@@ -8,6 +8,7 @@ const NS_INTERNAL_PORT = 8080;
 const NS_EXTERNAL_BIND_IP = "127.0.0.1";
 const NS_EXTERNAL_PORT = 8081;
 const NS_EXTERNAL_BASE_URL = "http://localhost";
+const NS_NOTIFY_PORT = 5000;
 
 /////////////////////////////////
 // Server Class
@@ -122,13 +123,35 @@ main.prototype = {
 
   verifyOrigin: function verifyOrigin(ip) {
     // TODO: Verify origin
-    console.log("Verify origin: " + ip);
+    console.log("Verify origin (TODO): " + ip);
     return true;
   },
 
   notifyHandset: function notifyHandset(ip, origin, data) {
-    // TODO: Notify the hanset with the associated Data
+    // Notify the hanset with the associated Data
     console.log("Notifiy from " + origin + " -> " + data + " to " + ip);
+
+    // Create the HTTP client
+    var http = require("http");
+    var options = {
+      host: ip,
+      port: NS_NOTIFY_PORT,
+      path: "/",
+      method: "POST"
+    };
+    var req = http.request(options, function(res) {
+      console.log('STATUS: ' + res.statusCode);
+      console.log('HEADERS: ' + JSON.stringify(res.headers));
+      res.setEncoding('utf8');
+      res.on('data', function (chunk) {
+        console.log('BODY: ' + chunk);
+      });
+    });
+    req.on("error", function(e) {
+      console.log("Error on request: " + e.message);
+    });
+
+    req.end("NOTIFY " + origin + " " + data + "\n");
   }
 }
 
