@@ -85,10 +85,14 @@ main.prototype = {
     }
 
     console.log("Located IP associated to Token " + params.token + " = " + ip);
-    this.prepareOkResponse(res,"Data to IP: " + ip);
 
-    // Notify handset
-    this.notifyHandset(ip, req.connection.remoteAddress, "TODO:data");
+    // When the data payload arrives, we'll process the petition
+    req.on("data", function(data) {
+      this.prepareOkResponse(res,"Data to IP: " + ip + " = " + data);
+
+      // Notify handset
+      this.notifyHandset(ip, req.connection.remoteAddress, data);
+    }.bind(this));
   },
 
   parseURL: function parseURL(url) {
