@@ -1,0 +1,61 @@
+Mozilla PUSH Notification server.
+
+Authors:
+ Andreas Gal (gal @ mozilla . com)
+ Fernando Rodríguez Sela (frsela @ tid . es)
+ Thinker Li (tlee @ mozilla . com)
+
+Introduction
+============
+
+The main objective is to reduce the battery comsuption & network traffic avoiding keep-alive messages.
+So the server shall be allocated inside the MNO private network with two network interfaces:
+
+  1.- To connect with user handset
+  2.- To connect from Internet
+
+  Handset         NotificationServer        WebSite
+ ---------       --------------------      ---------
+     |                    |                    |
+     | register(token)    |                    |
+     |------------------->|                    |
+     | Ok (publicURL)     |                    |
+     |<-------------------|                    |
+     |                    |                    |
+     | JS API             |                    |
+     |<----------------------------------------|
+     | register(publicURL, publicKey)          |
+     |---------------------------------------->|
+     |                    |                    |
+     |                    | notif(URL, data)   |
+     |                    |<-------------------|
+     |                    | verifyOrigin       |
+     |                    |------------------->|
+     | notfy(origin, data)|                    |
+     |<-------------------|                    |
+     |                    |                    |
+     | ACK (OPTIONAL)     |                    |
+     |---------------------------------------->|
+     |                    |                    |
+     |                    |                    |
+     |                    |                    |
+
+
+
+Notification server API
+=======================
+
+ PRIVATE INTERFACE
+
+  -> GET https://privateURL/register?token=uuid
+  <- 200 OK "REGISTERED&publicURL=https://publicURL/notify/token"
+  <- 200 OK "NOTIFY ORIGIN DATA"
+
+ PUBLIC INTERFACE
+
+  -> POST https://publicURL/notify/token?data=xxxx
+  <- 200 OK
+
+  <- verifyOrigin: GET https://websiteOriginURL
+  (validate certificate)
+
