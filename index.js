@@ -70,6 +70,13 @@ main.prototype = {
       return;
     }
 
+    // Verify origin
+    if(!this.verifyOrigin(req.connection.remoteAddress)) {
+      console.log("Bad origin " + req.connection.remoteAddress);
+      return;
+    }
+
+    // Locate handset IP address
     var ip = this.handsetsTable.locateByToken(params.token);
     if(!ip) {
       console.log("IP not located. Token: " + params.token);
@@ -78,7 +85,10 @@ main.prototype = {
     }
 
     console.log("Located IP associated to Token " + params.token + " = " + ip);
-    this.prepareOkResponse(res,"Data " + ip);
+    this.prepareOkResponse(res,"Data to IP: " + ip);
+
+    // Notify handset
+    this.notifyHandset(ip, req.connection.remoteAddress, "TODO:data");
   },
 
   parseURL: function parseURL(url) {
@@ -104,6 +114,17 @@ main.prototype = {
   prepareErrorResponse: function prepareErrorResponse(res, msg) {
     res.writeHead(404, {'Content-Type': 'text/plain'});
     res.end(msg);
+  },
+
+  verifyOrigin: function verifyOrigin(ip) {
+    // TODO: Verify origin
+    console.log("Verify origin: " + ip);
+    return true;
+  },
+
+  notifyHandset: function notifyHandset(ip, origin, data) {
+    // TODO: Notify the hanset with the associated Data
+    console.log("Notifiy from " + origin + " -> " + data + " to " + ip);
   }
 }
 
