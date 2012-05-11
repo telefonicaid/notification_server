@@ -1,3 +1,6 @@
+/**
+ * (c) Telefonica Digital, 2012 - Fernando Rodríguez Sela <frsela@tid.es>
+ */
 
 /////////////////////////////////
 // Configuration
