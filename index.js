@@ -58,7 +58,10 @@ main.prototype = {
       return;
     }
 
-    this.handsetsTable.register(req.connection.remoteAddress, params.token);
+    // If no IP address is received, use the origin IP. Hope is not masqueraded
+    if(params.ip == "")
+      params.ip = req.connection.remoteAddress;
+    this.handsetsTable.register(params.ip, params.token);
     var msg = "REGISTERED&" + NS_EXTERNAL_BASE_URL + ":" + NS_EXTERNAL_PORT +
               "/notify/" + params.token;
     this.prepareOkResponse(res,msg);
@@ -109,6 +112,9 @@ main.prototype = {
       data.token = path[2];
     } else {
       data.token = data.parsedURL.query.token;
+      data.ip = data.parsedURL.query.ip;
+      if(data.ip == null)
+        data.ip = "";
     }
     return data;
   },

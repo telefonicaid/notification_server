@@ -50,7 +50,7 @@ Notification server API
 
  PRIVATE INTERFACE
 
-  -> GET https://privateURL/register?token=uuid
+  -> GET https://privateURL/register?token=uuid[&ip=address]
   <- 200 OK "REGISTERED&publicURL=https://publicURL/notify/token"
   <- 200 OK "NOTIFY ORIGIN DATA"
 
