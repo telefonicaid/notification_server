@@ -22,12 +22,15 @@ So the server shall be allocated inside the MNO private network with two network
      | Ok (publicURL)     |                    |
      |<-------------------|                    |
      |                    |                    |
-     | JS API             |                    |
+     | GET: JS API        |                    |
+     |---------------------------------------->|
+     |  200 OK            |                    |
      |<----------------------------------------|
-     | register(publicURL, publicKey)          |
+     |                    |                    |
+     | AJAX: register(publicURL, publicKey)    |
      |---------------------------------------->|
      |                    |                    |
-     |                    | notif(URL, data)   |
+     |                    | notif(origin, data)|
      |                    |<-------------------|
      |                    | verifyOrigin       |
      |                    |------------------->|
