@@ -17,7 +17,7 @@ So the server shall be allocated inside the MNO private network with two network
   Handset         NotificationServer        WebSite
  ---------       --------------------      ---------
      |                    |                    |
-     | register(token)    |                    |
+     | register(token,ip) |                    |
      |------------------->|                    |
      | Ok (publicURL)     |                    |
      |<-------------------|                    |
