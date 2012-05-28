@@ -62,3 +62,10 @@ Notification server API
   <- verifyOrigin: GET https://websiteOriginURL
   (validate certificate)
 
+Requirements / Dependencies
+===========================
+
+Node.JS Modules (npm install <module>)
+
+* node-uuid
+* websocket
