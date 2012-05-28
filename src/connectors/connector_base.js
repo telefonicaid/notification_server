@@ -5,3 +5,27 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+var conn_ws = require("./connector_ws.js").connector_websocket;
+//var conn_ip = require("./connector_ipport.js").connector_ipport;
+
+function connector_base() {
+}
+
+connector_base.prototype = {
+  /**
+   * Create and return a connector object based on the data received
+   */
+  getConnector: function(data,conn) {
+    // TODO: Por ahora sólo devolvemos websocket connector
+    // TODO: En funcion de la IP, deberemos decidir si ir por uno u otro conector
+    var c = new conn_ws(data,conn);
+    return c;
+  }
+}
+
+var cb = new connector_base();
+function getConnectorFactory() {
+  return cb;
+}
+
+exports.getConnectorFactory = getConnectorFactory;

@@ -5,3 +5,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+function push_notifications() {
+}
+
+exports.push_notifications = push_notifications;

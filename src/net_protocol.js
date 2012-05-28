@@ -8,6 +8,9 @@
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 
+var DataStore = require("./datastore.js");
+var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
+
 function netProtocol(ip, port) {
   this.ip = ip;
   this.port = port;
@@ -44,20 +47,42 @@ netProtocol.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    console.log((new Date()) + ' Received request for ' + request.url);
+    console.log((new Date()) + 'HTTP: Received request for ' + request.url);
     var url = this.parseURL(request.url);
-    console.log(JSON.stringify(url));
+    console.log("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
     case "token":
       var token = require("./token.js").token;
-      response.writeHead(200);
+      var origin = (request.headers.origin || "*");
+      response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": origin} );
       response.write(token());
       break;
 
+    case "notify":
+      console.log("HTTP: Notification for " + url.token);
+      var n = DataStore.getDataStore().getNode(url.token);
+      n.notify("hola");
+      response.writeHead(404);
+      break;
+
+    case "register":
+      // We only accept application registration under the HTTP interface
+      if(url.token != "app") {
+        console.log("HTTP: Only application registration under this interface");
+        response.writeHead(404);
+        break;
+      }
+
+      console.log("HTTP: Application registration message");
+      response.writeHead(404);
+      break;
+
     default:
+      console.log("HTTP: Command not recognized");
       response.writeHead(404);
     }
 
+    // Close connection
     response.end();
   },
 
@@ -70,16 +95,42 @@ netProtocol.prototype = {
     ///////////////////////
     this.onWSMessage = function(message) {
       if (message.type === 'utf8') {
-        console.log('Received Message: ' + message.utf8Data);
-        connection.sendUTF(message.utf8Data);
-      }
-      else if (message.type === 'binary') {
-        console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');
-        connection.sendBytes(message.binaryData);
+        console.log('WS: Received Message: ' + message.utf8Data);
+        try {
+          var query = JSON.parse(message.utf8Data);
+        } catch(e) {
+          console.log("WS: Data received is not a valid JSON package");
+          connection.sendUTF('{ "error": "Data received is not a valid JSON package" }');
+          connection.close();
+          return;
+        }
+
+        switch(query.command) {
+        case "register/node":
+          console.log("WS: Node registration message");
+          var c = Connectors.getConnector(query.data, connection);
+          DataStore.getDataStore().registerNode(query.data.token, c);
+          break;
+
+        case "register/app":
+          console.log("WS: Application registration message");
+          break;
+
+        default:
+          console.log("WS: Command not recognized");
+          connection.sendUTF('{ "error": "Command not recognized" }');
+          connection.close();
+        }
+      } else if (message.type === 'binary') {
+        // No binary data supported yet
+        console.log('WS: Received Binary Message of ' + message.binaryData.length + ' bytes');
+        connection.sendUTF('{ "error": "Binary messages not yet supoprted" }');
+        connection.close();
       }
     };
 
     this.onWSClose = function(reasonCode, description) {
+      // TODO: De-register this node
       console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
     }
 
@@ -87,7 +138,7 @@ netProtocol.prototype = {
      * Verify origin in order to accept or reject connections
      */
     this.originIsAllowed = function(origin) {
-      // put logic here to detect whether the specified origin is allowed.
+      // TODO: put logic here to detect whether the specified origin is allowed.
       return true;
     }
 
@@ -101,7 +152,7 @@ netProtocol.prototype = {
       return;
     }
 
-    var connection = request.accept('echo-protocol', request.origin);
+    var connection = request.accept('push-notification', request.origin);
     console.log((new Date()) + ' Connection accepted.');
     connection.on('message', this.onWSMessage);
     connection.on('close', this.onWSClose);
