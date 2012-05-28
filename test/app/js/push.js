@@ -95,15 +95,15 @@ var Push = {
     onOpenWebsocket: function() {
         this.logMessage("[WS] Opened connection to " + this.ad);
         this.ws.ready = true;
-        this.ws.connection.send('{"token":"' + this.token + '", "command":"register/node"}');
+        this.logMessage("[REG] Started registration to the notification server");
+        this.ws.connection.send('{"data": {"token":"' + this.token + '"}, "command":"register/node"}');
         this.ws.connection.addEventListener('onmessage', function(e) {
-            alert("error!");
             Push.logMessage("[MSG], message received --- " + e.data);
         });
     },
 
     onErrorWebsocket: function(e) {
-        this.logMessage("[WS] Error connection to " + this.ad + " with error " + e.error);
+        this.logMessage("[WS] Error in websocket in " + this.ad + " with error " + e.error);
     },
 
     onCloseWebsocket: function(e) {
