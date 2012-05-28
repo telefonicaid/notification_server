@@ -17,7 +17,7 @@ So the server shall be allocated inside the MNO private network with two network
   Handset         NotificationServer        WebSite
  ---------       --------------------      ---------
      |                    |                    |
-     | register(token)    |                    |
+     | register(token,ip) |                    |
      |------------------->|                    |
      | Ok (publicURL)     |                    |
      |<-------------------|                    |
@@ -50,7 +50,7 @@ Notification server API
 
  PRIVATE INTERFACE
 
-  -> GET https://privateURL/register?token=uuid
+  -> GET https://privateURL/register?token=uuid[&ip=address]
   <- 200 OK "REGISTERED&publicURL=https://publicURL/notify/token"
   <- 200 OK "NOTIFY ORIGIN DATA"
 
