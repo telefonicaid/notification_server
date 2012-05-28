@@ -24,5 +24,5 @@ exports.ifaces = [
 /**
  * Public base URL to receive notifications
  */
-exports.publicBaseURL: "http://localhost";
+exports.publicBaseURL = "http://localhost";
 

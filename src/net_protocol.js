@@ -20,7 +20,7 @@ netProtocol.prototype = {
 
   init: function() {
     // Create a new HTTP Server
-    this.server = http.createServer(this.onHTTPMessage)
+    this.server = http.createServer(this.onHTTPMessage.bind(this))
     this.server.listen(this.port, this.ip);
     console.log('HTTP & WebSockets server running on ' + this.ip + ":" + this.port);
 
@@ -45,7 +45,19 @@ netProtocol.prototype = {
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
     console.log((new Date()) + ' Received request for ' + request.url);
-    response.writeHead(404);
+    var url = this.parseURL(request.url);
+    console.log(JSON.stringify(url));
+    switch(url.command) {
+    case "token":
+      var token = require("./token.js").token;
+      response.writeHead(200);
+      response.write(token());
+      break;
+
+    default:
+      response.writeHead(404);
+    }
+
     response.end();
   },
 
@@ -93,8 +105,24 @@ netProtocol.prototype = {
     console.log((new Date()) + ' Connection accepted.');
     connection.on('message', this.onWSMessage);
     connection.on('close', this.onWSClose);
-  }
+  },
 
+  ///////////////////////
+  // Auxiliar methods
+  ///////////////////////
+  parseURL: function(url) {
+    var urlparser = require('url');
+    var data = {}
+    data.parsedURL = urlparser.parse(url,true);
+    var path = data.parsedURL.pathname.split("/");
+    data.command = path[1];
+    if(path.length > 2) {
+      data.token = path[2];
+    } else {
+      data.token = data.parsedURL.query.token;
+    }
+    return data;
+  }
 }
 
 // Exports

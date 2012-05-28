@@ -7,14 +7,10 @@
 
 var uuid = require("node-uuid");
 
-function token() {};
-
-token.prototype = {
-  // The node token shall be unique
-  getToken: function() {
-    // TODO: Verify the token is not used
-    return uuid.v1();
-  }
+// The TOKEN shall be unique
+function token() {
+  // TODO: Verify the token is not used
+  return uuid.v1();
 }
 
-exports token: token;
+exports.token = token;
