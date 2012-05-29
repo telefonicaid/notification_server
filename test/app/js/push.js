@@ -97,9 +97,9 @@ var Push = {
         this.ws.ready = true;
         this.logMessage("[REG] Started registration to the notification server");
         this.ws.connection.send('{"data": {"token":"' + this.token + '"}, "command":"register/node"}');
-        this.ws.connection.addEventListener('onmessage', function(e) {
-            Push.logMessage("[MSG], message received --- " + e.data);
-        });
+        this.ws.connection.onmessage = function(e) {
+            Push.logMessage("[MSG] message received --- " + e.data);
+        };
     },
 
     onErrorWebsocket: function(e) {
