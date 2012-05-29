@@ -137,6 +137,9 @@ netProtocol.prototype = {
 
         case "register/app":
           console.log("WS: Application registration message");
+          DataStore.getDataStore().registerApplication(query.data.apptoken,query.data.nodetoken);
+          var baseURL = require('./config.js').publicBaseURL;
+          connection.send(baseURL + "/notify/" + query.data.apptoken);
           break;
 
         default:
