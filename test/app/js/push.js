@@ -5,8 +5,8 @@ var Push = {
     MAX_RETRIES: 1,
     actualRetries: 0,
 
-    //ad: "push.handsets.es",
-    ad: "localhost:8080",
+    ad: "push.handsets.es:8080",
+    //ad: "localhost:8080",
     ad_ws: null,
     ad_http: null,
 
@@ -50,6 +50,8 @@ var Push = {
         this.registerAppButton1.addEventListener('click', this.registerApp1.bind(this));
         this.registerAppButton2.addEventListener('click', this.registerApp2.bind(this));
         this.clearButton.addEventListener('click', this.onclear.bind(this));
+
+        Push.logMessage("[INIT] Notification server: " + this.ad);
     },
 
     onclear: function() {
