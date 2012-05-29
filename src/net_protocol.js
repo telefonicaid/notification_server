@@ -36,8 +36,11 @@ netProtocol.prototype = {
     // Websocket init
     this.wsServer = new WebSocketServer({
       httpServer: this.server,
-//    keepalive: false,
-//    keepaliveInterval: 200000,
+      keepalive: require('./config.js').websocket_params.keepalive,
+      keepaliveInterval: require('./config.js').websocket_params.keepaliveInterval,
+      dropConnectionOnKeepaliveTimeout: require('./config.js').websocket_params.dropConnectionOnKeepaliveTimeout,
+      keepaliveGracePeriod: require('./config.js').websocket_params.keepaliveGracePeriod,
+ 
       // You should not use autoAcceptConnections for production
       // applications, as it defeats all standard cross-origin protection
       // facilities built into the protocol and the browser.  You should

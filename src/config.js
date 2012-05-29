@@ -26,3 +26,13 @@ exports.ifaces = [
  */
 exports.publicBaseURL = "http://localhost:8081";
 
+/**
+ * Websocket configuration
+ * @see https://github.com/Worlize/WebSocket-Node/blob/master/lib/WebSocketServer.js
+ */
+exports.websocket_params = {
+  keepalive: true,
+  keepaliveInterval: 40000,
+  dropConnectionOnKeepaliveTimeout: true,
+  keepaliveGracePeriod: 30000
+};
