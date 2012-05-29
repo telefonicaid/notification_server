@@ -55,13 +55,15 @@ netProtocol.prototype = {
   onHTTPMessage: function(request, response) {
     console.log((new Date()) + 'HTTP: Received request for ' + request.url);
     var url = this.parseURL(request.url);
+    var status = "";
+    var text = "";
+    //response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": "*"} );
     console.log("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
     case "token":
       var token = require("./token.js").token;
-      var origin = (request.headers.origin || "*");
-      response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": origin} );
-      response.write(token());
+      text += token();
+      status = 200;
       break;
 
     case "notify":
@@ -69,8 +71,8 @@ netProtocol.prototype = {
       request.on("data", function(data) {
         var node_list = DataStore.getDataStore().getApplication(url.token);
         if(node_list == false) {
-          response.WriteHead(404);
-          response.Write('{ "error": "No application found" }');
+          status = 404;
+          text += '{ "error": "No application found" }';
         }
         console.log(" * Located nodes: " + JSON.stringify(node_list) );
         for(n in node_list) {
@@ -78,13 +80,12 @@ netProtocol.prototype = {
           var nodeConnector = DataStore.getDataStore().getNode(node_list[n]);
           if(nodeConnector != false) {
             nodeConnector.notify(data);
-            response.writeHead(200);
+            status = 200;
           } else {
-            response.writeHead(404);
-            response.Write('{ "error": "No node found" }');
+            status = 400;
+            text += '{ "error": "No node found" }';
           }
         }
-        
       }.bind(this));
       break;
 
@@ -92,22 +93,26 @@ netProtocol.prototype = {
       // We only accept application registration under the HTTP interface
       if(url.token != "app") {
         console.log("HTTP: Only application registration under this interface");
-        response.writeHead(404);
+        status = 404;
         break;
       }
       console.log("HTTP: Application registration message");
       DataStore.getDataStore().registerApplication(url.parsedURL.query.a,url.parsedURL.query.n);
-      response.writeHead(200);
+      status = 200;
       var baseURL = require('./config.js').publicBaseURL;
-      response.write(baseURL + "/notify/" + url.parsedURL.query.a);
+      text += (baseURL + "/notify/" + url.parsedURL.query.a);
       break;
 
     default:
       console.log("HTTP: Command not recognized");
-      response.writeHead(404);
+      status = 404;
     }
 
     // Close connection
+    response.statusCode = status;
+    response.setHeader("Content-Type", "text/plain");
+    response.setHeader("access-control-allow-origin", "*");
+    response.write(text);
     response.end();
   },
 
