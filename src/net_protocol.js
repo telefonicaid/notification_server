@@ -8,6 +8,8 @@
 // TODO: Error methods
 // TODO: push_url_recover_method
 // TODO: verify origin
+// TODO: URL Parser based on regexp
+// TODO: Replies to the 3rd. party server
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
@@ -139,7 +141,7 @@ netProtocol.prototype = {
           console.log("WS: Application registration message");
           DataStore.getDataStore().registerApplication(query.data.apptoken,query.data.nodetoken);
           var baseURL = require('./config.js').publicBaseURL;
-          connection.send(baseURL + "/notify/" + query.data.apptoken);
+          connection.sendUTF(baseURL + "/notify/" + query.data.apptoken);
           break;
 
         default:

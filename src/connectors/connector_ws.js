@@ -12,7 +12,7 @@ function connector_websocket(data,conn) {
 
 connector_websocket.prototype = {
   notify: function(msg) {
-    this.connection.send(msg);
+    this.connection.sendUTF(msg);
   }
 }
 
