@@ -3,7 +3,7 @@
   "description": "TestApp for Push",
   "launch_path": "/",
   "developer": {
-    "name": "Fernando Rodriguez Sela, Guillermo López Leal {frsela|gll}@tid.es",
+    "name": "Fernando Rodriguez Sela, Guillermo López Leal",
     "url": "https://pdihub.hi.inet/frsela/notification-server/"
   },
   "locales": {
@@ -14,7 +14,7 @@
     "es": {
       "name": "Notificaciones push nativas",
       "description": "Aplicación de pruebas para notificaciones push"
-    },
+    }
   },
   "default_locale": "en-US",
   "icons": {
