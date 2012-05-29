@@ -5,6 +5,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+// TODO: Error methods
+// TODO: push_url_recover_method
+// TODO: verify origin
+
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 
@@ -60,9 +64,26 @@ netProtocol.prototype = {
 
     case "notify":
       console.log("HTTP: Notification for " + url.token);
-      var n = DataStore.getDataStore().getNode(url.token);
-      n.notify("hola");
-      response.writeHead(404);
+      request.on("data", function(data) {
+        var node_list = DataStore.getDataStore().getApplication(url.token);
+        if(node_list == false) {
+          response.WriteHead(404);
+          response.Write('{ "error": "No application found" }');
+        }
+        console.log(" * Located nodes: " + JSON.stringify(node_list) );
+        for(n in node_list) {
+          console.log(" * Notifying node: " + node_list[n] );
+          var nodeConnector = DataStore.getDataStore().getNode(node_list[n]);
+          if(nodeConnector != false) {
+            nodeConnector.notify(data);
+            response.writeHead(200);
+          } else {
+            response.writeHead(404);
+            response.Write('{ "error": "No node found" }');
+          }
+        }
+        
+      }.bind(this));
       break;
 
     case "register":
@@ -72,9 +93,11 @@ netProtocol.prototype = {
         response.writeHead(404);
         break;
       }
-
       console.log("HTTP: Application registration message");
-      response.writeHead(404);
+      DataStore.getDataStore().registerApplication(url.parsedURL.query.a,url.parsedURL.query.n);
+      response.writeHead(200);
+      var baseURL = require('./config.js').publicBaseURL;
+      response.write(baseURL + "/notify/" + url.parsedURL.query.a);
       break;
 
     default:
