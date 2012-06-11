@@ -16,6 +16,7 @@ var http = require('http');
 
 var DataStore = require("./datastore.js");
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
+var token = require("./token.js").getToken;
 
 function netProtocol(ip, port) {
   this.ip = ip;
@@ -64,8 +65,7 @@ netProtocol.prototype = {
     console.log("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
     case "token":
-      var token = require("./token.js").token;
-      text += token();
+      text += token.get();
       status = 200;
       break;
 
@@ -141,6 +141,13 @@ netProtocol.prototype = {
         switch(query.command) {
         case "register/node":
           console.log("WS: Node registration message");
+          // Token verification
+          if(!token.verify(query.data.token)) {
+            console.log("WS: Token not valid (Checksum failed)");
+            connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
+            connection.close();
+            return;
+          }
           var c = Connectors.getConnector(query.data, connection);
           DataStore.getDataStore().registerNode(query.data.token, c);
           break;

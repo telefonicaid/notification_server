@@ -36,3 +36,11 @@ exports.websocket_params = {
   dropConnectionOnKeepaliveTimeout: true,
   keepaliveGracePeriod: 30000
 };
+
+/**
+ * Server id params (for TOKEN generation & validation)
+ */
+exports.server_info = {
+  id: "0000000001",
+  key: "12345678901234567890"
+}
