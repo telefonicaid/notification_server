@@ -5,6 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+var dgram = require('dgram');
+
 function connector_ipport(data,conn) {
   this.data = data;
   this.connection = conn;
@@ -16,27 +18,12 @@ connector_ipport.prototype = {
     // Notify the hanset with the associated Data
     console.log("Connector IPPort: Notify to " + this.data.iface.ip);
 
-    // Create the HTTP client
-    var http = require("http");
-    var options = {
-      host: this.data.iface.ip,
-      port: this.data.iface.port,
-      path: "/",
-      method: "POST"
-    };
-    var req = http.request(options, function(res) {
-      console.log('STATUS: ' + res.statusCode);
-      console.log('HEADERS: ' + JSON.stringify(res.headers));
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-      });
+    // UDP Notification Message
+    var message = new Buffer("NOTIFY " + msg);
+    var client = dgram.createSocket("udp4");
+    client.send(message, 0, message.length, this.data.iface.port, this.data.iface.ip, function(err, bytes) {
+      client.close();
     });
-    req.on("error", function(e) {
-      console.log("Connector IPPort: Error on request: " + e.message);
-    });
-
-    req.end("NOTIFY " + msg + "\n");    
   }
 }
 
