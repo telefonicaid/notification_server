@@ -4,6 +4,7 @@ Authors:
  Andreas Gal (gal @ mozilla . com)
  Fernando Rodríguez Sela (frsela @ tid . es)
  Thinker Li (tlee @ mozilla . com)
+ Guillermo Lopez Leal (gll @ tid . es)
 
 Introduction
 ============
@@ -62,3 +63,10 @@ Notification server API
   <- verifyOrigin: GET https://websiteOriginURL
   (validate certificate)
 
+Requirements / Dependencies
+===========================
+
+Node.JS Modules (npm install <module>)
+
+* node-uuid
+* websocket
