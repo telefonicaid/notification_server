@@ -72,23 +72,26 @@ netProtocol.prototype = {
     case "notify":
       console.log("HTTP: Notification for " + url.token);
       request.on("data", function(data) {
-        var node_list = DataStore.getDataStore().getApplication(url.token);
-        if(node_list == false) {
-          status = 404;
-          text += '{ "error": "No application found" }';
-        }
-        console.log(" * Located nodes: " + JSON.stringify(node_list) );
-        for(n in node_list) {
-          console.log(" * Notifying node: " + node_list[n] );
-          var nodeConnector = DataStore.getDataStore().getNode(node_list[n]);
-          if(nodeConnector != false) {
-            nodeConnector.notify(data);
-            status = 200;
-          } else {
-            status = 400;
-            text += '{ "error": "No node found" }';
+        DataStore.getDataStore().getApplication(
+          url.token,
+          function(err, replies) {
+            if(replies.length == 0) {
+//              status = 404;
+//              text += '{ "error": "No application found" }';
+            }
+            replies.forEach(function (reply, i) {
+              console.log(" * Notifying node: " + i + " : " + reply );
+              var nodeConnector = DataStore.getDataStore().getNode(reply);
+              if(nodeConnector != false) {
+                nodeConnector.notify(data);
+                status = 200;
+              } else {
+                status = 400;
+                text += '{ "error": "No node found" }';
+              }
+            })
           }
-        }
+        );
       }.bind(this));
       break;
 
