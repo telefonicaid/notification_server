@@ -74,6 +74,6 @@ Node.JS Modules (npm install <module>)
 
 * node-uuid
 * websocket
-* mongodb
+* mongodb --mongodb:native
 * stomp (Message Broker API for ActiveMQ, RabbitMQ, ...)
    https://github.com/benjaminws/stomp-js
