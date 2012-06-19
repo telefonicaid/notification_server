@@ -67,11 +67,13 @@ Requirements / Dependencies
 ===========================
 
 * Node.JS
-* Redis
 * MongoDB
+* ActiveMQ or RabbitMQ (Shall support STOMP protocol)
 
 Node.JS Modules (npm install <module>)
 
 * node-uuid
 * websocket
 * mongodb
+* stomp (Message Broker API for ActiveMQ, RabbitMQ, ...)
+   https://github.com/benjaminws/stomp-js
