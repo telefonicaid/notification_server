@@ -13,6 +13,7 @@
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
+var crypto = require("./cryptography.js").getCrypto;
 
 var DataStore = require("./datastore.js");
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
@@ -103,10 +104,11 @@ netProtocol.prototype = {
         break;
       }
       console.log("HTTP: Application registration message");
-      DataStore.getDataStore().registerApplication(url.parsedURL.query.a,url.parsedURL.query.n);
+      var appToken = crypto.hashSHA256(url.parsedURL.query.a);
+      DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
       status = 200;
       var baseURL = require('./config.js').publicBaseURL;
-      text += (baseURL + "/notify/" + url.parsedURL.query.a);
+      text += (baseURL + "/notify/" + appToken);
       break;
 
     default:
