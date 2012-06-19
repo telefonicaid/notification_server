@@ -55,7 +55,7 @@ datastore.prototype = {
                          { 'token': token, 'serverId': server_info.id },
                          { upsert: true },
                          function(err,d) {
-        if(err != null)
+        if(err == null)
           console.log("Node inserted/update into MongoDB");
         else
           console.log("Error inserting/updating node into MongoDB");
