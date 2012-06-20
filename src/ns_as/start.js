@@ -21,7 +21,8 @@ NS_AS_main.prototype = {
     		this.servers[a] = new protocol(config.ifaces[a].iface, config.ifaces[a].port);
         	this.servers[a].init();
    		}
-        console.log("NS_AS server initialized");
+   		var log = require("../common/logger.js").getLogger;
+        log.info("NS_AS server initialized");
 	}
 }
 

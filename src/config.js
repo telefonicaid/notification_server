@@ -22,6 +22,7 @@
 
 exports.NS_AS = {
   publicBaseURL: "http://localhost:8081",
+
   /**
    * Binding interfaces and ports
    * [ iface, port ]
@@ -30,13 +31,29 @@ exports.NS_AS = {
     // Internal network
     {
       iface: "0.0.0.0",
-      port: 8080 },
+      port: 8080 }/*,
     // External network
     {
       iface: "127.0.0.1",
       port: 8081,
-    }
-  ]
+    }*/
+  ],
+
+  server_info: {
+    id: "0000000001",
+    key: "12345678901234567890"
+  },
+
+  ddbbsettings: {
+    host: "banania.hi.inet",
+    port: 27017,
+    user: "",
+    password: "",
+    ddbbname: "push_notification_server",
+    auto_reconnect: true,
+    poolSize: 4,
+    native_parser: true
+  }
 }
 
 /********************* NS_MSG_monitor ********************************/
@@ -62,14 +79,3 @@ exports.NS_UA_WS = {
 
 
 /********************* NS_UA_SMS *************************************/
-
-
-
-/*****************************************************************************/
-/**
- * Server id params (for TOKEN generation & validation)
- */
-exports.server_info = {
-  id: "0000000001",
-  key: "12345678901234567890"
-}

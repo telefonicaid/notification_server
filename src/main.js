@@ -11,29 +11,38 @@ function main() {
 
 main.prototype = {
   start: function() {
+    // Import logger
+    var log = require("./common/logger.js").getLogger;
     // Look for what server type we are running
     var server = process.argv[2];
     //And start what is needed
     switch(server) {
       case "NS_UA_WS":
-        console.log("Starting NS_UA_WS server");
+        log.init("/tmp/push-NS_UA_WS.log", "NS_UA_WS", 1);
+        log.info("Starting as NS_UA_WS server");
         var sel = require('./ns_as/start.js');
         var server = new sel.NS_AS_main();
         server.start();
         break;
       case "NS_UA_SMS":
-        console.log("Starting NS_UA_SMS server");
+        log.init("/tmp/push-NS_UA_SMS.log", "NS_UA_SMS", 1);
+        log.info("Starting NS_UA_SMS server");
         break;
       case "NS_UA_UDP":
-        console.log("Starting NS_UA_UDP server");
+        log.init("/tmp/push-NS_UA_UDP.log", "NS_UA_UDP", 1);
+        log.info("Starting NS_UA_UDP server");
         break;
       case "NS_AS":
-        console.log("Starting NS_AS server");
+        log.init("/tmp/push-NS_AS.log", "NS_AS", 1);
+        log.info("Starting NS_AS server");
         break;
       case "NS_MSG_monitor":
-        console.log("Starting NS_MSG_monitor server");
+        log.init("/tmp/push-NS_MSG_monitor.log", "NS_MSG_monitor", 1);
+        log.info("Starting NS_MSG_monitor server");
         break;
       default:
+        log.init("/tmp/push.log", "PUSH", 1);
+        log.error("No server provided");
         printInfo();
     }
   }

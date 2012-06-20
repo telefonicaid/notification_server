@@ -11,7 +11,7 @@
 // TODO: URL Parser based on regexp
 // TODO: Replies to the 3rd. party server
 
-var WebSocketServer = require('websocket').server;
+var log = require("../common/logger.js").getLogger;
 var http = require('http');
 var crypto = require("../common/cryptography.js").getCrypto;
 
@@ -33,37 +33,19 @@ netProtocol.prototype = {
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this))
     this.server.listen(this.port, this.ip);
-    console.log('HTTP & WebSockets server running on ' + this.ip + ":" + this.port);
-
-    // Websocket init
-    this.wsServer = new WebSocketServer({
-      httpServer: this.server,
-      keepalive: require('../config.js').NS_UA_WS.websocket_params.keepalive,
-      keepaliveInterval: require('../config.js').NS_UA_WS.websocket_params.keepaliveInterval,
-      dropConnectionOnKeepaliveTimeout: require('../config.js').NS_UA_WS.websocket_params.dropConnectionOnKeepaliveTimeout,
-      keepaliveGracePeriod: require('../config.js').NS_UA_WS.websocket_params.keepaliveGracePeriod,
-
-      // You should not use autoAcceptConnections for production
-      // applications, as it defeats all standard cross-origin protection
-      // facilities built into the protocol and the browser.  You should
-      // *always* verify the connection's origin and decide whether or not
-      // to accept it.
-      autoAcceptConnections: false
-    });
-
-    this.wsServer.on('request', this.onWSRequest);
+    log.info('HTTP push server running on ' + this.ip + ":" + this.port);
   },
 
   //////////////////////////////////////////////
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    console.log((new Date()) + 'HTTP: Received request for ' + request.url);
+    log.debug((new Date()) + 'HTTP: Received request for ' + request.url);
     var url = this.parseURL(request.url);
     var status = "";
     var text = "";
     //response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": "*"} );
-    console.log("HTTP: Parsed URL: " + JSON.stringify(url));
+    log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
     case "token":
       text += token.get();
@@ -71,7 +53,7 @@ netProtocol.prototype = {
       break;
 
     case "notify":
-      console.log("HTTP: Notification for " + url.token);
+      log.debug("HTTP: Notification for " + url.token);
       request.on("data", function(data) {
         DataStore.getDataStore().getApplication(
           url.token,
@@ -81,7 +63,7 @@ netProtocol.prototype = {
 //              text += '{ "error": "No application found" }';
             }
             replies.forEach(function (reply, i) {
-              console.log(" * Notifying node: " + i + " : " + reply );
+              log.debug(" * Notifying node: " + i + " : " + reply );
               var nodeConnector = DataStore.getDataStore().getNode(reply);
               if(nodeConnector != false) {
                 nodeConnector.notify(data);
@@ -99,11 +81,11 @@ netProtocol.prototype = {
     case "register":
       // We only accept application registration under the HTTP interface
       if(url.token != "app") {
-        console.log("HTTP: Only application registration under this interface");
+        log.debug("HTTP: Only application registration under this interface");
         status = 404;
         break;
       }
-      console.log("HTTP: Application registration message");
+      log.debug("HTTP: Application registration message");
       var appToken = crypto.hashSHA256(url.parsedURL.query.a);
       DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
       status = 200;
@@ -112,7 +94,7 @@ netProtocol.prototype = {
       break;
 
     default:
-      console.log("HTTP: Command not recognized");
+      log.debug("HTTP: Command not recognized");
       status = 404;
     }
 
@@ -122,88 +104,6 @@ netProtocol.prototype = {
     response.setHeader("access-control-allow-origin", "*");
     response.write(text);
     response.end();
-  },
-
-  //////////////////////////////////////////////
-  // WebSocket callbacks
-  //////////////////////////////////////////////
-  onWSRequest: function(request) {
-    ///////////////////////
-    // WS Callbacks
-    ///////////////////////
-    this.onWSMessage = function(message) {
-      if (message.type === 'utf8') {
-        console.log('WS: Received Message: ' + message.utf8Data);
-        try {
-          var query = JSON.parse(message.utf8Data);
-        } catch(e) {
-          console.log("WS: Data received is not a valid JSON package");
-          connection.sendUTF('{ "error": "Data received is not a valid JSON package" }');
-          connection.close();
-          return;
-        }
-
-        switch(query.command) {
-        case "register/node":
-          console.log("WS: Node registration message");
-          // Token verification
-          if(!token.verify(query.data.token)) {
-            console.log("WS: Token not valid (Checksum failed)");
-            connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
-            connection.close();
-            return;
-          }
-          var c = Connectors.getConnector(query.data, connection);
-          DataStore.getDataStore().registerNode(query.data.token, c);
-          break;
-
-        case "register/app":
-          console.log("WS: Application registration message");
-          DataStore.getDataStore().registerApplication(query.data.apptoken,query.data.nodetoken);
-          var baseURL = require('../config.js').publicBaseURL;
-          connection.sendUTF(baseURL + "/notify/" + query.data.apptoken);
-          break;
-
-        default:
-          console.log("WS: Command not recognized");
-          connection.sendUTF('{ "error": "Command not recognized" }');
-          connection.close();
-        }
-      } else if (message.type === 'binary') {
-        // No binary data supported yet
-        console.log('WS: Received Binary Message of ' + message.binaryData.length + ' bytes');
-        connection.sendUTF('{ "error": "Binary messages not yet supoprted" }');
-        connection.close();
-      }
-    };
-
-    this.onWSClose = function(reasonCode, description) {
-      // TODO: De-register this node
-      console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
-    }
-
-    /**
-     * Verify origin in order to accept or reject connections
-     */
-    this.originIsAllowed = function(origin) {
-      // TODO: put logic here to detect whether the specified origin is allowed.
-      return true;
-    }
-
-    ///////////////////////
-    // Websocket creation
-    ///////////////////////
-    if (!this.originIsAllowed(request.origin)) {
-      // Make sure we only accept requests from an allowed origin
-      request.reject();
-      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
-      return;
-    }
-
-    var connection = request.accept('push-notification', request.origin);
-    console.log((new Date()) + ' Connection accepted.');
-    connection.on('message', this.onWSMessage);
-    connection.on('close', this.onWSClose);
   },
 
   ///////////////////////

@@ -6,31 +6,39 @@
  */
 
 var mongodb = require("mongodb");
-var server_info = require("../../config.js").server_info;
+var server_info = require("../../config.js").NS_AS.server_info;
+var log = require("../logger.js").getLogger;
+
+var ddbbsettings = require("../../config.js").NS_AS.ddbbsettings;
 
 function datastore() {
-  console.log("MONGO based data store loaded.");
+  log.info("MongoDB data store loaded.");
 
   // In-Memory storage
   this.nodesTable = {};
 
   // Connection to MongoDB
   this.db = new mongodb.Db(
-    "push_notification_server",
+    ddbbsettings.ddbbname,
     new mongodb.Server(
-      "banania.hi.inet",
-      27017,
-      {auto_reconnect: true, poolSize: 4}
+      ddbbsettings.host,
+      ddbbsettings.port,
+      {
+        auto_reconnect: ddbbsettings.auto_reconnect,
+        poolSize: ddbbsettings.poolSize
+      }
     ),
-    {native_parser: false}
+    {
+      native_parser: ddbbsettings.native_parser
+    }
   );
 
   // Establish connection to db
   this.db.open(function(err, db) {
     if(err == null) {
-      console.log("Connected to MongoDB !");
+      log.info("Connected to MongoDB!");
     } else {
-      console.log("Error connecting to MongoDB ! - " + err);
+      log.error("Error connecting to MongoDB ! - " + err);
       // TODO: Cierre del servidor? Modo alternativo?
     }
   });
@@ -42,7 +50,7 @@ datastore.prototype = {
    */
   registerNode: function (token, connector) {
     if(this.nodesTable[token]) {
-      console.log("Removing old node token " + token);
+      log.debug("Removing old node token " + token);
       delete(this.nodesTable[token]);
     }
 
@@ -56,9 +64,9 @@ datastore.prototype = {
                          { upsert: true },
                          function(err,d) {
         if(err == null)
-          console.log("Node inserted/update into MongoDB");
+          log.debug("Node inserted/update into MongoDB");
         else
-          console.log("Error inserting/updating node into MongoDB");
+          log.debug("Error inserting/updating node into MongoDB");
       });
     });
   },
@@ -85,9 +93,9 @@ datastore.prototype = {
                          {upsert: true},
                          function(err,d) {
         if(err == null)
-          console.log("Application inserted into MongoDB");
+          log.debug("Application inserted into MongoDB");
         else
-          console.log("Error inserting application into MongoDB: " + err);
+          log.debug("Error inserting application into MongoDB: " + err);
       });
     });
 
@@ -101,9 +109,9 @@ datastore.prototype = {
     this.db.collection("apps", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
         if(err == null)
-          console.log(d);
+          log.debug(d);
         else
-          console.log("Error finding application into MongoDB: " + err);
+          log.debug("Error finding application into MongoDB: " + err);
       });
     });
   }
