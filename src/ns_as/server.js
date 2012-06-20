@@ -16,15 +16,37 @@ var http = require('http');
 var crypto = require("../common/cryptography.js").getCrypto;
 
 var DataStore = require("../common/ddbb/datastore.js");
-var Connectors = require("../ns_ua/connectors/connector_base.js").getConnectorFactory();
 var token = require("../common/token.js").getToken;
 
-function netProtocol(ip, port) {
+function server(ip, port) {
   this.ip = ip;
   this.port = port;
 };
 
-netProtocol.prototype = {
+function onNewPushMessage(body, token) {
+  DataStore.getDataStore().getApplication(
+    token,
+    function(err, replies) {
+      if(replies.length == 0) {
+        //status = 404;
+        //text += '{ "error": "No application found" }';
+      }
+      replies.forEach(function (reply, i) {
+        log.debug(" * Notifying node: " + i + " : " + reply);
+        var nodeConnector = DataStore.getDataStore().getNode(reply);
+        if(nodeConnector != false) {
+          nodeConnector.notify(data);
+          this.status = 200;
+        } else {
+          this.status = 400;
+          this.text += '{ "error": "No node found" }';
+        }
+      })
+    }
+    );
+}
+
+server.prototype = {
   //////////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////////
@@ -42,67 +64,48 @@ netProtocol.prototype = {
   onHTTPMessage: function(request, response) {
     log.debug((new Date()) + 'HTTP: Received request for ' + request.url);
     var url = this.parseURL(request.url);
-    var status = "";
-    var text = "";
+    this.status = "";
+    this.text = "";
     //response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": "*"} );
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
-    case "token":
-      text += token.get();
-      status = 200;
-      break;
-
-    case "notify":
-      log.debug("HTTP: Notification for " + url.token);
-      request.on("data", function(data) {
-        DataStore.getDataStore().getApplication(
-          url.token,
-          function(err, replies) {
-            if(replies.length == 0) {
-//              status = 404;
-//              text += '{ "error": "No application found" }';
-            }
-            replies.forEach(function (reply, i) {
-              log.debug(" * Notifying node: " + i + " : " + reply );
-              var nodeConnector = DataStore.getDataStore().getNode(reply);
-              if(nodeConnector != false) {
-                nodeConnector.notify(data);
-                status = 200;
-              } else {
-                status = 400;
-                text += '{ "error": "No node found" }';
-              }
-            })
-          }
-        );
-      }.bind(this));
-      break;
-
-    case "register":
-      // We only accept application registration under the HTTP interface
-      if(url.token != "app") {
-        log.debug("HTTP: Only application registration under this interface");
-        status = 404;
+      case "token":
+        this.text += token.get();
+        this.status = 200;
         break;
-      }
-      log.debug("HTTP: Application registration message");
-      var appToken = crypto.hashSHA256(url.parsedURL.query.a);
-      DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
-      status = 200;
-      var baseURL = require('../config.js').NS_AS.publicBaseURL;
-      text += (baseURL + "/notify/" + appToken);
-      break;
 
-    default:
-      log.debug("HTTP: Command not recognized");
-      status = 404;
+      case "notify":
+        log.debug("HTTP: Notification for " + url.token);
+        request.on("data", function(body) {
+          new onNewPushMessage(body, url.token);
+        });
+        break;
+
+      case "register":
+        // We only accept application registration under the HTTP interface
+        if(url.token != "app") {
+          log.debug("HTTP: Only application registration under this interface");
+          this.status = 404;
+          break;
+        }
+        log.debug("HTTP: Application registration message");
+        var appToken = crypto.hashSHA256(url.parsedURL.query.a);
+        DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
+        this.status = 200;
+        var baseURL = require('../config.js').NS_AS.publicBaseURL;
+        this.text += (baseURL + "/notify/" + appToken);
+        break;
+
+      default:
+        log.debug("HTTP: Command not recognized");
+        status = 404;
     }
 
     // Close connection
-    response.statusCode = status;
+    response.statusCode = this.status;
     response.setHeader("Content-Type", "text/plain");
     response.setHeader("access-control-allow-origin", "*");
-    response.write(text);
+    response.write(this.text);
     response.end();
   },
 
@@ -125,4 +128,4 @@ netProtocol.prototype = {
 }
 
 // Exports
-exports.networkProtocol = netProtocol;
+exports.server = server;
