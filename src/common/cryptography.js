@@ -62,6 +62,27 @@ cryptography.prototype = {
   },
 
   ////////////////////////////////////////////
+  // Signature validations
+  ////////////////////////////////////////////
+
+  /**
+   * Verify signature using RSA-SHA256
+   * Use Public/Private keys for signatures:
+   * Private Key generation:
+   *  openssl genrsa 1024 > private.key
+   * Public Key generation:
+   *  openssl rsa -in private.key -out public.pem -outform PEM -pubout
+   * Signing data using private key:
+   *  openssl dgst -hex -sha256 -sign private.key msg.txt
+   */
+  verifySignature: function(data,signature,publicKey) {
+    var algorithm = 'RSA-SHA256';
+    var verifier = crypto.createVerify(algorithm);
+    verifier.update(data);
+    return verifier.verify(publicKey, signature, 'hex');
+  },
+
+  ////////////////////////////////////////////
   // HASH funcitons
   ////////////////////////////////////////////
   hashMD5: function(data) {
