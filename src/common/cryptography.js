@@ -5,6 +5,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+// Crypto module. See: http://nodejs.org/docs/v0.3.1/api/crypto.html
 var crypto = require('crypto');
 
 function cryptography() {}
@@ -67,6 +68,7 @@ cryptography.prototype = {
 
   /**
    * Verify signature using RSA-SHA256
+   * 
    * Use Public/Private keys for signatures:
    * Private Key generation:
    *  openssl genrsa 1024 > private.key
@@ -74,6 +76,10 @@ cryptography.prototype = {
    *  openssl rsa -in private.key -out public.pem -outform PEM -pubout
    * Signing data using private key:
    *  openssl dgst -hex -sha256 -sign private.key msg.txt
+   * 
+   * See:
+   *  http://www.openssl.org/docs/HOWTO/keys.txt
+   *  http://www.codealias.info/technotes/openssl_rsa_sign_and_verify_howto
    */
   verifySignature: function(data,signature,publicKey) {
     var algorithm = 'RSA-SHA256';
