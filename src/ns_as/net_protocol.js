@@ -38,10 +38,10 @@ netProtocol.prototype = {
     // Websocket init
     this.wsServer = new WebSocketServer({
       httpServer: this.server,
-      keepalive: require('../config.js').websocket_params.keepalive,
-      keepaliveInterval: require('../config.js').websocket_params.keepaliveInterval,
-      dropConnectionOnKeepaliveTimeout: require('../config.js').websocket_params.dropConnectionOnKeepaliveTimeout,
-      keepaliveGracePeriod: require('../config.js').websocket_params.keepaliveGracePeriod,
+      keepalive: require('../config.js').NS_UA_WS.websocket_params.keepalive,
+      keepaliveInterval: require('../config.js').NS_UA_WS.websocket_params.keepaliveInterval,
+      dropConnectionOnKeepaliveTimeout: require('../config.js').NS_UA_WS.websocket_params.dropConnectionOnKeepaliveTimeout,
+      keepaliveGracePeriod: require('../config.js').NS_UA_WS.websocket_params.keepaliveGracePeriod,
 
       // You should not use autoAcceptConnections for production
       // applications, as it defeats all standard cross-origin protection
@@ -107,7 +107,7 @@ netProtocol.prototype = {
       var appToken = crypto.hashSHA256(url.parsedURL.query.a);
       DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
       status = 200;
-      var baseURL = require('../config.js').publicBaseURL;
+      var baseURL = require('../config.js').NS_AS.publicBaseURL;
       text += (baseURL + "/notify/" + appToken);
       break;
 

@@ -5,26 +5,46 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('./config.js');
-var protocol = require('./ns_as/net_protocol.js').networkProtocol;
-
 function main() {
-  this.servers = [];
+  this.server;
 }
 
 main.prototype = {
   start: function() {
-    // Start servers
-    for(a in config.ifaces) {
-      this.servers[a] = new protocol(config.ifaces[a].iface, config.ifaces[a].port);
-      this.servers[a].init();
+    // Look for what server type we are running
+    var server = process.argv[2];
+    //And start what is needed
+    switch(server) {
+      case "NS_UA_WS":
+        console.log("Starting NS_UA_WS server");
+        var sel = require('./ns_as/start.js');
+        var server = new sel.NS_AS_main();
+        server.start();
+        break;
+      case "NS_UA_SMS":
+        console.log("Starting NS_UA_SMS server");
+        break;
+      case "NS_UA_UDP":
+        console.log("Starting NS_UA_UDP server");
+        break;
+      case "NS_AS":
+        console.log("Starting NS_AS server");
+        break;
+      case "NS_MSG_monitor":
+        console.log("Starting NS_MSG_monitor server");
+        break;
+      default:
+        printInfo();
     }
   }
+}
+
+function printInfo() {
+  console.log("No server selected, please start with node main.js [TYPE]. RTFD.");
 }
 
 /////////////////////////
 // Run the server
 /////////////////////////
-
 var m = new main();
 m.start();
