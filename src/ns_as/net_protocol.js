@@ -13,11 +13,11 @@
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-var crypto = require("./cryptography.js").getCrypto;
+var crypto = require("../common/cryptography.js").getCrypto;
 
-var DataStore = require("./datastore.js");
-var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
-var token = require("./token.js").getToken;
+var DataStore = require("../common/ddbb/datastore.js");
+var Connectors = require("../ns_ua/connectors/connector_base.js").getConnectorFactory();
+var token = require("../common/token.js").getToken;
 
 function netProtocol(ip, port) {
   this.ip = ip;
@@ -38,11 +38,11 @@ netProtocol.prototype = {
     // Websocket init
     this.wsServer = new WebSocketServer({
       httpServer: this.server,
-      keepalive: require('./config.js').websocket_params.keepalive,
-      keepaliveInterval: require('./config.js').websocket_params.keepaliveInterval,
-      dropConnectionOnKeepaliveTimeout: require('./config.js').websocket_params.dropConnectionOnKeepaliveTimeout,
-      keepaliveGracePeriod: require('./config.js').websocket_params.keepaliveGracePeriod,
- 
+      keepalive: require('../config.js').websocket_params.keepalive,
+      keepaliveInterval: require('../config.js').websocket_params.keepaliveInterval,
+      dropConnectionOnKeepaliveTimeout: require('../config.js').websocket_params.dropConnectionOnKeepaliveTimeout,
+      keepaliveGracePeriod: require('../config.js').websocket_params.keepaliveGracePeriod,
+
       // You should not use autoAcceptConnections for production
       // applications, as it defeats all standard cross-origin protection
       // facilities built into the protocol and the browser.  You should
@@ -107,7 +107,7 @@ netProtocol.prototype = {
       var appToken = crypto.hashSHA256(url.parsedURL.query.a);
       DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
       status = 200;
-      var baseURL = require('./config.js').publicBaseURL;
+      var baseURL = require('../config.js').publicBaseURL;
       text += (baseURL + "/notify/" + appToken);
       break;
 
@@ -160,7 +160,7 @@ netProtocol.prototype = {
         case "register/app":
           console.log("WS: Application registration message");
           DataStore.getDataStore().registerApplication(query.data.apptoken,query.data.nodetoken);
-          var baseURL = require('./config.js').publicBaseURL;
+          var baseURL = require('../config.js').publicBaseURL;
           connection.sendUTF(baseURL + "/notify/" + query.data.apptoken);
           break;
 

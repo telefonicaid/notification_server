@@ -6,7 +6,7 @@
  */
 
 var config = require('./config.js');
-var protocol = require('./net_protocol.js').networkProtocol;
+var protocol = require('./ns_as/net_protocol.js').networkProtocol;
 
 function main() {
   this.servers = [];

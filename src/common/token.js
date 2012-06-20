@@ -7,7 +7,7 @@
 
 var uuid = require("node-uuid");
 var crypto = require("./cryptography.js").getCrypto;
-var server_info = require("./config.js").server_info;
+var server_info = require("../config.js").server_info;
 
 function token() {}
 

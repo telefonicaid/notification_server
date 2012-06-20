@@ -5,8 +5,8 @@ var Push = {
     MAX_RETRIES: 1,
     actualRetries: 0,
 
-    ad: "push.handsets.es:8080",
-    //ad: "localhost:8080",
+    //ad: "push.handsets.es:8080",
+    ad: "localhost:8080",
     ad_ws: null,
     ad_http: null,
 
