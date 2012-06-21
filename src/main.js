@@ -6,7 +6,6 @@
  */
 
 function main() {
-  this.server;
 }
 
 main.prototype = {
@@ -20,9 +19,6 @@ main.prototype = {
       case "NS_UA_WS":
         log.init("/tmp/push-NS_UA_WS.log", "NS_UA_WS", 1);
         log.info("Starting as NS_UA_WS server");
-        var sel = require('./ns_as/start.js');
-        var server = new sel.NS_AS_main();
-        server.start();
         break;
       case "NS_UA_SMS":
         log.init("/tmp/push-NS_UA_SMS.log", "NS_UA_SMS", 1);
@@ -35,6 +31,9 @@ main.prototype = {
       case "NS_AS":
         log.init("/tmp/push-NS_AS.log", "NS_AS", 1);
         log.info("Starting NS_AS server");
+        var sel = require('./ns_as/start.js');
+        this.server = new sel.NS_AS_main();
+        this.server.start();
         break;
       case "NS_MSG_monitor":
         log.init("/tmp/push-NS_MSG_monitor.log", "NS_MSG_monitor", 1);
@@ -46,7 +45,7 @@ main.prototype = {
         printInfo();
     }
   }
-}
+};
 
 function printInfo() {
   console.log("No server selected, please start with node main.js [TYPE]. RTFD.");

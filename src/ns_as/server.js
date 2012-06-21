@@ -21,27 +21,27 @@ var token = require("../common/token.js").getToken;
 function server(ip, port) {
   this.ip = ip;
   this.port = port;
-};
+}
 
 function onNewPushMessage(body, token) {
   DataStore.getDataStore().getApplication(
     token,
     function(err, replies) {
-      if(replies.length == 0) {
+      if(replies.length === 0) {
         //status = 404;
         //text += '{ "error": "No application found" }';
       }
       replies.forEach(function (reply, i) {
         log.debug(" * Notifying node: " + i + " : " + reply);
         var nodeConnector = DataStore.getDataStore().getNode(reply);
-        if(nodeConnector != false) {
+        if(nodeConnector !== false) {
           nodeConnector.notify(data);
           this.status = 200;
         } else {
           this.status = 400;
           this.text += '{ "error": "No node found" }';
         }
-      })
+      });
     }
     );
 }
@@ -53,7 +53,7 @@ server.prototype = {
 
   init: function() {
     // Create a new HTTP Server
-    this.server = http.createServer(this.onHTTPMessage.bind(this))
+    this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
     log.info('HTTP push server running on ' + this.ip + ":" + this.port);
   },
@@ -98,7 +98,7 @@ server.prototype = {
 
       default:
         log.debug("HTTP: Command not recognized");
-        status = 404;
+        this.status = 404;
     }
 
     // Close connection
@@ -114,7 +114,7 @@ server.prototype = {
   ///////////////////////
   parseURL: function(url) {
     var urlparser = require('url');
-    var data = {}
+    var data = {};
     data.parsedURL = urlparser.parse(url,true);
     var path = data.parsedURL.pathname.split("/");
     data.command = path[1];
@@ -125,7 +125,7 @@ server.prototype = {
     }
     return data;
   }
-}
+};
 
 // Exports
 exports.server = server;
