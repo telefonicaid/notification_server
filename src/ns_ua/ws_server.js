@@ -107,11 +107,11 @@ server.prototype = {
     ///////////////////////
     this.onWSMessage = function(message) {
       if (message.type === 'utf8') {
-        console.log('WS: Received Message: ' + message.utf8Data);
+        log.debug('WS: Received Message: ' + message.utf8Data);
         try {
           var query = JSON.parse(message.utf8Data);
         } catch(e) {
-          console.log("WS: Data received is not a valid JSON package");
+          log.debug("WS: Data received is not a valid JSON package");
           connection.sendUTF('{ "error": "Data received is not a valid JSON package" }');
           connection.close();
           return;
@@ -119,10 +119,10 @@ server.prototype = {
 
         switch(query.command) {
         case "register/node":
-          console.log("WS: Node registration message");
+          log.debug("WS: Node registration message");
           // Token verification
           if(!token.verify(query.data.token)) {
-            console.log("WS: Token not valid (Checksum failed)");
+            log.debug("WS: Token not valid (Checksum failed)");
             connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
             connection.close();
             return;
@@ -132,20 +132,20 @@ server.prototype = {
           break;
 
         case "register/app":
-          console.log("WS: Application registration message");
+          log.debug("WS: Application registration message");
           dataManager.getDataManager().registerApplication(query.data.apptoken,query.data.nodetoken);
           var baseURL = require('./config.js').publicBaseURL;
           connection.sendUTF(baseURL + "/notify/" + query.data.apptoken);
           break;
 
         default:
-          console.log("WS: Command not recognized");
+          log.debug("WS: Command not recognized");
           connection.sendUTF('{ "error": "Command not recognized" }');
           connection.close();
         }
       } else if (message.type === 'binary') {
         // No binary data supported yet
-        console.log('WS: Received Binary Message of ' + message.binaryData.length + ' bytes');
+        log.debug('WS: Received Binary Message of ' + message.binaryData.length + ' bytes');
         connection.sendUTF('{ "error": "Binary messages not yet supoprted" }');
         connection.close();
       }
@@ -153,7 +153,7 @@ server.prototype = {
 
     this.onWSClose = function(reasonCode, description) {
       // TODO: De-register this node
-      console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+      log.debug(' Peer ' + connection.remoteAddress + ' disconnected.');
     }
 
     /**
@@ -170,12 +170,12 @@ server.prototype = {
     if (!this.originIsAllowed(request.origin)) {
       // Make sure we only accept requests from an allowed origin
       request.reject();
-      console.log((new Date()) + ' Connection from origin ' + request.origin + ' rejected.');
+      log.debug(' Connection from origin ' + request.origin + ' rejected.');
       return;
     }
 
     var connection = request.accept('push-notification', request.origin);
-    console.log((new Date()) + ' Connection accepted.');
+    log.debug(' Connection accepted.');
     connection.on('message', this.onWSMessage);
     connection.on('close', this.onWSClose);
   },
