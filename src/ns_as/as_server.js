@@ -16,7 +16,6 @@ var http = require('http');
 var crypto = require("../common/cryptography.js").getCrypto;
 
 var DataStore = require("../common/datastore.js");
-var token = require("../common/token.js").getToken;
 
 function server(ip, port) {
   this.ip = ip;

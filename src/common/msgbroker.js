@@ -13,7 +13,7 @@ msgBroker.prototype = {
   init: function(onConnect) {
     this.queue = new stomp.Stomp({
       port: 61613,
-      host: '192.168.1.1',
+      host: '127.0.0.1',
       debug: false,
       // login and passcode are optional (required by rabbitMQ)
       login: 'guest',
@@ -23,7 +23,7 @@ msgBroker.prototype = {
     this.queue.connect();
 
     // Queue Events
-    this.queue.on('connect', onConnect);
+    this.queue.on('connected', onConnect);
     this.queue.on('receipt', function(receipt) {
       console.log("RECEIPT: " + receipt);
     });
@@ -65,7 +65,7 @@ msgBroker.prototype = {
 // Singleton
 ///////////////////////////////////////////
 var _msgBroker = new msgBroker();
-function getmsgBroker() {
+function getMsgBroker() {
   return _msgBroker;
 }
-exports.getmsgBroker = new getmsgBroker();
+exports.getMsgBroker = getMsgBroker;

@@ -17,7 +17,13 @@ var http = require('http');
 var crypto = require("../common/cryptography.js").getCrypto;
 var dataManager = require("./datamanager.js");
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
-var token = require("../common/token.js").getToken;
+var token = require("../common/token.js").getToken();
+var msgBroker = require("../common/msgbroker.js").getMsgBroker();
+var config = require("../config.js").NS_UA_WS;
+
+function onPushMessage(message) {
+    log.debug("MB: " + message.body + " | Headers: " + message.headers['message-id']);
+}
 
 function server(ip, port) {
   this.ip = ip;
@@ -52,6 +58,12 @@ server.prototype = {
     });
 
     this.wsServer.on('request', this.onWSRequest);
+
+    // Register to my own Queue
+	msgBroker.init(function() {
+		log.debug("Connected to Message Broker");
+		msgBroker.subscribe(config.server_info.id, function(msg) { onPushMessage(msg); });
+	});
   },
 
   //////////////////////////////////////////////

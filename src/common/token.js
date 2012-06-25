@@ -58,4 +58,4 @@ var token = new token();
 function getToken() {
   return token;
 }
-exports.getToken = new getToken();
+exports.getToken = getToken;

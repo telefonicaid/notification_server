@@ -35,7 +35,7 @@ datamanager.prototype = {
   },
 
   /**
-   * Gets a node connector
+   * Gets a node connector (from memory)
    */
   getNode: function (token) {
     if(this.nodesTable[token]) {
@@ -51,7 +51,7 @@ datamanager.prototype = {
   registerApplication: function (appToken, nodeToken) {
     // Store in persistent storage
 	dataStore.getDataStore().registerApplication(appToken, nodeToken);
-  },
+  }
 }
 
 ///////////////////////////////////////////
