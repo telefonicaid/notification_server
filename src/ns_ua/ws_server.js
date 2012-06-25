@@ -15,8 +15,7 @@ var log = require("../common/logger.js").getLogger;
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 var crypto = require("../common/cryptography.js").getCrypto;
-
-var DataStore = require("../common/datastore.js");
+var dataManager = require("./datamanager.js");
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
 var token = require("../common/token.js").getToken;
 
@@ -80,7 +79,7 @@ server.prototype = {
         }
         log.debug("HTTP: Application registration message");
         var appToken = crypto.hashSHA256(url.parsedURL.query.a);
-        DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
+        dataManager.getDataManager().registerApplication(appToken,url.parsedURL.query.n);
         this.status = 200;
         var baseURL = require('../config.js').NS_AS.publicBaseURL;
         this.text += (baseURL + "/notify/" + appToken);
@@ -129,12 +128,12 @@ server.prototype = {
             return;
           }
           var c = Connectors.getConnector(query.data, connection);
-          DataStore.getDataStore().registerNode(query.data.token, c);
+          dataManager.getDataManager().registerNode(query.data.token, c);
           break;
 
         case "register/app":
           console.log("WS: Application registration message");
-          DataStore.getDataStore().registerApplication(query.data.apptoken,query.data.nodetoken);
+          dataManager.getDataManager().registerApplication(query.data.apptoken,query.data.nodetoken);
           var baseURL = require('./config.js').publicBaseURL;
           connection.sendUTF(baseURL + "/notify/" + query.data.apptoken);
           break;

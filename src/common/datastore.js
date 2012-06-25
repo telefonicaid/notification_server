@@ -14,9 +14,6 @@ var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
 function datastore() {
   log.info("MongoDB data store loaded.");
 
-  // In-Memory storage
-  this.nodesTable = {};
-
   // Connection to MongoDB
   this.db = new mongodb.Db(
     ddbbsettings.ddbbname,
@@ -36,7 +33,7 @@ function datastore() {
   // Establish connection to db
   this.db.open(function(err, db) {
     if(err == null) {
-      log.info("Connected to MongoDB!");
+      log.info("Connected to MongoDB on " + ddbbsettings.host + ":" + ddbbsettings.port + ", Database Name: " + ddbbsettings.ddbbname);
     } else {
       log.error("Error connecting to MongoDB ! - " + err);
       // TODO: Cierre del servidor? Modo alternativo?
@@ -49,14 +46,6 @@ datastore.prototype = {
    * Register a new node. As a parameter, we receive the connector object
    */
   registerNode: function (token, connector) {
-    if(this.nodesTable[token]) {
-      log.debug("Removing old node token " + token);
-      delete(this.nodesTable[token]);
-    }
-
-    // Register a new node
-    this.nodesTable[token] = connector;
-
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
       collection.update( { 'token': token },
@@ -75,9 +64,7 @@ datastore.prototype = {
    * Gets a node connector
    */
   getNode: function (token) {
-    if(this.nodesTable[token]) {
-      return this.nodesTable[token];
-    }
+	log.error("getNode from MONGO not developed yet");
     return false;
   },
 
@@ -98,7 +85,6 @@ datastore.prototype = {
           log.debug("Error inserting application into MongoDB: " + err);
       });
     });
-
   },
 
   /**

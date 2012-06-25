@@ -72,7 +72,7 @@ server.prototype = {
       case "notify":
         log.debug("HTTP: Notification for " + url.token);
         request.on("data", function(body) {
-          new onNewPushMessage(body, url.token);
+          onNewPushMessage(body, url.token);
         });
         break;
 
