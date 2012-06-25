@@ -67,6 +67,28 @@ exports.NS_AS = {
  */
 
 exports.NS_UA_WS = {
+
+  /**
+   * Binding interfaces and ports
+   * [ iface, port ]
+   */
+  ifaces: [
+    // Internal network
+    {
+      iface: "0.0.0.0",
+      port: 8080 }/*,
+    // External network
+    {
+      iface: "127.0.0.1",
+      port: 8081,
+    }*/
+  ],
+
+  server_info: {
+    id: "0000000001",
+    key: "12345678901234567890"
+  },
+
   websocket_params: {
     keepalive: true,
     keepaliveInterval: 40000,

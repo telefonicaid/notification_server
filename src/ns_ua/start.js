@@ -5,23 +5,23 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('../config.js').NS_AS;
+var config = require('../config.js').NS_UA_WS;
 
-function NS_AS_main() {
+function NS_UA_WS_main() {
     this.servers = [];
 }
 
-NS_AS_main.prototype = {
+NS_UA_WS_main.prototype = {
     start: function() {
-        var server = require('./as_server.js').server;
+        var server = require('./ws_server.js').server;
         // Start servers
         for(var a in config.ifaces) {
             this.servers[a] = new server(config.ifaces[a].iface, config.ifaces[a].port);
             this.servers[a].init();
         }
         var log = require("../common/logger.js").getLogger;
-        log.info("NS_AS server initialized");
+        log.info("NS_UA_WS server initialized");
     }
 };
 
-exports.NS_AS_main = NS_AS_main;
+exports.NS_UA_WS_main = NS_UA_WS_main;

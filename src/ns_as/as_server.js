@@ -43,7 +43,7 @@ function onNewPushMessage(body, token) {
         }
       });
     }
-    );
+  );
 }
 
 server.prototype = {
@@ -55,7 +55,7 @@ server.prototype = {
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('HTTP push server running on ' + this.ip + ":" + this.port);
+    log.info('HTTP push AS server running on ' + this.ip + ":" + this.port);
   },
 
   //////////////////////////////////////////////
@@ -69,31 +69,11 @@ server.prototype = {
     //response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": "*"} );
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
-      case "token":
-        this.text += token.get();
-        this.status = 200;
-        break;
-
       case "notify":
         log.debug("HTTP: Notification for " + url.token);
         request.on("data", function(body) {
           new onNewPushMessage(body, url.token);
         });
-        break;
-
-      case "register":
-        // We only accept application registration under the HTTP interface
-        if(url.token != "app") {
-          log.debug("HTTP: Only application registration under this interface");
-          this.status = 404;
-          break;
-        }
-        log.debug("HTTP: Application registration message");
-        var appToken = crypto.hashSHA256(url.parsedURL.query.a);
-        DataStore.getDataStore().registerApplication(appToken,url.parsedURL.query.n);
-        this.status = 200;
-        var baseURL = require('../config.js').NS_AS.publicBaseURL;
-        this.text += (baseURL + "/notify/" + appToken);
         break;
 
       default:

@@ -19,14 +19,19 @@ main.prototype = {
       case "NS_UA_WS":
         log.init("/tmp/push-NS_UA_WS.log", "NS_UA_WS", 1);
         log.info("Starting as NS_UA_WS server");
+        var sel = require('./ns_ua/start.js');
+        this.server = new sel.NS_UA_WS_main();
+        this.server.start();
         break;
       case "NS_UA_SMS":
         log.init("/tmp/push-NS_UA_SMS.log", "NS_UA_SMS", 1);
         log.info("Starting NS_UA_SMS server");
+        log.fatal("PENDING - TBD");
         break;
       case "NS_UA_UDP":
         log.init("/tmp/push-NS_UA_UDP.log", "NS_UA_UDP", 1);
         log.info("Starting NS_UA_UDP server");
+        log.fatal("PENDING - TBD");
         break;
       case "NS_AS":
         log.init("/tmp/push-NS_AS.log", "NS_AS", 1);
@@ -38,6 +43,7 @@ main.prototype = {
       case "NS_MSG_monitor":
         log.init("/tmp/push-NS_MSG_monitor.log", "NS_MSG_monitor", 1);
         log.info("Starting NS_MSG_monitor server");
+        log.fatal("PENDING - TBD");
         break;
       default:
         log.init("/tmp/push.log", "PUSH", 1);
