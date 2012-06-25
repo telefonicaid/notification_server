@@ -13,9 +13,9 @@
 
 var log = require("../common/logger.js").getLogger;
 var http = require('http');
-var crypto = require("../common/cryptography.js").getCrypto;
-
-var DataStore = require("../common/datastore.js");
+var crypto = require("../common/cryptography.js").getCrypto();
+var msgBroker = require("../common/msgbroker.js").getMsgBroker();
+var dataStore = require("../common/datastore.js").getDataStore();
 
 function server(ip, port) {
   this.ip = ip;
@@ -23,7 +23,7 @@ function server(ip, port) {
 }
 
 function onNewPushMessage(body, token) {
-  DataStore.getDataStore().getApplication(
+  dataStore.getApplication(
     token,
     function(err, replies) {
       if(replies.length === 0) {
@@ -32,7 +32,7 @@ function onNewPushMessage(body, token) {
       }
       replies.forEach(function (reply, i) {
         log.debug(" * Notifying node: " + i + " : " + reply);
-        var nodeConnector = DataStore.getDataStore().getNode(reply);
+        var nodeConnector = dataStore.getNode(reply);
         if(nodeConnector !== false) {
           nodeConnector.notify(data);
           this.status = 200;

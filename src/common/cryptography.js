@@ -111,4 +111,4 @@ var crypt = new cryptography();
 function getCrypto() {
   return crypt;
 }
-exports.getCrypto = new getCrypto();
+exports.getCrypto = getCrypto;
