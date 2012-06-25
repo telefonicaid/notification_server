@@ -7,16 +7,16 @@
 
 var dgram = require('dgram');
 
-function connector_ipport(data,conn) {
+function connector_udp(data,conn) {
   this.data = data;
   this.connection = conn;
   this.connection.close();
 }
 
-connector_ipport.prototype = {
+connector_udp.prototype = {
   notify: function(msg) {
     // Notify the hanset with the associated Data
-    console.log("Connector IPPort: Notify to " + this.data.iface.ip);
+    console.log("Connector UDP: Notify to " + this.data.iface.ip);
 
     // UDP Notification Message
     var message = new Buffer("NOTIFY " + msg);
@@ -27,4 +27,4 @@ connector_ipport.prototype = {
   }
 }
 
-exports.connector_ipport = connector_ipport;
+exports.connector_udp = connector_udp;
