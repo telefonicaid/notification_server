@@ -16,7 +16,7 @@ var WebSocketServer = require('websocket').server;
 var http = require('http');
 var crypto = require("../common/cryptography.js").getCrypto;
 
-var DataStore = require("../common/ddbb/datastore.js");
+var DataStore = require("../common/datastore.js");
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
 var token = require("../common/token.js").getToken;
 

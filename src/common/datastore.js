@@ -6,10 +6,10 @@
  */
 
 var mongodb = require("mongodb");
-var server_info = require("../../config.js").NS_AS.server_info;
-var log = require("../logger.js").getLogger;
+var server_info = require("../config.js").NS_AS.server_info;
+var log = require("./logger.js").getLogger;
 
-var ddbbsettings = require("../../config.js").NS_AS.ddbbsettings;
+var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
 
 function datastore() {
   log.info("MongoDB data store loaded.");
