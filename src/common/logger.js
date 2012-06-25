@@ -21,7 +21,7 @@ logger.prototype = {
   },
 
   log: function (level, message) {
-    var logmsg = "[" + this.appname + " # " + level + "] - {" + Date.now() + "} - " + message
+    var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message
     if(this.logfile)
       this.logfile.write(logmsg + "\n");
     if(this.consoleOutput)
