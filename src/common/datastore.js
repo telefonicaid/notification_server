@@ -45,7 +45,7 @@ datastore.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (token, connector) {
+  registerNode: function (token) {
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
       collection.update( { 'token': token },
@@ -100,6 +100,21 @@ datastore.prototype = {
           log.debug("Error finding application into MongoDB: " + err);
       });
     });
+  },
+
+  /**
+   * Save a new message
+   */
+  newMessage: function (id, watoken, message) {
+    this.db.collection("messages", function(err, collection) {
+      collection.insert( { 'id': id, 'watoken': watoken, 'payload': message },
+                         function(err,d) {
+        if(err == null)
+          log.debug("Message inserted into MongoDB");
+        else
+          log.debug("Error inserting message into MongoDB");
+      });
+	});
   }
 }
 

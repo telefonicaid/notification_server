@@ -13,6 +13,7 @@
 
 var log = require("../common/logger.js").getLogger;
 var http = require('http');
+var uuid = require("node-uuid");
 var crypto = require("../common/cryptography.js").getCrypto();
 var msgBroker = require("../common/msgbroker.js").getMsgBroker();
 var dataStore = require("../common/datastore.js").getDataStore();
@@ -23,26 +24,12 @@ function server(ip, port) {
 }
 
 function onNewPushMessage(body, token) {
-  dataStore.getApplication(
-    token,
-    function(err, replies) {
-      if(replies.length === 0) {
-        //status = 404;
-        //text += '{ "error": "No application found" }';
-      }
-      replies.forEach(function (reply, i) {
-        log.debug(" * Notifying node: " + i + " : " + reply);
-        var nodeConnector = dataStore.getNode(reply);
-        if(nodeConnector !== false) {
-          nodeConnector.notify(data);
-          this.status = 200;
-        } else {
-          this.status = 400;
-          this.text += '{ "error": "No node found" }';
-        }
-      });
-    }
-  );
+  // TODO: Verify signature
+  var id = uuid.v1();
+  log.debug("Storing message '" + body + "' for the " + token + " WA. Id: " + id);
+  dataStore.newMessage(id,token,body);
+  log.debug("Notify into the messages queue");
+  msgBroker.push("messages",id,false);
 }
 
 server.prototype = {
@@ -55,6 +42,11 @@ server.prototype = {
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
     log.info('HTTP push AS server running on ' + this.ip + ":" + this.port);
+
+    // Connect to the message broker
+	msgBroker.init(function() {
+		log.debug("Connected to Message Broker");
+	});
   },
 
   //////////////////////////////////////////////
