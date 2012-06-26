@@ -51,6 +51,14 @@ datamanager.prototype = {
   registerApplication: function (appToken, nodeToken) {
     // Store in persistent storage
 	dataStore.getDataStore().registerApplication(appToken, nodeToken);
+  },
+
+  /**
+   * Recover a message
+   */
+  getMessage: function (id, callbackFunc) {
+	  // Recover from the persistent storage
+	  dataStore.getDataStore().getMessage(id, callbackFunc);
   }
 }
 

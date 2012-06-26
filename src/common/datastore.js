@@ -107,14 +107,30 @@ datastore.prototype = {
    */
   newMessage: function (id, watoken, message) {
     this.db.collection("messages", function(err, collection) {
-      collection.insert( { 'id': id, 'watoken': watoken, 'payload': message },
+      collection.insert( { 'MsgId': id, 'watoken': watoken, 'payload': message },
                          function(err,d) {
         if(err == null)
           log.debug("Message inserted into MongoDB");
         else
           log.debug("Error inserting message into MongoDB");
       });
-	});
+	  });
+  },
+
+  /**
+   * Get a message
+   */
+  getMessage: function (id, callbackFunc) {
+	log.debug("Looking for message " + id);
+    // Get from MongoDB
+    this.db.collection("messages", function(err, collection) {
+      collection.find( { 'MsgId': id } ).toArray(function(err,d) {
+        if(err == null)
+          callbackFunc(d);
+        else
+          log.debug("Error finding message into MongoDB: " + err);          
+      });
+    });
   }
 }
 

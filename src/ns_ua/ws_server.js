@@ -15,14 +15,20 @@ var log = require("../common/logger.js").getLogger;
 var WebSocketServer = require('websocket').server;
 var http = require('http');
 var crypto = require("../common/cryptography.js").getCrypto();
-var dataManager = require("./datamanager.js");
+var dataManager = require("./datamanager.js").getDataManager();
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
 var token = require("../common/token.js").getToken();
 var msgBroker = require("../common/msgbroker.js").getMsgBroker();
 var config = require("../config.js").NS_UA_WS;
 
-function onPushMessage(message) {
-    log.debug("MB: " + message.body + " | Headers: " + message.headers['message-id']);
+function onMessage(message) {
+  log.debug("Message payload: " + JSON.stringify(message[0].payload));
+}
+
+function onPushMessage(messageId) {
+  log.debug("MB: " + messageId.body.toString() + " | Headers: " + messageId.headers['message-id']);
+	// Recover message from the data store
+	dataManager.getMessage(messageId.body.toString(), onMessage);
 }
 
 function server(ip, port) {
@@ -60,10 +66,11 @@ server.prototype = {
     this.wsServer.on('request', this.onWSRequest);
 
     // Register to my own Queue
-	msgBroker.init(function() {
-		log.debug("Connected to Message Broker");
-		msgBroker.subscribe(config.server_info.id, function(msg) { onPushMessage(msg); });
-	});
+    msgBroker.init(function() {
+      log.debug("Connected to Message Broker");
+      //msgBroker.subscribe(config.server_info.id, function(msg) { onPushMessage(msg); });
+      msgBroker.subscribe("messages", function(msg) { onPushMessage(msg); });
+    });
   },
 
   //////////////////////////////////////////////
@@ -91,7 +98,7 @@ server.prototype = {
         }
         log.debug("HTTP: Application registration message");
         var appToken = crypto.hashSHA256(url.parsedURL.query.a);
-        dataManager.getDataManager().registerApplication(appToken,url.parsedURL.query.n);
+        dataManager.registerApplication(appToken,url.parsedURL.query.n);
         this.status = 200;
         var baseURL = require('../config.js').NS_AS.publicBaseURL;
         this.text += (baseURL + "/notify/" + appToken);
@@ -140,12 +147,12 @@ server.prototype = {
             return;
           }
           var c = Connectors.getConnector(query.data, connection);
-          dataManager.getDataManager().registerNode(query.data.token, c);
+          dataManager.registerNode(query.data.token, c);
           break;
 
         case "register/app":
           log.debug("WS: Application registration message");
-          dataManager.getDataManager().registerApplication(query.data.apptoken,query.data.nodetoken);
+          dataManager.registerApplication(query.data.apptoken,query.data.nodetoken);
           var baseURL = require('./config.js').publicBaseURL;
           connection.sendUTF(baseURL + "/notify/" + query.data.apptoken);
           break;
