@@ -7,16 +7,26 @@
 
 // Import logger
 var log = require("./common/logger.js").getLogger;
+var os = require("os");
+
+////////////////////////////////////////////////////////////////////////////////
+function generateServerId() {
+  process.serverId = os.type()+"-"+os.release()+"#"+os.hostname()+"#"+process.pid;
+  return process.serverId;
+}
+////////////////////////////////////////////////////////////////////////////////
 
 function main() {
 }
 
 main.prototype = {
   start: function() {
+    // Generate a new server ID
+    log.info("Server ID: " + generateServerId());
+
     // Look for what server type we are running
-    var server = process.argv[2];
-    //And start what is needed
-    switch(server) {
+    //  and start what is needed
+    switch(process.argv[2]) {
       case "NS_UA_WS":
         log.init("/tmp/push-NS_UA_WS.log", "NS_UA_WS", 1);
         log.info("Starting as NS_UA_WS server");

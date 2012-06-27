@@ -83,7 +83,7 @@ server.prototype = {
 
     // Register to my own Queue
     msgBroker.init(function() {
-      msgBroker.subscribe(config.server_info.id, function(msg) { onPushMessage(msg); });
+      msgBroker.subscribe(process.serverId, function(msg) { onPushMessage(msg); });
     });
   },
 

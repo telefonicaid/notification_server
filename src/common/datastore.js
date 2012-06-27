@@ -6,7 +6,6 @@
  */
 
 var mongodb = require("mongodb");
-var server_info = require("../config.js").NS_AS.server_info;
 var log = require("./logger.js").getLogger;
 
 var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
@@ -49,7 +48,7 @@ datastore.prototype = {
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
       collection.update( { 'token': token },
-                         { 'token': token, 'serverId': server_info.id },
+                         { 'token': token, 'serverId': process.serverId },
                          { upsert: true },
                          function(err,d) {
         if(err == null)
