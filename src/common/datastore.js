@@ -44,11 +44,11 @@ datastore.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (token, serverId) {
+  registerNode: function (token, serverId, data) {
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
       collection.update( { 'token': token },
-                         { 'token': token, 'serverId': serverId },
+                         { 'token': token, 'serverId': serverId, 'data': data },
                          { upsert: true },
                          function(err,d) {
         if(err == null)

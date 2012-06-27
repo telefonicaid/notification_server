@@ -43,7 +43,14 @@ function onApplicationData(appData, messageId) {
 function onNodeData(nodeData, messageId) {
   log.debug("Node data recovered: " + JSON.stringify(nodeData));
   log.debug("Notify into the messages queue of node " + nodeData[0].serverId + " # " + messageId);
-  msgBroker.push(nodeData[0].serverId, { "messageId": messageId, "uatoken": nodeData[0].token }, false);
+  msgBroker.push(
+    nodeData[0].serverId,
+    { "messageId": messageId,
+      "uatoken": nodeData[0].token,
+      "data": nodeData[0].data
+    },
+    false
+  );
 }
 
 ////////////////////////////////////////////////////////////////////////////////

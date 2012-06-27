@@ -27,11 +27,29 @@ datamanager.prototype = {
       delete(this.nodesTable[token]);
     }
 
-    // Register a new node
-    this.nodesTable[token] = connector;
+    if(connector.getType() == "UDP") {
+      log.debug("Registraton of the node into datastore (UDP Connector)");
 
-    // Register in persistent datastore
-    dataStore.registerNode(token, process.serverId);
+      // No persitent object required on this server (ie., UDP connectors)
+      // Register in persistent datastore
+      dataStore.registerNode(
+        token,                                        // UAToken
+        "UDP",                                        // Queue name
+        { "interface": connector.getInterface() }     // UDP Interface data
+      );
+    } else {
+      log.debug("Registraton of the connector into memory and node into datastore");
+
+      // Register a new node
+      this.nodesTable[token] = connector;
+
+      // Register in persistent datastore
+      dataStore.registerNode(
+        token,                                        // UAToken
+        process.serverId,                             // Queue name (server ID)
+        {}                                            // No extra data
+      );
+    }
   },
 
   /**

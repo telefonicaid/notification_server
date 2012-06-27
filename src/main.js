@@ -41,8 +41,10 @@ main.prototype = {
         break;
       case "NS_UA_UDP":
         log.init("/tmp/push-NS_UA_UDP.log", "NS_UA_UDP", 1);
-        log.info("Starting NS_UA_UDP server");
-        log.fatal("PENDING - TBD");
+        log.info("Starting as NS_UA_UDP server");
+        var sel = require('./ns_ua/udp_main.js');
+        this.server = new sel.NS_UA_UDP_main();
+        this.server.start();
         break;
       case "NS_AS":
         log.init("/tmp/push-NS_AS.log", "NS_AS", 1);

@@ -14,16 +14,17 @@ function connector_udp(data,conn) {
 }
 
 connector_udp.prototype = {
+  getType: function() {
+    return "UDP";
+  },
+
+  getInterface: function() {
+    return this.data.interface;
+  },
+
   notify: function(msgList) {
     // Notify the hanset with the associated Data
-    console.log("Connector UDP: Notify to " + this.data.iface.ip);
-
-    // UDP Notification Message
-    var message = new Buffer("NOTIFY " + JSON.stringify(msgList));
-    var client = dgram.createSocket("udp4");
-    client.send(message, 0, message.length, this.data.iface.port, this.data.iface.ip, function(err, bytes) {
-      client.close();
-    });
+    console.error("Connector UDP: Notify to " + this.data.interface.ip + " not valid on this server");
   }
 }
 
