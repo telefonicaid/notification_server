@@ -20,28 +20,32 @@ logger.prototype = {
     this.debug("Logger initialized !");
   },
 
-  log: function (level, message) {
-    var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message
+  log: function (level, message, trace) {
+    var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
     if(this.logfile)
       this.logfile.write(logmsg + "\n");
-    if(this.consoleOutput)
+    if(this.consoleOutput) {
       console.log(logmsg);
+      if(trace) {
+        console.trace("Callstack");
+      }
+    }
   },
 
   debug: function (message) {
-    this.log("DEBUG", message);
+    this.log("DEBUG", message, false);
   },
 
   info: function (message) {
-    this.log("INFO", message);
+    this.log("INFO", message, false);
   },
 
   error: function (message) {
-    this.log("ERROR", message);
+    this.log("ERROR", message, true);
   },
 
   critical: function (message) {
-    this.log("CRITICAL", message);
+    this.log("CRITICAL", message, true);
   }
 }
 
