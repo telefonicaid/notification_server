@@ -18,18 +18,37 @@ var crypto = require("../common/cryptography.js").getCrypto();
 var msgBroker = require("../common/msgbroker.js").getMsgBroker();
 var dataStore = require("../common/datastore.js").getDataStore();
 
-function server(ip, port) {
-  this.ip = ip;
-  this.port = port;
-}
+////////////////////////////////////////////////////////////////////////////////
+// Callback functions
+////////////////////////////////////////////////////////////////////////////////
 
 function onNewPushMessage(body, token) {
   // TODO: Verify signature
   var id = uuid.v1();
   log.debug("Storing message '" + body + "' for the " + token + " WA. Id: " + id);
   dataStore.newMessage(id,token,body);
-  log.debug("Notify into the messages queue");
-  msgBroker.push("messages",id,false);
+  dataStore.getApplication(token, onApplicationData, id);
+}
+
+function onApplicationData(appData, messageId) {
+  log.debug("Application data recovered: " + JSON.stringify(appData));
+  appData[0].node.forEach(function (nodeData, i) {
+    log.debug("Notifying node: " + i + ": " + JSON.stringify(nodeData));
+    dataStore.getNode(nodeData, onNodeData, messageId);
+  });
+}
+
+function onNodeData(nodeData, messageId) {
+  log.debug("Node data recovered: " + JSON.stringify(nodeData));
+  log.debug("Notify into the messages queue of node " + nodeData[0].serverId + " # " + messageId);
+  msgBroker.push(nodeData[0].serverId, messageId, false);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+function server(ip, port) {
+  this.ip = ip;
+  this.port = port;
 }
 
 server.prototype = {

@@ -63,9 +63,16 @@ datastore.prototype = {
   /**
    * Gets a node - server relationship
    */
-  getNode: function (token) {
-    log.error("getNode from MONGO not developed yet");
-    return false;
+  getNode: function (token, callbackFunc, callbackParam) {
+    // Get from MongoDB
+    this.db.collection("nodes", function(err, collection) {
+      collection.find( { 'token': token } ).toArray(function(err,d) {
+        if(err == null)
+          callbackFunc(d, callbackParam);
+        else
+          log.debug("Error finding node into MongoDB: " + err);
+      });
+    });
   },
 
   // TODO: Verify that the node exists before add the application
@@ -90,12 +97,12 @@ datastore.prototype = {
   /**
    * Gets an application node list
    */
-  getApplication: function (token, cbfunc, cbParam) {
+  getApplication: function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
         if(err == null)
-          cbfunc(d, cbParam);
+          callbackFunc(d, callbackParam);
         else
           log.debug("Error finding application into MongoDB: " + err);
       });

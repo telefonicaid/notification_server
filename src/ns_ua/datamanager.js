@@ -5,7 +5,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var dataStore = require("../common/datastore.js")
+var dataStore = require("../common/datastore.js").getDataStore();
 var log = require("../common/logger.js").getLogger;
 
 var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
@@ -31,7 +31,7 @@ datamanager.prototype = {
     this.nodesTable[token] = connector;
 
     // Register in persistent datastore
-    dataStore.getDataStore().registerNode(token);
+    dataStore.registerNode(token);
   },
 
   /**
@@ -50,7 +50,7 @@ datamanager.prototype = {
    */
   registerApplication: function (appToken, nodeToken) {
     // Store in persistent storage
-    dataStore.getDataStore().registerApplication(appToken, nodeToken);
+    dataStore.registerApplication(appToken, nodeToken);
   },
 
   /**
@@ -58,7 +58,7 @@ datamanager.prototype = {
    */
   getMessage: function (id, callbackFunc) {
 	  // Recover from the persistent storage
-	  dataStore.getDataStore().getMessage(id, onMessage, { "messageId": id, "callbackFunction": callbackFunc });
+	  dataStore.getMessage(id, onMessage, {"messageId": id, "callbackFunction": callbackFunc});
   }
 }
 
@@ -70,12 +70,12 @@ function onMessage(message, message_info) {
   log.debug("Message payload: " + JSON.stringify(message[0].payload));
   message_info.message = message;
   // Recover list of UAs which has the application
-  dataStore.getDataStore().getApplication(message[0].watoken, onNodesForApp, message_info);
+  dataStore.getApplication(message[0].watoken, onApplicationData, message_info);
 }
 
-function onNodesForApp(nodelist, message_info) {
-  log.debug("Node list recovered: " + JSON.stringify(nodelist));
-  message_info.nodeList = nodelist[0].node;
+function onApplicationData(appData, message_info) {
+  log.debug("Application data recovered: " + JSON.stringify(appData));
+  message_info.nodeList = appData[0].node;
   message_info.callbackFunction(message_info);  
 }
 

@@ -6,6 +6,7 @@
  */
 
 var stomp = require('stomp');
+var log = require("./logger.js").getLogger;
 
 function msgBroker() {}
 
@@ -46,6 +47,7 @@ msgBroker.prototype = {
       destination: '/queue/'+queueName,
       ack: 'auto'
     });
+    log.debug("Subscribed to Message Broker /queue/" + queueName);
   },
 
   /**

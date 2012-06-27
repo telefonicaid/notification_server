@@ -21,6 +21,16 @@ var token = require("../common/token.js").getToken();
 var msgBroker = require("../common/msgbroker.js").getMsgBroker();
 var config = require("../config.js").NS_UA_WS;
 
+////////////////////////////////////////////////////////////////////////////////
+// Callback functions
+////////////////////////////////////////////////////////////////////////////////
+
+function onPushMessage(messageId) {
+  log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
+	// Recover message from the data store
+	dataManager.getMessage(messageId.body.toString(), onMessage);
+}
+
 function onMessage(message) {
   log.debug("Message data: " + JSON.stringify(message));
   message.nodeList.forEach(function (nodeData, i) {
@@ -35,11 +45,7 @@ function onMessage(message) {
   });
 }
 
-function onPushMessage(messageId) {
-  log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
-	// Recover message from the data store
-	dataManager.getMessage(messageId.body.toString(), onMessage);
-}
+////////////////////////////////////////////////////////////////////////////////
 
 function server(ip, port) {
   this.ip = ip;
@@ -77,9 +83,7 @@ server.prototype = {
 
     // Register to my own Queue
     msgBroker.init(function() {
-      log.debug("Connected to Message Broker");
-      //msgBroker.subscribe(config.server_info.id, function(msg) { onPushMessage(msg); });
-      msgBroker.subscribe("messages", function(msg) { onPushMessage(msg); });
+      msgBroker.subscribe(config.server_info.id, function(msg) { onPushMessage(msg); });
     });
   },
 
