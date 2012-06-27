@@ -11,8 +11,8 @@ function connector_websocket(data,conn) {
 }
 
 connector_websocket.prototype = {
-  notify: function(msg) {
-    this.connection.sendUTF(msg);
+  notify: function(msgList) {
+    this.connection.sendUTF(JSON.stringify(msgList));
   }
 }
 

@@ -14,12 +14,12 @@ function connector_udp(data,conn) {
 }
 
 connector_udp.prototype = {
-  notify: function(msg) {
+  notify: function(msgList) {
     // Notify the hanset with the associated Data
     console.log("Connector UDP: Notify to " + this.data.iface.ip);
 
     // UDP Notification Message
-    var message = new Buffer("NOTIFY " + msg);
+    var message = new Buffer("NOTIFY " + JSON.stringify(msgList));
     var client = dgram.createSocket("udp4");
     client.send(message, 0, message.length, this.data.iface.port, this.data.iface.ip, function(err, bytes) {
       client.close();
