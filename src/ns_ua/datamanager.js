@@ -56,9 +56,9 @@ datamanager.prototype = {
   /**
    * Recover a message data and associated UAs
    */
-  getMessage: function (id, callbackFunc) {
+  getMessage: function (id, callbackFunc, callbackParam) {
 	  // Recover from the persistent storage
-	  dataStore.getMessage(id, onMessage, {"messageId": id, "callbackFunction": callbackFunc});
+	  dataStore.getMessage(id, onMessage, {"messageId": id, "callbackFunction": callbackFunc, "callbackParam": callbackParam});
   }
 }
 
@@ -68,15 +68,7 @@ datamanager.prototype = {
 
 function onMessage(message, message_info) {
   log.debug("Message payload: " + JSON.stringify(message[0].payload));
-  message_info.message = message;
-  // Recover list of UAs which has the application
-  dataStore.getApplication(message[0].watoken, onApplicationData, message_info);
-}
-
-function onApplicationData(appData, message_info) {
-  log.debug("Application data recovered: " + JSON.stringify(appData));
-  message_info.nodeList = appData[0].node;
-  message_info.callbackFunction(message_info);  
+  message_info.callbackFunction( {"messageId": message_info.id, "payload": message[0].payload, "data": message_info.callbackParam} );
 }
 
 ///////////////////////////////////////////

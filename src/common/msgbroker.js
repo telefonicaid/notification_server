@@ -54,6 +54,10 @@ msgBroker.prototype = {
    * Insert a new message into the queue
    */
   push: function(queueName, rawData, persistent) {
+    console.log(JSON.stringify(rawData));
+    if(typeof(rawData) == "object")
+      rawData=JSON.stringify(rawData)
+
     this.queue.send({
       'destination': '/queue/'+queueName,
       'body': rawData,

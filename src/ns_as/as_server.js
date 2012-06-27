@@ -22,12 +22,14 @@ var dataStore = require("../common/datastore.js").getDataStore();
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 
-function onNewPushMessage(body, token) {
+function onNewPushMessage(body, watoken) {
   // TODO: Verify signature
   var id = uuid.v1();
-  log.debug("Storing message '" + body + "' for the " + token + " WA. Id: " + id);
-  dataStore.newMessage(id,token,body);
-  dataStore.getApplication(token, onApplicationData, id);
+  log.debug("Storing message '" + body + "' for the " + watoken + " WA. Id: " + id);
+  // Store on persistent database
+  dataStore.newMessage(id,watoken,body);
+  // Recover related application data
+  dataStore.getApplication(watoken, onApplicationData, id);
 }
 
 function onApplicationData(appData, messageId) {
@@ -41,7 +43,7 @@ function onApplicationData(appData, messageId) {
 function onNodeData(nodeData, messageId) {
   log.debug("Node data recovered: " + JSON.stringify(nodeData));
   log.debug("Notify into the messages queue of node " + nodeData[0].serverId + " # " + messageId);
-  msgBroker.push(nodeData[0].serverId, messageId, false);
+  msgBroker.push(nodeData[0].serverId, { "messageId": messageId, "uatoken": nodeData[0].token }, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

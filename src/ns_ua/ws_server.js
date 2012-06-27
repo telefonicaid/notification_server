@@ -25,24 +25,23 @@ var config = require("../config.js").NS_UA_WS;
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 
-function onPushMessage(messageId) {
+function onNewMessage(messageId) {
   log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
-	// Recover message from the data store
-	dataManager.getMessage(messageId.body.toString(), onMessage);
+  
+	// Recover message from the data store. Body contains the Destination UAToken
+	dataManager.getMessage(JSON.parse(messageId.body).messageId.toString(), onMessage, JSON.parse(messageId.body));
 }
 
-function onMessage(message) {
-  log.debug("Message data: " + JSON.stringify(message));
-  message.nodeList.forEach(function (nodeData, i) {
-    log.debug("Notifying node: " + i + ": " + JSON.stringify(nodeData));
-    var nodeConnector = dataManager.getNode(nodeData);
-    if(nodeConnector != false) {
-      log.debug("Sending messages: " + message.message[0].payload);
-      nodeConnector.notify(new Array(JSON.parse(message.message[0].payload)));
-    } else {
-      log.debug("error, No node found");
-    }
-  });
+function onMessage(messageData) {
+  log.debug("Message data: " + JSON.stringify(messageData));
+  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
+  var nodeConnector = dataManager.getNode(messageData.data.uatoken);
+  if(nodeConnector != false) {
+    log.debug("Sending messages: " + messageData.payload);
+    nodeConnector.notify(new Array(JSON.parse(messageData.payload)));
+  } else {
+    log.debug("error, No node found");
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -83,7 +82,7 @@ server.prototype = {
 
     // Register to my own Queue
     msgBroker.init(function() {
-      msgBroker.subscribe(process.serverId, function(msg) { onPushMessage(msg); });
+      msgBroker.subscribe(process.serverId, function(msg) { onNewMessage(msg); });
     });
   },
 
