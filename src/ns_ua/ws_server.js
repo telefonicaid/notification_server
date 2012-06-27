@@ -80,7 +80,7 @@ server.prototype = {
 
     this.wsServer.on('request', this.onWSRequest);
 
-    // Register to my own Queue
+    // Subscribe to my own Queue
     msgBroker.init(function() {
       msgBroker.subscribe(process.serverId, function(msg) { onNewMessage(msg); });
     });
@@ -144,8 +144,12 @@ server.prototype = {
             connection.close();
             return;
           }
-          var c = Connectors.getConnector(query.data, connection);
-          dataManager.registerNode(query.data.uatoken, c);
+
+          // New node registration
+          dataManager.registerNode(
+            query.data.uatoken,
+            Connectors.getConnector(query.data, connection)
+          );
           break;
 
         case "register/wa":
