@@ -83,14 +83,32 @@ var Push = {
         this.onDeleteToken();
     },
 
+    registerApp: function (uatoken, watoken) {
+        var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '" }, "command":"register/wa"}';
+        Push.logMessage("Preparing to send: " + msg);
+
+        if (this.checkbox.checked) {
+          Push.logMessage("[DEBUG] WS close ... I'll open it ...");
+          this.ws.connection = new WebSocket(this.ad_ws, "push-notification");
+          this.logMessage("[WS] Opening websocket to " + this.ad_ws);
+          this.ws.connection.onopen = function() {
+            this.ws.connection.send(msg);
+            Push.logMessage("[REG] Application 1 registered");
+            this.ws.connection.close();
+          }.bind(this);;
+        } else {
+          Push.logMessage("[DEBUG] WS open");
+          this.ws.connection.send(msg);
+          Push.logMessage("[REG] Application 1 registered");          
+        }      
+    },
+
     registerApp1: function() {
-        this.ws.connection.send('{"data": {"uatoken":"' + Push.token + '", "watoken": "app1" }, "command":"register/wa"}');
-        Push.logMessage("[REG] Application 1 registered");
+        this.registerApp(Push.token, "app1");
     },
 
     registerApp2: function() {
-        this.ws.connection.send('{"data": {"uatoken":"' + Push.token + '", "watoken": "app2" }, "command":"register/wa"}');
-        Push.logMessage("[REG] Application 2 registered");
+        this.registerApp(Push.token, "app2");
     },
 
     onReceivedToken: function() {
