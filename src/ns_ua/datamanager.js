@@ -31,7 +31,7 @@ datamanager.prototype = {
     this.nodesTable[token] = connector;
 
     // Register in persistent datastore
-    dataStore.registerNode(token);
+    dataStore.registerNode(token, process.serverId);
   },
 
   /**
