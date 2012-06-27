@@ -22,11 +22,21 @@ var msgBroker = require("../common/msgbroker.js").getMsgBroker();
 var config = require("../config.js").NS_UA_WS;
 
 function onMessage(message) {
-  log.debug("Message payload: " + JSON.stringify(message[0].payload));
+  log.debug("Message data: " + JSON.stringify(message));
+  message.nodeList.forEach(function (nodeData, i) {
+    log.debug(" * Notifying node: " + i + ": " + JSON.stringify(nodeData));
+    var nodeConnector = dataManager.getNode(nodeData);
+    if(nodeConnector != false) {
+      log.debug(" * Notifying message: " + message.message[0].payload);
+      nodeConnector.notify(message.message[0].payload);
+    } else {
+      log.debug("error, No node found");
+    }
+  });
 }
 
 function onPushMessage(messageId) {
-  log.debug("MB: " + messageId.body.toString() + " | Headers: " + messageId.headers['message-id']);
+  log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
 	// Recover message from the data store
 	dataManager.getMessage(messageId.body.toString(), onMessage);
 }

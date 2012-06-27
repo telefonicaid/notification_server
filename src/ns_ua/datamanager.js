@@ -31,7 +31,7 @@ datamanager.prototype = {
     this.nodesTable[token] = connector;
 
     // Register in persistent datastore
-	dataStore.getDataStore().registerNode(token);
+    dataStore.getDataStore().registerNode(token);
   },
 
   /**
@@ -50,16 +50,33 @@ datamanager.prototype = {
    */
   registerApplication: function (appToken, nodeToken) {
     // Store in persistent storage
-	dataStore.getDataStore().registerApplication(appToken, nodeToken);
+    dataStore.getDataStore().registerApplication(appToken, nodeToken);
   },
 
   /**
-   * Recover a message
+   * Recover a message data and associated UAs
    */
   getMessage: function (id, callbackFunc) {
 	  // Recover from the persistent storage
-	  dataStore.getDataStore().getMessage(id, callbackFunc);
+	  dataStore.getDataStore().getMessage(id, onMessage, { "messageId": id, "callbackFunction": callbackFunc });
   }
+}
+
+///////////////////////////////////////////
+// Callbacks functions
+///////////////////////////////////////////
+
+function onMessage(message, message_info) {
+  log.debug("Message payload: " + JSON.stringify(message[0].payload));
+  message_info.message = message;
+  // Recover list of UAs which has the application
+  dataStore.getDataStore().getApplication(message[0].watoken, onNodesForApp, message_info);
+}
+
+function onNodesForApp(nodelist, message_info) {
+  log.debug("Node list recovered: " + JSON.stringify(nodelist));
+  message_info.nodeList = nodelist[0].node;
+  message_info.callbackFunction(message_info);  
 }
 
 ///////////////////////////////////////////

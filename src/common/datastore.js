@@ -61,10 +61,10 @@ datastore.prototype = {
   },
 
   /**
-   * Gets a node connector
+   * Gets a node - server relationship
    */
   getNode: function (token) {
-	log.error("getNode from MONGO not developed yet");
+    log.error("getNode from MONGO not developed yet");
     return false;
   },
 
@@ -90,12 +90,12 @@ datastore.prototype = {
   /**
    * Gets an application node list
    */
-  getApplication: function (token, cbfunc) {
+  getApplication: function (token, cbfunc, cbParam) {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
         if(err == null)
-          log.debug(d);
+          cbfunc(d, cbParam);
         else
           log.debug("Error finding application into MongoDB: " + err);
       });
@@ -120,13 +120,13 @@ datastore.prototype = {
   /**
    * Get a message
    */
-  getMessage: function (id, callbackFunc) {
+  getMessage: function (id, callbackFunc, callbackParam) {
 	log.debug("Looking for message " + id);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       collection.find( { 'MsgId': id } ).toArray(function(err,d) {
         if(err == null)
-          callbackFunc(d);
+          callbackFunc(d, callbackParam);
         else
           log.debug("Error finding message into MongoDB: " + err);          
       });
