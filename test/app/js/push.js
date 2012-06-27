@@ -84,43 +84,13 @@ var Push = {
     },
 
     registerApp1: function() {
-        if (this.urlApp1 === null) {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
-                if(xmlhttp.readyState == 4){
-                    if(xmlhttp.status == 200) {
-                        Push.urlApp1 = xmlhttp.responseText;
-                        Push.logMessage("[REG] App1 registered with URL -->" + Push.urlApp1);
-                    } else {
-                        //Dooby
-                    }
-                }
-            };
-            xmlhttp.open("GET", this.ad_http + "/register/app?a=app1&n=" + Push.token, true);
-            xmlhttp.send(null);
-        } else {
-            Push.logMessage("[REG] We had a previous token for app1, not requesting");
-        }
+        this.ws.connection.send('{"data": {"uatoken":"' + Push.token + '", "watoken": "app1" }, "command":"register/wa"}');
+        Push.logMessage("[REG] Application 1 registered");
     },
 
     registerApp2: function() {
-        if (this.urlApp2 === null) {
-            var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
-                if(xmlhttp.readyState == 4){
-                    if(xmlhttp.status == 200) {
-                        Push.urlApp2 = xmlhttp.responseText;
-                        Push.logMessage("[REG] App2 registered with URL -->" + Push.urlApp2);
-                    } else {
-                        //Dooby!
-                    }
-                }
-            };
-            xmlhttp.open("GET", this.ad_http + "/register/app/?a=app2&n=" + Push.token, true);
-            xmlhttp.send(null);
-        } else {
-            Push.logMessage("[REG] We had a previous token for app2, not requesting");
-        }
+        this.ws.connection.send('{"data": {"uatoken":"' + Push.token + '", "watoken": "app2" }, "command":"register/wa"}');
+        Push.logMessage("[REG] Application 2 registered");
     },
 
     onReceivedToken: function() {
@@ -153,9 +123,9 @@ var Push = {
         this.ws.ready = true;
         this.logMessage("[REG] Started registration to the notification server");
         if (this.checkbox.checked) {
-            this.ws.connection.send('{"data": {"token":"' + this.token + '", "iface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "command":"register/node"}');
+            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "command":"register/ua"}');
         } else {
-            this.ws.connection.send('{"data": {"token":"' + this.token + '"}, "command":"register/node"}');
+            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "command":"register/ua"}');
         }
         this.ws.connection.onmessage = function(e) {
             Push.logMessage("[MSG] message received --- " + e.data);

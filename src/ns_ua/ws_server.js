@@ -102,21 +102,6 @@ server.prototype = {
         this.status = 200;
         break;
 
-      case "register":
-        // We only accept application registration under the HTTP interface
-        if(url.token != "app") {
-          log.debug("HTTP: Only application registration under this interface");
-          this.status = 404;
-          break;
-        }
-        log.debug("HTTP: Application registration message");
-        var appToken = crypto.hashSHA256(url.parsedURL.query.a);
-        dataManager.registerApplication(appToken,url.parsedURL.query.n);
-        this.status = 200;
-        var baseURL = require('../config.js').NS_AS.publicBaseURL;
-        this.text += (baseURL + "/notify/" + appToken);
-        break;
-
       default:
         log.debug("HTTP: Command not recognized");
         this.status = 404;
@@ -150,24 +135,25 @@ server.prototype = {
         }
 
         switch(query.command) {
-        case "register/node":
+        case "register/ua":
           log.debug("WS: Node registration message");
           // Token verification
-          if(!token.verify(query.data.token)) {
+          if(!token.verify(query.data.uatoken)) {
             log.debug("WS: Token not valid (Checksum failed)");
             connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
             connection.close();
             return;
           }
           var c = Connectors.getConnector(query.data, connection);
-          dataManager.registerNode(query.data.token, c);
+          dataManager.registerNode(query.data.uatoken, c);
           break;
 
-        case "register/app":
+        case "register/wa":
           log.debug("WS: Application registration message");
-          dataManager.registerApplication(query.data.apptoken,query.data.nodetoken);
-          var baseURL = require('./config.js').publicBaseURL;
-          connection.sendUTF(baseURL + "/notify/" + query.data.apptoken);
+          var appToken = crypto.hashSHA256(query.data.watoken);
+          dataManager.registerApplication(appToken,query.data.uatoken);
+          var baseURL = require('../config.js').NS_AS.publicBaseURL;
+          connection.sendUTF(baseURL + "/notify/" + appToken);
           break;
 
         default:
