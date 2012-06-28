@@ -160,6 +160,21 @@ server.prototype = {
           connection.sendUTF(baseURL + "/notify/" + appToken);
           break;
 
+        case "getAllMessages":
+          log.debug("WS: Pulling method called");
+          log.debug("Recover all messages for:" + query.data.uatoken);
+          if(!token.verify(query.data.uatoken)) {
+            log.debug("WS: Token not valid (Checksum failed)");
+            connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
+            connection.close();
+          } else {
+            dataManager.getAllMessages(query.data.uatoken, function(messages) {
+              connection.sendUTF(JSON.stringify(messages));
+              connection.close();
+            });
+          }
+          break;
+
         default:
           log.debug("WS: Command not recognized");
           connection.sendUTF('{ "error": "Command not recognized" }');

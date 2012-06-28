@@ -127,7 +127,7 @@ datastore.prototype = {
    * Get a message
    */
   getMessage: function (id, callbackFunc, callbackParam) {
-	log.debug("Looking for message " + id);
+    log.debug("Looking for message " + id);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       collection.find( { 'MsgId': id } ).toArray(function(err,d) {
@@ -135,6 +135,23 @@ datastore.prototype = {
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding message into MongoDB: " + err);          
+      });
+    });
+  },
+
+  /**
+   * Get all messages for a UA
+   */
+  getAllMessages: function (uatoken, callbackFunc) {
+    // TODO: Recover only messages for UAToken !
+    log.debug("Looking for messages of " + uatoken);
+    // Get from MongoDB
+    this.db.collection("messages", function(err, collection) {
+      collection.find( ).toArray(function(err,d) {
+        if(err == null)
+          callbackFunc(d);
+        else
+          log.debug("Error finding messages into MongoDB: " + err);          
       });
     });
   }

@@ -38,6 +38,7 @@ var Push = {
         this.clearButton = document.getElementById("buttonClear");
         this.registerAppButton1 = document.getElementById("buttonRegisterApp1");
         this.registerAppButton2 = document.getElementById("buttonRegisterApp2");
+        this.pullMessagesButton = document.getElementById("buttonPullMessages");
         this.logArea = document.getElementById("logarea");
         this.checkbox = document.getElementById("checkBox");
         this.ip = document.getElementById("ip");
@@ -49,6 +50,7 @@ var Push = {
         this.unregisterDeviceButton.addEventListener('click', this.unregisterDevice.bind(this));
         this.registerAppButton1.addEventListener('click', this.registerApp1.bind(this));
         this.registerAppButton2.addEventListener('click', this.registerApp2.bind(this));
+        this.pullMessagesButton.addEventListener('click', this.pullMessages.bind(this));
         this.clearButton.addEventListener('click', this.onclear.bind(this));
 
         Push.logMessage("[INIT] Notification server: " + this.ad);
@@ -95,7 +97,7 @@ var Push = {
             this.ws.connection.send(msg);
             Push.logMessage("[REG] Application 1 registered");
             this.ws.connection.close();
-          }.bind(this);;
+          }.bind(this);
         } else {
           Push.logMessage("[DEBUG] WS open");
           this.ws.connection.send(msg);
@@ -109,6 +111,28 @@ var Push = {
 
     registerApp2: function() {
         this.registerApp(Push.token, "app2");
+    },
+
+    pullMessages: function() {
+        var msg = '{"data": {"uatoken":"' + Push.token + '" }, "command":"getAllMessages"}';
+
+        if (this.checkbox.checked) {
+          Push.logMessage("[PULL] Starting to get all pending messages");
+          this.logMessage("[WS] Opening websocket to " + this.ad_ws);
+
+          this.ws.connection = new WebSocket(this.ad_ws, "push-notification");
+          this.ws.connection.onclose = this.onCloseWebsocket.bind(this);
+          this.ws.connection.onerror = this.onCloseWebsocket.bind(this);
+
+          this.ws.connection.onopen = function() {
+            this.ws.connection.onmessage = function(e) {
+                Push.logMessage("[MSG] message received --- " + e.data);
+            };
+            this.ws.connection.send(msg);
+            Push.logMessage("[PULL] Query sent");
+          }.bind(this);
+        } else
+          Push.logMessage("[PULL] Error, only for UDP clients");
     },
 
     onReceivedToken: function() {

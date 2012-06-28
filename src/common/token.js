@@ -43,6 +43,9 @@ token.prototype = {
 
   // Verify the given TOKEN
   verify: function(token) {
+    if(token == null)
+      return false;
+
     // Decrypt token
     var rawToken = crypto.decryptAES(token,server_info.key).split('@');
 

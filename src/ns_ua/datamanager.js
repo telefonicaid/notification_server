@@ -77,6 +77,14 @@ datamanager.prototype = {
   getMessage: function (id, callbackFunc, callbackParam) {
 	  // Recover from the persistent storage
 	  dataStore.getMessage(id, onMessage, {"messageId": id, "callbackFunction": callbackFunc, "callbackParam": callbackParam});
+  },
+
+  /**
+   * Get all messages for a UA
+   */
+  getAllMessages: function(uatoken, callbackFunc) {
+	  // Recover from the persistent storage
+	  dataStore.getAllMessages(uatoken, callbackFunc);
   }
 }
 
