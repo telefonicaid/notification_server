@@ -27,17 +27,17 @@ msgBroker.prototype = {
     // Queue Events
     this.queue.on('connected', onConnect);
     this.queue.on('receipt', function(receipt) {
-      console.log("RECEIPT: " + receipt);
+      log.debug("RECEIPT: " + receipt);
     });
     this.queue.on('error', (function(error_frame) {
-      console.log("ERROR: " + error_frame.body);
+      log.error(error_frame.body);
       this.close();
     }).bind(this));
   },
 
   close: function() {
     if(this.queue) {
-      this.queue.close();
+      this.queue.disconnect();
       this.queue = null;
     }
   },
@@ -55,7 +55,7 @@ msgBroker.prototype = {
    * Insert a new message into the queue
    */
   push: function(queueName, rawData, persistent) {
-    console.log(JSON.stringify(rawData));
+    log.debug(JSON.stringify(rawData));
     if(typeof(rawData) == "object")
       rawData = JSON.stringify(rawData);
 
