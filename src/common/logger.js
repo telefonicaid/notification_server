@@ -14,6 +14,7 @@ function logger() {
 
 logger.prototype = {
   init: function (logfile, appname, consoleOutput) {
+    // use {'flags': 'a'} to append and {'flags': 'w'} to erase and write a new file
     this.logfile = fs.createWriteStream(logfile, { flags: 'w', encoding: null, mode: 0666 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
@@ -47,7 +48,7 @@ logger.prototype = {
   critical: function (message) {
     this.log("CRITICAL", message, true);
   }
-}
+};
 
 ///////////////////////////////////////////
 // Singleton

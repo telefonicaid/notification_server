@@ -21,7 +21,7 @@ cryptography.prototype = {
   _encrypt: function(data, key, algorithm)
   {
     var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex';            // hex, base64 
+    var cipherEncoding = 'hex';            // hex, base64
 
     var cipher = crypto.createCipher(algorithm, key);
     var ciphertext = "";
@@ -36,13 +36,12 @@ cryptography.prototype = {
    */
   _decrypt: function(ciphertext, key, algorithm) {
     var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex';            // hex, base64 
+    var cipherEncoding = 'hex';            // hex, base64
 
     var decipher = crypto.createDecipher(algorithm, key);
     var data = "";
     data = decipher.update(ciphertext, cipherEncoding, clearEncoding);
     data += decipher.final(cipherEncoding);
-    
     return (data);
   },
 
@@ -68,7 +67,7 @@ cryptography.prototype = {
 
   /**
    * Verify signature using RSA-SHA256
-   * 
+   *
    * Use Public/Private keys for signatures:
    * Private Key generation:
    *  openssl genrsa 1024 > private.key
@@ -76,7 +75,7 @@ cryptography.prototype = {
    *  openssl rsa -in private.key -out public.pem -outform PEM -pubout
    * Signing data using private key:
    *  openssl dgst -hex -sha256 -sign private.key msg.txt
-   * 
+   *
    * See:
    *  http://www.openssl.org/docs/HOWTO/keys.txt
    *  http://www.codealias.info/technotes/openssl_rsa_sign_and_verify_howto
@@ -102,7 +101,7 @@ cryptography.prototype = {
   hashSHA512: function(data) {
     return crypto.createHash('sha512').update(data).digest('hex');
   }
-}
+};
 
 ///////////////////////////////////////////
 // Singleton

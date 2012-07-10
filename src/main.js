@@ -86,7 +86,7 @@ m.start();
 function onClose() {
     log.error('Received interruption signal');
     m.stop();
-    process.exit();  
+    process.exit();
 }
 process.on('SIGHUP',  onClose);    // 1
 process.on('SIGINT',  onClose);    // 2
