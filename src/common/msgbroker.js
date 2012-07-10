@@ -29,10 +29,10 @@ msgBroker.prototype = {
     this.queue.on('receipt', function(receipt) {
       console.log("RECEIPT: " + receipt);
     });
-    this.queue.on('error', function(error_frame) {
+    this.queue.on('error', (function(error_frame) {
       console.log("ERROR: " + error_frame.body);
       this.close();
-    });
+    }).bind(this));
   },
 
   close: function() {
