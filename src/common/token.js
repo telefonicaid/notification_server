@@ -43,7 +43,7 @@ token.prototype = {
 
   // Verify the given TOKEN
   verify: function(token) {
-    if(token == null)
+    if(token === null)
       return false;
 
     // Decrypt token
@@ -52,7 +52,7 @@ token.prototype = {
     // CRC Verification
     return (rawToken[1] == crypto.hashMD5(rawToken[0]));
   }
-}
+};
 
 ///////////////////////////////////////////
 // Singleton

@@ -14,6 +14,18 @@
  * where TYPE is NS_AS, NS_UA_WS, NS_UA_UDP, NS_UA_SMS or NS_MSG_monitor
  */
 
+
+/********************* Common DB**************************************/
+exports.ddbb = {
+  port: 61613,
+  host: 'karanka.hi.inet',
+  debug: false,
+  //Just for rabbitmq
+  login: 'guest',
+  passcode: 'guest'
+};
+
+
 /********************* NS_AS *****************************************/
 
 /**
@@ -27,14 +39,14 @@ exports.NS_AS = {
    * Binding interfaces and ports
    * [ iface, port ]
    */
-  ifaces: [
+  iterfaces: [
     // Internal network
     {
-      iface: "0.0.0.0",
+      iterface: "0.0.0.0",
       port: 8080 }/*,
     // External network
     {
-      iface: "127.0.0.1",
+      iterface: "127.0.0.1",
       port: 8081,
     }*/
   ],

@@ -85,7 +85,6 @@ server.prototype = {
     var url = this.parseURL(request.url);
     this.status = "";
     this.text = "";
-    //response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": "*"} );
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
       case "notify":

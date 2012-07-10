@@ -7,18 +7,19 @@
 
 var stomp = require('stomp');
 var log = require("./logger.js").getLogger;
+var ddbb_info = require("../config.js").ddbb;
 
 function msgBroker() {}
 
 msgBroker.prototype = {
   init: function(onConnect) {
     this.queue = new stomp.Stomp({
-      port: 61613,
-      host: '127.0.0.1',
-      debug: false,
+      port: ddbb_info.port,
+      host: ddbb_info.host,
+      debug: ddbb_info.debug,
       // login and passcode are optional (required by rabbitMQ)
-      login: 'guest',
-      passcode: 'guest'
+      login: ddbb_info.user,
+      passcode: ddbb_info.password
     });
 
     this.queue.connect();
@@ -33,7 +34,7 @@ msgBroker.prototype = {
       this.close();
     });
   },
-  
+
   close: function() {
     if(this.queue) {
       this.queue.close();
@@ -56,7 +57,7 @@ msgBroker.prototype = {
   push: function(queueName, rawData, persistent) {
     console.log(JSON.stringify(rawData));
     if(typeof(rawData) == "object")
-      rawData=JSON.stringify(rawData)
+      rawData = JSON.stringify(rawData);
 
     this.queue.send({
       'destination': '/queue/'+queueName,
@@ -65,7 +66,7 @@ msgBroker.prototype = {
       'receipt': true
     });
   }
-}
+};
 
 ///////////////////////////////////////////
 // Singleton
