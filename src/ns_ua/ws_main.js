@@ -15,9 +15,16 @@ function NS_UA_WS_main() {
 NS_UA_WS_main.prototype = {
   start: function() {
     var server = require('./ws_server.js').server;
+    
+    if (!config.interfaces) {
+      log.error("NS_UA_WS interfaces not configured")
+      this.close();
+      return;
+    }
+    
     // Start servers
-    for(var a in config.ifaces) {
-      this.servers[a] = new server(config.ifaces[a].iface, config.ifaces[a].port);
+    for(var a in config.interfaces) {
+      this.servers[a] = new server(config.interfaces[a].interface, config.interfaces[a].port);
       this.servers[a].init();
     }
     log.info("NS_UA_WS server initialized");

@@ -17,7 +17,7 @@ msgBroker.prototype = {
       port: ddbb_info.port,
       host: ddbb_info.host,
       debug: ddbb_info.debug,
-      // login and passcode are optional (required by rabbitMQ)
+      // login and passcode may be optional (required by rabbitMQ)
       login: ddbb_info.user,
       passcode: ddbb_info.password
     });
@@ -30,7 +30,7 @@ msgBroker.prototype = {
       log.debug("RECEIPT: " + receipt);
     });
     this.queue.on('error', (function(error_frame) {
-      log.error(error_frame.body);
+      log.error('We cannot connect to the message broker on ' + ddbb_info.host + ':' + ddbb_info.port + ' -- ' + error_frame.body);
       this.close();
     }).bind(this));
   },

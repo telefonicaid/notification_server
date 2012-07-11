@@ -27,13 +27,16 @@ function onNewPushMessage(body, watoken) {
   var id = uuid.v1();
   log.debug("Storing message '" + body + "' for the " + watoken + " WA. Id: " + id);
   // Store on persistent database
-  dataStore.newMessage(id,watoken,body);
+  dataStore.newMessage(id, watoken, body);
   // Recover related application data
   dataStore.getApplication(watoken, onApplicationData, id);
 }
 
 function onApplicationData(appData, messageId) {
   log.debug("Application data recovered: " + JSON.stringify(appData));
+  if (!appData.length) {
+    return;
+  }
   appData[0].node.forEach(function (nodeData, i) {
     log.debug("Notifying node: " + i + ": " + JSON.stringify(nodeData));
     dataStore.getNode(nodeData, onNodeData, messageId);
@@ -42,14 +45,17 @@ function onApplicationData(appData, messageId) {
 
 function onNodeData(nodeData, messageId) {
   log.debug("Node data recovered: " + JSON.stringify(nodeData));
+  if (!nodeData.length) {
+    return;
+  }
   log.debug("Notify into the messages queue of node " + nodeData[0].serverId + " # " + messageId);
   msgBroker.push(
     nodeData[0].serverId,
     { "messageId": messageId,
-      "uatoken": nodeData[0].token,
-      "data": nodeData[0].data
-    },
-    false
+    "uatoken": nodeData[0].token,
+    "data": nodeData[0].data
+  },
+  false
   );
 }
 
@@ -72,9 +78,9 @@ server.prototype = {
     log.info('HTTP push AS server running on ' + this.ip + ":" + this.port);
 
     // Connect to the message broker
-	msgBroker.init(function() {
-		log.debug("Connected to Message Broker");
-	});
+    msgBroker.init(function() {
+      log.debug("Connected to Message Broker");
+    });
   },
 
   //////////////////////////////////////////////
@@ -93,9 +99,8 @@ server.prototype = {
           onNewPushMessage(body, url.token);
         });
         break;
-
       default:
-        log.debug("HTTP: Command not recognized");
+        log.debug("HTTP: Command '" + url.command + "' not recognized");
         this.status = 404;
     }
 

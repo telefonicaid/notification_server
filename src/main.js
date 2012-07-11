@@ -11,7 +11,8 @@ var os = require("os");
 
 ////////////////////////////////////////////////////////////////////////////////
 function generateServerId() {
-  process.serverId = os.type()+"-"+os.release()+"#"+os.hostname()+"#"+process.pid;
+  process.serverId = os.type() + "-" + os.release() + "#" +
+                     os.hostname() + "#" + process.pid;
   return process.serverId;
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +87,7 @@ m.start();
 function onClose() {
     log.error('Received interruption signal');
     m.stop();
-    process.exit();
+    process.exit(1);
 }
 process.on('SIGHUP',  onClose);    // 1
 process.on('SIGINT',  onClose);    // 2

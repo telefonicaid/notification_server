@@ -31,8 +31,9 @@ function datastore() {
 
   // Establish connection to db
   this.db.open(function(err, db) {
-    if(err === null) {
-      log.info("Connected to MongoDB on " + ddbbsettings.host + ":" + ddbbsettings.port + ", Database Name: " + ddbbsettings.ddbbname);
+    if(err == null) {
+      log.info("Connected to MongoDB on " + ddbbsettings.host + ":" +
+              ddbbsettings.port + ", Database Name: " + ddbbsettings.ddbbname);
     } else {
       log.error("Error connecting to MongoDB ! - " + err);
       // TODO: Cierre del servidor? Modo alternativo?
@@ -51,10 +52,10 @@ datastore.prototype = {
                          { 'token': token, 'serverId': serverId, 'data': data },
                          { upsert: true },
                          function(err,d) {
-        if(err === null)
+        if(err == null)
           log.debug("Node inserted/update into MongoDB");
         else
-          log.debug("Error inserting/updating node into MongoDB");
+          log.debug("Error inserting/updating node into MongoDB -- " + err);
       });
     });
   },
@@ -66,7 +67,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(err === null)
+        if(err == null)
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding node into MongoDB: " + err);
@@ -85,7 +86,7 @@ datastore.prototype = {
                          {$push : { 'node': nodeToken }},
                          {upsert: true},
                          function(err,d) {
-        if(err === null)
+        if(err == null)
           log.debug("Application inserted into MongoDB");
         else
           log.debug("Error inserting application into MongoDB: " + err);
@@ -100,7 +101,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(err === null)
+        if(err == null)
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding application into MongoDB: " + err);
@@ -113,9 +114,9 @@ datastore.prototype = {
    */
   newMessage: function (id, watoken, message) {
     this.db.collection("messages", function(err, collection) {
-      collection.insert( { 'MsgId': id, 'watoken': watoken, 'payload': message },
+      collection.insert({ 'MsgId': id, 'watoken': watoken, 'payload': message },
                          function(err,d) {
-        if(err === null)
+        if(err == null)
           log.debug("Message inserted into MongoDB");
         else
           log.debug("Error inserting message into MongoDB");
@@ -131,7 +132,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       collection.find( { 'MsgId': id } ).toArray(function(err,d) {
-        if(err === null)
+        if(err == null)
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding message into MongoDB: " + err);
@@ -148,7 +149,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       collection.find( ).toArray(function(err,d) {
-        if(err === null)
+        if(err  == null)
           callbackFunc(d);
         else
           log.debug("Error finding messages into MongoDB: " + err);
