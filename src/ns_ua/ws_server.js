@@ -150,6 +150,8 @@ server.prototype = {
             query.data.uatoken,
             Connectors.getConnector(query.data, connection)
           );
+          
+          connection.sendUTF('OK');
           break;
 
         case "register/wa":
