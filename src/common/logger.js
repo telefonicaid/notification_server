@@ -8,7 +8,9 @@
 var fs = require('fs');
 
 function logger() {
+  //Move to config.js
   this.consoleOutput = true;
+  this.minLogLevel = 0; // 0: debug, 1: info, 2: error, 3:critical
   this.debug("Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !");
 }
 
@@ -34,19 +36,27 @@ logger.prototype = {
   },
 
   debug: function (message) {
-    this.log("DEBUG", message, false);
+    if (this.minLogLevel == 0) {
+      this.log("DEBUG", message, false);
+    }
   },
 
   info: function (message) {
-    this.log("INFO", message, false);
+    if (this.minLogLevel <= 1) {
+      this.log("INFO", message, false);
+    }
   },
 
   error: function (message) {
-    this.log("ERROR", message, true);
+    if (this.minLogLevel <= 2) {
+      this.log("ERROR", message, true);
+    }
   },
 
   critical: function (message) {
-    this.log("CRITICAL", message, true);
+    if (this.minLogLevel <= 3) {
+      this.log("CRITICAL", message, true);
+    }
   }
 };
 
