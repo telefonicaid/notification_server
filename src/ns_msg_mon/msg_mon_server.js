@@ -26,8 +26,8 @@ monitor.prototype = {
 };
 
 function onNewMessage(msg) {
-    log.debug('Mensaje recibido en la --');
-    //dataStore.getApplication(watoken, onApplicationData, id);
+  log.debug('Mensaje recibido en la --' + msg.body.toString());
+  //dataStore.getApplication(watoken, onApplicationData, id);
 }
 
 function onApplicationData(appData, messageId) {
