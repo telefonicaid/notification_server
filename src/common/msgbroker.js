@@ -46,7 +46,7 @@ msgBroker.prototype = {
     this.queue.on('message', callbackFunc);
     this.queue.subscribe({
       destination: '/queue/' + queueName,
-      ack: 'client'
+      ack: 'auto'
     });
     log.debug("Subscribed to Message Broker /queue/" + queueName);
   },
