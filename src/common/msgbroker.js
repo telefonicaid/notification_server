@@ -45,8 +45,8 @@ msgBroker.prototype = {
   subscribe: function(queueName, callbackFunc) {
     this.queue.on('message', callbackFunc);
     this.queue.subscribe({
-      destination: '/queue/'+queueName,
-      ack: 'auto'
+      destination: '/queue/' + queueName,
+      ack: 'client'
     });
     log.debug("Subscribed to Message Broker /queue/" + queueName);
   },
@@ -54,18 +54,13 @@ msgBroker.prototype = {
   /**
    * Insert a new message into the queue
    */
-  push: function(queueName, rawData, persistent) {
-    log.debug("Intentando meter en la cola");
-    //log.debug(JSON.stringify(rawData));
-    if(typeof(rawData) == "object")
-      rawData = JSON.stringify(rawData);
-
+  push: function(queueName, body, persistent) {
+    log.debug('Going to send ' + body);
     this.queue.send({
       'destination': '/queue/' + queueName,
-      'body': rawData,
-      'persistent': false, //FIXME
-      'receipt': true
-    });
+      'body': body.toString(),
+      'persistent': persistent
+    }, true); //receipt
   }
 };
 
