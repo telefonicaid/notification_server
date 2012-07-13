@@ -7,32 +7,32 @@
 
 var stomp = require('stomp');
 var log = require("./logger.js").getLogger;
-var ddbb_info = require("../config.js").ddbb;
+var queueconf = require("../config.js").queue;
 
 function msgBroker() {}
 
 msgBroker.prototype = {
   init: function(onConnect) {
     this.queue = new stomp.Stomp({
-      port: ddbb_info.port,
-      host: ddbb_info.host,
-      debug: ddbb_info.debug,
+      port: queueconf.port,
+      host: queueconf.host,
+      debug: queueconf.debug,
       // login and passcode may be optional (required by rabbitMQ)
-      login: ddbb_info.user,
-      passcode: ddbb_info.password
+      login: queueconf.user,
+      passcode: queueconf.password
     });
 
     this.queue.connect();
-
     // Queue Events
     this.queue.on('connected', onConnect);
     this.queue.on('receipt', function(receipt) {
       log.debug("RECEIPT: " + receipt);
     });
     this.queue.on('error', (function(error_frame) {
-      log.error('We cannot connect to the message broker on ' + ddbb_info.host + ':' + ddbb_info.port + ' -- ' + error_frame.body);
+      log.error('We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + queueconf.body);
       this.close();
     }).bind(this));
+    log.debug("Connected to Message Broker");
   },
 
   close: function() {
@@ -55,14 +55,15 @@ msgBroker.prototype = {
    * Insert a new message into the queue
    */
   push: function(queueName, rawData, persistent) {
-    log.debug(JSON.stringify(rawData));
+    log.debug("Intentando meter en la cola");
+    //log.debug(JSON.stringify(rawData));
     if(typeof(rawData) == "object")
       rawData = JSON.stringify(rawData);
 
     this.queue.send({
-      'destination': '/queue/'+queueName,
+      'destination': '/queue/' + queueName,
       'body': rawData,
-      'persistent': persistent,
+      'persistent': false, //FIXME
       'receipt': true
     });
   }

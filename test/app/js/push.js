@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var Push = {
 
@@ -6,13 +6,13 @@ var Push = {
     actualRetries: 0,
 
     //ad: "push.handsets.es:8080",
-    ad: "localhost:8080",
+    ad: 'localhost:8080',
     ad_ws: null,
     ad_http: null,
 
     ws: {
         connection: null,
-        ready: false,
+        ready: false
     },
 
     token: null,
@@ -24,8 +24,8 @@ var Push = {
      * This initializes the app
      */
     init: function() {
-        this.ad_ws = "ws://" + this.ad;
-        this.ad_http = "http://" + this.ad;
+        this.ad_ws = 'ws://' + this.ad;
+        this.ad_http = 'http://' + this.ad;
         // TODO: get from mozSettings the "token"
         /*savedToken = getToken();
         if (savedToken !== null) {
@@ -33,16 +33,16 @@ var Push = {
         }
         */
         // Assign UI elements to variables
-        this.registerDeviceButton = document.getElementById("buttonRegisterDevice");
-        this.unregisterDeviceButton = document.getElementById("buttonUnregisterDevice");
-        this.clearButton = document.getElementById("buttonClear");
-        this.registerAppButton1 = document.getElementById("buttonRegisterApp1");
-        this.registerAppButton2 = document.getElementById("buttonRegisterApp2");
-        this.pullMessagesButton = document.getElementById("buttonPullMessages");
-        this.logArea = document.getElementById("logarea");
-        this.checkbox = document.getElementById("checkBox");
-        this.ip = document.getElementById("ip");
-        this.port = document.getElementById("port");
+        this.registerDeviceButton = document.getElementById('buttonRegisterDevice');
+        this.unregisterDeviceButton = document.getElementById('buttonUnregisterDevice');
+        this.clearButton = document.getElementById('buttonClear');
+        this.registerAppButton1 = document.getElementById('buttonRegisterApp1');
+        this.registerAppButton2 = document.getElementById('buttonRegisterApp2');
+        this.pullMessagesButton = document.getElementById('buttonPullMessages');
+        this.logArea = document.getElementById('logarea');
+        this.checkbox = document.getElementById('checkBox');
+        this.ip = document.getElementById('ip');
+        this.port = document.getElementById('port');
 
         this.registerDeviceButton.disabled = false;
         // Listeners
@@ -53,11 +53,11 @@ var Push = {
         this.pullMessagesButton.addEventListener('click', this.pullMessages.bind(this));
         this.clearButton.addEventListener('click', this.onclear.bind(this));
 
-        Push.logMessage("[INIT] Notification server: " + this.ad);
+        Push.logMessage('[INIT] Notification server: ' + this.ad);
     },
 
     onclear: function() {
-        this.logArea.innerHTML = "";
+        this.logArea.innerHTML = '';
     },
 
     /**
@@ -67,16 +67,16 @@ var Push = {
         if (this.token === null) {
             var xmlhttp = new XMLHttpRequest();
             xmlhttp.onreadystatechange = function() {
-                if(xmlhttp.readyState == 4){
-                    if(xmlhttp.status == 200) {
+                if (xmlhttp.readyState == 4) {
+                    if (xmlhttp.status == 200) {
                         Push.token = xmlhttp.responseText;
                         Push.onReceivedToken();
                     } else {
-                        Push.logMessage("[TOK] The notification server is not working")
+                        Push.logMessage('[TOK] The notification server is not working');
                     }
                 }
             };
-            xmlhttp.open("GET", this.ad_http + "/token", true);
+            xmlhttp.open('GET', this.ad_http + '/token', true);
             xmlhttp.send(null);
         }
     },
@@ -85,107 +85,107 @@ var Push = {
         this.onDeleteToken();
     },
 
-    registerApp: function (uatoken, watoken) {
+    registerApp: function(uatoken, watoken) {
         var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '" }, "command":"register/wa"}';
-        Push.logMessage("Preparing to send: " + msg);
+        Push.logMessage('Preparing to send: ' + msg);
 
         if (this.checkbox.checked) {
           Push.logMessage("[DEBUG] WS close ... I'll open it ...");
-          this.ws.connection = new WebSocket(this.ad_ws, "push-notification");
-          this.logMessage("[WS] Opening websocket to " + this.ad_ws);
+          this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
+          this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
           this.ws.connection.onopen = function() {
             this.ws.connection.send(msg);
-            Push.logMessage("[REG] Application 1 registered");
+            Push.logMessage('[REG] Application 1 registered');
             this.ws.connection.close();
           }.bind(this);
         } else {
-          Push.logMessage("[DEBUG] WS open");
+          Push.logMessage('[DEBUG] WS open');
           this.ws.connection.send(msg);
-          Push.logMessage("[REG] Application 1 registered");          
-        }      
+          Push.logMessage('[REG] Application 1 registered');
+        }
     },
 
     registerApp1: function() {
-        this.registerApp(Push.token, "app1");
+        this.registerApp(Push.token, 'app1');
     },
 
     registerApp2: function() {
-        this.registerApp(Push.token, "app2");
+        this.registerApp(Push.token, 'app2');
     },
 
     pullMessages: function() {
         var msg = '{"data": {"uatoken":"' + Push.token + '" }, "command":"getAllMessages"}';
 
         if (this.checkbox.checked) {
-          Push.logMessage("[PULL] Starting to get all pending messages");
-          this.logMessage("[WS] Opening websocket to " + this.ad_ws);
+          Push.logMessage('[PULL] Starting to get all pending messages');
+          this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
 
-          this.ws.connection = new WebSocket(this.ad_ws, "push-notification");
+          this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
           this.ws.connection.onclose = this.onCloseWebsocket.bind(this);
           this.ws.connection.onerror = this.onCloseWebsocket.bind(this);
 
           this.ws.connection.onopen = function() {
             this.ws.connection.onmessage = function(e) {
-                Push.logMessage("[MSG] message received --- " + e.data);
+                Push.logMessage('[MSG] message received --- ' + e.data);
             };
             this.ws.connection.send(msg);
-            Push.logMessage("[PULL] Query sent");
+            Push.logMessage('[PULL] Query sent');
           }.bind(this);
         } else
-          Push.logMessage("[PULL] Error, only for UDP clients");
+          Push.logMessage('[PULL] Error, only for UDP clients');
     },
 
     onReceivedToken: function() {
-        if(this.token === null) {
+        if (this.token === null) {
             return;
         }
-        this.logMessage("[TOK] Token from the notification server (or saved)" + this.token);
-        this.ws.connection = new WebSocket(this.ad_ws, "push-notification");
-        this.logMessage("[WS] Opening websocket to " + this.ad_ws);
+        this.logMessage('[TOK] Token from the notification server (or saved)' + this.token);
+        this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
+        this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
         this.ws.connection.onopen = this.onOpenWebsocket.bind(this);
         this.ws.connection.onclose = this.onCloseWebsocket.bind(this);
         this.ws.connection.onerror = this.onCloseWebsocket.bind(this);
-        this.registerDeviceButton.disabled=true;
-        this.unregisterDeviceButton.disabled=false;
+        this.registerDeviceButton.disabled = true;
+        this.unregisterDeviceButton.disabled = false;
     },
 
     onDeleteToken: function() {
-        this.logMessage("[TOK][REG] We are deleting our tokens");
+        this.logMessage('[TOK][REG] We are deleting our tokens');
         this.token = null;
         this.urlApp1 = null;
         this.urlApp2 = null;
         this.ws.connection.close();
-        this.logMessage("[TOK][REG] Tokens deleted")
-        this.registerDeviceButton.disabled=false;
-        this.unregisterDeviceButton.disabled=true;
+        this.logMessage('[TOK][REG] Tokens deleted');
+        this.registerDeviceButton.disabled = false;
+        this.unregisterDeviceButton.disabled = true;
     },
 
     onOpenWebsocket: function() {
-        this.logMessage("[WS] Opened connection to " + this.ad);
+        this.logMessage('[WS] Opened connection to ' + this.ad);
         this.ws.ready = true;
-        this.logMessage("[REG] Started registration to the notification server");
+        this.logMessage('[REG] Started registration to the notification server');
         if (this.checkbox.checked) {
             this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "command":"register/ua"}');
         } else {
             this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "command":"register/ua"}');
         }
         this.ws.connection.onmessage = function(e) {
-            Push.logMessage("[MSG] message received --- " + e.data);
+            Push.logMessage('[MSG] message received --- ' + e.data);
         };
     },
 
     onErrorWebsocket: function(e) {
-        this.logMessage("[WS] Error in websocket in " + this.ad + " with error " + e.error);
+        this.logMessage('[WS] Error in websocket in ' + this.ad + ' with error ' + e.error);
     },
 
     onCloseWebsocket: function(e) {
-        this.logMessage("[WS] Closed connection to " + this.ad + " with code " + e.code + " and reason " + e.reason);
+        this.logMessage('[WS] Closed connection to ' + this.ad + ' with code ' + e.code + ' and reason ' + e.reason);
         this.ws.ready = false;
         //HACK to reconnect
-        if (this.MAX_RETRIES>++this.actualRetries) {
+        if (this.MAX_RETRIES > ++this.actualRetries) {
             this.onReceivedToken();
         } else {
-            this.logMessage("[WS] MAX_RETRIES reached. Stopping")
+            this.logMessage('[WS] MAX_RETRIES reached. Stopping');
         }
     },
 
@@ -193,9 +193,9 @@ var Push = {
      * Logs every message from the websocket
      */
      logMessage: function(message) {
-        var msg = message + "</br>";
+        var msg = message + '</br>';
         this.logArea.innerHTML += msg;
-     },
+     }
 };
 
 window.addEventListener('load', function pushOnLoad(evt) {

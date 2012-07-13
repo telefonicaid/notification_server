@@ -57,7 +57,9 @@ main.prototype = {
       case "NS_MSG_monitor":
         log.init("/tmp/push-NS_MSG_monitor.log", "NS_MSG_monitor", 1);
         log.info("Starting NS_MSG_monitor server");
-        log.fatal("PENDING - TBD");
+        var sel = require('./ns_msg_mon/msg_mon_main.js');
+        this.server = new sel.NS_MSG_MON_main();
+        this.server.start();
         break;
       default:
         log.init("/tmp/push.log", "PUSH", 1);

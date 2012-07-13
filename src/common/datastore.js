@@ -8,7 +8,7 @@
 var mongodb = require("mongodb");
 var log = require("./logger.js").getLogger;
 
-var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
+var ddbbsettings = require("../config.js").ddbbsettings;
 
 function datastore() {
   log.info("MongoDB data store loaded.");
