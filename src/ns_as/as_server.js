@@ -23,7 +23,13 @@ var dataStore = require("../common/datastore.js").getDataStore();
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewPushMessage(body, watoken) {
-  var json = JSON.parse(body);
+  var json = null;
+  try {
+    json = JSON.parse(body);
+  } catch (err) {
+    log.info('Not valid JSON notification');
+    return;
+  }
   var sig = json.signature;
   var message = json.message;
   //FIXME: get pbk from the DB
