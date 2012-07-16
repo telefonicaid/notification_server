@@ -40,7 +40,7 @@ P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
 PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
 lx8GvbnYJHO/50QGkQIDAQAB\n\
 -----END PUBLIC KEY-----";
-  if (sig && !crypto.verifySignature(message, sig, pbk)) {
+  if (sig && !crypto.verifySignature(message+"\n", sig, pbk)) {
       log.info('Bad signature, dropping notification');
       return;
   }
