@@ -24,15 +24,17 @@ msgBroker.prototype = {
 
     this.queue.connect();
     // Queue Events
-    this.queue.on('connected', onConnect);
+    this.queue.on('connected', (function() {
+      log.debug("Connected to Message Broker");
+      onConnect();
+    }));
     this.queue.on('receipt', function(receipt) {
       log.debug("RECEIPT: " + receipt);
     });
     this.queue.on('error', (function(error_frame) {
-      log.error('We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + queueconf.body);
+      log.error('We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error_frame.body);
       this.close();
     }).bind(this));
-    log.debug("Connected to Message Broker");
   },
 
   close: function() {
