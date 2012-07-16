@@ -16,17 +16,16 @@ function monitor() {
 
 monitor.prototype = {
   init: function() {
-    log.info('MSG monitor server running');
-
     // Connect to the message broker
     msgBroker.init(function() {
+      log.info('MSG monitor server running');
       msgBroker.subscribe("newMessages", function(msg) { onNewMessage(msg); });
     });
   },
 };
 
 function onNewMessage(msg) {
-  log.debug('Mensaje recibido en la --' + msg.body.toString());
+  log.debug('Mensaje recibido en la cola con id: ' + msg.body.toString());
   //dataStore.getApplication(watoken, onApplicationData, id);
 }
 

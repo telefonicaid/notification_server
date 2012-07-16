@@ -12,6 +12,7 @@
 // TODO: Replies to the 3rd. party server
 
 var log = require("../common/logger.js").getLogger;
+var consts = require("../consts.js").consts;
 var http = require('http');
 var uuid = require("node-uuid");
 var crypto = require("../common/cryptography.js").getCrypto();
@@ -22,17 +23,22 @@ var dataStore = require("../common/datastore.js").getDataStore();
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 
-function onNewPushMessage(body, watoken) {
+function onNewPushMessage(notification, watoken) {
   var json = null;
   try {
-    json = JSON.parse(body);
+    json = JSON.parse(notification);
   } catch (err) {
     log.info('Not valid JSON notification');
     return;
   }
   var sig = json.signature;
   var message = json.message;
+  if (message.length > consts.MAX_PAYLOAD_SIZE) {
+    log.debug('Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    return;
+  }
   //FIXME: get pbk from the DB
+  //var pbk = dataStore.getPBKApplication(watoken);
   var pbk = "\
 -----BEGIN PUBLIC KEY-----\n\
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n\
@@ -40,16 +46,15 @@ P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
 PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
 lx8GvbnYJHO/50QGkQIDAQAB\n\
 -----END PUBLIC KEY-----";
-  if (sig && !crypto.verifySignature(message+"\n", sig, pbk)) {
+  if (sig && !crypto.verifySignature(message + '\n', sig, pbk)) {
       log.info('Bad signature, dropping notification');
       return;
   }
-  log.debug('Message not signed');
   var id = uuid.v1();
-  log.debug("Storing message '" + body + "' for the " + watoken + " WA. Id: " + id);
+  log.debug("Storing message '" + notification + "' for the " + watoken + " WA. Id: " + id);
   // Store on persistent database
-  msgBroker.push("newMessages", body, false);
-  dataStore.newMessage(id, watoken, body);
+  msgBroker.push("newMessages", id, false);
+  dataStore.newMessage(id, watoken, notification);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,10 +65,10 @@ function server(ip, port) {
 }
 
 server.prototype = {
+
   //////////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////////
-
   init: function() {
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
@@ -79,26 +84,33 @@ server.prototype = {
   onHTTPMessage: function(request, response) {
     log.debug((new Date()) + 'HTTP: Received request for ' + request.url);
     var url = this.parseURL(request.url);
-    this.status = "";
-    this.text = "";
+    if (!url.token) {
+      log.debug('No valid url (no watoken)');
+      response.statusCode = 404;
+      response.write('No valid WAtoken');
+      response.end();
+      return;
+    }
+    var status = "";
+    var text = "";
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
       case "notify":
         log.debug("HTTP: Notification for " + url.token);
-        request.on("data", function(body) {
-          onNewPushMessage(body, url.token);
+        request.on("data", function(notification) {
+          onNewPushMessage(notification, url.token);
         });
         break;
       default:
         log.debug("HTTP: Command '" + url.command + "' not recognized");
-        this.status = 404;
+        status = 404;
     }
 
     // Close connection
-    response.statusCode = this.status;
+    response.statusCode = status;
     response.setHeader("Content-Type", "text/plain");
     response.setHeader("access-control-allow-origin", "*");
-    response.write(this.text);
+    response.write(text);
     response.end();
   },
 
