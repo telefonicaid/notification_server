@@ -26,6 +26,9 @@ monitor.prototype = {
 
 function onNewMessage(msg) {
   log.debug('Mensaje recibido en la cola con id: ' + msg.body.toString());
+  var msg = dataStore.getMessage(msg.body.toString(), function(message) {
+    log.debug('Mensaje completo --> ' + message[0].MsgId);
+  });
   //dataStore.getApplication(watoken, onApplicationData, id);
 }
 

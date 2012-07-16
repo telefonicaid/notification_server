@@ -67,7 +67,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(err == null)
+        if(err == null && callbackFunc)
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding node into MongoDB: " + err);
@@ -101,7 +101,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(err == null)
+        if(err == null && callbackFunc)
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding application into MongoDB: " + err);
@@ -132,10 +132,15 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       collection.find( { 'MsgId': id } ).toArray(function(err,d) {
-        if(err == null)
-          callbackFunc(d, callbackParam);
-        else
-          log.debug("Error finding message into MongoDB: " + err);
+        if(err == null) {
+          if (callbackFunc) {
+            callbackFunc(d, callbackParam);
+          } else {
+            return d;
+          }
+        } else {
+          log.debug("Error finding message from MongoDB: " + err);
+        }
       });
     });
   },
@@ -149,10 +154,10 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       collection.find( ).toArray(function(err,d) {
-        if(err  == null)
+        if(err  == null && callbackFunc)
           callbackFunc(d);
         else
-          log.debug("Error finding messages into MongoDB: " + err);
+          log.debug("Error finding messages from MongoDB: " + err);
       });
     });
   }
