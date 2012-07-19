@@ -163,6 +163,8 @@ server.prototype = {
           break;
 
         case "getAllMessages":
+          if(!query.data.uatoken)
+            break;
           log.debug("WS: Pulling method called");
           log.debug("Recover all messages for:" + query.data.uatoken);
           if(!token.verify(query.data.uatoken)) {
