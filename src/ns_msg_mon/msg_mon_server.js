@@ -25,35 +25,38 @@ monitor.prototype = {
 };
 
 function onNewMessage(msg) {
-  log.debug('Mensaje recibido en la cola con id: ' + msg.body.toString());
-  var msg = dataStore.getMessage(msg.body.toString(), function(message) {
-    log.debug('Mensaje completo --> ' + message[0].MsgId);
-  });
-  //dataStore.getApplication(watoken, onApplicationData, id);
+  var json = JSON.parse(msg.body);
+  log.debug('Mensaje recibido en la cola con id: ' + json.MsgId.toString());
+  log.debug('Mensaje desde la cola ---' + JSON.stringify(json).toString());
+  /*var msg = dataStore.getMessage(json.MsgId.toString(), function(message) {
+    log.debug('Mensaje completo --> ' + message[0]);
+  });*/
+  dataStore.getApplication(json.watoken.toString(), onApplicationData, json);
 }
 
-function onApplicationData(appData, messageId) {
+function onApplicationData(appData, json) {
   log.debug("Application data recovered: " + JSON.stringify(appData));
   if (!appData.length) {
     return;
   }
   appData[0].node.forEach(function (nodeData, i) {
     log.debug("Notifying node: " + i + ": " + JSON.stringify(nodeData));
-    dataStore.getNode(nodeData, onNodeData, messageId);
+    dataStore.getNode(nodeData, onNodeData, json);
   });
 }
 
-function onNodeData(nodeData, messageId) {
+function onNodeData(nodeData, json) {
   log.debug("Node data recovered: " + JSON.stringify(nodeData));
   if (!nodeData.length) {
     return;
   }
-  log.debug("Notify into the messages queue of node " + nodeData[0].serverId + " # " + messageId);
+  log.debug("Notify into the messages queue of node " + nodeData[0].serverId + " # " + json.messageId);
   msgBroker.push(
     nodeData[0].serverId,
-    { "messageId": messageId,
+    { "messageId": json.messageId,
       "uatoken": nodeData[0].token,
-      "data": nodeData[0].data
+      "data": nodeData[0].data,
+      "payload": json
     },
     false
   );
