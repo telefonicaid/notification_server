@@ -111,17 +111,19 @@ datastore.prototype = {
 
   /**
    * Save a new message
+   * @return New message as stored on DB
    */
   newMessage: function (id, watoken, message) {
+    var msg = { 'MsgId': id, 'watoken': watoken, 'payload': message };
     this.db.collection("messages", function(err, collection) {
-      collection.insert({ 'MsgId': id, 'watoken': watoken, 'payload': message },
-                         function(err,d) {
+      collection.insert(msg, function(err,d) {
         if(err == null)
           log.debug("Message inserted into MongoDB");
         else
           log.debug("Error inserting message into MongoDB");
       });
     });
+    return msg;
   },
 
   /**
