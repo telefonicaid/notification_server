@@ -26,19 +26,16 @@ var config = require("../config.js").NS_UA_WS;
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewMessage(messageId) {
-  log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
-  
+  log.debug('New message for WS server');
+  var json = JSON.parse(messageId.body);
+  //log.debug("MB: " + messageId.as_string() + " | Headers: " + messageId.headers['message-id']);
 	// Recover message from the data store. Body contains the Destination UAToken
-	dataManager.getMessage(JSON.parse(messageId.body).messageId.toString(), onMessage, JSON.parse(messageId.body));
-}
-
-function onMessage(messageData) {
-  log.debug("Message data: " + JSON.stringify(messageData));
-  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
-  var nodeConnector = dataManager.getNode(messageData.data.uatoken);
+	//dataManager.getMessage(json.messageId, onMessage, json);
+  log.debug("Notifying node: " + JSON.stringify(json.uatoken));
+  var nodeConnector = dataManager.getNode(json.uatoken);
   if(nodeConnector != false) {
-    log.debug("Sending messages: " + messageData.payload);
-    nodeConnector.notify(new Array(JSON.parse(messageData.payload)));
+    log.debug("Sending messages: " + json.payload.payload.toString());
+    nodeConnector.notify(new Array(json.payload.payload));
   } else {
     log.debug("error, No node found");
   }
@@ -69,7 +66,7 @@ server.prototype = {
       keepaliveInterval: require('../config.js').NS_UA_WS.websocket_params.keepaliveInterval,
       dropConnectionOnKeepaliveTimeout: require('../config.js').NS_UA_WS.websocket_params.dropConnectionOnKeepaliveTimeout,
       keepaliveGracePeriod: require('../config.js').NS_UA_WS.websocket_params.keepaliveGracePeriod,
- 
+
       // You should not use autoAcceptConnections for production
       // applications, as it defeats all standard cross-origin protection
       // facilities built into the protocol and the browser.  You should
@@ -150,7 +147,7 @@ server.prototype = {
             query.data.uatoken,
             Connectors.getConnector(query.data, connection)
           );
-          
+
           connection.sendUTF('OK');
           break;
 
