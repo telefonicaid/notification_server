@@ -15,8 +15,8 @@
  */
 
 
-/********************* Common DB**************************************/
-exports.ddbb = {
+/********************* Common Queue ***********************************/
+exports.queue = {
   port: 61613,
   host: 'karanka.hi.inet',
   debug: false,
@@ -25,13 +25,22 @@ exports.ddbb = {
   passcode: 'guest'
 };
 
+exports.ddbbsettings = {
+    host: "karanka.hi.inet",
+    port: 27017,
+    user: "",
+    password: "",
+    ddbbname: "push_notification_server",
+    auto_reconnect: true,
+    poolSize: 4,
+    native_parser: false
+};
+
 
 /********************* NS_AS *****************************************/
-
 /**
  * Public base URL to receive notifications
  */
-
 exports.NS_AS = {
   publicBaseURL: "http://localhost:8081",
 
@@ -39,14 +48,14 @@ exports.NS_AS = {
    * Binding interfaces and ports
    * [ iface, port ]
    */
-  iterfaces: [
+  interfaces: [
     // Internal network
     {
-      iterface: "0.0.0.0",
-      port: 8080 }/*,
+      interface: "0.0.0.0",
+      port: 8081 }/*,
     // External network
     {
-      iterface: "127.0.0.1",
+      iface: "127.0.0.1",
       port: 8081,
     }*/
   ],
@@ -54,18 +63,7 @@ exports.NS_AS = {
   server_info: {
     key: "12345678901234567890"
   },
-
-  ddbbsettings: {
-    host: "banania.hi.inet",
-    port: 27017,
-    user: "",
-    password: "",
-    ddbbname: "push_notification_server",
-    auto_reconnect: true,
-    poolSize: 4,
-    native_parser: true
-  }
-}
+};
 
 /********************* NS_MSG_monitor ********************************/
 
@@ -76,21 +74,19 @@ exports.NS_AS = {
  * Websocket configuration
  * @see https://github.com/Worlize/WebSocket-Node/blob/master/lib/WebSocketServer.js
  */
-
 exports.NS_UA_WS = {
-
   /**
    * Binding interfaces and ports
    * [ iface, port ]
    */
-  ifaces: [
+  interfaces: [
     // Internal network
     {
-      iface: "0.0.0.0",
+      interface: "0.0.0.0",
       port: 8080 }/*,
     // External network
     {
-      iface: "127.0.0.1",
+      interface: "127.0.0.1",
       port: 8081,
     }*/
   ],
