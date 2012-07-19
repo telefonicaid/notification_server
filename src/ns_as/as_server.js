@@ -51,10 +51,11 @@ lx8GvbnYJHO/50QGkQIDAQAB\n\
       return;
   }
   var id = uuid.v1();
-  log.debug("Storing message '" + notification + "' for the " + watoken + " WA. Id: " + id);
+  log.debug("Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
   // Store on persistent database
-  msgBroker.push("newMessages", id, false);
-  dataStore.newMessage(id, watoken, notification);
+  var msg = dataStore.newMessage(id, watoken, json);
+  // Also send to the newMessages Queue
+  msgBroker.push("newMessages", msg, false);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
