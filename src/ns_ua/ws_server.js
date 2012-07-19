@@ -89,26 +89,25 @@ server.prototype = {
   onHTTPMessage: function(request, response) {
     log.debug((new Date()) + 'HTTP: Received request for ' + request.url);
     var url = this.parseURL(request.url);
-    this.status = "";
-    this.text = "";
-    //response.writeHead(200, {"Content-Type": "text/plain", "access-control-allow-origin": "*"} );
+    var status = null;
+    var text = null;
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
     switch(url.command) {
       case "token":
-        this.text += token.get();
-        this.status = 200;
+        text = token.get();
+        status = 200;
         break;
 
       default:
         log.debug("HTTP: Command not recognized");
-        this.status = 404;
+        status = 404;
     }
 
     // Close connection
-    response.statusCode = this.status;
+    response.statusCode = status;
     response.setHeader("Content-Type", "text/plain");
     response.setHeader("access-control-allow-origin", "*");
-    response.write(this.text);
+    response.write(text);
     response.end();
   },
 
@@ -184,7 +183,7 @@ server.prototype = {
       } else if (message.type === 'binary') {
         // No binary data supported yet
         log.debug('WS: Received Binary Message of ' + message.binaryData.length + ' bytes');
-        connection.sendUTF('{ "error": "Binary messages not yet supoprted" }');
+        connection.sendUTF('{ "error": "Binary messages not yet supported" }');
         connection.close();
       }
     };
