@@ -57,10 +57,10 @@ msgBroker.prototype = {
    * Insert a new message into the queue
    */
   push: function(queueName, body, persistent) {
-    log.debug('Going to send ' + body);
+    log.debug('Going to send ' + JSON.stringify(body));
     this.queue.send({
       'destination': '/queue/' + queueName,
-      'body': body.toString(),
+      'body': JSON.stringify(body),
       'persistent': persistent
     }, true); //receipt
   }
