@@ -1,10 +1,10 @@
 var assert = require('assert'),
     vows = require('vows'),
-    seriousCalculations = require('../');
+    token = require("../../../common/token.js").getToken();
 
-vows.describe('serious-calculations').addBatch({
+vows.describe('get-token').addBatch({
   'When performing serious calculations': {
-    topic: seriousCalculations.performSeriousCalculations(4),
+    topic: token,
     'result should be valid': function (result) {
       assert.isNumber(result);
       assert.equal(result, 8);
