@@ -5,12 +5,6 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-// TODO: Error methods
-// TODO: push_url_recover_method
-// TODO: verify origin
-// TODO: URL Parser based on regexp
-// TODO: Replies to the 3rd. party server
-
 var log = require("../common/logger.js").getLogger;
 var consts = require("../consts.js").consts;
 var http = require('http');
@@ -22,30 +16,26 @@ var dataStore = require("../common/datastore.js").getDataStore();
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-
 function onNewPushMessage(notification, watoken) {
   var json = null;
+  //Only accept valid JSON messages
   try {
     json = JSON.parse(notification);
   } catch (err) {
     log.info('Not valid JSON notification');
     return;
   }
+  //Only accept notification messages
+  if (json.messageType != "notification") return;
   var sig = json.signature;
   var message = json.message;
+  //Bad notification, drop it.
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
     log.debug('Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return;
   }
-  //FIXME: get pbk from the DB
-  //var pbk = dataStore.getPBKApplication(watoken);
-  var pbk = "\
------BEGIN PUBLIC KEY-----\n\
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n\
-P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
-PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
-lx8GvbnYJHO/50QGkQIDAQAB\n\
------END PUBLIC KEY-----";
+  //TODO: get pbk from the DB
+  var pbk = dataStore.getPBKApplication(watoken);
   if (sig && !crypto.verifySignature(message, sig, pbk)) {
       log.info('Bad signature, dropping notification');
       return;
@@ -57,16 +47,14 @@ lx8GvbnYJHO/50QGkQIDAQAB\n\
   // Also send to the newMessages Queue
   msgBroker.push("newMessages", msg, false);
 }
-
 ////////////////////////////////////////////////////////////////////////////////
+
 
 function server(ip, port) {
   this.ip = ip;
   this.port = port;
 }
-
 server.prototype = {
-
   //////////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////////
@@ -95,15 +83,13 @@ server.prototype = {
     var status = "";
     var text = "";
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
-    switch(url.command) {
-      case "notify":
-        log.debug("HTTP: Notification for " + url.token);
-        request.on("data", function(notification) {
-          onNewPushMessage(notification, url.token);
-        });
-        break;
-      default:
-        log.debug("HTTP: Command '" + url.command + "' not recognized");
+    if (url.messageType == 'notify') {
+      log.debug("HTTP: Notification for " + url.token);
+      request.on("data", function(notification) {
+        onNewPushMessage(notification, url.token);
+      });
+    } else {
+        log.debug("HTTP: messageType '" + url.messageType + "' not recognized");
         status = 404;
     }
 
@@ -123,7 +109,7 @@ server.prototype = {
     var data = {};
     data.parsedURL = urlparser.parse(url,true);
     var path = data.parsedURL.pathname.split("/");
-    data.command = path[1];
+    data.messageType = path[1];
     if(path.length > 2) {
       data.token = path[2];
     } else {

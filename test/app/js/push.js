@@ -86,7 +86,7 @@ var Push = {
     },
 
     registerApp: function(uatoken, watoken) {
-        var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '" }, "command":"registerWA" }';
+        var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '" }, "messageType":"registerWA" }';
         this.logMessage('Preparing to send: ' + msg);
 
         if (this.checkbox.checked) {
@@ -114,7 +114,7 @@ var Push = {
     },
 
     pullMessages: function() {
-        var msg = '{"data": {"uatoken":"' + this.token + '" }, "command":"getAllMessages"}';
+        var msg = '{"data": {"uatoken":"' + this.token + '" }, "messageType":"getAllMessages"}';
 
         if (this.checkbox.checked) {
           this.logMessage('[PULL] Starting to get all pending messages');
@@ -166,9 +166,9 @@ var Push = {
         this.ws.ready = true;
         this.logMessage('[REG] Started registration to the notification server');
         if (this.checkbox.checked) {
-            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "command":"registerUA"}');
+            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "messageType":"registerUA"}');
         } else {
-            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "command":"registerUA"}');
+            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "messageType":"registerUA"}');
         }
         this.ws.connection.onmessage = function(e) {
             this.logMessage('[MSG] message received --- ' + e.data);

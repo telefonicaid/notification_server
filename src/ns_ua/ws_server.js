@@ -75,11 +75,11 @@ server.prototype = {
     var text = null;
 
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
-    if (url.command == 'token') {
+    if (url.messageType == 'token') {
       text = token.get();
       status = 200;
     } else {
-      log.debug("HTTP: Command not recognized");
+      log.debug("HTTP: messageType not recognized");
       status = 404;
     }
 
@@ -111,7 +111,7 @@ server.prototype = {
           return;
         }
 
-        switch(query.command) {
+        switch(query.messageType) {
         case "registerUA":
           log.debug("WS: UA registration message");
           // Token verification
@@ -123,7 +123,7 @@ server.prototype = {
           }
 
           // New UA registration
-          var okNode = dataManager.registerNode(
+          dataManager.registerNode(
             query.data.uatoken,
             Connectors.getConnector(query.data, connection)
           );
@@ -166,8 +166,8 @@ server.prototype = {
           break;
 
         default:
-          log.debug("WS: Command not recognized");
-          connection.sendUTF('{ "error": "Command not recognized" }');
+          log.debug("WS: messageType not recognized");
+          connection.sendUTF('{ "error": "messageType not recognized" }');
           connection.close();
         }
       } else if (message.type === 'binary') {
@@ -215,7 +215,7 @@ server.prototype = {
     var data = {};
     data.parsedURL = urlparser.parse(url,true);
     var path = data.parsedURL.pathname.split("/");
-    data.command = path[1];
+    data.messageType = path[1];
     if(path.length > 2) {
       data.token = path[2];
     } else {
