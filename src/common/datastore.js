@@ -31,7 +31,7 @@ function datastore() {
 
   // Establish connection to db
   this.db.open(function(err, db) {
-    if(err == null) {
+    if(!err) {
       log.info("Connected to MongoDB on " + ddbbsettings.host + ":" +
               ddbbsettings.port + ", Database Name: " + ddbbsettings.ddbbname);
     } else {
@@ -52,7 +52,7 @@ datastore.prototype = {
                          { 'token': token, 'serverId': serverId, 'data': data },
                          { upsert: true },
                          function(err,d) {
-        if(err == null)
+        if(!err)
           log.debug("Node inserted/update into MongoDB");
         else
           log.debug("Error inserting/updating node into MongoDB -- " + err);
@@ -67,7 +67,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(err == null && callbackFunc)
+        if(!err && callbackFunc)
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding node into MongoDB: " + err);
@@ -86,7 +86,7 @@ datastore.prototype = {
                          {$push : { 'node': nodeToken }},
                          {upsert: true},
                          function(err,d) {
-        if(err == null)
+        if(!err)
           log.debug("Application inserted into MongoDB");
         else
           log.debug("Error inserting application into MongoDB: " + err);
@@ -101,7 +101,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(err == null && callbackFunc)
+        if(!err && callbackFunc)
           callbackFunc(d, callbackParam);
         else
           log.debug("Error finding application into MongoDB: " + err);
@@ -117,7 +117,7 @@ datastore.prototype = {
     var msg = { 'MsgId': id, 'watoken': watoken, 'payload': message };
     this.db.collection("messages", function(err, collection) {
       collection.insert(msg, function(err,d) {
-        if(err == null)
+        if(!err)
           log.debug("Message inserted into MongoDB");
         else
           log.debug("Error inserting message into MongoDB");
@@ -134,7 +134,7 @@ datastore.prototype = {
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       collection.find( { 'MsgId': id } ).toArray(function(err,d) {
-        if(err == null) {
+        if(!err) {
           if (callbackFunc) {
             callbackFunc(d, callbackParam);
           } else {
@@ -155,9 +155,11 @@ datastore.prototype = {
     log.debug("Looking for messages of " + uatoken);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
-      collection.find( ).toArray(function(err,d) {
-        if(err  == null && callbackFunc)
+      collection.find( { 'uatoken': uatoken } ).toArray(function(err,d) {
+        if(!err && callbackFunc) {
+          console.log(d);
           callbackFunc(d);
+        }
         else
           log.debug("Error finding messages from MongoDB: " + err);
       });

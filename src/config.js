@@ -42,7 +42,7 @@ exports.ddbbsettings = {
  * Public base URL to receive notifications
  */
 exports.NS_AS = {
-  publicBaseURL: "http://localhost:8081",
+  publicBaseURL: "http://futurama.hi.inet:8081",
 
   /**
    * Binding interfaces and ports
@@ -62,7 +62,7 @@ exports.NS_AS = {
 
   server_info: {
     key: "12345678901234567890"
-  },
+  }
 };
 
 /********************* NS_MSG_monitor ********************************/
