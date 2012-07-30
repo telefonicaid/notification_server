@@ -53,7 +53,7 @@ var Push = {
         this.pullMessagesButton.addEventListener('click', this.pullMessages.bind(this));
         this.clearButton.addEventListener('click', this.onclear.bind(this));
 
-        Push.logMessage('[INIT] Notification server: ' + this.ad);
+        this.logMessage('[INIT] Notification server: ' + this.ad);
     },
 
     onclear: function() {
@@ -66,16 +66,16 @@ var Push = {
     registerDevice: function() {
         if (this.token === null) {
             var xmlhttp = new XMLHttpRequest();
-            xmlhttp.onreadystatechange = function() {
+            xmlhttp.onreadystatechange = (function() {
                 if (xmlhttp.readyState == 4) {
                     if (xmlhttp.status == 200) {
-                        Push.token = xmlhttp.responseText;
-                        Push.onReceivedToken();
+                        this.token = xmlhttp.responseText;
+                        this.onReceivedToken();
                     } else {
-                        Push.logMessage('[TOK] The notification server is not working');
+                        this.logMessage('[TOK] The notification server is not working');
                     }
                 }
-            };
+            }.bind(this));
             xmlhttp.open('GET', this.ad_http + '/token', true);
             xmlhttp.send(null);
         }
@@ -86,53 +86,54 @@ var Push = {
     },
 
     registerApp: function(uatoken, watoken) {
-        var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '" }, "command":"register/wa"}';
-        Push.logMessage('Preparing to send: ' + msg);
+        var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '" }, "command":"registerWA" }';
+        this.logMessage('Preparing to send: ' + msg);
 
         if (this.checkbox.checked) {
-          Push.logMessage("[DEBUG] WS close ... I'll open it ...");
+          this.logMessage("[DEBUG] WS close ... I'll open it ...");
           this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
           this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
           this.ws.connection.onopen = function() {
             this.ws.connection.send(msg);
-            Push.logMessage('[REG] Application 1 registered');
+            this.logMessage('[REG] Application 1 registered');
             this.ws.connection.close();
           }.bind(this);
         } else {
-          Push.logMessage('[DEBUG] WS open');
+          this.logMessage('[DEBUG] WS open');
           this.ws.connection.send(msg);
-          Push.logMessage('[REG] Application 1 registered');
+          this.logMessage('[REG] Application 1 registered');
         }
     },
 
     registerApp1: function() {
-        this.registerApp(Push.token, 'app1');
+        this.registerApp(this.token, 'app1');
     },
 
     registerApp2: function() {
-        this.registerApp(Push.token, 'app2');
+        this.registerApp(this.token, 'app2');
     },
 
     pullMessages: function() {
-        var msg = '{"data": {"uatoken":"' + Push.token + '" }, "command":"getAllMessages"}';
+        var msg = '{"data": {"uatoken":"' + this.token + '" }, "command":"getAllMessages"}';
 
         if (this.checkbox.checked) {
-          Push.logMessage('[PULL] Starting to get all pending messages');
+          this.logMessage('[PULL] Starting to get all pending messages');
           this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
 
           this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
           this.ws.connection.onclose = this.onCloseWebsocket.bind(this);
           this.ws.connection.onerror = this.onCloseWebsocket.bind(this);
 
-          this.ws.connection.onopen = function() {
+          this.ws.connection.onopen = (function() {
             this.ws.connection.onmessage = function(e) {
-                Push.logMessage('[MSG] message received --- ' + e.data);
+                this.logMessage('[MSG] message received --- ' + e.data);
             };
             this.ws.connection.send(msg);
-            Push.logMessage('[PULL] Query sent');
-          }.bind(this);
-        } else
-          Push.logMessage('[PULL] Error, only for UDP clients');
+            this.logMessage('[PULL] Query sent');
+          }).bind(this);
+        } else {
+          this.logMessage('[PULL] Error, only for UDP clients');
+        }
     },
 
     onReceivedToken: function() {
@@ -165,12 +166,12 @@ var Push = {
         this.ws.ready = true;
         this.logMessage('[REG] Started registration to the notification server');
         if (this.checkbox.checked) {
-            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "command":"register/ua"}');
+            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "command":"registerUA"}');
         } else {
-            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "command":"register/ua"}');
+            this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "command":"registerUA"}');
         }
         this.ws.connection.onmessage = function(e) {
-            Push.logMessage('[MSG] message received --- ' + e.data);
+            this.logMessage('[MSG] message received --- ' + e.data);
         };
     },
 
