@@ -1,4 +1,4 @@
-Mozilla PUSH Notification server.
+Mozilla PUSH Notification server [![Build Status](https://secure.travis-ci.org/telefonicaid/notification_server.png)](http://travis-ci.org/telefonicaid/notification_server/)
 ===
 
 ### Authors:
