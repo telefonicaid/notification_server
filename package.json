@@ -25,7 +25,7 @@
         "stomp": "0.0.x"
     },
     "devDependencies": {
-        "vows": "*"
+        "vows": "0.6.x"
     },
     "license": "TBD",
     "engine": {

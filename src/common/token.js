@@ -47,7 +47,7 @@ token.prototype = {
       return false;
 
     // Decrypt token
-    var rawToken = crypto.decryptAES(token,server_info.key).split('@');
+    var rawToken = crypto.decryptAES(token, server_info.key).split('@');
 
     // CRC Verification
     return (rawToken[1] == crypto.hashMD5(rawToken[0]));
