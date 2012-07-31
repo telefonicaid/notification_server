@@ -1,7 +1,10 @@
 language: "node_js"
+
 node_js:
-  - 0.7
+  - 0.6
   - 0.8
+
 notifications:
-   email: frsela@tid.es
-   email: gll@tid.es
+   email:
+      - frsela@tid.es
+      - gll@tid.es
