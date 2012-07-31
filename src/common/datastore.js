@@ -110,6 +110,15 @@ datastore.prototype = {
   },
 
   /**
+   * Get the Pbk of the WA.
+   */
+  getPbkApplication: function(watoken) {
+    /*this.db.collection("apps", function(err, collection) {
+      collection.find();
+    }*/
+  },
+
+  /**
    * Save a new message
    * @return New message as stored on DB
    */

@@ -34,8 +34,7 @@ function onNewPushMessage(notification, watoken) {
     log.debug('Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return;
   }
-  //TODO: get pbk from the DB
-  var pbk = dataStore.getPBKApplication(watoken);
+  var pbk = dataStore.getPbkApplication(watoken);
   if (sig && !crypto.verifySignature(message, sig, pbk)) {
       log.info('Bad signature, dropping notification');
       return;
