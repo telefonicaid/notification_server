@@ -4,6 +4,9 @@ node_js:
   - 0.6
   - 0.8
 
+before_script:
+  - rm -rf node_modules
+
 notifications:
    email:
       - frsela@tid.es
