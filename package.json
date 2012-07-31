@@ -32,6 +32,6 @@
         "node": ">=0.8"
     },
     "scripts": {
-        "test": "./node_modules/.bin/vows --spec"
+        "test": "./node_modules/.bin/vows test/*.js --spec"
     }
 }
