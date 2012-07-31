@@ -1,17 +1,21 @@
 {
     "name": "push-notification-server",
     "version": "0.3.0",
-    "author": "Fernando Rodriguez Sela <frsela@tid.es>, Guillermo López Leal <gll@tid.es>",
+    "author": "Telefónica I+D. 2012",
     "description": "a push notification server for desktop and mobile",
     "contributors": [
         {
-            "name": "Contributor 1",
-            "email": "thanks@thankyou.com"
+            "name": "Fernando Rodriguez Sela",
+            "email": "frsela@tid.es"
+        },
+        {
+            "name": "Guillermo López Leal",
+            "email": "gll@tid.es"
         }
     ],
     "repository": {
         "type": "git",
-        "url": "https://pdihub.hi.inet/frsela/notification-server.git"
+        "url": "https://github.com/telefonicaid/notification_server"
     },
     "keywords": [
         "push",
@@ -27,10 +31,7 @@
     "devDependencies": {
         "vows": "0.6.x"
     },
-    "license": "TBD",
-    "engine": {
-        "node": ">=0.8"
-    },
+    "license": "GNU AFFERO GENERAL PUBLIC LICENSE v3",
     "scripts": {
         "test": "./node_modules/.bin/vows test/*.js --spec"
     }
