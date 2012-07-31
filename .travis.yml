@@ -4,7 +4,7 @@ node_js:
   - 0.6
   - 0.8
 
-before_script:
+before_install:
   - rm -rf node_modules
 
 notifications:
