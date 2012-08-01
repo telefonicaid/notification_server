@@ -93,11 +93,11 @@ var Push = {
           this.logMessage("[DEBUG] WS close ... I'll open it ...");
           this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
           this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
-          this.ws.connection.onopen = function() {
+          this.ws.connection.onopen = (function() {
             this.ws.connection.send(msg);
             this.logMessage('[REG] Application 1 registered');
             this.ws.connection.close();
-          }.bind(this);
+          }).bind(this);
         } else {
           this.logMessage('[DEBUG] WS open');
           this.ws.connection.send(msg);
@@ -125,9 +125,9 @@ var Push = {
           this.ws.connection.onerror = this.onCloseWebsocket.bind(this);
 
           this.ws.connection.onopen = (function() {
-            this.ws.connection.onmessage = function(e) {
+            this.ws.connection.onmessage = (function(e) {
                 this.logMessage('[MSG] message received --- ' + e.data);
-            };
+            }).bind(this);
             this.ws.connection.send(msg);
             this.logMessage('[PULL] Query sent');
           }).bind(this);
@@ -170,9 +170,9 @@ var Push = {
         } else {
             this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "messageType":"registerUA"}');
         }
-        this.ws.connection.onmessage = function(e) {
+        this.ws.connection.onmessage = (function(e) {
             this.logMessage('[MSG] message received --- ' + e.data);
-        };
+        }).bind(this);
     },
 
     onErrorWebsocket: function(e) {
