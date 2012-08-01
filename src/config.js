@@ -1,19 +1,18 @@
 /**
  * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-/**
- * This software is made from different servers which are documented in the
- * /documentation folder. Check what each server does before changing
- * anything here. Every parameter is explained.
- * You should run the software as:
- * node main.js [TYPE]
- * where TYPE is NS_AS, NS_UA_WS, NS_UA_UDP, NS_UA_SMS or NS_MSG_monitor
- */
-
+/******************* Servers to run on this machine ********************/
+exports.servers = {
+  NS_AS: true,
+  NS_MSG_monitor: true,
+  NS_UA_WS: true,
+  NS_UA_UDP: false,
+  NS_UA_SMS: false
+}
 
 /********************* Common Queue ***********************************/
 exports.queue = {
@@ -60,6 +59,9 @@ exports.NS_AS = {
     }*/
   ],
 
+  /**
+   * This should be shared between all your frontends (to verify token)
+   */
   server_info: {
     key: "12345678901234567890"
   }
