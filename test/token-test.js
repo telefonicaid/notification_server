@@ -4,13 +4,19 @@ var assert = require('assert'),
 
 //Internal vars
 var tokens = [];
+var NUM_TOKENS = 50000;
+var then = new Date();
 
 //Filling
 (function fillTokens() {
-  for (var i = 9999; i >= 0; i--) {
+  for (var i = NUM_TOKENS; i >= 0; i--) {
     tokens.push(token.get());
   }
 })();
+
+//Only for debug (time to create NUM_TOKENS tokens and add them to the array)
+var now = new Date();
+
 
 function allDifferents(l) {
   var obj = {};
@@ -21,6 +27,7 @@ function allDifferents(l) {
   return true;
 }
 
+// TESTS //
 vows.describe('Token tests').addBatch({
   /**
    * Test to ask for a token. Check length
@@ -43,12 +50,14 @@ vows.describe('Token tests').addBatch({
   },
 
   /**
-   * Ask for 10000 tokens. Should be all different
+   * Ask for NUM_TOKENS tokens. Should be all different
    */
-  'Getting 10000 tokens, must be ALL different': {
+  'Getting a lot of tokens, must be ALL different': {
     topic: tokens,
     'all items are different': function(topic) {
       assert.isTrue(allDifferents(topic));
     }
   }
 }).export(module);
+
+console.log("Time spent to generate " + NUM_TOKENS + " tokens: " + (now - then) + " ms");
