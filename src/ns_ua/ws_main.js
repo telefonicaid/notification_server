@@ -24,7 +24,7 @@ NS_UA_WS_main.prototype = {
 
     // Start servers
     for(var a in config.interfaces) {
-      this.servers[a] = new server(config.interfaces[a].interface, config.interfaces[a].port);
+      this.servers[a] = new server(config.interfaces[a].ip, config.interfaces[a].port);
       this.servers[a].init();
     }
     log.info("NS_UA_WS server initialized");

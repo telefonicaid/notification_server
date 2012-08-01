@@ -17,7 +17,7 @@ exports.servers = {
 /********************* Common Queue ***********************************/
 exports.queue = {
   port: 61613,
-  host: 'localhost',
+  host: 'owd-push-qa-be1',
   debug: false,
   //Just for rabbitmq
   login: 'guest',
@@ -25,14 +25,12 @@ exports.queue = {
 };
 
 exports.ddbbsettings = {
-    host: "localhost",
-    port: 27017,
-    user: "",
-    password: "",
-    ddbbname: "push_notification_server",
-    auto_reconnect: true,
-    poolSize: 4,
-    native_parser: false
+  machines: [
+    ["owd-push-qa-be1", 27017],
+    ["owd-push-qa-be2", 27017]
+  ],
+  ddbbname: "push_notification_server",
+  replicasetName: "Server_Push"
 };
 
 
@@ -48,15 +46,10 @@ exports.NS_AS = {
    * [ iface, port ]
    */
   interfaces: [
-    // Internal network
     {
-      interface: "0.0.0.0",
-      port: 8081 }/*,
-    // External network
-    {
-      iface: "127.0.0.1",
-      port: 8081,
-    }*/
+      ip: "0.0.0.0",
+      port: 8081
+    }
   ],
 
   /**
@@ -84,13 +77,9 @@ exports.NS_UA_WS = {
   interfaces: [
     // Internal network
     {
-      interface: "0.0.0.0",
-      port: 8080 }/*,
-    // External network
-    {
-      interface: "127.0.0.1",
-      port: 8081,
-    }*/
+      ip: "0.0.0.0",
+      port: 8080
+    }
   ],
 
   server_info: {

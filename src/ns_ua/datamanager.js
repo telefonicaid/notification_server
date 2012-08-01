@@ -11,7 +11,7 @@ var log = require("../common/logger.js").getLogger;
 var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
 
 function datamanager() {
-  log.info("In-Memory data manager loaded.");
+  log.info("dataManager --> In-Memory data manager loaded.");
 
   // In-Memory NODE table storage
   this.nodesTable = {};
@@ -23,12 +23,12 @@ datamanager.prototype = {
    */
   registerNode: function (token, connector) {
     if(this.nodesTable[token]) {
-      log.debug("Removing old node token " + token);
+      log.debug("dataManager::registerNode --> Removing old node token " + token);
       delete(this.nodesTable[token]);
     }
 
     if(connector.getType() == "UDP") {
-      log.debug("Registraton of the node into datastore (UDP Connector)");
+      log.debug("dataManager::registerNode --> Registraton of the node into datastore (UDP Connector)");
 
       // No persitent object required on this server (ie., UDP connectors)
       // Register in persistent datastore
@@ -38,7 +38,7 @@ datamanager.prototype = {
         { "interface": connector.getInterface() }     // UDP Interface data
       );
     } else {
-      log.debug("Registraton of the connector into memory and node into datastore");
+      log.debug("dataManager::registerNode --> Registraton of the connector into memory and node into datastore");
 
       // Register a new node
       this.nodesTable[token] = connector;
@@ -56,6 +56,7 @@ datamanager.prototype = {
    * Gets a node connector (from memory)
    */
   getNode: function (token) {
+    log.debug("dataManager::getNode --> getting node from memory")
     if(this.nodesTable[token]) {
       return this.nodesTable[token];
     }
@@ -75,26 +76,31 @@ datamanager.prototype = {
    * Recover a message data and associated UAs
    */
   getMessage: function (id, callbackFunc, callbackParam) {
-	  // Recover from the persistent storage
-	  dataStore.getMessage(id, onMessage, {"messageId": id, "callbackFunction": callbackFunc, "callbackParam": callbackParam});
+    // Recover from the persistent storage
+    dataStore.getMessage(id, onMessage, {"messageId": id,
+                                         "callbackFunction": callbackFunc,
+                                         "callbackParam": callbackParam}
+                        );
   },
 
   /**
    * Get all messages for a UA
    */
   getAllMessages: function(uatoken, callbackFunc) {
-	  // Recover from the persistent storage
-	  dataStore.getAllMessages(uatoken, callbackFunc);
+    // Recover from the persistent storage
+    dataStore.getAllMessages(uatoken, callbackFunc);
   }
-}
+};
 
 ///////////////////////////////////////////
 // Callbacks functions
 ///////////////////////////////////////////
-
 function onMessage(message, message_info) {
-  log.debug("Message payload: " + JSON.stringify(message[0].payload));
-  message_info.callbackFunction( {"messageId": message_info.id, "payload": message[0].payload, "data": message_info.callbackParam} );
+  log.debug("dataManager::onMessage --> Message payload: " + JSON.stringify(message[0].payload));
+  message_info.callbackFunction({"messageId": message_info.id,
+                                 "payload": message[0].payload,
+                                 "data": message_info.callbackParam}
+                               );
 }
 
 ///////////////////////////////////////////

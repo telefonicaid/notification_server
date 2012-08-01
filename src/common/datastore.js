@@ -13,27 +13,19 @@ var ddbbsettings = require("../config.js").ddbbsettings;
 function datastore() {
   log.info("MongoDB data store loaded.");
 
+  var servers = [];
+  ddbbsettings.machines.forEach(function(machine) {
+    servers.push(new mongodb.Server(machine[0], machine[1], {auto_reconnect: true }));
+  });
+  var replSet = new mongodb.ReplSetServers(servers, {rs_name:ddbbsettings.replicasetName});
+
   // Connection to MongoDB
-  this.db = new mongodb.Db(
-    ddbbsettings.ddbbname,
-    new mongodb.Server(
-      ddbbsettings.host,
-      ddbbsettings.port,
-      {
-        auto_reconnect: ddbbsettings.auto_reconnect,
-        poolSize: ddbbsettings.poolSize
-      }
-    ),
-    {
-      native_parser: ddbbsettings.native_parser
-    }
-  );
+  this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet);
 
   // Establish connection to db
   this.db.open(function(err, db) {
     if(!err) {
-      log.info("Connected to MongoDB on " + ddbbsettings.host + ":" +
-              ddbbsettings.port + ", Database Name: " + ddbbsettings.ddbbname);
+      log.info("Connected to MongoDB on " + ddbbsettings.machines + ". Database Name: " + ddbbsettings.ddbbname);
     } else {
       log.error("Error connecting to MongoDB ! - " + err);
       // TODO: Cierre del servidor? Modo alternativo?

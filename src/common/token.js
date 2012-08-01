@@ -17,8 +17,7 @@ token.prototype = {
   // The TOKEN shall be unique
   get: function() {
     // SerialNumber + TimeStamp + NotificationServer_Id + CRC -> RAWToken
-    this.serialNumber += 1;
-    var rawToken = this.serialNumber + "#" + Date.now() + "#" + process.serverId + "_" + uuid.v1();
+    var rawToken = this.serialNumber++ + "#" + Date.now() + "#" + process.serverId + "_" + uuid.v1();
 
     //////////////////////////////////////////////////////////////////////////////////////
     // Due to the Node.JS Crypto library decission (ignore padding) we should add it:
@@ -43,7 +42,7 @@ token.prototype = {
 
   // Verify the given TOKEN
   verify: function(token) {
-    if(token === null)
+    if(!token)
       return false;
 
     // Decrypt token
