@@ -32,6 +32,9 @@
     "devDependencies": {
         "vows": "0.6.x"
     },
+    "engines": {
+        "node": ">=0.8.x"
+    }
     "license": "GNU AFFERO GENERAL PUBLIC LICENSE v3",
     "scripts": {
         "test": "./node_modules/.bin/vows test/*.js --spec"
