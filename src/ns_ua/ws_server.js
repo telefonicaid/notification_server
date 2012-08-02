@@ -50,10 +50,10 @@ server.prototype = {
     // Websocket init
     this.wsServer = new WebSocketServer({
       httpServer: this.server,
-      keepalive: require('../config.js').NS_UA_WS.websocket_params.keepalive,
-      keepaliveInterval: require('../config.js').NS_UA_WS.websocket_params.keepaliveInterval,
-      dropConnectionOnKeepaliveTimeout: require('../config.js').NS_UA_WS.websocket_params.dropConnectionOnKeepaliveTimeout,
-      keepaliveGracePeriod: require('../config.js').NS_UA_WS.websocket_params.keepaliveGracePeriod,
+      keepalive: config.websocket_params.keepalive,
+      keepaliveInterval: config.websocket_params.keepaliveInterval,
+      dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
+      keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
       //False for production
       autoAcceptConnections: false
     });
@@ -107,7 +107,7 @@ server.prototype = {
           query = JSON.parse(message.utf8Data);
         } catch(e) {
           log.info("WS::onWSMessage --> Data received is not a valid JSON package");
-          connection.sendUTF('{ "error": "Data received is not a valid JSON package" }');
+          connection.sendUTF('{ "status": "error", "reason": "Data received is not a valid JSON package" }');
           connection.close();
           return;
         }
@@ -118,7 +118,7 @@ server.prototype = {
             // Token verification
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
-              connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
+              connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
               connection.close();
               return;
             }
@@ -136,14 +136,15 @@ server.prototype = {
             var appToken = crypto.hashSHA256(query.data.watoken);
             dataManager.registerApplication(appToken, query.data.uatoken);
             var baseURL = require('../config.js').NS_AS.publicBaseURL;
-            connection.sendUTF(baseURL + "/notify/" + appToken);
+            var notifyURL = baseURL + "/notify/" + appToken;
+            connection.sendUTF('"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"');
             log.debug("WS::onWSMessage::registerWA --> OK registering WA");
             break;
 
           case "getAllMessages":
             if(!query.data.uatoken) {
               log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
-              connection.sendUTF('{ "error": "No UAtoken sent" }');
+              connection.sendUTF('{ "error": "No UAtoken sent", "reason": "No UAToken sent" }');
               connection.close();
               return;
             }
