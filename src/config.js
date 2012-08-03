@@ -24,13 +24,25 @@ exports.queue = {
   passcode: 'guest'
 };
 
-exports.ddbbsettings = {
+/********************* Database conf *********************************/
+/**
+ * If replicasetName is not set, we ONLY use the first machine, and
+ * connect to a single mongo instance.
+ */
+/*exports.ddbbsettings = {
   machines: [
     ["owd-push-qa-be1", 27017],
     ["owd-push-qa-be2", 27017]
   ],
   ddbbname: "push_notification_server",
   replicasetName: "Server_Push"
+};*/
+exports.ddbbsettings = {
+  machines: [
+    ["owd-push-qa-be1", 27017]
+  ],
+  ddbbname: "push_notification_server",
+  replicasetName: null
 };
 
 
