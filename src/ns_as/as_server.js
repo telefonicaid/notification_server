@@ -16,29 +16,36 @@ var dataStore = require("../common/datastore.js").getDataStore();
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-function onNewPushMessage(notification, watoken) {
+function onNewPushMessage(notification, watoken, callback) {
   var json = null;
   //Only accept valid JSON messages
   try {
     json = JSON.parse(notification);
   } catch (err) {
     log.info('Not valid JSON notification');
+    callback('{"status":"ERROR", "reason":"JSON not valid"', 400);
     return;
   }
   //Only accept notification messages
-  if (json.messageType != "notification") return;
+  if (json.messageType != "notification") {
+    callback('{"status":"ERROR", "reason":"Not messageType=notification"', 400);
+    return;
+  }
   var sig = json.signature;
   var message = json.message;
-  //Bad notification, drop it.
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
     log.debug('Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    callback('{"status":"ERROR", "reason":"Body too big"', 200);
     return;
   }
   dataStore.getPbkApplication(watoken, function(pbkbase64) {
-    var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
-    if (sig && !crypto.verifySignature(message, sig, pbk)) {
+    if (pbkbase64) {
+      var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
+      if (sig && !crypto.verifySignature(message, sig, pbk)) {
         log.info('Bad signature, dropping notification');
+        callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"', 400);
         return;
+      }
     }
     var id = uuid.v1();
     log.debug("Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
@@ -46,6 +53,8 @@ function onNewPushMessage(notification, watoken) {
     var msg = dataStore.newMessage(id, watoken, json);
     // Also send to the newMessages Queue
     msgBroker.push("newMessages", msg, false);
+    callback('{"status": "ACCEPTED"}', 200);
+    return;
   });
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,29 +86,30 @@ server.prototype = {
     if (!url.token) {
       log.debug('No valid url (no watoken)');
       response.statusCode = 404;
-      response.write('No valid WAtoken');
+      response.write('{"status": "ERROR", "reason": "No valid WAtoken"');
       response.end();
       return;
     }
-    var status = "";
-    var text = "";
     log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
     if (url.messageType == 'notify') {
       log.debug("HTTP: Notification for " + url.token);
       request.on("data", function(notification) {
-        onNewPushMessage(notification, url.token);
+        onNewPushMessage(notification, url.token, function(body, code) {
+            response.statusCode = code;
+            response.setHeader("Content-Type", "text/plain");
+            response.setHeader("access-control-allow-origin", "*");
+            response.write(body);
+            response.end();
+        });
       });
     } else {
-        log.debug("HTTP: messageType '" + url.messageType + "' not recognized");
-        status = 404;
+      log.debug("HTTP: messageType '" + url.messageType + "' not recognized");
+      response.statusCode = 404;
+      response.setHeader("Content-Type", "text/plain");
+      response.setHeader("access-control-allow-origin", "*");
+      response.write('{"status": "ERROR", "reason": "Only notify by this interface"}');
+      response.end();
     }
-
-    // Close connection
-    response.statusCode = status;
-    response.setHeader("Content-Type", "text/plain");
-    response.setHeader("access-control-allow-origin", "*");
-    response.write(text);
-    response.end();
   },
 
   ///////////////////////

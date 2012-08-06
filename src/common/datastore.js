@@ -164,12 +164,15 @@ datastore.prototype = {
           }
           else if (!err && !d){
             log.debug('datastore::getPbkApplication --> There are no pbk for the WAToken' + watoken);
+            callback();
           } else {
             log.debug('datastore::getPbkApplication --> There was a problem finding the pbk for the WAToken');
+            callback();
           }
         });
       } else {
         log.error('datastore::getPbkApplication --> there was a problem opening the apps collection');
+        callback();
       }
     });
   },
