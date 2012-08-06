@@ -21,7 +21,7 @@ datamanager.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (token, connector) {
+  registerNode: function (token, connector, callback) {
     if(this.nodesTable[token]) {
       log.debug("dataManager::registerNode --> Removing old node token " + token);
       delete(this.nodesTable[token]);
@@ -35,7 +35,8 @@ datamanager.prototype = {
       dataStore.registerNode(
         token,                                        // UAToken
         "UDP",                                        // Queue name
-        { "interface": connector.getInterface() }     // UDP Interface data
+        { "interface": connector.getInterface() },    // UDP Interface data
+        callback
       );
     } else {
       log.debug("dataManager::registerNode --> Registraton of the connector into memory and node into datastore");
@@ -47,7 +48,8 @@ datamanager.prototype = {
       dataStore.registerNode(
         token,                                        // UAToken
         process.serverId,                             // Queue name (server ID)
-        {}                                            // No extra data
+        {},                                            // No extra data
+        callback
       );
     }
   },
@@ -55,21 +57,21 @@ datamanager.prototype = {
   /**
    * Gets a node connector (from memory)
    */
-  getNode: function (token) {
-    log.debug("dataManager::getNode --> getting node from memory")
+  getNode: function (token, callback) {
+    log.debug("dataManager::getNode --> getting node from memory");
     if(this.nodesTable[token]) {
-      return this.nodesTable[token];
+      callback(this.nodesTable[token]);
     }
-    return false;
+    callback(false);
   },
 
   // TODO: Verify that the node exists before add the application
   /**
    * Register a new application
    */
-  registerApplication: function (appToken, nodeToken) {
+  registerApplication: function (appToken, nodeToken, pbkbase64, callback) {
     // Store in persistent storage
-    dataStore.registerApplication(appToken, nodeToken);
+    dataStore.registerApplication(appToken, nodeToken, pbkbase64, callback);
   },
 
   /**

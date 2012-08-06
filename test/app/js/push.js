@@ -1,5 +1,13 @@
 'use strict';
 
+//To create base64 strings for pbk
+function utf8_to_b64( str ) {
+    return window.btoa(unescape(encodeURIComponent( str )));
+}
+function b64_to_utf8( str ) {
+    return decodeURIComponent(escape(window.atob( str )));
+}
+
 var Push = {
 
     MAX_RETRIES: 1,
@@ -85,8 +93,8 @@ var Push = {
         this.onDeleteToken();
     },
 
-    registerApp: function(uatoken, watoken) {
-        var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '" }, "messageType":"registerWA" }';
+    registerApp: function(uatoken, watoken, pbkbase64) {
+        var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"registerWA" }';
         this.logMessage('Preparing to send: ' + msg);
 
         if (this.checkbox.checked) {
@@ -106,11 +114,18 @@ var Push = {
     },
 
     registerApp1: function() {
-        this.registerApp(this.token, 'app1');
+        var pbk1 = '\
+-----BEGIN PUBLIC KEY-----\n\
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n\
+P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
+PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
+lx8GvbnYJHO/50QGkQIDAQAB\n\
+-----END PUBLIC KEY-----';
+        this.registerApp(this.token, 'app1', utf8_to_b64(pbk1));
     },
 
     registerApp2: function() {
-        this.registerApp(this.token, 'app2');
+        this.registerApp(this.token, 'app2', 'pbk2');
     },
 
     pullMessages: function() {

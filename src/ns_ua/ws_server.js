@@ -19,16 +19,17 @@ var config = require("../config.js").NS_UA_WS;
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 function onNewMessage(messageId) {
-  log.debug('WS::onNewMessage --> New message received');
+  log.debug('WS::Queue::onNewMessage --> New message received: ' + JSON.stringify(messageId.body));
   var json = JSON.parse(messageId.body);
-  log.debug("WS::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
-  var nodeConnector = dataManager.getNode(json.uatoken);
-  if(nodeConnector) {
-    log.debug("WS::onNewMessage --> Sending messages: " + json.payload.payload.toString());
-    nodeConnector.notify(new Array(json.payload.payload));
-  } else {
-    log.info("WS::onNewMessage --> No node found");
-  }
+  log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
+  dataManager.getNode(json.uatoken, function(nodeConnector) {
+    if(nodeConnector) {
+      log.debug("WS::Queue::onNewMessage --> Sending messages: " + json.payload.payload.toString());
+      nodeConnector.notify(new Array(json.payload.payload));
+    } else {
+      log.info("WS::Queue::onNewMessage --> No node found");
+    }
+  });
 }
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -106,6 +107,7 @@ server.prototype = {
         try {
           query = JSON.parse(message.utf8Data);
         } catch(e) {
+          log.error(e);
           log.info("WS::onWSMessage --> Data received is not a valid JSON package");
           connection.sendUTF('{ "status": "error", "reason": "Data received is not a valid JSON package" }');
           connection.close();
@@ -125,20 +127,33 @@ server.prototype = {
             // New UA registration
             dataManager.registerNode(
               query.data.uatoken,
-              Connectors.getConnector(query.data, connection)
+              Connectors.getConnector(query.data, connection),
+              function(ok) {
+                if (ok) {
+                  connection.sendUTF('{"status":"REGISTERED"}');
+                  log.debug("WS::onWSMessage --> OK register UA");
+                } else {
+                  connection.sendUTF('{"status":"ERROR"}');
+                  log.info("WS::onWSMessage --> Failing registering UA");
+                }
+              }
             );
-            connection.sendUTF('{"status":"REGISTERED"}');
-            log.debug("WS::onWSMessage --> OK register UA");
             break;
 
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
             var appToken = crypto.hashSHA256(query.data.watoken);
-            dataManager.registerApplication(appToken, query.data.uatoken);
-            var baseURL = require('../config.js').NS_AS.publicBaseURL;
-            var notifyURL = baseURL + "/notify/" + appToken;
-            connection.sendUTF('"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"');
-            log.debug("WS::onWSMessage::registerWA --> OK registering WA");
+            dataManager.registerApplication(appToken, query.data.uatoken, query.data.pbkbase64, function(ok) {
+              if (ok) {
+                var baseURL = require('../config.js').NS_AS.publicBaseURL;
+                var notifyURL = baseURL + "/notify/" + appToken;
+                connection.sendUTF('"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"');
+                log.debug("WS::onWSMessage::registerWA --> OK registering WA");
+              } else {
+                connection.sendUTF('"status": "ERROR"');
+                log.info("WS::onWSMessage::registerWA --> Failing registering WA");
+              }
+            });
             break;
 
           case "getAllMessages":

@@ -48,18 +48,26 @@ datastore.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (token, serverId, data) {
+  registerNode: function (token, serverId, data, callback) {
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
-      collection.update( { 'token': token },
-                         { 'token': token, 'serverId': serverId, 'data': data },
-                         { upsert: true },
+      if (!err) {
+        collection.save( { _id: token, serverId: serverId, data: data },
+                         { safe: true },
                          function(err,d) {
-        if(!err)
-          log.debug("Node inserted/update into MongoDB");
-        else
-          log.debug("Error inserting/updating node into MongoDB -- " + err);
-      });
+          if(!err && d) {
+            log.debug("datastore::registerNode --> Node inserted/update into MongoDB");
+            callback(true);
+          }
+          else {
+            log.debug("datastore::registerNode --> Error inserting/updating node into MongoDB -- " + err);
+            callback(false);
+          }
+        });
+      } else {
+        log.error("datastore::registerNode --> There was a problem opening the nodes collection");
+        callback(false);
+      }
     });
   },
 
@@ -69,12 +77,24 @@ datastore.prototype = {
   getNode: function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
-      collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(!err && callbackFunc)
-          callbackFunc(d, callbackParam);
-        else
-          log.debug("Error finding node into MongoDB: " + err);
-      });
+      if (!err) {
+        collection.findOne( { _id: token }, function(err,d) {
+          if(!err && callbackFunc && d) {
+            log.debug('Finding info for node ' + token);
+            log.debug("datastore::getNode --> Data found, calling callback with data");
+            callbackFunc(d, callbackParam);
+          }
+          else if (!d && !err) {
+            log.debug('Finding info for node ' + token);
+            log.debug("datastore::getNode --> No error, but no nodes to notify");
+          } else {
+            log.debug('Finding info for node ' + token);
+            log.debug("datastore::getNode --> Error finding node into MongoDB: " + err);
+          }
+        });
+      } else {
+        log.error("datastore::getNode --> there was a problem opening the nodes collection");
+      }
     });
   },
 
@@ -82,18 +102,26 @@ datastore.prototype = {
   /**
    * Register a new application
    */
-  registerApplication: function (appToken, nodeToken) {
+  registerApplication: function (waToken, nodeToken, pbkbase64, callback) {
     // Store in MongoDB
     this.db.collection("apps", function(err, collection) {
-      collection.update( {'token': appToken},
-                         {$push : { 'node': nodeToken }},
-                         {upsert: true},
-                         function(err,d) {
-        if(!err)
-          log.debug("Application inserted into MongoDB");
-        else
-          log.debug("Error inserting application into MongoDB: " + err);
-      });
+      if (!err) {
+        collection.update( { _id: waToken },
+          { $addToSet : { node: nodeToken, pbkbase64: pbkbase64 }},
+          {safe: true, upsert: true},
+          function(err,d) {
+            if(!err) {
+              log.debug("datastore::registerApplication --> Application inserted into MongoDB");
+              callback(true);
+            } else {
+              log.debug("datastore::registerApplication --> Error inserting application into MongoDB: " + err);
+              callback(false);
+            }
+          });
+      } else {
+        log.error("datastore::registerApplication --> there was a problem opening the apps collection");
+        callback(false);
+      }
     });
   },
 
@@ -103,22 +131,47 @@ datastore.prototype = {
   getApplication: function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
-      collection.find( { 'token': token } ).toArray(function(err,d) {
-        if(!err && callbackFunc)
-          callbackFunc(d, callbackParam);
-        else
-          log.debug("Error finding application into MongoDB: " + err);
-      });
+      if (!err) {
+        collection.findOne( { _id: token }, function(err,d) {
+          if(!err && callbackFunc && d) {
+            //console.log("err=" + err + ". callbackFunc=" + callbackFunc + ". d=" + d);
+            callbackFunc(d, callbackParam);
+          }
+          else
+            log.debug("datastore::getApplication -->Error finding application from MongoDB: " + err);
+        });
+      } else {
+        log.error("datastore::getApplication --> there was a problem opening the apps collection");
+      }
     });
   },
 
   /**
    * Get the Pbk of the WA.
+   * @ return the pbk.
    */
-  getPbkApplication: function(watoken) {
-    /*this.db.collection("apps", function(err, collection) {
-      collection.find();
-    }*/
+  getPbkApplication: function(watoken2, callback) {
+    var watoken = watoken2.toString();
+    log.debug("datastore::getPbkApplication --> Going to find the pbk for the watoken " + watoken);
+    this.db.collection("apps", function(err, collection) {
+      if (!err) {
+        collection.findOne( { _id: watoken }, function(err, d){
+          if (!err && d) {
+            var pbkbase64 = d.pbkbase64.toString('base64');
+            log.debug("datastore::getPbkApplication --> Found the pbk (base64) '" + pbkbase64 + "' for the watoken '" + watoken);
+            //WARN: This returns the base64 as saved on the DDBB!!
+            callback(pbkbase64);
+          }
+          else if (!err && !d){
+            log.debug('datastore::getPbkApplication --> There are no pbk for the WAToken' + watoken);
+          } else {
+            log.debug('datastore::getPbkApplication --> There was a problem finding the pbk for the WAToken');
+          }
+        });
+      } else {
+        log.error('datastore::getPbkApplication --> there was a problem opening the apps collection');
+      }
+    });
   },
 
   /**
@@ -126,14 +179,18 @@ datastore.prototype = {
    * @return New message as stored on DB
    */
   newMessage: function (id, watoken, message) {
-    var msg = { 'MsgId': id, 'watoken': watoken, 'payload': message };
+    var msg = { _id: id, watoken: watoken, payload: message };
     this.db.collection("messages", function(err, collection) {
-      collection.insert(msg, function(err,d) {
-        if(!err)
-          log.debug("Message inserted into MongoDB");
-        else
-          log.debug("Error inserting message into MongoDB");
-      });
+      if (!err) {
+        collection.save(msg, { safe: true }, function(err, d) {
+          if(!err && d)
+            log.debug("datastore::newMessage --> Message inserted into MongoDB");
+          else
+            log.debug("datastore::newMessage --> Error inserting message into MongoDB");
+        });
+      } else {
+        log.error("datastore::newMessage --> There was a problem opening the messages collection");
+      }
     });
     return msg;
   },
@@ -145,17 +202,23 @@ datastore.prototype = {
     log.debug("Looking for message " + id);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
-      collection.find( { 'MsgId': id } ).toArray(function(err,d) {
-        if(!err) {
-          if (callbackFunc) {
-            callbackFunc(d, callbackParam);
+      if (!err) {
+        collection.findOne( { 'MsgId': id }, function(err,d) {
+          if(!err) {
+            if (callbackFunc && d) {
+              log.debug("datastore::getMessage --> The message has been inserted. Calling callback");
+              callbackFunc(d, callbackParam);
+            } else {
+              log.debug("datastore::getMessage --> The message has been inserted.");
+              return d;
+            }
           } else {
-            return d;
+            log.debug("datastore::getMessage --> Error finding message from MongoDB: " + err);
           }
-        } else {
-          log.debug("Error finding message from MongoDB: " + err);
-        }
-      });
+        });
+      } else {
+        log.error("datastore::getMessage --> There was a problem opening the messages collection");
+      }
     });
   },
 
@@ -167,14 +230,19 @@ datastore.prototype = {
     log.debug("Looking for messages of " + uatoken);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
-      collection.find( { 'uatoken': uatoken } ).toArray(function(err,d) {
-        if(!err && callbackFunc) {
-          console.log(d);
-          callbackFunc(d);
-        }
-        else
-          log.debug("Error finding messages from MongoDB: " + err);
-      });
+      if (!err) {
+        collection.find( { _id: uatoken } ).toArray(function(err,d) {
+          if(!err && callbackFunc && d) {
+            log.debug("datastore::getAllMessages --> Messages found, calling callback");
+            callbackFunc(d);
+          }
+          else if (!err && !d) {
+            log.debug("datastore::getAllMessages --> No messages found");
+          }
+        });
+      } else {
+        log.error("datastore::getAllMessages --> There was a problem opening the messages collection");
+      }
     });
   }
 };

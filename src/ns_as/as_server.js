@@ -34,17 +34,19 @@ function onNewPushMessage(notification, watoken) {
     log.debug('Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return;
   }
-  var pbk = dataStore.getPbkApplication(watoken);
-  if (sig && !crypto.verifySignature(message, sig, pbk)) {
-      log.info('Bad signature, dropping notification');
-      return;
-  }
-  var id = uuid.v1();
-  log.debug("Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
-  // Store on persistent database
-  var msg = dataStore.newMessage(id, watoken, json);
-  // Also send to the newMessages Queue
-  msgBroker.push("newMessages", msg, false);
+  dataStore.getPbkApplication(watoken, function(pbkbase64) {
+    var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
+    if (sig && !crypto.verifySignature(message, sig, pbk)) {
+        log.info('Bad signature, dropping notification');
+        return;
+    }
+    var id = uuid.v1();
+    log.debug("Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
+    // Store on persistent database
+    var msg = dataStore.newMessage(id, watoken, json);
+    // Also send to the newMessages Queue
+    msgBroker.push("newMessages", msg, false);
+  });
 }
 ////////////////////////////////////////////////////////////////////////////////
 
