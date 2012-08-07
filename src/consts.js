@@ -6,5 +6,6 @@
  */
 
 exports.consts = {
-  MAX_PAYLOAD_SIZE: 1024
+  MAX_PAYLOAD_SIZE: 1024,
+  TESTING: true
 };

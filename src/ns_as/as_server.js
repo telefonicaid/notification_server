@@ -13,6 +13,8 @@ var crypto = require("../common/cryptography.js").getCrypto();
 var msgBroker = require("../common/msgbroker.js").getMsgBroker();
 var dataStore = require("../common/datastore.js").getDataStore();
 
+var TESTING = consts.TESTING;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,3 +134,6 @@ server.prototype = {
 
 // Exports
 exports.server = server;
+
+//For testing
+exports.onNewPushMessage = onNewPushMessage

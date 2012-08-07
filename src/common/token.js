@@ -37,7 +37,7 @@ token.prototype = {
     rawToken += "@" + crypto.hashMD5(rawToken);
 
     // Encrypt token with AES
-    return crypto.encryptAES(rawToken,server_info.key);
+    return crypto.encryptAES(rawToken, server_info.key);
   },
 
   // Verify the given TOKEN
