@@ -21,11 +21,25 @@ starts = childs;
 var started = [];
 starts.forEach(function(child) {
   started[child] = new (forever.Monitor)(['node', 'main.js', child], {
-    max: 3,
+    max: 1,
+    killTree: true,
     silent: false
   });
   started[child].start();
   started[child].on('exit', function() {
-    console.log(child + ' has closed after 3 restarts, check the logs!');
+    console.warn(child + ' has closed after 1 restart, check the logs!');
   });
 });
+
+function closeChilds() {
+  started.forEach(function(child) {
+    child.exit();
+  });
+
+  setInterval(function() {
+    process.exit();
+  }, 2000);
+}
+
+process.on('SIGTERM', closeChilds);
+process.on('SIGINT', closeChilds);
