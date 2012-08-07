@@ -6,18 +6,18 @@
  */
 
 var fs = require('fs');
+var consts = require("../consts.js").consts;
 
 function logger() {
-  //Move to config.js
-  this.consoleOutput = true;
-  this.minLogLevel = 0; // 0: debug, 1: info, 2: error, 3:critical
+  this.consoleOutput = consts.CONSOLEOUTPUT;
+  this.minLogLevel = consts.MINLOGLEVEL;
   this.debug("Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !");
 }
 
 logger.prototype = {
   init: function (logfile, appname, consoleOutput) {
     // use {'flags': 'a'} to append and {'flags': 'w'} to erase and write a new file
-    this.logfile = fs.createWriteStream(logfile, { flags: 'w', encoding: null, mode: 0666 });
+    this.logfile = fs.createWriteStream(logfile, { flags: 'w', encoding: null, mode: 666 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
     this.debug("Logger initialized !");
@@ -30,7 +30,7 @@ logger.prototype = {
     if(this.consoleOutput) {
       console.log(logmsg);
       if(trace) {
-        console.trace("Callstack");
+        console.trace("Callstack:");
       }
     }
   },
