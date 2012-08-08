@@ -1,0 +1,5 @@
+Project: owdPush
+Module: pushServer
+Version: 1.0
+Organization: TelefonicaId
+PrefixOrganization: pdi
