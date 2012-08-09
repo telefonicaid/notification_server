@@ -10,11 +10,12 @@ branches:
 before_install:
   - rm -rf node_modules
   - sudo rabbitmq-plugins enable rabbitmq_stomp
+  - sudo service rabbitmq restart
 
 before_script:
+  - cd src
   - node start.js
 
 notifications:
    email:
-      - frsela@tid.es
       - gll@tid.es
