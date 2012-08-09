@@ -11,6 +11,9 @@ before_install:
   - rm -rf node_modules
   - sudo rabbitmq-plugins enable rabbitmq_stomp
 
+before_script:
+  - node start.js
+
 notifications:
    email:
       - frsela@tid.es
