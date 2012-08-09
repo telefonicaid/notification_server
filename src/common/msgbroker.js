@@ -13,7 +13,11 @@ function msgBroker() {}
 msgBroker.prototype = {
   init: function(onConnect) {
     //If we are in travis, use the RabbitMQ
-    if (process.env.TRAVIS) queueconf.port = 5672;
+    if (process.env.TRAVIS) {
+      log.info('We are on travis-ci \\o/');
+      queueconf.port = 5672;
+    }
+    log.info('Connecting to the queue server');
     this.queue = new stomp.Stomp({
       port: queueconf.port,
       host: queueconf.host,
