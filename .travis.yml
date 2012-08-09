@@ -3,6 +3,10 @@ language: "node_js"
 node_js:
   - 0.8
 
+branches:
+  only:
+    - develop
+
 before_install:
   - rm -rf node_modules
 
