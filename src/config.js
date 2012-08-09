@@ -11,8 +11,8 @@
  */
 exports.servers = {
   NS_AS: true,
-  NS_MSG_monitor: false,
-  NS_UA_WS: false,
+  NS_MSG_monitor: true,
+  NS_UA_WS: true,
   NS_UA_UDP: false,
   NS_UA_SMS: false
 }

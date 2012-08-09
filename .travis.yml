@@ -8,7 +8,7 @@ branches:
     - develop
 
 before_install:
-  - rm -rf node_modules
+  - npm rebuild
   - sudo rabbitmq-plugins enable rabbitmq_stomp
   - sudo service rabbitmq-server restart
 
