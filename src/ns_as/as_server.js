@@ -10,8 +10,9 @@ var consts = require("../consts.js").consts;
 var http = require('http');
 var uuid = require("node-uuid");
 var crypto = require("../common/cryptography.js").getCrypto();
-var msgBroker = require("../common/msgbroker.js").getMsgBroker();
-var dataStore = require("../common/datastore.js").getDataStore();
+var msgBroker = require("../common/msgbroker");
+var dataStore = require("../common/datastore");
+var emitter = require("events").EventEmitter;
 
 var TESTING = consts.TESTING;
 
@@ -76,7 +77,18 @@ server.prototype = {
     this.server.listen(this.port, this.ip);
     log.info('NS_AS::init --> HTTP push AS server running on ' + this.ip + ":" + this.port);
     // Connect to the message broker
-    msgBroker.init(function(){});
+    msgBroker.on('brokerconnected', function() {
+      log.info("NS_AS::init --> MsgBroker ready and connected");
+      this.msgbrokerready = true;
+    }.bind(this));
+    dataStore.on('ddbbconnected', function() {
+      log.info("NS_AS::init --> DataStore ready and connected");
+      this.ddbbready = true;
+    }.bind(this));
+    setTimeout(function() {
+      msgBroker.init();
+      dataStore.init();
+    }, 1000);
   },
 
   //////////////////////////////////////////////
@@ -134,4 +146,3 @@ server.prototype = {
 
 // Exports
 exports.server = server;
-exports.onNewPushMessage = onNewPushMessage;

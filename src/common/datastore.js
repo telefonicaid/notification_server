@@ -7,41 +7,45 @@
 
 var mongodb = require("mongodb");
 var log = require("./logger.js").getLogger;
-
+var events = require("events");
+var util = require("util");
 var ddbbsettings = require("../config.js").ddbbsettings;
 
 function datastore() {
-  log.info("datastore::starting --> MongoDB data store loading.");
+  events.EventEmitter.call(this);
+  this.init = function() {
+    log.info("datastore::starting --> MongoDB data store loading.");
+    if (ddbbsettings.replicasetName) {
+      //Filling the replicaset data
+      var servers = [];
+      ddbbsettings.machines.forEach(function(machine) {
+        servers.push(new mongodb.Server(machine[0], machine[1], {auto_reconnect: true }));
+      });
+      var replSet = new mongodb.ReplSetServers(servers, {rs_name:ddbbsettings.replicasetName});
 
-  if (ddbbsettings.replicasetName) {
-    //Filling the replicaset data
-    var servers = [];
-    ddbbsettings.machines.forEach(function(machine) {
-      servers.push(new mongodb.Server(machine[0], machine[1], {auto_reconnect: true }));
-    });
-    var replSet = new mongodb.ReplSetServers(servers, {rs_name:ddbbsettings.replicasetName});
-
-    // Connection to MongoDB
-    this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet);
-  } else {
-    this.db = new mongodb.Db(
-      ddbbsettings.ddbbname,
-      new mongodb.Server(
-        ddbbsettings.machines[0][0], //host
-        ddbbsettings.machines[0][1] //port
-      )
-    );
-  }
-
-  // Establish connection to db
-  this.db.open(function(err, db) {
-    if(!err) {
-      log.info("datastore::starting --> Connected to MongoDB on " + ddbbsettings.machines + ". Database Name: " + ddbbsettings.ddbbname);
+      // Connection to MongoDB
+      this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet);
     } else {
-      log.error("datastore::starting --> Error connecting to MongoDB ! - " + err);
-      // TODO: Cierre del servidor? Modo alternativo?
+      this.db = new mongodb.Db(
+        ddbbsettings.ddbbname,
+        new mongodb.Server(
+          ddbbsettings.machines[0][0], //host
+          ddbbsettings.machines[0][1] //port
+        )
+      );
     }
-  });
+
+    // Establish connection to db
+    this.db.open(function(err, db) {
+      if(!err) {
+        log.info("datastore::starting --> Connected to MongoDB on " + ddbbsettings.machines + ". Database Name: " + ddbbsettings.ddbbname);
+        this.emit('ddbbconnected');
+      } else {
+        log.error("datastore::starting --> Error connecting to MongoDB ! - " + err);
+        // TODO: Cierre del servidor? Modo alternativo?
+      }
+    }.bind(this));
+  };
 }
 
 datastore.prototype = {
@@ -253,9 +257,10 @@ datastore.prototype = {
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
-var ds = new datastore();
+util.inherits(datastore, events.EventEmitter);
+var _ds = new datastore();
 function getDataStore() {
-  return ds;
+  return _ds;
 }
 
-exports.getDataStore = getDataStore;
+module.exports = getDataStore();
