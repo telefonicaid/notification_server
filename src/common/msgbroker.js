@@ -12,6 +12,7 @@ var queueconf = require("../config.js").queue;
 function msgBroker() {}
 msgBroker.prototype = {
   init: function(onConnect) {
+    if (process.env.TRAVIS) queueconf.port = 5672;
     this.queue = new stomp.Stomp({
       port: queueconf.port,
       host: queueconf.host,
@@ -75,8 +76,7 @@ function getMsgBroker() {
 }
 
 //Testing vars
-var TESTING = require("../consts.js").consts.TESTING;
-console.log(TESTING);
+//var TESTING = require("../consts.js").consts.TESTING;
 if (TESTING) {
   var getMsgBrokerMock = require("./msgbroker-mock.js").getMsgBroker;
   exports.getMsgBroker = getMsgBrokerMock;

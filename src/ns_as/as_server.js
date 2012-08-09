@@ -134,8 +134,4 @@ server.prototype = {
 
 // Exports
 exports.server = server;
-
-//For testing
-if (TESTING) {
-  exports.onNewPushMessage = onNewPushMessage;
-}
+exports.onNewPushMessage = onNewPushMessage;
