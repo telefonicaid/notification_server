@@ -16,6 +16,7 @@ before_script:
   - cd src
   - nohup node start.js &
   - sleep 10
+  - cd ..
 
 notifications:
    email:
