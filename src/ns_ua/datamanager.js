@@ -5,7 +5,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var dataStore = require("../common/datastore.js").getDataStore();
+var dataStore = require("../common/datastore");
 var log = require("../common/logger.js").getLogger;
 
 var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;

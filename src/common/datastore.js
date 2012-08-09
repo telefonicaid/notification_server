@@ -11,10 +11,11 @@ var events = require("events");
 var util = require("util");
 var ddbbsettings = require("../config.js").ddbbsettings;
 
-function datastore() {
-  events.EventEmitter.call(this);
+var DataStore = function() {
   this.init = function() {
     log.info("datastore::starting --> MongoDB data store loading.");
+    events.EventEmitter.call(this);
+
     if (ddbbsettings.replicasetName) {
       //Filling the replicaset data
       var servers = [];
@@ -45,10 +46,10 @@ function datastore() {
         // TODO: Cierre del servidor? Modo alternativo?
       }
     }.bind(this));
-  };
-}
+    };
+};
 
-datastore.prototype = {
+DataStore.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
@@ -254,11 +255,12 @@ datastore.prototype = {
   }
 };
 
+
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
-util.inherits(datastore, events.EventEmitter);
-var _ds = new datastore();
+util.inherits(DataStore, events.EventEmitter);
+var _ds = new DataStore();
 function getDataStore() {
   return _ds;
 }

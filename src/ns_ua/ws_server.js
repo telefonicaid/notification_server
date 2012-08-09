@@ -12,7 +12,7 @@ var crypto = require("../common/cryptography.js").getCrypto();
 var dataManager = require("./datamanager.js").getDataManager();
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
 var token = require("../common/token.js").getToken();
-var msgBroker = require("../common/msgbroker.js").getMsgBroker();
+var msgBroker = require("../common/msgbroker.js");
 var config = require("../config.js").NS_UA_WS;
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -14,11 +14,6 @@ var util = require("util");
 var MsgBroker = function() {
   events.EventEmitter.call(this);
   this.init = function(onConnect) {
-    //If we are in travis, use the RabbitMQ
-    if (process.env.TRAVIS) {
-      log.info('We are on travis-ci \\o/');
-      queueconf.port = 5672;
-    }
     log.info('msgBroker::queue.init --> Connecting to the queue server');
     this.queue = new stomp.Stomp({
       port: queueconf.port,
@@ -41,6 +36,7 @@ var MsgBroker = function() {
     });
     this.queue.on('error', (function(error_frame) {
       log.error('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error_frame.body);
+      this.emit('brokerdisconnected');
       this.close();
     }.bind(this)));
   };

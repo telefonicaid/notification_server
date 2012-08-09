@@ -81,6 +81,10 @@ server.prototype = {
       log.info("NS_AS::init --> MsgBroker ready and connected");
       this.msgbrokerready = true;
     }.bind(this));
+    msgBroker.on('brokerdisconnected', function() {
+      log.warn("NS_AS::init --> MsgBroker DISCONNECTED!!");
+      this.msgbrokerready = false;
+    }.bind(this));
     dataStore.on('ddbbconnected', function() {
       log.info("NS_AS::init --> DataStore ready and connected");
       this.ddbbready = true;
@@ -95,6 +99,13 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    if (!this.ddbbready || !this.msgbrokerready) {
+      log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
+      response.statusCode = 404;
+      response.write('{"status": "ERROR", "reason": "Try again later"}');
+      response.end();
+      return;
+    }
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
     var url = this.parseURL(request.url);
     if (!url.token) {
