@@ -258,11 +258,4 @@ function getDataStore() {
   return ds;
 }
 
-//Testing vars
-var TESTING = require("../consts.js").consts.TESTING;
-if (TESTING) {
-  var getDataStoreMock = require("./datastore-mock.js").getDataStore;
-  exports.getDataStore = getDataStoreMock;
-} else {
-  exports.getDataStore = getDataStore;
-}
+exports.getDataStore = getDataStore;

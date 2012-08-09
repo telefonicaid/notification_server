@@ -12,6 +12,7 @@ var queueconf = require("../config.js").queue;
 function msgBroker() {}
 msgBroker.prototype = {
   init: function(onConnect) {
+    //If we are in travis, use the RabbitMQ
     if (process.env.TRAVIS) queueconf.port = 5672;
     this.queue = new stomp.Stomp({
       port: queueconf.port,
@@ -75,11 +76,4 @@ function getMsgBroker() {
   return _msgBroker;
 }
 
-//Testing vars
-//var TESTING = require("../consts.js").consts.TESTING;
-if (false/*TESTING*/) {
-  var getMsgBrokerMock = require("./msgbroker-mock.js").getMsgBroker;
-  exports.getMsgBroker = getMsgBrokerMock;
-} else {
-  exports.getMsgBroker = getMsgBroker;
-}
+exports.getMsgBroker = getMsgBroker;
