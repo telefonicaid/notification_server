@@ -8,7 +8,7 @@
 exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
   //Please, change this options below to debug and testing
-  TESTING: false,
+  TESTING: true,
   MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
   CONSOLEOUTPUT: 1
 };
