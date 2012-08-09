@@ -11,7 +11,7 @@ var consts = require("../consts.js").consts;
 function logger() {
   this.consoleOutput = consts.CONSOLEOUTPUT;
   this.minLogLevel = consts.MINLOGLEVEL;
-  this.debug("Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !");
+  this.debug("logger::logger --> Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !");
 }
 
 logger.prototype = {
@@ -20,7 +20,7 @@ logger.prototype = {
     this.logfile = fs.createWriteStream(logfile, { flags: 'w', encoding: null, mode: 666 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
-    this.info("Logger initialized !");
+    this.info("logger::init --> Logger initialized!");
   },
 
   log: function (level, message, trace) {
@@ -30,7 +30,7 @@ logger.prototype = {
     if(this.consoleOutput) {
       console.log(logmsg);
       if(trace) {
-        console.trace("Callstack:");
+        console.trace("logger::log --> Callstack:");
       }
     }
   },
