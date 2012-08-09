@@ -10,7 +10,7 @@ branches:
 before_install:
   - rm -rf node_modules
   - sudo rabbitmq-plugins enable rabbitmq_stomp
-  - sudo service rabbitmq restart
+  - sudo service rabbitmq-server restart
 
 before_script:
   - cd src
