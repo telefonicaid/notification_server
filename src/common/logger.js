@@ -20,7 +20,7 @@ logger.prototype = {
     this.logfile = fs.createWriteStream(logfile, { flags: 'w', encoding: null, mode: 666 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
-    this.debug("Logger initialized !");
+    this.info("Logger initialized !");
   },
 
   log: function (level, message, trace) {
