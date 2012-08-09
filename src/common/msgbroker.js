@@ -77,7 +77,7 @@ function getMsgBroker() {
 
 //Testing vars
 //var TESTING = require("../consts.js").consts.TESTING;
-if (TESTING) {
+if (false/*TESTING*/) {
   var getMsgBrokerMock = require("./msgbroker-mock.js").getMsgBroker;
   exports.getMsgBroker = getMsgBrokerMock;
 } else {
