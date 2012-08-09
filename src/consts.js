@@ -10,5 +10,5 @@ exports.consts = {
   //Please, change this options below to debug and testing
   TESTING: true,
   MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
-  CONSOLEOUTPUT: 0
+  CONSOLEOUTPUT: 1
 };

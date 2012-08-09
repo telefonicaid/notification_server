@@ -24,7 +24,7 @@ function onNewPushMessage(notification, watoken, callback) {
   try {
     json = JSON.parse(notification);
   } catch (err) {
-    log.info('Not valid JSON notification');
+    log.info('NS_AS::onNewPushMessage --> Not valid JSON notification');
     callback('{"status":"ERROR", "reason":"JSON not valid"', 400);
     return;
   }
@@ -36,7 +36,7 @@ function onNewPushMessage(notification, watoken, callback) {
   var sig = json.signature;
   var message = json.message;
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
-    log.debug('Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     callback('{"status":"ERROR", "reason":"Body too big"', 200);
     return;
   }
@@ -44,13 +44,13 @@ function onNewPushMessage(notification, watoken, callback) {
     if (pbkbase64) {
       var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
       if (sig && !crypto.verifySignature(message, sig, pbk)) {
-        log.info('Bad signature, dropping notification');
+        log.info('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
         callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"', 400);
         return;
       }
     }
     var id = uuid.v1();
-    log.debug("Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
+    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
     // Store on persistent database
     var msg = dataStore.newMessage(id, watoken, json);
     // Also send to the newMessages Queue
@@ -74,7 +74,7 @@ server.prototype = {
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('HTTP push AS server running on ' + this.ip + ":" + this.port);
+    log.info('NS_AS::init --> HTTP push AS server running on ' + this.ip + ":" + this.port);
     // Connect to the message broker
     msgBroker.init(function(){});
   },
@@ -83,18 +83,18 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    log.debug((new Date()) + 'HTTP: Received request for ' + request.url);
+    log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
     var url = this.parseURL(request.url);
     if (!url.token) {
-      log.debug('No valid url (no watoken)');
+      log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
       response.statusCode = 404;
       response.write('{"status": "ERROR", "reason": "No valid WAtoken"');
       response.end();
       return;
     }
-    log.debug("HTTP: Parsed URL: " + JSON.stringify(url));
+    log.debug("NS_AS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
     if (url.messageType == 'notify') {
-      log.debug("HTTP: Notification for " + url.token);
+      log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
       request.on("data", function(notification) {
         onNewPushMessage(notification, url.token, function(body, code) {
             response.statusCode = code;
@@ -105,7 +105,7 @@ server.prototype = {
         });
       });
     } else {
-      log.debug("HTTP: messageType '" + url.messageType + "' not recognized");
+      log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
       response.statusCode = 404;
       response.setHeader("Content-Type", "text/plain");
       response.setHeader("access-control-allow-origin", "*");
@@ -134,6 +134,4 @@ server.prototype = {
 
 // Exports
 exports.server = server;
-
-//For testing
-exports.onNewPushMessage = onNewPushMessage
+exports.onNewPushMessage = onNewPushMessage;

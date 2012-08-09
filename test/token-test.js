@@ -3,20 +3,15 @@ var assert = require('assert'),
     token = require("../src/common/token.js").getToken();
 
 //Internal vars
-var tokens = [];
 var NUM_TOKENS = 50000;
-var then = new Date();
-
-//Filling
-(function fillTokens() {
+//Get a lot of tokens
+function getTokens() {
+  var tokens = [];
   for (var i = NUM_TOKENS; i >= 0; i--) {
     tokens.push(token.get());
   }
-})();
-
-//Only for debug (time to create NUM_TOKENS tokens and add them to the array)
-var now = new Date();
-
+  return tokens;
+}
 
 function allDifferents(l) {
   var obj = {};
@@ -42,9 +37,9 @@ vows.describe('Token tests').addBatch({
     }
   },
 
-  'Verifiying the token': {
+  'Verify the token': {
     topic: token.verify(token.get()),
-    'should be correct': function(topic) {
+    'should be correct for this server': function(topic) {
       assert.isTrue(topic);
     }
   },
@@ -52,12 +47,10 @@ vows.describe('Token tests').addBatch({
   /**
    * Ask for NUM_TOKENS tokens. Should be all different
    */
-  'Getting a lot of tokens, must be ALL different': {
-    topic: tokens,
-    'all items are different': function(topic) {
+  'Getting a lot of tokens': {
+    topic: getTokens(),
+    'all items MUST BE different': function(topic) {
       assert.isTrue(allDifferents(topic));
     }
   }
 }).export(module);
-
-console.log("Time spent to generate " + NUM_TOKENS + " tokens: " + (now - then) + " ms");

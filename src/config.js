@@ -27,7 +27,7 @@ exports.servers = {
  * Choose your host, port and other self-explanatory options
  */
 exports.queue = {
-  host: 'owd-push-qa-be1',
+  host: 'localhost',
   port: 61613,
   debug: false,
   //Just for rabbitmq
