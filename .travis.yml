@@ -14,7 +14,8 @@ before_install:
 
 before_script:
   - cd src
-  - node start.js
+  - nohup node start.js &
+  - sleep 10
 
 notifications:
    email:
