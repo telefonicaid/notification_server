@@ -2,7 +2,7 @@ Name:     	push-server
 Version:   	%{versionModule}
 Release:   	%{releaseModule}
 Summary:       	Instalation of push server (owd) 
-BuildArch:  	x86_64
+BuildArch:      noarch	
 SOURCE0:	%{_topdir}/../
 Group:		PDI/OWD/Push_Server 
 License:	Tefonica PDI
