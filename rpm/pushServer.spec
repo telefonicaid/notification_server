@@ -45,7 +45,10 @@ then
 fi
 
 %install
-%{__cp} -R %{_topdir}/../../src/* $RPM_BUILD_ROOT%{_psdir}
+mkdir -p $RPM_BUILD_ROOT%{_psdir}/bin $RPM_BUILD_ROOT%{_psdir}/node_modules $RPM_BUILD_ROOT%{_psdir}/test
+%{__cp} -R %{_topdir}/../../src/* $RPM_BUILD_ROOT%{_psdir}/bin/
+%{__cp} -R %{_topdir}/../../node_modules/* $RPM_BUILD_ROOT%{_psdir}/node_modules/
+%{__cp} -R %{_topdir}/../../test/* $RPM_BUILD_ROOT%{_psdir}/test/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
