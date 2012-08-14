@@ -11,7 +11,7 @@ Vendor:		Telefonica PDI
 
 %define _psdir  /opt/pdi/owd/push_server
 %description
-Servidor que permite mediante un api rest enviar notificaciones desde un servidor de terceros a un dispositivo movil o un navegador de escritorio.
+Servidor que permite mediante un api rest enviar notificaciones desde un servidor de terceros a un dispositivo movil o un navegador de escritorio
 %prep
 [ -d $RPM_BUILD_ROOT/%{_psdir} ] || %{__mkdir_p} $RPM_BUILD_ROOT/%{_psdir}
 %build
