@@ -20,7 +20,7 @@ var DataStore = function() {
       //Filling the replicaset data
       var servers = [];
       ddbbsettings.machines.forEach(function(machine) {
-        servers.push(new mongodb.Server(machine[0], machine[1], {auto_reconnect: true }));
+        servers.push(new mongodb.Server(machine[0], machine[1], { auto_reconnect: true }));
       });
       var replSet = new mongodb.ReplSetServers(servers, {rs_name:ddbbsettings.replicasetName});
 
@@ -46,14 +46,9 @@ var DataStore = function() {
         // TODO: Cierre del servidor? Modo alternativo?
       }
     }.bind(this));
-    };
-};
+  },
 
-DataStore.prototype = {
-  /**
-   * Register a new node. As a parameter, we receive the connector object
-   */
-  registerNode: function (token, serverId, data, callback) {
+  this.registerNode = function (token, serverId, data, callback) {
     // Register in MONGO that this server manages this node
     this.db.collection("nodes", function(err, collection) {
       if (!err) {
@@ -74,12 +69,12 @@ DataStore.prototype = {
         callback(false);
       }
     });
-  },
+  };
 
   /**
    * Gets a node - server relationship
    */
-  getNode: function (token, callbackFunc, callbackParam) {
+  this.getNode = function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       if (!err) {
@@ -107,7 +102,7 @@ DataStore.prototype = {
   /**
    * Register a new application
    */
-  registerApplication: function (waToken, nodeToken, pbkbase64, callback) {
+  this.registerApplication = function (waToken, nodeToken, pbkbase64, callback) {
     // Store in MongoDB
     this.db.collection("apps", function(err, collection) {
       if (!err) {
@@ -133,7 +128,7 @@ DataStore.prototype = {
   /**
    * Gets an application node list
    */
-  getApplication: function (token, callbackFunc, callbackParam) {
+  this.getApplication = function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       if (!err) {
@@ -155,7 +150,7 @@ DataStore.prototype = {
    * Get the Pbk of the WA.
    * @ return the pbk.
    */
-  getPbkApplication: function(watoken2, callback) {
+  this.getPbkApplication = function(watoken2, callback) {
     var watoken = watoken2.toString();
     log.debug("datastore::getPbkApplication --> Going to find the pbk for the watoken " + watoken);
     this.db.collection("apps", function(err, collection) {
@@ -186,7 +181,7 @@ DataStore.prototype = {
    * Save a new message
    * @return New message as stored on DB
    */
-  newMessage: function (id, watoken, message) {
+  this.newMessage = function (id, watoken, message) {
     var msg = { _id: id, watoken: watoken, payload: message };
     this.db.collection("messages", function(err, collection) {
       if (!err) {
@@ -206,7 +201,7 @@ DataStore.prototype = {
   /**
    * Get a message
    */
-  getMessage: function (id, callbackFunc, callbackParam) {
+  this.getMessage = function (id, callbackFunc, callbackParam) {
     log.debug("Looking for message " + id);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
@@ -233,7 +228,7 @@ DataStore.prototype = {
   /**
    * Get all messages for a UA
    */
-  getAllMessages: function (uatoken, callbackFunc) {
+  this.getAllMessages = function (uatoken, callbackFunc) {
     // TODO: Recover only messages for UAToken !
     log.debug("Looking for messages of " + uatoken);
     // Get from MongoDB
@@ -252,15 +247,14 @@ DataStore.prototype = {
         log.error("datastore::getAllMessages --> There was a problem opening the messages collection");
       }
     });
-  }
+  };
 };
-
 
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
 util.inherits(DataStore, events.EventEmitter);
-var _ds = new DataStore();
+var _ds = new DataStore(); _ds.init();
 function getDataStore() {
   return _ds;
 }
