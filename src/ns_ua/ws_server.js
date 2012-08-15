@@ -147,7 +147,7 @@ server.prototype = {
               if (ok) {
                 var baseURL = require('../config.js').NS_AS.publicBaseURL;
                 var notifyURL = baseURL + "/notify/" + appToken;
-                connection.sendUTF('"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"');
+                connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
                 log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {
                 connection.sendUTF('"status": "ERROR"');
