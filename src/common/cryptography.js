@@ -40,15 +40,17 @@ cryptography.prototype = {
 
     var decipher = crypto.createDecipher(algorithm, key);
     var data = "";
-    data = decipher.update(ciphertext, cipherEncoding, clearEncoding);
-    data += decipher.final(cipherEncoding);
-    return (data);
+    try {
+      data = decipher.update(ciphertext, cipherEncoding, clearEncoding);
+      data += decipher.final(cipherEncoding);
+    } catch (err) {}
+    return data;
   },
 
   /**
    * AES Encrypt
    */
-  encryptAES: function(data,key) {
+  encryptAES: function(data, key) {
     var algorithm = 'aes-128-cbc';
     return this._encrypt(data,key,algorithm);
   },
@@ -56,9 +58,9 @@ cryptography.prototype = {
   /**
    * AES Decrypt
    */
-  decryptAES: function(data,key) {
+  decryptAES: function(data, key) {
     var algorithm = 'aes-128-cbc';
-    return this._decrypt(data,key,algorithm);
+    return this._decrypt(data, key, algorithm);
   },
 
   ////////////////////////////////////////////
