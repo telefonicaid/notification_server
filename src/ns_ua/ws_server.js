@@ -130,7 +130,7 @@ server.prototype = {
               Connectors.getConnector(query.data, connection),
               function(ok) {
                 if (ok) {
-                  connection.sendUTF('{"status":"REGISTERED"}');
+                  connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
                   log.debug("WS::onWSMessage --> OK register UA");
                 } else {
                   connection.sendUTF('{"status":"ERROR"}');
