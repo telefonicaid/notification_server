@@ -1,17 +1,17 @@
-Name:     push-server 
-Version:   %{versionModule}
-Release:   %{releaseModule}
-Summary:       Instalation of push server (owd) 
-BuildArch:  x86_64
-SOURCE0: %{_topdir}/..
-Group:         PDI/OWD/Push_Server 
-License:       Tefonica PDI
-URL:           http://www.tid.es
-Vendor:        Telefonica PDI 
+Name:     	push-server 
+Version:   	%{versionModule}
+Release:   	%{releaseModule}
+Summary:       	Instalation of push server (owd) 
+BuildArch:      x86_64	
+SOURCE0:	%{_topdir}/../
+Group:		PDI/OWD/Push_Server 
+License:	Tefonica PDI
+URL:		http://www.tid.es
+Vendor:		Telefonica PDI 
 
 %define _psdir  /opt/pdi/owd/push_server
 %description
-Servidor que permite mediante un api rest enviar notificaciones desde un servidor de terceros a un dispositivo movil o un navegador de escritorio.
+Servidor que permite mediante un api rest enviar notificaciones desde un servidor de terceros a un dispositivo movil o un navegador de escritorio
 %prep
 [ -d $RPM_BUILD_ROOT/%{_psdir} ] || %{__mkdir_p} $RPM_BUILD_ROOT/%{_psdir}
 %build
@@ -45,18 +45,16 @@ then
 fi
 
 %install
-
-cp -r %SOURCE0/. $RPM_BUILD_ROOT%{_psdir}
-
-
+mkdir -p $RPM_BUILD_ROOT%{_psdir}/bin $RPM_BUILD_ROOT%{_psdir}/node_modules $RPM_BUILD_ROOT%{_psdir}/test
+%{__cp} -R %{_topdir}/../../src/* $RPM_BUILD_ROOT%{_psdir}/bin/
+%{__cp} -R %{_topdir}/../../node_modules/* $RPM_BUILD_ROOT%{_psdir}/node_modules/
+%{__cp} -R %{_topdir}/../../test/* $RPM_BUILD_ROOT%{_psdir}/test/
 
 %clean
 rm -rf $RPM_BUILD_ROOT
-
 
 %files
 %defattr(755,push_server,push_server,-)
 %{_psdir}
 
 %changelog
-
