@@ -15,7 +15,7 @@ exports.servers = {
   NS_UA_WS: true,
   NS_UA_UDP: false,
   NS_UA_SMS: false
-}
+};
 
 ////////////////////////////////////////////////////////////////////////
 //Different configurations for the servers

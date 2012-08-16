@@ -18,13 +18,14 @@ connector_base.prototype = {
   getConnector: function(data,conn) {
     // TODO: Por ahora sólo devolvemos websocket connector
     // TODO: En funcion de la IP, deberemos decidir si ir por uno u otro conector
-    if(data.interface != null)
-      var c = new conn_udp(data,conn);
+    var c = null;
+    if(!data.interface)
+      c = new conn_udp(data,conn);
     else
-      var c = new conn_ws(data,conn);
+      c = new conn_ws(data,conn);
     return c;
   }
-}
+};
 
 var cb = new connector_base();
 function getConnectorFactory() {

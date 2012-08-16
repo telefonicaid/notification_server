@@ -130,7 +130,7 @@
     if (PushTest.registerUAOK &&
         PushTest.registerWAOK &&
         PushTest.gotNotification) {
-      debug("Everything went as expected!");
+      debug("Everything went better than expected! http://i2.kym-cdn.com/entries/icons/original/000/001/253/everything_went_better_than_expected.jpg");
     } else {
       console.log("KO, check flags:");
       console.log("registerUAOK is " + PushTest.registerUAOK);

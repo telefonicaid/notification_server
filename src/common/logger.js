@@ -36,7 +36,7 @@ logger.prototype = {
   },
 
   debug: function (message) {
-    if (this.minLogLevel == 0) {
+    if (this.minLogLevel === 0) {
       this.log("DEBUG", message, false);
     }
   },
