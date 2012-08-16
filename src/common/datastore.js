@@ -72,6 +72,13 @@ var DataStore = function() {
   };
 
   /**
+   * Unregister a node
+   */
+   this.unregisterNode = function() {
+    //TODO
+   };
+
+  /**
    * Gets a node - server relationship
    */
   this.getNode = function (token, callbackFunc, callbackParam) {

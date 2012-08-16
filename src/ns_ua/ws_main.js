@@ -18,7 +18,7 @@ NS_UA_WS_main.prototype = {
 
     if (!config.interfaces) {
       log.error("NS_UA_WS interfaces not configured");
-      this.close();
+      this.stop();
       return;
     }
 
