@@ -8,16 +8,6 @@
 var forever = require('forever-monitor');
 var starts = require("./config.js").servers;
 
-var TESTING = require("./consts.js").consts.TESTING;
-
-if (TESTING) {
-  console.warn('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.warn('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.warn('!!!!!!!!!! WE ARE RUNNING IN TEST MODE. BE CAREFUL, THE SERVER WILL NOT BE FULLY FUNCTIONAL!!!!!!!!!!');
-  console.warn('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-  console.warn('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-}
-
 //Fill what server should be started
 var childs = [];
 (function fillChilds() {
