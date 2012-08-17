@@ -26,7 +26,11 @@ datamanager.prototype = {
     if(this.nodesTable[token]) {
       log.debug("dataManager::registerNode --> Removing old node token " + token);
       delete(this.nodesTable[token]);
-      //TODO: Delete old connection for this token
+      for (var i in this.nodesConnections) {
+        if (this.nodesConnections[i] == token)
+          delete(this.nodesConnections[i]);
+        break;
+      }
     }
 
     if(connector.getType() == "UDP") {
@@ -65,8 +69,10 @@ datamanager.prototype = {
     var token = this.nodesConnections[connection];
     if(token) {
       log.debug("dataManager::unregisterNode --> Removing disconnected node token " + token);
+      //Delete from memory
       delete(this.nodesTable[token]);
       delete(this.nodesConnections[connection]);
+      //Delete from DDBB
       dataStore.unregisterNode(
         token,
         function(ok) {
