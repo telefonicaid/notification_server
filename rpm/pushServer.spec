@@ -1,8 +1,9 @@
+%define _binaries_in_noarch_packages_terminate_build 0
 Name:     	push-server 
 Version:   	%{versionModule}
 Release:   	%{releaseModule}
 Summary:       	Instalation of push server (owd) 
-BuildArch:      noarch	
+BuildArch:      noarch
 SOURCE0:	%{_topdir}/../
 Group:		PDI/OWD/Push_Server 
 License:	Tefonica PDI
