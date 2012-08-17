@@ -1,5 +1,18 @@
 /**
  * E2E test for Push Notifications.
+ * This is not a unit test. Just first run the server with the default
+ * configurations (in config.js.template in the src/ dir)
+ *
+ * $ node start.js
+ *
+ * and then run this test with:
+ *
+ * $ node E2Etest.js
+ *
+ * It expects to run in localhost.
+ *
+ * If there is no output, it means that everything went well. If not, there
+ * will be debug information showing what failed.
  */
 
  var PushTest = {
