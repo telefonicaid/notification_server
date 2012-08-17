@@ -2,7 +2,7 @@ Name:     	push-server
 Version:   	%{versionModule}
 Release:   	%{releaseModule}
 Summary:       	Instalation of push server (owd) 
-BuildArch:      x86_64	
+BuildArch:      noarch	
 SOURCE0:	%{_topdir}/../
 Group:		PDI/OWD/Push_Server 
 License:	Tefonica PDI
@@ -45,8 +45,8 @@ then
 fi
 
 %install
-mkdir -p $RPM_BUILD_ROOT%{_psdir}/bin $RPM_BUILD_ROOT%{_psdir}/node_modules $RPM_BUILD_ROOT%{_psdir}/test
-%{__cp} -R %{_topdir}/../../src/* $RPM_BUILD_ROOT%{_psdir}/bin/
+mkdir -p $RPM_BUILD_ROOT%{_psdir}/src $RPM_BUILD_ROOT%{_psdir}/node_modules $RPM_BUILD_ROOT%{_psdir}/test
+%{__cp} -R %{_topdir}/../../src/* $RPM_BUILD_ROOT%{_psdir}/src/
 %{__cp} -R %{_topdir}/../../node_modules/* $RPM_BUILD_ROOT%{_psdir}/node_modules/
 %{__cp} -R %{_topdir}/../../test/* $RPM_BUILD_ROOT%{_psdir}/test/
 
