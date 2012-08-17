@@ -74,8 +74,22 @@ var DataStore = function() {
   /**
    * Unregister a node
    */
-   this.unregisterNode = function() {
-    //TODO
+   this.unregisterNode = function(token, callback) {
+    this.db.collection("nodes", function(err, collection) {
+      if (!err) {
+        collection.remove( { _id: token },
+                         { safe: true },
+                         function(err,d) {
+          if(!err) {
+            log.debug("datastore::unregisterNode --> Node removed from MongoDB");
+            callback(true);
+          }
+        });
+      } else {
+        log.error("datastore::unregisterNode --> There was a problem opening the nodes collection");
+        callback(false);
+      }
+    });
    };
 
   /**

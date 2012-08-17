@@ -128,6 +128,7 @@ server.prototype = {
             dataManager.registerNode(
               query.data.uatoken,
               Connectors.getConnector(query.data, connection),
+              connection,
               function(ok) {
                 if (ok) {
                   connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
@@ -195,6 +196,7 @@ server.prototype = {
     this.onWSClose = function(reasonCode, description) {
       // TODO: De-register this node
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected.');
+      dataManager.unregisterNode(connection);
     };
 
     /**
