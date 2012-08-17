@@ -15,16 +15,18 @@ function datamanager() {
 
   // In-Memory NODE table storage
   this.nodesTable = {};
+  this.nodesConnections = {};
 }
 
 datamanager.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (token, connector, callback) {
+  registerNode: function (token, connector, connection, callback) {
     if(this.nodesTable[token]) {
       log.debug("dataManager::registerNode --> Removing old node token " + token);
       delete(this.nodesTable[token]);
+      //TODO: Delete old connection for this token
     }
 
     if(connector.getType() == "UDP") {
@@ -43,6 +45,7 @@ datamanager.prototype = {
 
       // Register a new node
       this.nodesTable[token] = connector;
+      this.nodesConnections[connection] = token;
 
       // Register in persistent datastore
       dataStore.registerNode(
@@ -50,6 +53,29 @@ datamanager.prototype = {
         process.serverId,                             // Queue name (server ID)
         {},                                            // No extra data
         callback
+      );
+    }
+  },
+
+  /**
+   * Unregisters a Node from the DDBB and memory
+   */
+  unregisterNode: function(connection) {
+    log.debug('dataManager::unregisterNode --> Going to unregister a node');
+    var token = this.nodesConnections[connection];
+    if(token) {
+      log.debug("dataManager::unregisterNode --> Removing disconnected node token " + token);
+      delete(this.nodesTable[token]);
+      delete(this.nodesConnections[connection]);
+      dataStore.unregisterNode(
+        token,
+        function(ok) {
+          if (ok) {
+            log.debug('dataManager::unregisterNode --> Deleted from DDBB');
+          } else {
+            log.info('dataManager::unregisterNode --> There was a problem deleting the token from the DDBB');
+          }
+        }
       );
     }
   },
