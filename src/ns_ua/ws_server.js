@@ -179,6 +179,12 @@ server.prototype = {
             }
             break;
 
+          case "ack":
+            if(query.messageId) {
+              dataManager.removeMessage(query.messageId);
+            }
+            break;
+
           default:
             log.debug("WS::onWSMessage::default --> messageType not recognized");
             connection.sendUTF('{ "error": "messageType not recognized" }');

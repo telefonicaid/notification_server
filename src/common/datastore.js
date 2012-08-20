@@ -270,6 +270,23 @@ var DataStore = function() {
         log.error("datastore::getAllMessages --> There was a problem opening the messages collection");
       }
     });
+  },
+
+  this.removeMessage = function(messageId) {
+    log.debug('dataStore::removeMessage --> Going to remove message with _id=' + messageId);
+    this.db.collection("messages", function(err, collection) {
+      if (!err) {
+        collection.remove( { _id: messageId },
+                         { safe: true },
+                         function(err,d) {
+          if(!err) {
+            log.debug("datastore::removeMessage --> Message removed from MongoDB");
+          }
+        });
+      } else {
+        log.error("datastore::removeMessage --> There was a problem opening the messages collection");
+      }
+    });
   };
 };
 

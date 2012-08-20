@@ -123,6 +123,13 @@ datamanager.prototype = {
   getAllMessages: function(uatoken, callbackFunc) {
     // Recover from the persistent storage
     dataStore.getAllMessages(uatoken, callbackFunc);
+  },
+
+  /**
+   * Delete an ACK'ed message
+   */
+  removeMessage: function(messageId) {
+    dataStore.removeMessage(messageId);
   }
 };
 
