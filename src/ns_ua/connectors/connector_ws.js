@@ -15,6 +15,10 @@ connector_websocket.prototype = {
     return "WS";
   },
 
+  getConnection: function() {
+    return this.connection;
+  },
+
   notify: function(msgList) {
     this.connection.sendUTF(JSON.stringify(msgList));
   }

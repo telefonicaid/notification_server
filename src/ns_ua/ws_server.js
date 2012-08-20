@@ -129,7 +129,6 @@ server.prototype = {
             dataManager.registerNode(
               query.data.uatoken,
               Connectors.getConnector(query.data, connection),
-              connection,
               function(ok) {
                 if (ok) {
                   connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');

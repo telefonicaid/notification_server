@@ -22,7 +22,7 @@ datamanager.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (token, connector, connection, callback) {
+  registerNode: function (token, connector, callback) {
     if(this.nodesTable[token]) {
       log.debug("dataManager::registerNode --> Removing old node token " + token);
       delete(this.nodesTable[token]);
@@ -49,7 +49,7 @@ datamanager.prototype = {
 
       // Register a new node
       this.nodesTable[token] = connector;
-      this.nodesConnections[connection] = token;
+      this.nodesConnections[connector.getConnection()] = token;
 
       // Register in persistent datastore
       dataStore.registerNode(
