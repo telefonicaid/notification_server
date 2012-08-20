@@ -10,6 +10,7 @@ var log = require("./logger.js").getLogger;
 var events = require("events");
 var util = require("util");
 var ddbbsettings = require("../config.js").ddbbsettings;
+var helpers = require("../common/helpers.js");
 
 var DataStore = function() {
   this.init = function() {
@@ -203,6 +204,8 @@ var DataStore = function() {
    * @return New message as stored on DB
    */
   this.newMessage = function (id, watoken, message) {
+    message.messageId = id;
+    message.url = helpers.getNotificationURL(watoken);
     var msg = { _id: id, watoken: watoken, payload: message };
     this.db.collection("messages", function(err, collection) {
       if (!err) {
@@ -250,7 +253,6 @@ var DataStore = function() {
    * Get all messages for a UA
    */
   this.getAllMessages = function (uatoken, callbackFunc) {
-    // TODO: Recover only messages for UAToken !
     log.debug("Looking for messages of " + uatoken);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {

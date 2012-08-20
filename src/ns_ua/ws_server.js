@@ -12,6 +12,7 @@ var crypto = require("../common/cryptography.js").getCrypto();
 var dataManager = require("./datamanager.js").getDataManager();
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
 var token = require("../common/token.js").getToken();
+var helpers = require("../common/helpers.js");
 var msgBroker = require("../common/msgbroker.js");
 var config = require("../config.js").NS_UA_WS;
 
@@ -143,11 +144,11 @@ server.prototype = {
 
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
-            var appToken = crypto.hashSHA256(query.data.watoken);
+            var appToken = crypto.hashSHA256(query.data.watoken + query.data.pbkbase64);
             dataManager.registerApplication(appToken, query.data.uatoken, query.data.pbkbase64, function(ok) {
               if (ok) {
                 var baseURL = require('../config.js').NS_AS.publicBaseURL;
-                var notifyURL = baseURL + "/notify/" + appToken;
+                var notifyURL = helpers.getNotificationURL(appToken);
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
                 log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {

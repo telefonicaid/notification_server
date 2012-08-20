@@ -80,7 +80,7 @@ server.prototype = {
       this.msgbrokerready = true;
     }.bind(this));
     msgBroker.on('brokerdisconnected', function() {
-      log.warn("NS_AS::init --> MsgBroker DISCONNECTED!!");
+      log.error("NS_AS::init --> MsgBroker DISCONNECTED!!");
       this.msgbrokerready = false;
     }.bind(this));
     dataStore.on('ddbbconnected', function() {
