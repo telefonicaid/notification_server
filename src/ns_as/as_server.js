@@ -24,27 +24,32 @@ function onNewPushMessage(notification, watoken, callback) {
     json = JSON.parse(notification);
   } catch (err) {
     log.info('NS_AS::onNewPushMessage --> Not valid JSON notification');
-    callback('{"status":"ERROR", "reason":"JSON not valid"', 400);
+    callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
     return;
   }
   //Only accept notification messages
   if (json.messageType != "notification") {
-    callback('{"status":"ERROR", "reason":"Not messageType=notification"', 400);
+    callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
     return;
   }
   var sig = json.signature;
   var message = json.message;
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
     log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
-    callback('{"status":"ERROR", "reason":"Body too big"', 200);
+    callback('{"status":"ERROR", "reason":"Body too big"}', 200);
     return;
   }
   dataStore.getPbkApplication(watoken, function(pbkbase64) {
     if (pbkbase64) {
+      if (!sig) {
+        log.debug("NS_AS::onNewPushMessage --> Notification not signed where it must.");
+        callback('{"status":"ERROR", "reason":"You must sign your message with your Private Key"}', 400);
+        return;
+      }
       var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
       if (sig && !crypto.verifySignature(message, sig, pbk)) {
         log.info('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
-        callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"', 400);
+        callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
         return;
       }
     }
@@ -109,7 +114,7 @@ server.prototype = {
     if (!url.token) {
       log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
       response.statusCode = 404;
-      response.write('{"status": "ERROR", "reason": "No valid WAtoken"');
+      response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
       response.end();
       return;
     }
