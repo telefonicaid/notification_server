@@ -11,7 +11,9 @@
  *
  * It expects to run in localhost.
  *
- * If there is no output, it means that everything went well. If not, there
+ * If there is no output (except maybe a couple of fails of the websockets
+ * module when not using native fast extensions),
+ * it means that everything went well. If not, there
  * will be debug information showing what failed.
  */
 

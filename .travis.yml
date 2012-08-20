@@ -17,6 +17,8 @@ before_script:
   - nohup node start.js &
   - sleep 10
   - cd ..
+  - cd test
+  - node E2Etest.js
 
 notifications:
    email:
