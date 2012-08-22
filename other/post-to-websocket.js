@@ -17,7 +17,7 @@ function onHTTPMessage(req, res) {
      req.on('end', function() {
        websocket(fullBody, function(salida) {
         console.log("salida para post --> " + salida);
-        res.setHeader("access-control-allow-origin", "*");
+        res.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
         res.end(salida);
       });
      });
