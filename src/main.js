@@ -86,11 +86,6 @@ function onClose() {
     m.stop();
     process.exit(1);
 }
-process.on('SIGHUP',  onClose);    // 1
-process.on('SIGINT',  onClose);    // 2
+
 process.on('SIGKILL', onClose);    // 9
-process.on('SIGPIPE', onClose);    // 13
-process.on('SIGPOLL', onClose);
-process.on('SIGPROF', onClose);
-process.on('SIGALRM', onClose);    // 14
 process.on('SIGTERM', onClose);    // 15
