@@ -13,7 +13,7 @@ var Push = {
   MAX_RETRIES: 1,
   actualRetries: 0,
 
-  ad: 'localhost:8080',
+  ad: 'futurama.hi.inet:8080',
   ad_ws: null,
   ad_http: null,
 
@@ -117,7 +117,7 @@ var Push = {
   },
 
   registerApp2: function() {
-    this.registerApp(this.token, 'app2', 'pbk2');
+    this.registerApp(this.token, 'app2', '');
   },
 
   pullMessages: function() {
@@ -156,10 +156,10 @@ var Push = {
   },
 
   onDeleteToken: function() {
-    this.logMessage('[TOK][REG] We are deleting our tokens');
-    this.token = null;
+    this.logMessage('[TOK][REG] We are disconnecting our tokens');
+    /*this.token = null;
     this.urlApp1 = null;
-    this.urlApp2 = null;
+    this.urlApp2 = null;*/
     this.ws.connection.close();
     this.logMessage('[TOK][REG] Tokens deleted');
   },
@@ -182,6 +182,11 @@ var Push = {
         this.ws.connection.send(ack);
       }
     }).bind(this);
+    setTimeout(function() {
+      var getAllMessages = '{"messageType": "getAllMessages", "data": {"uatoken":"' + Push.token +'" }}';
+      Push.logMessage('Going to getAllMessages');
+      Push.ws.connection.send(getAllMessages);
+    }, 1000);
   },
 
   onErrorWebsocket: function(e) {
