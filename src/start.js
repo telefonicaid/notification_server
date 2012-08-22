@@ -62,3 +62,4 @@ function closeChilds() {
 
 process.on('SIGTERM', closeChilds);
 process.on('SIGINT', closeChilds);
+process.on('SIGKILL', closeChilds);
