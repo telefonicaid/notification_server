@@ -27,9 +27,10 @@ datamanager.prototype = {
       log.debug("dataManager::registerNode --> Removing old node token " + token);
       delete(this.nodesTable[token]);
       for (var i in this.nodesConnections) {
-        if (this.nodesConnections[i] == token)
+        if (this.nodesConnections[i] == token) {
           delete(this.nodesConnections[i]);
-        break;
+          break;
+        }
       }
     }
 
