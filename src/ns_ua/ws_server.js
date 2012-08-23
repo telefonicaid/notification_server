@@ -20,8 +20,11 @@ var config = require("../config.js").NS_UA_WS;
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 function onNewMessage(messageId) {
-  log.debug('WS::Queue::onNewMessage --> New message received: ' + JSON.stringify(messageId.body));
-  var json = JSON.parse(messageId.body);
+  log.debug('WS::Queue::onNewMessage --> New message received: ' + messageId);
+  var json = {};
+  try {
+    json = JSON.parse(messageId.body);
+  } catch(e) { return; }
   log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
   dataManager.getNode(json.uatoken, function(nodeConnector) {
     if(nodeConnector) {
