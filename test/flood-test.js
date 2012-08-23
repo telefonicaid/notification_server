@@ -1,18 +1,21 @@
+var a = 0;
+
 function sendNotification() {
     var http = require("http");
     var options = {
-      host: "127.0.0.1",
+      host: "localhost",//owd-push-qa-fe1.hi.inet",
       port: 8081,
-      path: "notify/d5856351bbc14599e687dac105150e8a919b21477f3c00386405228caac1e43a",
+      path: "/notify/b578c949551625b05bcac73fb81a9d8bf9272bb0c2a47ff8f7bc6b8bb44554ef",
       method: 'POST'
     };
 
     var req = http.request(options, function(res) {
-      console.log('STATUS: ' + res.statusCode);
-      console.log('HEADERS: ' + JSON.stringify(res.headers));
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
+        //console.log(chunk);
+        if ((++a % 100) === 0) {
+          console.log("Enviadas " + a + " peticiones");
+        }
       });
     });
 
@@ -25,6 +28,6 @@ function sendNotification() {
     req.end();
 }
 
-for (var i = 2 - 1; i >= 0; i--) {
+for (var i = 100000 - 1; i >= 0; i--) {
   sendNotification();
 };

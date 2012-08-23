@@ -20,18 +20,17 @@
  var PushTest = {
 
   getToken: function getToken() {
+    PushTest.port =  require('../src/config.js').NS_UA_WS.interfaces[0].port;
+    PushTest.host = '127.0.0.1';
     PushTest.NOTIFICATION = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}';
-    var port = require('../src/config.js').NS_UA_WS.interfaces[0].port;
 
     var http = require("http");
-
     var options = {
-      host: 'localhost',
-      port: port,
+      host: PushTest.host,
+      port: PushTest.port,
       path: '/token',
       method: 'GET'
     };
-
     var req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
@@ -93,7 +92,7 @@
       }
       sendRegisterUAMessage();
     });
-    client.connect('ws://localhost:' + port, 'push-notification');
+    client.connect('ws://' + PushTest.host + ':' + PushTest.port, 'push-notification');
   },
 
   registerWA: function registerWA() {
@@ -117,12 +116,6 @@
     };
 
     var req = http.request(options, function(res) {
-      /*console.log('STATUS: ' + res.statusCode);
-      console.log('HEADERS: ' + JSON.stringify(res.headers));
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-        console.log('BODY: ' + chunk);
-      });*/
     });
 
     req.on('error', function(e) {

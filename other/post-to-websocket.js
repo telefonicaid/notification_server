@@ -6,8 +6,7 @@ console.log('post-to-websocket --> Listening on 0.0.0.0:8888');
 
 function onHTTPMessage(req, res) {
   console.log('post-to-websocket --> Received request for ' + req.url);
-  switch(req.url) {
-    case "/websocket":
+  if(req.url == "/websocket") {
     console.log("Petition accepted in /websocket");
     if (req.method == 'POST') {
      var fullBody = '';
@@ -26,8 +25,8 @@ function onHTTPMessage(req, res) {
     res.write("Petition in /websocket not a POST");
     res.end();
   }
-  break;
-  default:
+}
+else {
   res.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
   res.write("Malformed petition");
   res.end();
