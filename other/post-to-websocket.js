@@ -54,13 +54,14 @@ function websocket(text, callback) {
     connection.on('message', function(message) {
       if (message.type === 'utf8') {
         console.log("Received: '" + message.utf8Data + "'");
+        connection.close();
         callback(message.utf8Data);
       }
     });
 
     if (connection.connected) {
      connection.sendUTF(text);
-   }
+    }
  });
 
   client.connect('ws://localhost:8080/', 'push-notification');
