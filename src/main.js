@@ -19,6 +19,7 @@ function generateServerId() {
 ////////////////////////////////////////////////////////////////////////////////
 
 function main() {
+  var server = null;
 }
 
 main.prototype = {
@@ -69,7 +70,7 @@ main.prototype = {
   },
 
   stop: function() {
-    log.info("Closing server");
+    log.info('Closing the server correctly');
     this.server.stop();
   }
 };
@@ -83,10 +84,17 @@ m.start();
 /////////////////////////
 // On close application
 function onClose() {
-    log.error('Received interruption signal');
+    log.info('Received interruption signal.');
     m.stop();
     process.exit(1);
 }
 
-process.on('SIGKILL', onClose);    // 9
-process.on('SIGTERM', onClose);    // 15
+function onKill() {
+  log.error('Received kill signal.');
+  m.stop();
+  process.exit(1);
+}
+
+process.on('SIGINT', onClose);     // 2
+process.on('SIGKILL', onKill);    // 9
+process.on('SIGTERM', onKill);    // 15

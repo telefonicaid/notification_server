@@ -37,6 +37,7 @@ function onNewMessage(messageId) {
 function server(ip, port) {
   this.ip = ip;
   this.port = port;
+  this.ready = false;
 }
 
 server.prototype = {
@@ -61,9 +62,11 @@ server.prototype = {
     });
     this.wsServer.on('request', this.onWSRequest);
 
-    // Subscribe to my own Queue
+    // Subscribe to my own Quesue
+    var self = this;
     msgBroker.init(function() {
       msgBroker.subscribe(process.serverId, function(msg) { onNewMessage(msg); });
+      self.ready = true;
     });
   },
 
@@ -71,10 +74,16 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
-    var url = this.parseURL(request.url);
+    var tokensGenerated = 0;
     var status = null;
     var text = null;
+    if (!this.ready) {
+      log.error('WS:onHTTPMessage --> Request received but not ready yet');
+      text = '{"error": "Server not ready. Try again."}';
+      status = 404;
+    } else {
+      log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
+      var url = this.parseURL(request.url);
 
     log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
     if (url.messageType == 'token') {
@@ -85,7 +94,7 @@ server.prototype = {
       text = '{"error": "messageType not recognized for this HTTP API"}';
       status = 404;
     }
-
+    }
     // Close connection
     response.statusCode = status;
     response.setHeader("Content-Type", "text/plain");
@@ -244,6 +253,12 @@ server.prototype = {
       data.token = data.parsedURL.query.token;
     }
     return data;
+  },
+
+  stop: function() {
+    log.info("WS::stop --> Closing WS server");
+    this.ready = false;
+    //msgBroker.unsubscribe(process.serverId);
   }
 };
 

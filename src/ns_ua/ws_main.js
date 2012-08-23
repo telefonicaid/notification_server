@@ -31,8 +31,10 @@ NS_UA_WS_main.prototype = {
   },
 
   stop: function() {
+    this.servers.forEach(function(server) {
+      server.stop();
+    });
     log.info("NS_UA_WS server stopped");
-    // TODO: Remove nodes from Mongo & close message queue
   }
 };
 
