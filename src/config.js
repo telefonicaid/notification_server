@@ -29,11 +29,11 @@ exports.servers = {
  */
 exports.queue = {
   host: 'localhost',
-  port: 61613,
+  port: 5672, //AMQP default port
   debug: false,
   //Just for rabbitmq
   login: 'guest',
-  passcode: 'guest'
+  password: 'guest'
 };
 
 /********************* Database configuration *************************/

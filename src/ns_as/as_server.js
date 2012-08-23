@@ -10,7 +10,7 @@ var consts = require("../consts.js").consts;
 var http = require('http');
 var uuid = require("node-uuid");
 var crypto = require("../common/cryptography.js").getCrypto();
-var msgBroker = require("../common/msgbroker");
+var msgBroker = require("../common/msgbroker-amqp");
 var dataStore = require("../common/datastore");
 var emitter = require("events").EventEmitter;
 
@@ -58,7 +58,7 @@ function onNewPushMessage(notification, watoken, callback) {
     // Store on persistent database
     var msg = dataStore.newMessage(id, watoken, json);
     // Also send to the newMessages Queue
-    msgBroker.push("newMessages", msg, false);
+    msgBroker.push("newMessages", msg);
     callback('{"status": "ACCEPTED"}', 200);
     return;
   });

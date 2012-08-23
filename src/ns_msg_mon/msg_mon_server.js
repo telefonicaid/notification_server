@@ -7,7 +7,7 @@
 
 var log = require("../common/logger.js").getLogger;
 var crypto = require("../common/cryptography.js").getCrypto();
-var msgBroker = require("../common/msgbroker");
+var msgBroker = require("../common/msgbroker-amqp");
 var dataStore = require("../common/datastore");
 
 
@@ -25,7 +25,12 @@ monitor.prototype = {
 };
 
 function onNewMessage(msg) {
-  var json = JSON.parse(msg.body);
+  var json = {};
+  try {
+    json = JSON.parse(msg);
+  } catch(e) {
+    return;
+  }
   log.debug('Mensaje recibido en la cola con id: ' + json._id.toString());
   log.debug('Mensaje desde la cola ---' + JSON.stringify(json).toString());
   dataStore.getApplication(json.watoken.toString(), onApplicationData, json);
@@ -48,14 +53,14 @@ function onNodeData(nodeData, json) {
     return;
   }
   log.debug("Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
-  msgBroker.push(
-    nodeData.serverId,
-    { "messageId": json._id,
+  var body = { "messageId": json._id,
       "uatoken": nodeData._id,
       "data": nodeData.data,
       "payload": json
-    },
-    false
+    };
+  msgBroker.push(
+    nodeData.serverId,
+    body
   );
 }
 
