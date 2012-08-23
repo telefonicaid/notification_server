@@ -252,7 +252,7 @@ var DataStore = function() {
   /**
    * Get all messages for a UA
    */
-  this.getAllMessages = function (uatoken, callbackFunc) {
+  this.getAllMessages = function (uatoken, callbackFunc, callbackParam) {
     log.debug("Looking for messages of " + uatoken);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
@@ -260,7 +260,7 @@ var DataStore = function() {
         collection.find( { _id: uatoken } ).toArray(function(err,d) {
           if(!err && callbackFunc && d) {
             log.debug("datastore::getAllMessages --> Messages found, calling callback");
-            callbackFunc(d);
+            callbackFunc(d, callbackParam);
           }
           else if (!err && !d) {
             log.debug("datastore::getAllMessages --> No messages found");

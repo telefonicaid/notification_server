@@ -171,9 +171,9 @@ server.prototype = {
               connection.close();
               return;
             } else {
-              dataManager.getAllMessages(query.data.uatoken, function(messages) {
+              dataManager.getAllMessages(query.data.uatoken, function(messages, close) {
                 connection.sendUTF(JSON.stringify(messages));
-                connection.close();
+                if (close) connection.close();
                 return;
               });
             }

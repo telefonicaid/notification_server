@@ -122,8 +122,11 @@ datamanager.prototype = {
    * Get all messages for a UA
    */
   getAllMessages: function(uatoken, callbackFunc) {
-    // Recover from the persistent storage
-    dataStore.getAllMessages(uatoken, callbackFunc);
+    var callbackParam = false;
+    if (this.nodesTable[uatoken].getType() == "UDP") {
+      callbackParam = true;
+    }
+    dataStore.getAllMessages(uatoken, callbackFunc, callbackParam);
   },
 
   /**
