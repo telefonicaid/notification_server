@@ -6,6 +6,7 @@
  */
 
 // Import logger
+var config = require('./config.js');
 var log = require("./common/logger.js").getLogger;
 var os = require("os");
 
@@ -29,7 +30,7 @@ main.prototype = {
     // and start what is needed
     switch(process.argv[2]) {
       case "NS_UA_WS":
-        log.init("/tmp/push-NS_UA_WS.log", "NS_UA_WS", 1);
+        log.init(config.NS_UA_WS.logfile, "NS_UA_WS", 1);
         log.info("Starting as NS_UA_WS server");
         sel = require('./ns_ua/ws_main.js');
         this.server = new sel.NS_UA_WS_main();
@@ -41,21 +42,21 @@ main.prototype = {
         log.fatal("PENDING - TBD");
         break;
       case "NS_UA_UDP":
-        log.init("/tmp/push-NS_UA_UDP.log", "NS_UA_UDP", 1);
+        log.init(config.NS_UA_UDP.logfile, "NS_UA_UDP", 1);
         log.info("Starting as NS_UA_UDP server");
         sel = require('./ns_ua/udp_main.js');
         this.server = new sel.NS_UA_UDP_main();
         this.server.start();
         break;
       case "NS_AS":
-        log.init("/tmp/push-NS_AS.log", "NS_AS", 1);
+        log.init(config.NS_AS.logfile, "NS_AS", 1);
         log.info("Starting NS_AS server");
         sel = require('./ns_as/as_main.js');
         this.server = new sel.NS_AS_main();
         this.server.start();
         break;
       case "NS_MSG_monitor":
-        log.init("/tmp/push-NS_MSG_monitor.log", "NS_MSG_monitor", 1);
+        log.init(config.NS_Monitor.logfile, "NS_MSG_monitor", 1);
         log.info("Starting NS_MSG_monitor server");
         sel = require('./ns_msg_mon/msg_mon_main.js');
         this.server = new sel.NS_MSG_MON_main();
