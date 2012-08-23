@@ -31,3 +31,10 @@ function sendNotification() {
 for (var i = 100000 - 1; i >= 0; i--) {
   sendNotification();
 };
+
+function onClose() {
+  console.log("Hemos enviado " + a + "notificaciones. Comprueba la cola de newMessages y Mongo");
+  process.exit(1);
+}
+
+process.on('SIGINT', onClose);

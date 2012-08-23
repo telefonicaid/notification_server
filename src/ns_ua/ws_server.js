@@ -88,22 +88,22 @@ server.prototype = {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
       var url = this.parseURL(request.url);
 
-    log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
-    if (url.messageType == 'token') {
-      text = token.get();
-      status = 200;
-    } else {
-      log.debug("WS::onHTTPMessage --> messageType not recognized");
-      text = '{"error": "messageType not recognized for this HTTP API"}';
-      status = 404;
+      log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
+      if (url.messageType == 'token') {
+        text = token.get();
+        status = 200;
+      } else {
+        log.debug("WS::onHTTPMessage --> messageType not recognized");
+        text = '{"error": "messageType not recognized for this HTTP API"}';
+        status = 404;
+      }
     }
-    }
-    // Close connection
-    response.statusCode = status;
-    response.setHeader("Content-Type", "text/plain");
-    response.setHeader("access-control-allow-origin", "*");
-    response.write(text);
-    response.end();
+      // Close connection
+      response.statusCode = status;
+      response.setHeader("Content-Type", "text/plain");
+      response.setHeader("access-control-allow-origin", "*");
+      response.write(text);
+      response.end();
   },
 
   //////////////////////////////////////////////
