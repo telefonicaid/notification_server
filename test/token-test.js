@@ -1,6 +1,6 @@
 var assert = require('assert'),
     vows = require('vows'),
-    token = require("../src/common/token.js").getToken();
+    token = require("../src/common/token");
 
 //Internal vars
 var NUM_TOKENS = 50000;
