@@ -6,7 +6,7 @@
  */
 
  var amqp = require('amqp');
- var log = require("./logger.js").getLogger;
+ var log = require("./logger.js");
  var queueconf = require("../config.js").queue;
  var events = require("events");
  var util = require("util");

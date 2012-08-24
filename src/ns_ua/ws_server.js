@@ -5,13 +5,13 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js").getLogger;
+var log = require("../common/logger.js");
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-var crypto = require("../common/cryptography.js").getCrypto();
-var dataManager = require("./datamanager.js").getDataManager();
+var crypto = require("../common/cryptography.js");
+var dataManager = require("./datamanager.js");
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
-var token = require("../common/token.js").getToken();
+var token = require("../common/token.js");
 var helpers = require("../common/helpers.js");
 var msgBroker = require("../common/msgbroker.js");
 var config = require("../config.js").NS_UA_WS;

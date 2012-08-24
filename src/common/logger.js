@@ -6,7 +6,7 @@
  */
 
 var fs = require('fs');
-var consts = require("../consts.js").consts;
+var consts = require("../consts.js");
 
 function logger() {
   this.consoleOutput = consts.CONSOLEOUTPUT;
@@ -68,4 +68,5 @@ var _logger = new logger();
 function getLogger() {
   return _logger;
 }
-exports.getLogger = new getLogger();
+
+module.exports = getLogger();

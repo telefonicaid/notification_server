@@ -6,7 +6,7 @@
  */
 
 var dataStore = require("../common/datastore");
-var log = require("../common/logger.js").getLogger;
+var log = require("../common/logger.js");
 
 var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
 
@@ -160,4 +160,4 @@ function getDataManager() {
   return dm;
 }
 
-exports.getDataManager = getDataManager;
+module.exports = getDataManager();

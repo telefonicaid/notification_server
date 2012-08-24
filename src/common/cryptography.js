@@ -112,4 +112,5 @@ var crypt = new cryptography();
 function getCrypto() {
   return crypt;
 }
-exports.getCrypto = getCrypto;
+
+module.exports = getCrypto();
