@@ -7,7 +7,7 @@
 
 var log = require("../common/logger.js").getLogger;
 var dataManager = require("./datamanager.js").getDataManager();
-var msgBroker = require("../common/msgbroker-amqp.js");
+var msgBroker = require("../common/msgbroker.js");
 var dgram = require('dgram');
 
 ////////////////////////////////////////////////////////////////////////////////
