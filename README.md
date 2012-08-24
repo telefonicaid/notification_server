@@ -65,12 +65,14 @@ Diagram:
     (validate certificate)
 
 ## Requirements / Dependencies
-* Node.JS
-* MongoDB
-* ActiveMQ or RabbitMQ (should support STOMP protocol)
+* Node.JS (>= 0.8.x)
+* MongoDB (>= 2.0.x)
+* RabbitMQ (>= 2.8.x) (shall support AMQP protocol)
 
 ### Node.JS Modules (```npm install <module>```)
-* node-uuid
-* websocket
-* mongodb --mongodb:native
-* stomp
+* node-uuid (1.3.x) - https://github.com/broofa/node-uuid
+* websocket (1.0.x) - https://github.com/Worlize/WebSocket-Node
+* mongodb --mongodb:native (1.0.x) - https://github.com/mongodb/node-mongodb-native
+* node-amqp (0.1.x) - https://github.com/postwait/node-amqp
+* forever-monitor (1.0.x) - https://github.com/nodejitsu/forever-monitor
+

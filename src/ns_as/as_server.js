@@ -10,8 +10,8 @@ var consts = require("../consts.js").consts;
 var http = require('http');
 var uuid = require("node-uuid");
 var crypto = require("../common/cryptography.js").getCrypto();
-var msgBroker = require("../common/msgbroker-amqp");
-var dataStore = require("../common/datastore");
+var msgBroker = require("../common/msgbroker.js");
+var dataStore = require("../common/datastore.js");
 var emitter = require("events").EventEmitter;
 
 ////////////////////////////////////////////////////////////////////////////////

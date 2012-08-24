@@ -7,8 +7,8 @@
 
 var log = require("../common/logger.js").getLogger;
 var crypto = require("../common/cryptography.js").getCrypto();
-var msgBroker = require("../common/msgbroker-amqp");
-var dataStore = require("../common/datastore");
+var msgBroker = require("../common/msgbroker.js");
+var dataStore = require("../common/datastore.js");
 
 function monitor() {
 }

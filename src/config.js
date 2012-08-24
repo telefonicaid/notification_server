@@ -14,8 +14,7 @@ exports.servers = {
   NS_AS: true,
   NS_MSG_monitor: true,
   NS_UA_WS: true,
-  NS_UA_UDP: false,
-  NS_UA_SMS: false
+  NS_UA_UDP: false
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -135,5 +134,3 @@ exports.NS_UA_WS = {
 exports.NS_UA_UDP = {
   logfile: "/tmp/NS_UA_UDP.log"
 };
-
-/********************* NS_UA_SMS *************************************/
