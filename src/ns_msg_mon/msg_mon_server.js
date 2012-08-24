@@ -10,7 +10,6 @@ var crypto = require("../common/cryptography.js").getCrypto();
 var msgBroker = require("../common/msgbroker-amqp");
 var dataStore = require("../common/datastore");
 
-
 function monitor() {
 }
 

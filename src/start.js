@@ -52,12 +52,15 @@ starts.forEach(function(child) {
 
 function closeChilds() {
   started.forEach(function(child) {
+    //Send the exit signal to childs (SIGINT)
     child.exit();
   });
 
+  //Wait for a safe time to close this parent.
+  //This should be enough to every child to close correctly
   setInterval(function() {
     process.exit();
-  }, 2000);
+  }, 5000);
 }
 
 process.on('SIGTERM', closeChilds);

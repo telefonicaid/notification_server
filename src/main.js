@@ -84,13 +84,13 @@ m.start();
 /////////////////////////
 // On close application
 function onClose() {
-    log.info('Received interruption signal.');
+    log.info('Received interruption (2) signal');
     m.stop();
     process.exit(1);
 }
 
 function onKill() {
-  log.error('Received kill signal.');
+  log.error('Received kill (9 or 15) signal');
   m.stop();
   process.exit(1);
 }
