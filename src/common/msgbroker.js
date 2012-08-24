@@ -5,37 +5,38 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var stomp = require('stomp');
-var log = require("./logger.js").getLogger;
-var queueconf = require("../config.js").queue;
-var events = require("events");
-var util = require("util");
+ var amqp = require('amqp');
+ var log = require("./logger.js").getLogger;
+ var queueconf = require("../config.js").queue;
+ var events = require("events");
+ var util = require("util");
 
-var MsgBroker = function() {
+ var MsgBroker = function() {
   events.EventEmitter.call(this);
   this.init = function(onConnect) {
     log.info('msgBroker::queue.init --> Connecting to the queue server');
-    this.queue = new stomp.Stomp({
+
+    //Create connection to the broker
+    this.queue = amqp.createConnection({
       port: queueconf.port,
       host: queueconf.host,
-      debug: queueconf.debug,
-      // login and passcode may be optional (required by rabbitMQ)
-      login: queueconf.user,
-      passcode: queueconf.password
+      login: queueconf.login,
+      password: queueconf.password
     });
 
-    this.queue.connect();
     // Queue Events
-    this.queue.on('connected', (function() {
-      log.info("msgbroker::queue.onconnected --> Connected to Message Broker");
+    this.queue.on('ready', (function() {
+      log.info("msgbroker::queue.ready --> Connected to Message Broker");
       this.emit('brokerconnected');
       if (onConnect) onConnect();
     }).bind(this));
+
     this.queue.on('receipt', function(receipt) {
       log.debug("msgbroker::queue.onreceipt --> RECEIPT: " + receipt);
     });
-    this.queue.on('error', (function(error_frame) {
-      log.error('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error_frame.body);
+
+    this.queue.on('error', (function(error) {
+      log.error('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error);
       this.emit('brokerdisconnected');
       this.close();
     }.bind(this)));
@@ -43,31 +44,28 @@ var MsgBroker = function() {
 
   this.close = function() {
     if(this.queue) {
-      this.queue.disconnect();
+      this.queue.end();
       this.queue = null;
     }
     log.info('msgbroker::close --> Closing connection to msgBroker');
   };
 
-  this.subscribe = function(queueName, callbackFunc) {
-    this.queue.on('message', callbackFunc);
-    this.queue.subscribe({
-      destination: '/queue/' + queueName,
-      ack: 'auto'
+  this.subscribe = function(queueName, callback) {
+    this.queue.queue(queueName, function(q) {
+      log.debug("msgbroker::subscribe --> Subscribed to queue " + queueName);
+      q.bind('#');
+      q.subscribe(function (message) {
+        callback(message.data);
+      });
     });
-    log.debug("msgbroker::subscribe --> Subscribed to Message Broker /queue/" + queueName);
   };
 
   /**
    * Insert a new message into the queue
    */
-  this.push = function(queueName, body, persistent) {
+   this.push = function(queueName, body) {
     log.debug('msgbroker::push --> Going to send ' + JSON.stringify(body));
-    this.queue.send({
-      'destination': '/queue/' + queueName,
-      'body': JSON.stringify(body),
-      'persistent': persistent
-    }, true); //receipt
+    this.queue.publish(queueName, JSON.stringify(body));
   };
 };
 
