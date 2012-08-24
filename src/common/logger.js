@@ -6,11 +6,11 @@
  */
 
 var fs = require('fs');
-var consts = require("../consts.js").consts;
+var logparams = require("../config.js").logger;
 
 function logger() {
-  this.consoleOutput = consts.CONSOLEOUTPUT;
-  this.minLogLevel = consts.MINLOGLEVEL;
+  this.consoleOutput = logparams.CONSOLEOUTPUT;
+  this.minLogLevel = logparams.MINLOGLEVEL;
   this.debug("logger::logger --> Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !");
 }
 
@@ -68,4 +68,5 @@ var _logger = new logger();
 function getLogger() {
   return _logger;
 }
-exports.getLogger = new getLogger();
+
+module.exports = getLogger();

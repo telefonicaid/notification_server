@@ -5,8 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js").getLogger;
-var dataManager = require("./datamanager.js").getDataManager();
+var log = require("../common/logger.js");
+var dataManager = require("./datamanager.js");
 var msgBroker = require("../common/msgbroker.js");
 var dgram = require('dgram');
 

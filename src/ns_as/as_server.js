@@ -5,11 +5,11 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js").getLogger;
-var consts = require("../consts.js").consts;
+var log = require("../common/logger.js");
+var consts = require("../consts.js");
 var http = require('http');
 var uuid = require("node-uuid");
-var crypto = require("../common/cryptography.js").getCrypto();
+var crypto = require("../common/cryptography.js");
 var msgBroker = require("../common/msgbroker.js");
 var dataStore = require("../common/datastore.js");
 var emitter = require("events").EventEmitter;

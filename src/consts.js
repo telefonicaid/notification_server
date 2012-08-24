@@ -5,8 +5,6 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-exports.consts = {
+module.exports = {
   MAX_PAYLOAD_SIZE: 1024,
-  MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
-  CONSOLEOUTPUT: 1
 };

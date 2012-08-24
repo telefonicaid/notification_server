@@ -5,7 +5,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js").getLogger;
+var log = require("../common/logger.js");
 
 function NS_UA_UDP_main() {
   this.servers = [];

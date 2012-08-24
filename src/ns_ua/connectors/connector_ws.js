@@ -24,4 +24,4 @@ connector_websocket.prototype = {
   }
 };
 
-exports.connector_websocket = connector_websocket;
+module.exports = connector_websocket;

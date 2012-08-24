@@ -6,7 +6,7 @@
  */
 
 var config = require('../config.js').NS_UA_WS;
-var log = require("../common/logger.js").getLogger;
+var log = require("../common/logger.js");
 
 function NS_UA_WS_main() {
   this.servers = [];

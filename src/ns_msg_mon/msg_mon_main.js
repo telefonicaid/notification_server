@@ -6,7 +6,7 @@
  */
 
 var config = require('../config.js').NS_MSG_MON;
-var log = require("../common/logger.js").getLogger;
+var log = require("../common/logger.js");
 
 function NS_MSG_MON_main() {
 }

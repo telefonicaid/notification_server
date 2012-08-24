@@ -6,7 +6,7 @@
  */
 
 var mongodb = require("mongodb");
-var log = require("./logger.js").getLogger;
+var log = require("./logger.js");
 var events = require("events");
 var util = require("util");
 var ddbbsettings = require("../config.js").ddbbsettings;
