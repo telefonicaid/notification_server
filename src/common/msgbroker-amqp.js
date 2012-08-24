@@ -55,7 +55,7 @@
       log.debug("msgbroker::subscribe --> Subscribed to queue " + queueName);
       q.bind('#');
       q.subscribe(function (message) {
-        callback(message);
+        callback(message.data);
       });
     });
   };
