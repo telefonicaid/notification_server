@@ -7,7 +7,7 @@
 
 // Import logger
 var config = require('./config.js');
-var log = require("./common/logger.js").getLogger;
+var log = require("./common/logger.js");
 var os = require("os");
 
 ////////////////////////////////////////////////////////////////////////////////

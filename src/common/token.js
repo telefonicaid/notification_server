@@ -6,7 +6,7 @@
  */
 
 var uuid = require("node-uuid");
-var crypto = require("./cryptography.js").getCrypto();
+var crypto = require("./cryptography.js");
 var server_info = require("../config.js").NS_AS.server_info;
 
 function token() {}
@@ -60,4 +60,5 @@ var token = new token();
 function getToken() {
   return token;
 }
-exports.getToken = getToken;
+
+module.exports = getToken();

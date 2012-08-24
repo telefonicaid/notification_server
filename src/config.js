@@ -18,8 +18,14 @@ exports.servers = {
 };
 
 ////////////////////////////////////////////////////////////////////////
-//Different configurations for the servers
+// Common configuration parameters
 ////////////////////////////////////////////////////////////////////////
+
+/********************* Logger parameters ***********************************/
+exports.logger = {
+  MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
+  CONSOLEOUTPUT: 1
+};
 
 /********************* Common Queue ***********************************/
 /**
@@ -60,6 +66,9 @@ exports.ddbbsettings = {
   replicasetName: null
 };
 
+////////////////////////////////////////////////////////////////////////
+//Different configurations for the servers
+////////////////////////////////////////////////////////////////////////
 
 /********************* NS_AS *****************************************/
 /**

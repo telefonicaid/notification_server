@@ -32,4 +32,4 @@ connector_udp.prototype = {
   }
 };
 
-exports.connector_udp = connector_udp;
+module.exports = connector_udp;

@@ -6,7 +6,7 @@
  */
 
 var config = require('../config.js').NS_AS;
-var log = require("../common/logger.js").getLogger;
+var log = require("../common/logger.js");
 
 function NS_AS_main() {
   this.servers = [];

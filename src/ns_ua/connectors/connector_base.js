@@ -5,8 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var conn_ws = require("./connector_ws.js").connector_websocket;
-var conn_udp = require("./connector_udp.js").connector_udp;
+var conn_ws = require("./connector_ws.js");
+var conn_udp = require("./connector_udp.js");
 
 function connector_base() {
 }
