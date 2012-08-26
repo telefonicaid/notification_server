@@ -23,7 +23,7 @@ var DataStore = function() {
       ddbbsettings.machines.forEach(function(machine) {
         servers.push(new mongodb.Server(machine[0], machine[1], { auto_reconnect: true }));
       });
-      var replSet = new mongodb.ReplSetServers(servers, {rs_name:ddbbsettings.replicasetName});
+      var replSet = new mongodb.ReplSetServers(servers, {rs_name:ddbbsettings.replicasetName, read_secondary: true});
 
       // Connection to MongoDB
       this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet);
