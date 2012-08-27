@@ -6,11 +6,28 @@
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-        <collectionProp name="Arguments.arguments"/>
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="FrontEndServer" elementType="Argument">
+            <stringProp name="Argument.name">FrontEndServer</stringProp>
+            <stringProp name="Argument.value">${__property(FrontEndServer)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="FrontEndServer" elementType="Argument">
+            <stringProp name="Argument.name">FrontEndServer</stringProp>
+            <stringProp name="Argument.value">owd-push-qa-fe1.hi.inet</stringProp>
+            <stringProp name="Argument.desc">This is the front end server under load</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
@@ -22,7 +39,7 @@
             <success>true</success>
             <label>false</label>
             <code>true</code>
-            <message>true</message>
+            <message>false</message>
             <threadName>false</threadName>
             <dataType>false</dataType>
             <encoding>false</encoding>
@@ -311,7 +328,7 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">owd-push-qa-f12.hi.inet</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontEndServer}</stringProp>
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -401,7 +418,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">owd-push-qa-fe2.hi.inet</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontEndServer}</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
