@@ -1,5 +1,5 @@
 /**
- * PUSH Notification server V 0.2
+ * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
  * License: GNU Affero V3 (see LICENSE file)
  * Fernando Rodríguez Sela <frsela@tid.es>
@@ -48,14 +48,16 @@ exports.queue = {
  */
 
 //DDBB defaults to using MongoDB in a replicaset
-/*exports.ddbbsettings = {
+exports.ddbbsettings = {
   machines: [
-    ["owd-push-qa-be1", 27017],
-    ["owd-push-qa-be2", 27017]
+    ["localhost", 27017],
+    ["localhost", 27018],
+    ["localhost", 27019],
+    ["localhost", 27020]
   ],
   ddbbname: "push_notification_server",
   replicasetName: "Server_Push"
-};*/
+};
 
 //DDBB defaults to use a single MongoDB instance
 exports.ddbbsettings = {
