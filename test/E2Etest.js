@@ -78,7 +78,8 @@
             debug("WA registered with url -- " + msg.url);
           } else if (msg[0].messageType == 'notification') {
             PushTest.gotNotification = true;
-            debug("Notification received!!");
+            PushTest.connection.sendUTF('{"messageType": "ack", "messageId": "' + msg[0].messageId+ '"}');
+            debug("Notification received!! Sending ACK");
           }
         }
       });
