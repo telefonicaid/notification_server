@@ -19,11 +19,11 @@ var config = require("../config.js").NS_UA_WS;
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-function onNewMessage(messageId) {
-  log.debug('WS::Queue::onNewMessage --> New message received: ' + messageId);
+function onNewMessage(message) {
+  log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
   var json = {};
   try {
-    json = JSON.parse(messageId.body);
+    json = JSON.parse(message);
   } catch(e) { return; }
   log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
   dataManager.getNode(json.uatoken, function(nodeConnector) {
