@@ -139,13 +139,16 @@
         PushTest.registerWAOK &&
         PushTest.gotNotification) {
       debug("Everything went better than expected! http://i2.kym-cdn.com/entries/icons/original/000/001/253/everything_went_better_than_expected.jpg");
+      PushTest.connection.close();
+      process.exit(0);
     } else {
       console.log("KO, check flags:");
       console.log("registerUAOK is " + PushTest.registerUAOK);
       console.log("registerWAOK is " + PushTest.registerWAOK);
       console.log("gotNotification is " + PushTest.gotNotification);
+      PushTest.connection.close();
+      process.exit(1);
     }
-    PushTest.connection.close();
   }
 };
 
