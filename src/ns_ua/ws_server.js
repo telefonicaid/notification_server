@@ -24,11 +24,13 @@ function onNewMessage(message) {
   var json = {};
   try {
     json = JSON.parse(message);
-  } catch(e) { return; }
+  } catch(e) {
+    return;
+  }
   log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
   dataManager.getNode(json.uatoken, function(nodeConnector) {
     if(nodeConnector) {
-      log.debug("WS::Queue::onNewMessage --> Sending messages: " + json.payload.payload.toString());
+      log.debug("WS::Queue::onNewMessage --> Sending messages: " + JSON.stringify(json.payload.payload));
       nodeConnector.notify(new Array(json.payload.payload));
     } else {
       log.info("WS::Queue::onNewMessage --> No node found");
