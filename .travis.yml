@@ -9,18 +9,20 @@ branches:
 
 before_install:
   - npm rebuild
-  - sudo rabbitmq-plugins enable rabbitmq_stomp
-  - sudo service rabbitmq-server restart
 
 before_script:
   - cd src
   - nohup node start.js &
   - sleep 10
-  - cd ..
-  - cd test
+  - cd ../test
   - node E2Etest.js
   - cd ..
+
+after_script:
+  - cd src
+  - cat nohup.out
 
 notifications:
    email:
       - gll@tid.es
+
