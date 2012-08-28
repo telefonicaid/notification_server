@@ -19,7 +19,7 @@ connector_base.prototype = {
     // TODO: Por ahora sólo devolvemos websocket connector
     // TODO: En funcion de la IP, deberemos decidir si ir por uno u otro conector
     var c = null;
-    if(data.interface != null)
+    if(data.interface.ip != null && data.interface.port != null)
       c = new conn_udp(data,conn);
     else
       c = new conn_ws(data,conn);
