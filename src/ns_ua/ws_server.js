@@ -25,6 +25,7 @@ function onNewMessage(message) {
   try {
     json = JSON.parse(message);
   } catch(e) {
+    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
   log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
@@ -106,7 +107,7 @@ server.prototype = {
       response.setHeader("Content-Type", "text/plain");
       response.setHeader("access-control-allow-origin", "*");
       response.write(text);
-      response.end();
+      return response.end();
   },
 
   //////////////////////////////////////////////
@@ -126,8 +127,7 @@ server.prototype = {
           log.error(e);
           log.info("WS::onWSMessage --> Data received is not a valid JSON package");
           connection.sendUTF('{ "status": "error", "reason": "Data received is not a valid JSON package" }');
-          connection.close();
-          return;
+          return connection.close();
         }
 
         switch(query.messageType) {
@@ -137,8 +137,7 @@ server.prototype = {
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
               connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
-              connection.close();
-              return;
+              return connection.close();
             }
             // New UA registration
             dataManager.registerNode(
@@ -176,15 +175,13 @@ server.prototype = {
             if(!query.data.uatoken) {
               log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
               connection.sendUTF('{ "error": "No UAtoken sent", "reason": "No UAToken sent" }');
-              connection.close();
-              return;
+              return connection.close();
             }
             log.debug("WS::onWSMessage::getAllMessages --> Recovering messages for " + query.data.uatoken);
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage::getAllMessages --> Token not valid (Checksum failed)");
               connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
-              connection.close();
-              return;
+              return connection.close();
             } else {
               dataManager.getAllMessages(query.data.uatoken, function(messages, close) {
                 connection.sendUTF(JSON.stringify(messages));
@@ -203,14 +200,13 @@ server.prototype = {
           default:
             log.debug("WS::onWSMessage::default --> messageType not recognized");
             connection.sendUTF('{ "error": "messageType not recognized" }');
-            connection.close();
-            return;
+            return connection.close();
         }
       } else if (message.type === 'binary') {
         // No binary data supported yet
         log.info('WS::onWSMessage --> Received Binary Message of ' + message.binaryData.length + ' bytes');
         connection.sendUTF('{ "error": "Binary messages not yet supported" }');
-        connection.close();
+        return connection.close();
       }
     };
 
