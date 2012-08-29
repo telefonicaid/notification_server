@@ -57,7 +57,8 @@ server.prototype = {
 
     // Subscribe to the UDP common Queue
     msgBroker.init(function() {
-      msgBroker.subscribe("UDP", function(msg) { onNewMessage(msg); });
+      var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
+      msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
   }
 };
