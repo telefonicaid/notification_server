@@ -27,13 +27,12 @@
     // Queue Events
     this.queue.on('ready', (function() {
       log.info("msgbroker::queue.ready --> Connected to Message Broker");
+      //TODO: use Events instead of callbacks here
       this.emit('brokerconnected');
-      if (onConnect) onConnect();
+      if (onConnect) {
+        return onConnect();
+      }
     }).bind(this));
-
-    this.queue.on('receipt', function(receipt) {
-      log.debug("msgbroker::queue.onreceipt --> RECEIPT: " + receipt);
-    });
 
     this.queue.on('error', (function(error) {
       log.error('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error);
@@ -55,7 +54,7 @@
       log.debug("msgbroker::subscribe --> Subscribed to queue " + queueName);
       q.bind('#');
       q.subscribe(function (message) {
-        callback(message.data);
+        return callback(message.data);
       });
     });
   };
