@@ -50,8 +50,8 @@
     log.info('msgbroker::close --> Closing connection to msgBroker');
   };
 
-  this.subscribe = function(queueName, callback) {
-    this.queue.queue(queueName, function(q) {
+  this.subscribe = function(queueName, args, callback) {
+    this.queue.queue(queueName, args, function(q) {
       log.debug("msgbroker::subscribe --> Subscribed to queue " + queueName);
       q.bind('#');
       q.subscribe(function (message) {

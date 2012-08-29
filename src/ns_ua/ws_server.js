@@ -70,7 +70,8 @@ server.prototype = {
     // Subscribe to my own Quesue
     var self = this;
     msgBroker.init(function() {
-      msgBroker.subscribe(process.serverId, function(msg) { onNewMessage(msg); });
+      var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
+      msgBroker.subscribe(process.serverId, args, function(msg) { onNewMessage(msg); });
       self.ready = true;
     });
   },
