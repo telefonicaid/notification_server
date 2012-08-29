@@ -96,26 +96,30 @@ var DataStore = function() {
   /**
    * Gets a node - server relationship
    */
-  this.getNode = function (token, callbackFunc, callbackParam) {
+  this.getNode = function (token, callbackFuncOk, callbackParamOk,
+                           callbackFuncKo, callbackParamKo) {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
-          if(!err && callbackFunc && d) {
+          if(!err && callbackFuncOk && d) {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Data found, calling callback with data");
-            callbackFunc(d, callbackParam);
+            callbackFuncOk(d, callbackParamOk);
           }
           else if (!d && !err) {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> No error, but no nodes to notify");
+            callbackFuncKo(callbackParamKo);
           } else {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Error finding node into MongoDB: " + err);
+            callbackFuncKo(callbackParamKo);
           }
         });
       } else {
         log.error("datastore::getNode --> there was a problem opening the nodes collection");
+        callbackFuncKo(callbackParamKo);
       }
     });
   },
@@ -150,20 +154,23 @@ var DataStore = function() {
   /**
    * Gets an application node list
    */
-  this.getApplication = function (token, callbackFunc, callbackParam) {
+  this.getApplication = function (token, callbackFuncOk, callbackParamOk,
+                                  callbackFuncKo, callbackParamKo) {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
-          if(!err && callbackFunc && d) {
-            //console.log("err=" + err + ". callbackFunc=" + callbackFunc + ". d=" + d);
-            callbackFunc(d, callbackParam);
-          }
-          else
+          if(!err && callbackFuncOk && d) {
+            //console.log("err=" + err + ". callbackFuncOk=" + callbackFunc + ". d=" + d);
+            callbackFuncOk(d, callbackParamOk);
+          } else {
             log.debug("datastore::getApplication -->Error finding application from MongoDB: " + err);
+            callbackFuncKo(callbackParamKo);
+          }
         });
       } else {
         log.error("datastore::getApplication --> there was a problem opening the apps collection");
+        callbackFuncKo(callbackParamKo);
       }
     });
   },

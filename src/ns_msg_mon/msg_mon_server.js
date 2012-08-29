@@ -18,7 +18,7 @@ monitor.prototype = {
     // Connect to the message broker
     msgBroker.init(function() {
       log.info('MSG monitor server running');
-      msgBroker.subscribe("newMessages", function(msg) { onNewMessage(msg); });
+      msgBroker.subscribe("newMessages", function(msg) {onNewMessage(msg);});
     });
   }
 };
@@ -32,7 +32,7 @@ function onNewMessage(msg) {
   }
   log.debug('Mensaje recibido en la cola con id: ' + json._id.toString());
   log.debug('Mensaje desde la cola ---' + JSON.stringify(json).toString());
-  dataStore.getApplication(json.watoken.toString(), onApplicationData, json);
+  dataStore.getApplication(json.watoken.toString(), onApplicationData, json, removeMessage, json);
 }
 
 function onApplicationData(appData, json) {
@@ -42,7 +42,7 @@ function onApplicationData(appData, json) {
   }
   appData.node.forEach(function (nodeData, i) {
     log.debug("Notifying node: " + i + ": " + JSON.stringify(nodeData));
-    dataStore.getNode(nodeData, onNodeData, json);
+    dataStore.getNode(nodeData, onNodeData, json, removeMessage, json);
   });
 }
 
@@ -52,15 +52,21 @@ function onNodeData(nodeData, json) {
     return;
   }
   log.debug("Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
-  var body = { "messageId": json._id,
-      "uatoken": nodeData._id,
-      "data": nodeData.data,
-      "payload": json
-    };
+  var body = {
+    "messageId": json._id,
+    "uatoken": nodeData._id,
+    "data": nodeData.data,
+    "payload": json
+  };
   msgBroker.push(
     nodeData.serverId,
     body
   );
+}
+
+function removeMessage(json) {
+  log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
+  dataStore.removeMessage(json._id);
 }
 
 // Exports
