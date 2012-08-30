@@ -24,33 +24,28 @@ function onNewPushMessage(notification, watoken, callback) {
     json = JSON.parse(notification);
   } catch (err) {
     log.info('NS_AS::onNewPushMessage --> Not valid JSON notification');
-    callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
-    return;
+    return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
   }
   //Only accept notification messages
   if (json.messageType != "notification") {
-    callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
-    return;
+    return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
   }
   var sig = json.signature;
   var message = json.message;
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
     log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
-    callback('{"status":"ERROR", "reason":"Body too big"}', 200);
-    return;
+    return callback('{"status":"ERROR", "reason":"Body too big"}', 200);
   }
   dataStore.getPbkApplication(watoken, function(pbkbase64) {
     if (pbkbase64) {
       if (!sig) {
         log.debug("NS_AS::onNewPushMessage --> Notification not signed where it must.");
-        callback('{"status":"ERROR", "reason":"You must sign your message with your Private Key"}', 400);
-        return;
+        return callback('{"status":"ERROR", "reason":"You must sign your message with your Private Key"}', 400);
       }
       var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
       if (sig && !crypto.verifySignature(message, sig, pbk)) {
         log.info('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
-        callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
-        return;
+        return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
       }
     }
     var id = uuid.v1();
@@ -59,8 +54,7 @@ function onNewPushMessage(notification, watoken, callback) {
     var msg = dataStore.newMessage(id, watoken, json);
     // Also send to the newMessages Queue
     msgBroker.push("newMessages", msg);
-    callback('{"status": "ACCEPTED"}', 200);
-    return;
+    return callback('{"status": "ACCEPTED"}', 200);
   });
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +64,7 @@ function server(ip, port) {
   this.ip = ip;
   this.port = port;
 }
+
 server.prototype = {
   //////////////////////////////////////////////
   // Constructor
@@ -78,8 +73,9 @@ server.prototype = {
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('NS_AS::init --> HTTP push AS server running on ' + this.ip + ":" + this.port);
-    // Connect to the message broker
+    log.info('NS_AS::init --> HTTP push AS server starting on ' + this.ip + ":" + this.port);
+
+    // Msg Broker events
     msgBroker.on('brokerconnected', function() {
       log.info("NS_AS::init --> MsgBroker ready and connected");
       this.msgbrokerready = true;
@@ -88,10 +84,14 @@ server.prototype = {
       log.error("NS_AS::init --> MsgBroker DISCONNECTED!!");
       this.msgbrokerready = false;
     }.bind(this));
+
+    // DataStore events
     dataStore.on('ddbbconnected', function() {
       log.info("NS_AS::init --> DataStore ready and connected");
       this.ddbbready = true;
     }.bind(this));
+
+    //Let's wait one second to start the msgBroker and the dataStore
     setTimeout(function() {
       msgBroker.init();
       dataStore.init();
@@ -106,8 +106,7 @@ server.prototype = {
       log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
       response.statusCode = 404;
       response.write('{"status": "ERROR", "reason": "Try again later"}');
-      response.end();
-      return;
+      return response.end();
     }
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
     var url = this.parseURL(request.url);
@@ -115,8 +114,7 @@ server.prototype = {
       log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
       response.statusCode = 404;
       response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
-      response.end();
-      return;
+      return response.end();
     }
     log.debug("NS_AS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
     if (url.messageType == 'notify') {
@@ -127,7 +125,7 @@ server.prototype = {
             response.setHeader("Content-Type", "text/plain");
             response.setHeader("access-control-allow-origin", "*");
             response.write(body);
-            response.end();
+            return response.end();
         });
       });
     } else {
@@ -136,7 +134,7 @@ server.prototype = {
       response.setHeader("Content-Type", "text/plain");
       response.setHeader("access-control-allow-origin", "*");
       response.write('{"status": "ERROR", "reason": "Only notify by this interface"}');
-      response.end();
+      return response.end();
     }
   },
 

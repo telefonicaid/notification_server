@@ -58,16 +58,16 @@ var DataStore = function() {
                          function(err,d) {
           if(!err && d) {
             log.debug("datastore::registerNode --> Node inserted/update into MongoDB");
-            callback(true);
+            return callback(true);
           }
           else {
             log.debug("datastore::registerNode --> Error inserting/updating node into MongoDB -- " + err);
-            callback(false);
+            return callback(false);
           }
         });
       } else {
         log.error("datastore::registerNode --> There was a problem opening the nodes collection");
-        callback(false);
+        return callback(false);
       }
     });
   };
@@ -83,12 +83,12 @@ var DataStore = function() {
                          function(err,d) {
           if(!err) {
             log.debug("datastore::unregisterNode --> Node removed from MongoDB");
-            callback(true);
+            return callback(true);
           }
         });
       } else {
         log.error("datastore::unregisterNode --> There was a problem opening the nodes collection");
-        callback(false);
+        return callback(false);
       }
     });
    };
@@ -96,15 +96,15 @@ var DataStore = function() {
   /**
    * Gets a node - server relationship
    */
-  this.getNode = function (token, callbackFunc, callbackParam) {
+  this.getNode = function (token, callback, callbackParam) {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
-          if(!err && callbackFunc && d) {
+          if(!err && callback && d) {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Data found, calling callback with data");
-            callbackFunc(d, callbackParam);
+            return callback(d, callbackParam);
           }
           else if (!d && !err) {
             log.debug('Finding info for node ' + token);
@@ -134,15 +134,15 @@ var DataStore = function() {
           function(err,d) {
             if(!err) {
               log.debug("datastore::registerApplication --> Application inserted into MongoDB");
-              callback(true);
+              return callback(true);
             } else {
               log.debug("datastore::registerApplication --> Error inserting application into MongoDB: " + err);
-              callback(false);
+              return callback(false);
             }
           });
       } else {
         log.error("datastore::registerApplication --> there was a problem opening the apps collection");
-        callback(false);
+        return callback(false);
       }
     });
   },
@@ -150,14 +150,13 @@ var DataStore = function() {
   /**
    * Gets an application node list
    */
-  this.getApplication = function (token, callbackFunc, callbackParam) {
+  this.getApplication = function (token, callback, callbackParam) {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
-          if(!err && callbackFunc && d) {
-            //console.log("err=" + err + ". callbackFunc=" + callbackFunc + ". d=" + d);
-            callbackFunc(d, callbackParam);
+          if(!err && callback && d) {
+            return callback(d, callbackParam);
           }
           else
             log.debug("datastore::getApplication -->Error finding application from MongoDB: " + err);
@@ -182,19 +181,19 @@ var DataStore = function() {
             var pbkbase64 = d.pbkbase64.toString('base64');
             log.debug("datastore::getPbkApplication --> Found the pbk (base64) '" + pbkbase64 + "' for the watoken '" + watoken);
             //WARN: This returns the base64 as saved on the DDBB!!
-            callback(pbkbase64);
+            return callback(pbkbase64);
           }
           else if (!err && !d){
             log.debug('datastore::getPbkApplication --> There are no pbk for the WAToken' + watoken);
-            callback();
+            return callback();
           } else {
             log.debug('datastore::getPbkApplication --> There was a problem finding the pbk for the WAToken');
-            callback();
+            return callback();
           }
         });
       } else {
         log.error('datastore::getPbkApplication --> there was a problem opening the apps collection');
-        callback();
+        return callback();
       }
     });
   },
@@ -225,16 +224,16 @@ var DataStore = function() {
   /**
    * Get a message
    */
-  this.getMessage = function (id, callbackFunc, callbackParam) {
+  this.getMessage = function (id, callback, callbackParam) {
     log.debug("Looking for message " + id);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       if (!err) {
         collection.findOne( { 'MsgId': id }, function(err,d) {
           if(!err) {
-            if (callbackFunc && d) {
+            if (callback && d) {
               log.debug("datastore::getMessage --> The message has been inserted. Calling callback");
-              callbackFunc(d, callbackParam);
+              return callback(d, callbackParam);
             } else {
               log.debug("datastore::getMessage --> The message has been inserted.");
               return d;
@@ -252,15 +251,15 @@ var DataStore = function() {
   /**
    * Get all messages for a UA
    */
-  this.getAllMessages = function (uatoken, callbackFunc, callbackParam) {
+  this.getAllMessages = function (uatoken, callback, callbackParam) {
     log.debug("Looking for messages of " + uatoken);
     // Get from MongoDB
     this.db.collection("messages", function(err, collection) {
       if (!err) {
         collection.find( { _id: uatoken } ).toArray(function(err,d) {
-          if(!err && callbackFunc && d) {
+          if(!err && callback && d) {
             log.debug("datastore::getAllMessages --> Messages found, calling callback");
-            callbackFunc(d, callbackParam);
+            return callback(d, callbackParam);
           }
           else if (!err && !d) {
             log.debug("datastore::getAllMessages --> No messages found");

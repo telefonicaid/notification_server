@@ -97,9 +97,9 @@ datamanager.prototype = {
   getNode: function (token, callback) {
     log.debug("dataManager::getNode --> getting node from memory");
     if(this.nodesTable[token]) {
-      callback(this.nodesTable[token]);
+      return callback(this.nodesTable[token]);
     }
-    callback(false);
+    return callback(false);
   },
 
   // TODO: Verify that the node exists before add the application
@@ -114,10 +114,10 @@ datamanager.prototype = {
   /**
    * Recover a message data and associated UAs
    */
-  getMessage: function (id, callbackFunc, callbackParam) {
+  getMessage: function (id, callback, callbackParam) {
     // Recover from the persistent storage
     dataStore.getMessage(id, onMessage, {"messageId": id,
-                                         "callbackFunction": callbackFunc,
+                                         "callback": callback,
                                          "callbackParam": callbackParam}
                         );
   },
@@ -125,12 +125,12 @@ datamanager.prototype = {
   /**
    * Get all messages for a UA
    */
-  getAllMessages: function(uatoken, callbackFunc) {
+  getAllMessages: function(uatoken, callback) {
     var callbackParam = false;
     if (this.nodesTable[uatoken].getType() == "UDP") {
       callbackParam = true;
     }
-    dataStore.getAllMessages(uatoken, callbackFunc, callbackParam);
+    dataStore.getAllMessages(uatoken, callback, callbackParam);
   },
 
   /**
@@ -146,7 +146,7 @@ datamanager.prototype = {
 ///////////////////////////////////////////
 function onMessage(message, message_info) {
   log.debug("dataManager::onMessage --> Message payload: " + JSON.stringify(message[0].payload));
-  message_info.callbackFunction({"messageId": message_info.id,
+  message_info.callback({"messageId": message_info.id,
                                  "payload": message[0].payload,
                                  "data": message_info.callbackParam}
                                );
