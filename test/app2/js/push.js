@@ -25,8 +25,9 @@ var Push = {
   },
 
   registerApp: function() {
+    var self = this;
     this.logMessage("[registerApp] Registering application with token id = " + this.watoken);
-    
+
     if(!navigator.mozPush) {
       this.logMessage("[registerApp] No navigator.mozPush object found !");
     } else {
@@ -53,6 +54,7 @@ var Push = {
   },
 
   getURL: function() {
+    var self = this;
     this.logMessage("[getURL] Getting current Notification URL");
     
     if(!navigator.mozPush) {
