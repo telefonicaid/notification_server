@@ -20,6 +20,7 @@
   "icons": {
     "120": "/style/icons/PushIcon.png"
   },
+  "messages": ["push-notification"],
   "permissions": [
     "request-push-notification",
     "settings"

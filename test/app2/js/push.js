@@ -25,23 +25,36 @@ var Push = {
   },
 
   registerApp: function() {
+    var self = this;
     this.logMessage("[registerApp] Registering application with token id = " + this.watoken);
-    
+
     if(!navigator.mozPush) {
       this.logMessage("[registerApp] No navigator.mozPush object found !");
     } else {
       this.logMessage("[registerApp] Calling navigator.mozPush.requestURL('" + this.watoken + "') ...");
       var req = navigator.mozPush.requestURL(this.watoken);
       req.onsuccess = function(e) {
-        this.logMessage("[registerApp] URL = ");// + req.result.url);
+        self.logMessage("[registerApp] URL = " + req.result.url);
+
+        // Registering to receive PUSH notifications
+        try {
+          self.logMessage("[registerApp:PUSH] Registering for messaging");
+          navigator.mozSetMessageHandler("push-notification", function(msg) {
+            self.logMessage("[registerApp:PUSH] New Message");
+          });
+        } catch(e) {
+          self.logMessage("[registerApp] This platform does not support system messages.");
+        }
+
       };
       req.onerror = function(e) {
-        this.logMessage("[registerApp] Error registering app");
+        self.logMessage("[registerApp] Error registering app");
       }
     }
   },
 
   getURL: function() {
+    var self = this;
     this.logMessage("[getURL] Getting current Notification URL");
     
     if(!navigator.mozPush) {
@@ -50,10 +63,10 @@ var Push = {
       try {
         var req = navigator.mozPush.getCurrentURL();
         req.onsuccess = function(e) {
-          this.logMessage("[getURL] URL = " + req.result.url);
+          self.logMessage("[getURL] URL = " + req.result.url);
         };
         req.onerror = function(e) {
-          this.logMessage("[getURL] Error getting URL");
+          self.logMessage("[getURL] Error getting URL");
         }
       } catch(e) {
         this.logMessage("JARRRRL");
