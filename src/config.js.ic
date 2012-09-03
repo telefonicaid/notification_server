@@ -31,14 +31,18 @@ exports.logger = {
  * This has been tested with ActiveMQ >= 5.6.
  * Choose your host, port and other self-explanatory options
  */
+
+
+
 exports.queue = {
   host: 'localhost',
-  port: 61613,
+  port: 5672, //AMQP default port
   debug: false,
   //Just for rabbitmq
   login: 'guest',
-  passcode: 'guest'
+  password: 'guest'
 };
+
 
 /********************* Database configuration *************************/
 /**
