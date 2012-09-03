@@ -17,7 +17,7 @@ function logger() {
 logger.prototype = {
   init: function (logfile, appname, consoleOutput) {
     // use {'flags': 'a'} to append and {'flags': 'w'} to erase and write a new file
-    this.logfile = fs.createWriteStream(logfile, { flags: 'a', encoding: null, mode: 666 });
+    this.logfile = fs.createWriteStream(logfile, { flags: 'a', encoding: null, mode: 0666 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
     this.info("---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------");
