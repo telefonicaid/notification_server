@@ -37,6 +37,11 @@
             <stringProp name="Argument.value">${__property(TEST_registerUA_stepIncrement)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="ResultsPath" elementType="Argument">
+            <stringProp name="Argument.name">ResultsPath</stringProp>
+            <stringProp name="Argument.value">${__property(Resultspath)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
@@ -78,6 +83,11 @@
             <stringProp name="Argument.name">TEST_registerUA_stepIncrement</stringProp>
             <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Additional users per step for the registerUA test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ResultsPath" elementType="Argument">
+            <stringProp name="Argument.name">ResultsPath</stringProp>
+            <stringProp name="Argument.value">/owd/results</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -175,7 +185,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename"></stringProp>
+        <stringProp name="filename">${Resultspath}/localhost.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
@@ -237,31 +247,31 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-fe1.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-fe1.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="903740944">
+          <collectionProp name="1041802919">
             <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1396973377">
+          <collectionProp name="-1258911402">
             <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1284633361">
+          <collectionProp name="-1146571386">
             <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-737440086">
+          <collectionProp name="-599378111">
             <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
@@ -299,31 +309,31 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-fe2.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-fe2.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="904664465">
+          <collectionProp name="1146339538">
             <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1396049856">
+          <collectionProp name="-1154374783">
             <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1283709840">
+          <collectionProp name="-1042034767">
             <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-736516565">
+          <collectionProp name="-494841492">
             <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
@@ -361,31 +371,31 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-be1.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-be1.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="-1528828277">
+          <collectionProp name="869921247">
             <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="771886044">
+          <collectionProp name="-1124331728">
             <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1416488261">
+          <collectionProp name="982261263">
             <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-869294986">
+          <collectionProp name="1529454538">
             <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
@@ -423,31 +433,31 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-be2.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-be2.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="-1527904756">
+          <collectionProp name="974457866">
             <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="772809565">
+          <collectionProp name="-1019795109">
             <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1415564740">
+          <collectionProp name="1086797882">
             <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-868371465">
+          <collectionProp name="1633991157">
             <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
@@ -537,7 +547,7 @@
         </kg.apc.jmeter.samplers.DummySampler>
         <hashTree>
           <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token to text file" enabled="true">
-            <stringProp name="filename">owd/tokens_new.txt</stringProp>
+            <stringProp name="filename">${Resultspath}/tokens_new.txt</stringProp>
             <stringProp name="columns">responseData|\r\n</stringProp>
             <boolProp name="overwrite">false</boolProp>
             <stringProp name="header"></stringProp>
@@ -636,7 +646,7 @@
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token to text file" enabled="true">
-              <stringProp name="filename">owd/tokens_registered.txt</stringProp>
+              <stringProp name="filename">${Resultspath}/tokens_registered.txt</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
