@@ -5,12 +5,12 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var mongodb = require("mongodb");
-var log = require("./logger.js");
-var events = require("events");
-var util = require("util");
-var ddbbsettings = require("../config.js").ddbbsettings;
-var helpers = require("../common/helpers.js");
+var mongodb = require("mongodb"),
+    log = require("./logger.js"),
+    events = require("events"),
+    util = require("util"),
+    ddbbsettings = require("../config.js").ddbbsettings,
+    helpers = require("../common/helpers.js");
 
 var DataStore = function() {
   this.init = function() {

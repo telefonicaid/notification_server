@@ -5,10 +5,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var dataStore = require("../common/datastore");
-var log = require("../common/logger.js");
-
-var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
+var dataStore = require("../common/datastore"),
+    log = require("../common/logger.js"),
+    ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
 
 function datamanager() {
   log.info("dataManager --> In-Memory data manager loaded.");
