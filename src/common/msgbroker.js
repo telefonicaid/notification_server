@@ -25,20 +25,21 @@
     });
 
     // Queue Events
+    var self = this;
     this.queue.on('ready', (function() {
       log.info("msgbroker::queue.ready --> Connected to Message Broker");
       //TODO: use Events instead of callbacks here
-      this.emit('brokerconnected');
+      self.emit('brokerconnected');
       if (onConnect) {
         return onConnect();
       }
-    }).bind(this));
+    }));
 
     this.queue.on('error', (function(error) {
       log.error('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error);
-      this.emit('brokerdisconnected');
-      this.close();
-    }.bind(this)));
+      self.emit('brokerdisconnected');
+      self.close();
+    }));
   };
 
   this.close = function() {

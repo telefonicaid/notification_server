@@ -64,9 +64,9 @@ main.prototype = {
     }
   },
 
-  stop: function() {
+  stop: function(callback) {
     log.info('Closing the server correctly');
-    this.server.stop();
+    this.server.stop(callback);
   }
 };
 
@@ -79,15 +79,19 @@ m.start();
 /////////////////////////
 // On close application
 function onClose() {
-    log.info('Received interruption (2) signal');
-    m.stop();
-    process.exit(1);
+  log.info('Received interruption (2) signal');
+  m.stop(function(err) {
+    if (err) process.exit(1);
+    process.exit(0);
+  });
 }
 
 function onKill() {
   log.error('Received kill (9 or 15) signal');
-  m.stop();
-  process.exit(1);
+  m.stop(function(err) {
+    if (err) process.exit(1);
+    process.exit(0);
+  });
 }
 
 process.on('SIGINT', onClose);     // 2

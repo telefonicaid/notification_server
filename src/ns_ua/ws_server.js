@@ -257,10 +257,17 @@ server.prototype = {
     return data;
   },
 
-  stop: function() {
+  stop: function(callback) {
     log.info("WS::stop --> Closing WS server");
+    //Server not ready
     this.ready = false;
-    //msgBroker.unsubscribe(process.serverId);
+    //Closing connection with msgBroker
+    msgBroker.close();
+    //Closing connections from the server
+    this.server.close(function() {
+      //Calling the callback
+      callback(null);
+    });
   }
 };
 
