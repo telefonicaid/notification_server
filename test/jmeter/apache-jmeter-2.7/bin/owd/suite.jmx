@@ -6,11 +6,93 @@
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
       <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-        <collectionProp name="Arguments.arguments"/>
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="FrontEndServer1" elementType="Argument">
+            <stringProp name="Argument.name">FrontEndServer1</stringProp>
+            <stringProp name="Argument.value">${__property(FrontEndServer1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="FrontEndServer2" elementType="Argument">
+            <stringProp name="Argument.name">FrontEndServer2</stringProp>
+            <stringProp name="Argument.value">${__property(FrontEndServer2)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BackEndServer1" elementType="Argument">
+            <stringProp name="Argument.name">BackEndServer1</stringProp>
+            <stringProp name="Argument.value">${__property(BackEndServer1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BackEndServer2" elementType="Argument">
+            <stringProp name="Argument.name">BackEndServer2</stringProp>
+            <stringProp name="Argument.value">${__property(BackEndServer2)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_getTokens_stepIncrement" elementType="Argument">
+            <stringProp name="Argument.name">TEST_getTokens_stepIncrement</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_getTokens_stepIncrement)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_registerUA_stepIncrement" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerUA_stepIncrement</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_registerUA_stepIncrement)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ResultsPath" elementType="Argument">
+            <stringProp name="Argument.name">ResultsPath</stringProp>
+            <stringProp name="Argument.value">${__property(Resultspath)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="FrontEndServer1" elementType="Argument">
+            <stringProp name="Argument.name">FrontEndServer1</stringProp>
+            <stringProp name="Argument.value">owd-push-qa-fe1.hi.inet</stringProp>
+            <stringProp name="Argument.desc">This is the front end server under load</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="FrontEndServer2" elementType="Argument">
+            <stringProp name="Argument.name">FrontEndServer2</stringProp>
+            <stringProp name="Argument.value">owd-push-qa-fe2.hi.inet</stringProp>
+            <stringProp name="Argument.desc">This is the front end that runs the POST to websocket node</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BackEndServer1" elementType="Argument">
+            <stringProp name="Argument.name">BackEndServer1</stringProp>
+            <stringProp name="Argument.value">owd-push-qa-be1.hi.inet</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Master back end</stringProp>
+          </elementProp>
+          <elementProp name="BackEndServer2" elementType="Argument">
+            <stringProp name="Argument.name">BackEndServer2</stringProp>
+            <stringProp name="Argument.value">owd-push-qa-be2.hi.inet</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Slave back end</stringProp>
+          </elementProp>
+          <elementProp name="TEST_getTokens_stepIncrement" elementType="Argument">
+            <stringProp name="Argument.name">TEST_getTokens_stepIncrement</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.desc">Additional users per step for the getTokens test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_registerUA_stepIncrement" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerUA_stepIncrement</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.desc">Additional users per step for the registerUA test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ResultsPath" elementType="Argument">
+            <stringProp name="Argument.name">ResultsPath</stringProp>
+            <stringProp name="Argument.value">/owd/results</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </Arguments>
+      <hashTree/>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
@@ -22,7 +104,7 @@
             <success>true</success>
             <label>false</label>
             <code>true</code>
-            <message>true</message>
+            <message>false</message>
             <threadName>false</threadName>
             <dataType>false</dataType>
             <encoding>false</encoding>
@@ -41,6 +123,100 @@
         </objProp>
         <stringProp name="filename">owd/results.jtl</stringProp>
       </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>true</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>true</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+          </value>
+        </objProp>
+        <stringProp name="filename">${Resultspath}/localhost.log</stringProp>
+        <longProp name="interval_grouping">1000</longProp>
+        <boolProp name="graph_aggregated">false</boolProp>
+        <stringProp name="include_sample_labels"></stringProp>
+        <stringProp name="exclude_sample_labels"></stringProp>
+        <collectionProp name="metricConnections">
+          <collectionProp name="917712290">
+            <stringProp name="-1204607085">localhost</stringProp>
+            <stringProp name="1600768">4444</stringProp>
+            <stringProp name="66952">CPU</stringProp>
+            <stringProp name="0"></stringProp>
+          </collectionProp>
+          <collectionProp name="-1383002031">
+            <stringProp name="-1204607085">localhost</stringProp>
+            <stringProp name="1600768">4444</stringProp>
+            <stringProp name="-1993889503">Memory</stringProp>
+            <stringProp name="0"></stringProp>
+          </collectionProp>
+          <collectionProp name="-1270662015">
+            <stringProp name="-1204607085">localhost</stringProp>
+            <stringProp name="1600768">4444</stringProp>
+            <stringProp name="-274342153">Network I/O</stringProp>
+            <stringProp name="0"></stringProp>
+          </collectionProp>
+          <collectionProp name="-723468740">
+            <stringProp name="-1204607085">localhost</stringProp>
+            <stringProp name="1600768">4444</stringProp>
+            <stringProp name="2590131">Swap</stringProp>
+            <stringProp name="0"></stringProp>
+          </collectionProp>
+        </collectionProp>
+      </kg.apc.jmeter.perfmon.PerfMonCollector>
       <hashTree/>
       <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for owd-push-qa-fe1" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -71,32 +247,32 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-fe1.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-fe1.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="-1667832445">
-            <stringProp name="607410007">owd-push-qa-fe1</stringProp>
+          <collectionProp name="1041802919">
+            <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="326420530">
-            <stringProp name="607410007">owd-push-qa-fe1</stringProp>
+          <collectionProp name="-1258911402">
+            <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="438760546">
-            <stringProp name="607410007">owd-push-qa-fe1</stringProp>
+          <collectionProp name="-1146571386">
+            <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="985953821">
-            <stringProp name="607410007">owd-push-qa-fe1</stringProp>
+          <collectionProp name="-599378111">
+            <stringProp name="1504416760">${FrontEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
             <stringProp name="0"></stringProp>
@@ -133,32 +309,32 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-fe2.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-fe2.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="-1666700387">
-            <stringProp name="607410008">owd-push-qa-fe2</stringProp>
+          <collectionProp name="1146339538">
+            <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="327552588">
-            <stringProp name="607410008">owd-push-qa-fe2</stringProp>
+          <collectionProp name="-1154374783">
+            <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="439892604">
-            <stringProp name="607410008">owd-push-qa-fe2</stringProp>
+          <collectionProp name="-1042034767">
+            <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="987085879">
-            <stringProp name="607410008">owd-push-qa-fe2</stringProp>
+          <collectionProp name="-494841492">
+            <stringProp name="1504416791">${FrontEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
             <stringProp name="0"></stringProp>
@@ -166,7 +342,7 @@
         </collectionProp>
       </kg.apc.jmeter.perfmon.PerfMonCollector>
       <hashTree/>
-      <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for owd-push-qa-be1" enabled="false">
+      <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for owd-push-qa-be1" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -195,32 +371,32 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-be1.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-be1.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="869643718">
-            <stringProp name="607406163">owd-push-qa-be1</stringProp>
+          <collectionProp name="869921247">
+            <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1124609257">
-            <stringProp name="607406163">owd-push-qa-be1</stringProp>
+          <collectionProp name="-1124331728">
+            <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="981983734">
-            <stringProp name="607406163">owd-push-qa-be1</stringProp>
+          <collectionProp name="982261263">
+            <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="1529177009">
-            <stringProp name="607406163">owd-push-qa-be1</stringProp>
+          <collectionProp name="1529454538">
+            <stringProp name="1182480812">${BackEndServer1}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
             <stringProp name="0"></stringProp>
@@ -228,7 +404,7 @@
         </collectionProp>
       </kg.apc.jmeter.perfmon.PerfMonCollector>
       <hashTree/>
-      <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for owd-push-qa-be2" enabled="false">
+      <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for owd-push-qa-be2" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -257,32 +433,32 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">owd/owd-push-qa-be2.log</stringProp>
+        <stringProp name="filename">${Resultspath}/owd-push-qa-be2.log</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
         <collectionProp name="metricConnections">
-          <collectionProp name="870775776">
-            <stringProp name="607406164">owd-push-qa-be2</stringProp>
+          <collectionProp name="974457866">
+            <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-1993889503">Memory</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="-1123477199">
-            <stringProp name="607406164">owd-push-qa-be2</stringProp>
+          <collectionProp name="-1019795109">
+            <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="66952">CPU</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="983115792">
-            <stringProp name="607406164">owd-push-qa-be2</stringProp>
+          <collectionProp name="1086797882">
+            <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="-274342153">Network I/O</stringProp>
             <stringProp name="0"></stringProp>
           </collectionProp>
-          <collectionProp name="1530309067">
-            <stringProp name="607406164">owd-push-qa-be2</stringProp>
+          <collectionProp name="1633991157">
+            <stringProp name="1182480843">${BackEndServer2}</stringProp>
             <stringProp name="1600768">4444</stringProp>
             <stringProp name="2590131">Swap</stringProp>
             <stringProp name="0"></stringProp>
@@ -292,12 +468,19 @@
       <hashTree/>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Get token" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-1940622604">
-            <stringProp name="1567">10</stringProp>
+          <collectionProp name="291626625">
+            <stringProp name="-2059196417">${TEST_getTokens_stepIncrement}</stringProp>
             <stringProp name="48">0</stringProp>
             <stringProp name="1722">60</stringProp>
+            <stringProp name="48873">180</stringProp>
             <stringProp name="1722">60</stringProp>
-            <stringProp name="1567">10</stringProp>
+          </collectionProp>
+          <collectionProp name="-1082884318">
+            <stringProp name="-2059196417">${TEST_getTokens_stepIncrement}</stringProp>
+            <stringProp name="48687">120</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="1722">60</stringProp>
           </collectionProp>
         </collectionProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -311,7 +494,7 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">owd-push-qa-f12.hi.inet</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -364,7 +547,7 @@
         </kg.apc.jmeter.samplers.DummySampler>
         <hashTree>
           <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token to text file" enabled="true">
-            <stringProp name="filename">owd/tokens_new.txt</stringProp>
+            <stringProp name="filename">${Resultspath}/tokens_new.txt</stringProp>
             <stringProp name="columns">responseData|\r\n</stringProp>
             <boolProp name="overwrite">false</boolProp>
             <stringProp name="header"></stringProp>
@@ -373,14 +556,21 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Register terminal" enabled="false">
+      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Register terminal" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-896576054">
-            <stringProp name="49">1</stringProp>
-            <stringProp name="0">0</stringProp>
+          <collectionProp name="-1694659946">
+            <stringProp name="-1518497324">${TEST_registerUA_stepIncrement}</stringProp>
             <stringProp name="48">0</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="48873">180</stringProp>
+            <stringProp name="1722">60</stringProp>
+          </collectionProp>
+          <collectionProp name="1225796407">
+            <stringProp name="-1518497324">${TEST_registerUA_stepIncrement}</stringProp>
             <stringProp name="48687">120</stringProp>
-            <stringProp name="1567">10</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="1722">60</stringProp>
+            <stringProp name="1722">60</stringProp>
           </collectionProp>
         </collectionProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -401,7 +591,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">owd-push-qa-fe2.hi.inet</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontEndServer2}</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -444,20 +634,19 @@
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
         <hashTree>
-          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="jp@gc - Dummy Sampler" enabled="true">
+          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Response writer" enabled="true">
             <boolProp name="WAITING">false</boolProp>
             <boolProp name="SUCCESFULL">true</boolProp>
             <stringProp name="RESPONSE_CODE">200</stringProp>
             <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
-            <stringProp name="REQUEST_DATA">Dummy Sampler used to simulate requests and responses
-without actual network activity. This helps debugging tests.</stringProp>
+            <stringProp name="REQUEST_DATA"></stringProp>
             <stringProp name="RESPONSE_DATA">${token}</stringProp>
             <stringProp name="RESPONSE_TIME">0</stringProp>
             <stringProp name="LATENCY">0</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token to text file" enabled="true">
-              <stringProp name="filename">owd/tokens_registered.txt</stringProp>
+              <stringProp name="filename">${Resultspath}/tokens_registered.txt</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -522,7 +711,7 @@ without actual network activity. This helps debugging tests.</stringProp>
           <hashTree/>
         </hashTree>
       </hashTree>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.TransactionsPerSecondGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Transactions per Second" enabled="true">
+      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.TransactionsPerSecondGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Transactions per Second" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -558,7 +747,7 @@ without actual network activity. This helps debugging tests.</stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
       </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
       <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ThreadsStateOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Active Threads Over Time" enabled="true">
+      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ThreadsStateOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Active Threads Over Time" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -594,7 +783,7 @@ without actual network activity. This helps debugging tests.</stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
       </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
       <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.LatenciesOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Response Latencies Over Time" enabled="true">
+      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ThroughputVsThreadsGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Transaction Throughput vs Threads" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -630,43 +819,7 @@ without actual network activity. This helps debugging tests.</stringProp>
         <stringProp name="exclude_sample_labels"></stringProp>
       </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
       <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ThroughputVsThreadsGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Transaction Throughput vs Threads" enabled="true">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>true</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-        <longProp name="interval_grouping">500</longProp>
-        <boolProp name="graph_aggregated">false</boolProp>
-        <stringProp name="include_sample_labels"></stringProp>
-        <stringProp name="exclude_sample_labels"></stringProp>
-      </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
-      <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ResponseTimesDistributionGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="jp@gc - Response Times Distribution" enabled="true">
+      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ResponseTimesDistributionGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Response Times Distribution" enabled="true">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
