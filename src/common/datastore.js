@@ -96,26 +96,29 @@ var DataStore = function() {
   /**
    * Gets a node - server relationship
    */
-  this.getNode = function (token, callback, callbackParam) {
+  this.getNode = function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
-          if(!err && callback && d) {
+          if(!err && callbackFunc && d) {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Data found, calling callback with data");
-            return callback(d, callbackParam);
+            callbackFunc(d, callbackParam);
           }
           else if (!d && !err) {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> No error, but no nodes to notify");
+            callbackFunc(null, callbackParam);
           } else {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Error finding node into MongoDB: " + err);
+            callbackFunc(null, callbackParam);
           }
         });
       } else {
         log.error("datastore::getNode --> there was a problem opening the nodes collection");
+        callbackFunc(null, callbackParam);
       }
     });
   },
@@ -150,19 +153,21 @@ var DataStore = function() {
   /**
    * Gets an application node list
    */
-  this.getApplication = function (token, callback, callbackParam) {
+  this.getApplication = function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
     this.db.collection("apps", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
-          if(!err && callback && d) {
-            return callback(d, callbackParam);
-          }
-          else
+          if(!err && callbackFunc && d) {
+            callbackFunc(d, callbackParam);
+          } else {
             log.debug("datastore::getApplication -->Error finding application from MongoDB: " + err);
+            callbackFunc(null, callbackParam);
+          }
         });
       } else {
         log.error("datastore::getApplication --> there was a problem opening the apps collection");
+        callbackFunc(null, callbackParam);
       }
     });
   },
