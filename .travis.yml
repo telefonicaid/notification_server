@@ -11,7 +11,7 @@ before_install:
   - npm rebuild
 
 before_script:
-  - sudo service rabbitmq-server restart
+  - sudo service rabbitmq-server start
   - sleep 5
   - cd src
   - node start.js &
