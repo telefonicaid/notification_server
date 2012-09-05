@@ -158,7 +158,13 @@ server.prototype = {
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
             var appToken = crypto.hashSHA256(query.data.watoken + query.data.pbkbase64);
-            dataManager.registerApplication(appToken, query.data.uatoken, query.data.pbkbase64, function(ok) {
+            if(!dataManager.getUAToken(connection)) {
+              log.error("No UAToken found for this connection !");
+              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
+              break;
+            }
+
+            dataManager.registerApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
               if (ok) {
                 var baseURL = require('../config.js').NS_AS.publicBaseURL;
                 var notifyURL = helpers.getNotificationURL(appToken);

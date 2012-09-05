@@ -86,7 +86,7 @@ var Push = {
   },
 
   registerApp: function(uatoken, watoken, pbkbase64) {
-    var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"registerWA" }';
+    var msg = '{"data": {"watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"registerWA" }';
     this.logMessage('Preparing to send: ' + msg);
 
     if (this.checkbox.checked) {
