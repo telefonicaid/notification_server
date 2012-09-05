@@ -11,16 +11,12 @@ before_install:
   - npm rebuild
 
 before_script:
+  - rabbitmq-plugins list
   - cd src
-  - nohup node start.js &
+  - node start.js &
   - sleep 10
   - cd ../test
   - node E2Etest.js
-  - cd ..
-
-after_script:
-  - cd src
-  - cat nohup.out
 
 notifications:
    email:
