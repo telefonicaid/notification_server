@@ -54,11 +54,12 @@ function onNodeData(nodeData, json) {
     return log.debug("MSG_mon::onNodeData --> Node data is empty, aborting");
   }
   log.debug("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
-  var body = { "messageId": json._id,
-      "uatoken": nodeData._id,
-      "data": nodeData.data,
-      "payload": json
-    };
+  var body = {
+    "messageId": json._id,
+    "uatoken": nodeData._id,
+    "data": nodeData.data,
+    "payload": json
+  };
   msgBroker.push(
     nodeData.serverId,
     body
