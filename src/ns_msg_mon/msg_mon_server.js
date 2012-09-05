@@ -20,8 +20,8 @@ monitor.prototype = {
       log.info('MSG_mon::init --> MSG monitor server running');
       //We want a durable queue, that do not autodeletes on last closed connection, and
       // with HA activated (mirrored in each rabbit server)
-      var args = { durable: true, autoDelete: false, arguments: { 'x-ha-policy': 'all' } };
-      msgBroker.subscribe("newMessages", args,  function(msg) { onNewMessage(msg); });
+      var args = {durable: true, autoDelete: false, arguments: {'x-ha-policy': 'all'}};
+      msgBroker.subscribe("newMessages", args,  function(msg) {onNewMessage(msg);});
     });
   }
 };
@@ -38,10 +38,13 @@ function onNewMessage(msg) {
 }
 
 function onApplicationData(appData, json) {
-  log.debug("MSG_mon::onApplicationData --> Application data recovered: " + JSON.stringify(appData));
-  if (!appData.node) {
-    return log.debug("MSG_mon::onApplicationData --> No nodes, aborting");
+  if (!appData || !appData.node) {
+    log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
+    dataStore.removeMessage(json._id);
+    return log.debug("MSG_mon::onApplicationData --> No nodes, message removed and aborting");
   }
+
+  log.debug("MSG_mon::onApplicationData --> Application data recovered: " + JSON.stringify(appData));
   appData.node.forEach(function (nodeData, i) {
     log.debug("MSG_mon::onApplicationData --> Notifying node: " + i + ": " + JSON.stringify(nodeData));
     dataStore.getNode(nodeData, onNodeData, json);
@@ -49,16 +52,20 @@ function onApplicationData(appData, json) {
 }
 
 function onNodeData(nodeData, json) {
-  log.debug("MSG_mon::onNodeData --> Node data recovered: " + JSON.stringify(nodeData));
   if (!nodeData) {
-    return log.debug("MSG_mon::onNodeData --> Node data is empty, aborting");
+    log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
+    dataStore.removeMessage(json._id);
+    return log.debug("MSG_mon::onNodeData --> Node data is empty, message removed and aborting");
   }
+
+  log.debug("MSG_mon::onNodeData --> Node data recovered: " + JSON.stringify(nodeData));
   log.debug("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
-  var body = { "messageId": json._id,
-      "uatoken": nodeData._id,
-      "data": nodeData.data,
-      "payload": json
-    };
+  var body = {
+    "messageId": json._id,
+    "uatoken": nodeData._id,
+    "data": nodeData.data,
+    "payload": json
+  };
   msgBroker.push(
     nodeData.serverId,
     body
