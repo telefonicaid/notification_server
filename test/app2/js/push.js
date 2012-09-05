@@ -41,6 +41,7 @@ var Push = {
           self.logMessage("[registerApp:PUSH] Registering for messaging");
           navigator.mozSetMessageHandler("push-notification", function(msg) {
             self.logMessage("[registerApp:PUSH] New Message");
+            self.logMessage(JSON.stringify(msg));
           });
         } catch(e) {
           self.logMessage("[registerApp] This platform does not support system messages.");

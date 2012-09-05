@@ -118,7 +118,7 @@ exports.NS_UA_WS = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 8080
+      port: 9080
     }
   ],
 
