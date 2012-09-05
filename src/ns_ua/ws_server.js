@@ -160,6 +160,7 @@ server.prototype = {
             var appToken = crypto.hashSHA256(query.data.watoken + query.data.pbkbase64);
             if(!dataManager.getUAToken(connection)) {
               log.error("No UAToken found for this connection !");
+              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
               break;
             }
 
