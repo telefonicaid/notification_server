@@ -101,7 +101,7 @@ var DataStore = function() {
     this.db.collection("nodes", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
-          if(!err && callbackFuncOk && d) {
+          if(!err && callbackFunc && d) {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Data found, calling callback with data");
             callbackFunc(d, callbackParam);
