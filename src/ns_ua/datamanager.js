@@ -102,6 +102,13 @@ datamanager.prototype = {
     return callback(false);
   },
 
+  /**
+   * Gets a UAToken from a given connection object
+   */
+  getUAToken: function (connection) {
+    return this.nodesConnections[connection] || null;
+  },
+
   // TODO: Verify that the node exists before add the application
   /**
    * Register a new application
