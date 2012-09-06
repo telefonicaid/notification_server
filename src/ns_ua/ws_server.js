@@ -164,6 +164,7 @@ server.prototype = {
               break;
             }
 
+            log.debug("WS::onWSMessage::registerWA UAToken: " + dataManager.getUAToken(connection));
             dataManager.registerApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
               if (ok) {
                 var baseURL = require('../config.js').NS_AS.publicBaseURL;

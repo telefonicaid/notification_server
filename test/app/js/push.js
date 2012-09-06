@@ -13,7 +13,7 @@ var Push = {
   MAX_RETRIES: 1,
   actualRetries: 0,
 
-  ad: 'futurama.hi.inet:8080',
+  ad: 'localhost:8080',
   ad_ws: null,
   ad_http: null,
 
