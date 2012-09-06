@@ -116,8 +116,7 @@
       method: 'POST'
     };
 
-    var req = http.request(options, function(res) {
-    });
+    var req = http.request(options, function(res) {});
 
     req.on('error', function(e) {
       console.log('problem with request: ' + e.message);
