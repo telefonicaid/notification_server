@@ -86,7 +86,7 @@ server.prototype = {
     var text = null;
     if (!this.ready) {
       log.error('WS:onHTTPMessage --> Request received but not ready yet');
-      text = '{"error": "Server not ready. Try again."}';
+      text = '{"status": "ERROR", "reason": "Server not ready. Try again."}';
       status = 404;
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
@@ -95,12 +95,11 @@ server.prototype = {
       log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
       if (url.messageType == 'token') {
         text = token.get();
-        tokensGenerated++;
         status = 200;
         this.tokensGenerated++;
       } else {
         log.debug("WS::onHTTPMessage --> messageType not recognized");
-        text = '{"error": "messageType not recognized for this HTTP API"}';
+        text = '{"status": "ERROR", "reason": "messageType not recognized for this HTTP API"}';
         status = 404;
       }
     }
@@ -131,7 +130,7 @@ server.prototype = {
         } catch(e) {
           log.error(e);
           log.info("WS::onWSMessage --> Data received is not a valid JSON package");
-          connection.sendUTF('{ "status": "error", "reason": "Data received is not a valid JSON package" }');
+          connection.sendUTF('{ "status": "ERROR", "reason": "Data received is not a valid JSON package" }');
           return connection.close();
         }
 
@@ -153,7 +152,7 @@ server.prototype = {
                   connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
                   log.debug("WS::onWSMessage --> OK register UA");
                 } else {
-                  connection.sendUTF('{"status":"ERROR"}');
+                  connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
                   log.info("WS::onWSMessage --> Failing registering UA");
                 }
               }
@@ -162,12 +161,16 @@ server.prototype = {
 
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
+            if (!query.data.watoken) {
+              log.debug("WS::onWSMessage::registerWA --> Null WAtoken");
+              connection.sendUTF('{ "error": "Not valid WAtoken sent", "reason": "It\'s null" }');
+              return connection.close();
+            }
             if(!dataManager.getUAToken(connection)) {
               log.error("No UAToken found for this connection !");
               connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
               break;
             }
-
             log.debug("WS::onWSMessage::registerWA UAToken: " + dataManager.getUAToken(connection));
             appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
             dataManager.registerApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
@@ -176,7 +179,7 @@ server.prototype = {
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
                 log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {
-                connection.sendUTF('"status": "ERROR"');
+                connection.sendUTF('{"status": "ERROR", reason: "Try again later"}');
                 log.info("WS::onWSMessage::registerWA --> Failing registering WA");
               }
             });
@@ -197,7 +200,7 @@ server.prototype = {
                 connection.sendUTF('{"status": "UNREGISTERED", "url": "' + notifyURL + '", "messageType": "unregisterWA"}');
                 log.debug("WS::onWSMessage::unregisterWA --> OK unregistering WA");
               } else {
-                connection.sendUTF('"status": "ERROR"');
+                connection.sendUTF('{"status": "ERROR", "reason": "Try again later"}');
                 log.info("WS::onWSMessage::unregisterWA --> Failing unregistering WA");
               }
             });
@@ -206,13 +209,13 @@ server.prototype = {
           case "getAllMessages":
             if(!query.data.uatoken) {
               log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
-              connection.sendUTF('{ "error": "No UAtoken sent", "reason": "No UAToken sent" }');
+              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken sent" }');
               return connection.close();
             }
             log.debug("WS::onWSMessage::getAllMessages --> Recovering messages for " + query.data.uatoken);
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage::getAllMessages --> Token not valid (Checksum failed)");
-              connection.sendUTF('{ "error": "Token received is not accepted. Please get a valid one" }');
+              connection.sendUTF('{ "status": "ERROR", "reason": "Token received is not accepted. Please get a valid one" }');
               return connection.close();
             } else {
               dataManager.getAllMessages(query.data.uatoken, function(messages, close) {
@@ -231,13 +234,13 @@ server.prototype = {
 
           default:
             log.debug("WS::onWSMessage::default --> messageType not recognized");
-            connection.sendUTF('{ "error": "messageType not recognized" }');
+            connection.sendUTF('{"status": "ERROR", "reason": "messageType not recognized" }');
             return connection.close();
         }
       } else if (message.type === 'binary') {
         // No binary data supported yet
         log.info('WS::onWSMessage --> Received Binary Message of ' + message.binaryData.length + ' bytes');
-        connection.sendUTF('{ "error": "Binary messages not yet supported" }');
+        connection.sendUTF('{ "status": "ERROR", "reason": "Binary messages not yet supported" }');
         return connection.close();
       }
     };
