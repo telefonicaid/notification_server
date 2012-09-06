@@ -22,44 +22,53 @@ datamanager.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (token, connector, callback) {
-    if(this.nodesTable[token]) {
-      log.debug("dataManager::registerNode --> Removing old node token " + token);
-      delete(this.nodesTable[token]);
-      for (var i in this.nodesConnections) {
-        if (this.nodesConnections[i] == token) {
-          delete(this.nodesConnections[i]);
-          break;
+  registerNode: function (_token, _connector, _callback) {
+    dataStore.getNode(_token, function(d,p) {
+      if(!d) {
+        log.debug("dataManager::registerNode --> No node found on database, so we can register it");
+
+        if(this.nodesTable[p.token]) {
+          log.debug("dataManager::registerNode --> Removing old node token " + p.token);
+          delete(this.nodesTable[p.token]);
+          for (var i in this.nodesConnections) {
+            if (this.nodesConnections[i] == p.token) {
+              delete(this.nodesConnections[i]);
+              break;
+            }
+          }
         }
+
+        if(p.connector.getType() == "UDP") {
+          log.debug("dataManager::registerNode --> Registraton of the node into datastore (UDP Connector)");
+
+          // No persitent object required on this server (ie., UDP connectors)
+          // Register in persistent datastore
+          dataStore.registerNode(
+            p.token,                                      // UAToken
+            "UDP",                                        // Queue name
+            {"interface": p.connector.getInterface()},    // UDP Interface data
+            p.callback
+          );
+        } else {
+          log.debug("dataManager::registerNode --> Registraton of the connector into memory and node into datastore");
+
+          // Register a new node
+          this.nodesTable[p.token] = p.connector;
+          this.nodesConnections[helpers.getConnectionId(p.connector.getConnection())] = p.token;
+
+          // Register in persistent datastore
+          dataStore.registerNode(
+            p.token,                                       // UAToken
+            process.serverId,                              // Queue name (server ID)
+            {},                                            // No extra data
+            p.callback
+          );
+        }
+      } else {
+        log.debug("dataManager::registerNode --> Node registered");
+        p.callback(false);
       }
-    }
-
-    if(connector.getType() == "UDP") {
-      log.debug("dataManager::registerNode --> Registraton of the node into datastore (UDP Connector)");
-
-      // No persitent object required on this server (ie., UDP connectors)
-      // Register in persistent datastore
-      dataStore.registerNode(
-        token,                                        // UAToken
-        "UDP",                                        // Queue name
-        { "interface": connector.getInterface() },    // UDP Interface data
-        callback
-      );
-    } else {
-      log.debug("dataManager::registerNode --> Registraton of the connector into memory and node into datastore");
-
-      // Register a new node
-      this.nodesTable[token] = connector;
-      this.nodesConnections[helpers.getConnectionId(connector.getConnection())] = token;
-
-      // Register in persistent datastore
-      dataStore.registerNode(
-        token,                                        // UAToken
-        process.serverId,                             // Queue name (server ID)
-        {},                                            // No extra data
-        callback
-      );
-    }
+    }.bind(this), {token: _token, connector: _connector, callback: _callback});
   },
 
   /**
