@@ -14,6 +14,16 @@ var token = require("../common/token.js");
 var helpers = require("../common/helpers.js");
 var msgBroker = require("../common/msgbroker.js");
 var config = require("../config.js").NS_UA_WS;
+var log = require("../common/logger.js"),
+    WebSocketServer = require('websocket').server,
+    http = require('http'),
+    crypto = require("../common/cryptography.js"),
+    dataManager = require("./datamanager.js"),
+    Connectors = require("./connectors/connector_base.js").getConnectorFactory(),
+    token = require("../common/token.js"),
+    helpers = require("../common/helpers.js"),
+    msgBroker = require("../common/msgbroker.js"),
+    config = require("../config.js").NS_UA_WS;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -94,6 +104,7 @@ server.prototype = {
       log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
       if (url.messageType == 'token') {
         text = token.get();
+        tokensGenerated++;
         status = 200;
         this.tokensGenerated++;
       } else {
@@ -243,7 +254,7 @@ server.prototype = {
     this.onWSClose = function(reasonCode, description) {
       // TODO: De-register this node
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected.');
-      dataManager.unregisterNode(connection);
+      return dataManager.unregisterNode(connection);
     };
 
     /**
@@ -259,9 +270,8 @@ server.prototype = {
     ///////////////////////
     if (!this.originIsAllowed(request.origin)) {
       // Make sure we only accept requests from an allowed origin
-      request.reject();
       log.debug('WS:: --> Connection from origin ' + request.origin + ' rejected.');
-      return;
+      return request.reject();
     }
 
     var connection = request.accept('push-notification', request.origin);

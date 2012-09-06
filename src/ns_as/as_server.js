@@ -5,20 +5,20 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js");
-var consts = require("../consts.js");
-var http = require('http');
-var uuid = require("node-uuid");
-var crypto = require("../common/cryptography.js");
-var msgBroker = require("../common/msgbroker.js");
-var dataStore = require("../common/datastore.js");
-var emitter = require("events").EventEmitter;
+var log = require("../common/logger"),
+    consts = require("../consts.js"),
+    http = require('http'),
+    uuid = require("node-uuid"),
+    crypto = require("../common/cryptography"),
+    msgBroker = require("../common/msgbroker"),
+    dataStore = require("../common/datastore");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 function onNewPushMessage(notification, watoken, callback) {
   var json = null;
+
   //Only accept valid JSON messages
   try {
     json = JSON.parse(notification);
@@ -30,8 +30,8 @@ function onNewPushMessage(notification, watoken, callback) {
   if (json.messageType != "notification") {
     return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
   }
-  var sig = json.signature;
-  var message = json.message;
+  var sig = json.signature,
+      message = json.message;
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
     log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback('{"status":"ERROR", "reason":"Body too big"}', 200);
@@ -158,8 +158,8 @@ server.prototype = {
   // Auxiliar methods
   ///////////////////////
   parseURL: function(url) {
-    var urlparser = require('url');
-    var data = {};
+    var urlparser = require('url'),
+        data = {};
     data.parsedURL = urlparser.parse(url,true);
     var path = data.parsedURL.pathname.split("/");
     data.messageType = path[1];

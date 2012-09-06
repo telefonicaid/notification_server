@@ -5,13 +5,13 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
- var amqp = require('amqp');
- var log = require("./logger.js");
- var queueconf = require("../config.js").queue;
- var events = require("events");
- var util = require("util");
+var amqp = require('amqp'),
+    log = require("./logger.js"),
+    queueconf = require("../config.js").queue,
+    events = require("events"),
+    util = require("util");
 
- var MsgBroker = function() {
+var MsgBroker = function() {
   events.EventEmitter.call(this);
   this.init = function(onConnect) {
     log.info('msgBroker::queue.init --> Connecting to the queue server');
@@ -63,7 +63,7 @@
   /**
    * Insert a new message into the queue
    */
-   this.push = function(queueName, body) {
+  this.push = function(queueName, body) {
     log.debug('msgbroker::push --> Going to send ' + JSON.stringify(body));
     this.queue.publish(queueName, JSON.stringify(body));
   };
