@@ -20,23 +20,22 @@
  var PushTest = {
 
   getToken: function getToken() {
-    this.port =  require('../src/config.js').NS_UA_WS.interfaces[0].port;
-    this.host = '127.0.0.1';
-    this.NOTIFICATION = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}';
+    PushTest.port =  require('../src/config.js').NS_UA_WS.interfaces[0].port;
+    PushTest.host = '127.0.0.1';
+    PushTest.NOTIFICATION = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}';
 
     var http = require("http");
     var options = {
-      host: this.host,
-      port: this.port,
+      host: PushTest.host,
+      port: PushTest.port,
       path: '/token',
       method: 'GET'
     };
-    var self = this;
     var req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
         debug(chunk);
-        self.token = chunk.toString();
+        PushTest.token = chunk.toString();
       });
     });
     req.on('error', function(e) {
@@ -55,9 +54,8 @@
       console.log('Connect Error: ' + error.toString());
     });
 
-    var self = this;
     client.on('connect', function(connection) {
-      self.connection = connection;
+      PushTest.connection = connection;
       debug('WebSocket client connected');
       connection.on('error', function(error) {
         console.log("Connection Error: " + error.toString());
@@ -70,48 +68,47 @@
           debug("Received: '" + message.utf8Data + "'");
           var msg = JSON.parse(message.utf8Data);
           debug(msg);
-          var notificationJSON = JSON.parse(self.NOTIFICATION);
-          if (msg && msg.status == 'REGISTERED' && msg.messageType == "registerUA") {
-            self.registerUAOK = true;
+          var notificationJSON = JSON.parse(PushTest.NOTIFICATION);
+          if (msg.status == 'REGISTERED' && msg.messageType == "registerUA") {
+            PushTest.registerUAOK = true;
             debug("UA registered");
-          } else if (msg && msg.status == 'REGISTERED' && msg.messageType == 'registerWA') {
-            self.registerWAOK = true;
-            self.url = msg.url;
+          } else if (msg.status == 'REGISTERED' && msg.messageType == 'registerWA') {
+            PushTest.registerWAOK = true;
+            PushTest.url = msg.url;
             debug("WA registered with url -- " + msg.url);
-          } else if (msg && msg[0].messageType == 'notification') {
-            self.gotNotification = true;
-            self.connection.sendUTF('{"messageType": "ack", "messageId": "' + msg[0].messageId+ '"}');
+          } else if (msg[0].messageType == 'notification') {
+            PushTest.gotNotification = true;
+            PushTest.connection.sendUTF('{"messageType": "ack", "messageId": "' + msg[0].messageId+ '"}');
             debug("Notification received!! Sending ACK");
           }
         }
       });
 
       function sendRegisterUAMessage() {
-       var self = this;
         if (connection.connected) {
-          var msg = ('{"data": {"uatoken":"' + self.token + '"}, "messageType":"registerUA"}');
+          var msg = ('{"data": {"uatoken":"' + PushTest.token + '"}, "messageType":"registerUA"}');
           connection.sendUTF(msg.toString());
-          self.registerUAOK = false;
+          PushTest.registerUAOK = false;
         }
       }
       sendRegisterUAMessage();
     });
-    client.connect('ws://' + this.host + ':' + this.port, 'push-notification');
+    client.connect('ws://' + PushTest.host + ':' + PushTest.port, 'push-notification');
   },
 
   registerWA: function registerWA() {
-    var msg = '{"data": {"watoken": "testApp"}, "messageType":"registerWA" }';
-    this.connection.sendUTF(msg.toString());
+    var msg = '{"data": {"uatoken":"' + PushTest.token + '", "watoken": "testApp"}, "messageType":"registerWA" }';
+    PushTest.connection.sendUTF(msg.toString());
   },
 
   _parseURL: function _parseURL() {
     var url = require('url');
-    return url.parse(this.url);
+    return url.parse(PushTest.url);
   },
 
   sendNotification: function sendNotification() {
     var http = require("http");
-    var urlData = this._parseURL();
+    var urlData = PushTest._parseURL();
     var options = {
       host: urlData.hostname,
       port: urlData.port,
@@ -127,7 +124,7 @@
     });
 
     // write data to request body
-    req.write(this.NOTIFICATION);
+    req.write(PushTest.NOTIFICATION);
     req.end();
   },
 
@@ -139,24 +136,24 @@
   },
 
   check: function check() {
-    if (this.registerUAOK &&
-        this.registerWAOK &&
-        this.gotNotification) {
+    if (PushTest.registerUAOK &&
+        PushTest.registerWAOK &&
+        PushTest.gotNotification) {
       debug("Everything went better than expected! http://i2.kym-cdn.com/entries/icons/original/000/001/253/everything_went_better_than_expected.jpg");
-      this.connection.close();
+      PushTest.connection.close();
       process.exit(0);
     } else {
       console.log("KO, check flags:");
-      console.log("registerUAOK is " + this.registerUAOK);
-      console.log("registerWAOK is " + this.registerWAOK);
-      console.log("gotNotification is " + this.gotNotification);
-      this.connection.close();
+      console.log("registerUAOK is " + PushTest.registerUAOK);
+      console.log("registerWAOK is " + PushTest.registerWAOK);
+      console.log("gotNotification is " + PushTest.gotNotification);
+      PushTest.connection.close();
       process.exit(1);
     }
   }
 };
 
-var DEBUG = true;
+var DEBUG = false;
 debug = function(text) {
   if (DEBUG) {
     console.log(text);
