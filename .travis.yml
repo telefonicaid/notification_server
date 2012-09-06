@@ -25,4 +25,4 @@ before_script:
 notifications:
    email:
       - gll@tid.es
-
+      - frsela@tid.es
