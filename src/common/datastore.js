@@ -112,7 +112,7 @@ var DataStore = function() {
             callbackFunc(d, callbackParam);
           } else if (!d && !err) {
             log.debug('Finding info for node ' + token);
-            log.debug("datastore::getNode --> No error, but no nodes to notify");
+            log.debug("datastore::getNode --> No error, but no nodes found");
             callbackFunc(null, callbackParam);
           } else {
             log.debug('Finding info for node ' + token);
