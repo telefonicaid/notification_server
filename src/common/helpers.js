@@ -7,12 +7,13 @@
 
 var publicBaseURL = require('../config.js').NS_AS.publicBaseURL;
 var uuid = require("node-uuid");
+var crypto = require("../common/cryptography.js");
 
 /**
- * Gets the public notification URL for the given watoken
+ * Gets the public notification URL for the given apptoken
  */
-function getNotificationURL(watoken) {
-	return publicBaseURL + "/notify/" + watoken;
+function getNotificationURL(apptoken) {
+	return publicBaseURL + "/notify/" + apptoken;
 }
 exports.getNotificationURL = getNotificationURL;
 
@@ -27,3 +28,8 @@ function getConnectionId(connection) {
   return connection.__uniqueid;
 }
 exports.getConnectionId = getConnectionId;
+
+function getAppToken(watoken, pbkbase64) {
+  return crypto.hashSHA256(watoken + pbkbase64);
+}
+exports.getAppToken = getAppToken;

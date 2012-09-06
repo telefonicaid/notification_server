@@ -8,7 +8,6 @@
 var log = require("../common/logger.js");
 var WebSocketServer = require('websocket').server;
 var http = require('http');
-var crypto = require("../common/cryptography.js");
 var dataManager = require("./datamanager.js");
 var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
 var token = require("../common/token.js");
@@ -114,6 +113,9 @@ server.prototype = {
   // WebSocket callbacks
   //////////////////////////////////////////////
   onWSRequest: function(request) {
+    // Common variables
+    var appToken = null;
+
     ///////////////////////
     // WS Callbacks
     ///////////////////////
@@ -157,7 +159,6 @@ server.prototype = {
 
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
-            var appToken = crypto.hashSHA256(query.data.watoken + query.data.pbkbase64);
             if(!dataManager.getUAToken(connection)) {
               log.error("No UAToken found for this connection !");
               connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
@@ -165,15 +166,36 @@ server.prototype = {
             }
 
             log.debug("WS::onWSMessage::registerWA UAToken: " + dataManager.getUAToken(connection));
+            appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
             dataManager.registerApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
               if (ok) {
-                var baseURL = require('../config.js').NS_AS.publicBaseURL;
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
                 log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {
                 connection.sendUTF('"status": "ERROR"');
                 log.info("WS::onWSMessage::registerWA --> Failing registering WA");
+              }
+            });
+            break;
+
+          case "unregisterWA":
+            log.debug("WS::onWSMessage::unregisterWA --> Application un-registration message");
+            if(!dataManager.getUAToken(connection)) {
+              log.error("No UAToken found for this connection !");
+              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
+              break;
+            }
+
+            appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
+            dataManager.unregisterApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
+              if (ok) {
+                var notifyURL = helpers.getNotificationURL(appToken);
+                connection.sendUTF('{"status": "UNREGISTERED", "url": "' + notifyURL + '", "messageType": "unregisterWA"}');
+                log.debug("WS::onWSMessage::unregisterWA --> OK unregistering WA");
+              } else {
+                connection.sendUTF('"status": "ERROR"');
+                log.info("WS::onWSMessage::unregisterWA --> Failing unregistering WA");
               }
             });
             break;
