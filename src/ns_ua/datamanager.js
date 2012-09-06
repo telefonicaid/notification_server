@@ -7,7 +7,7 @@
 
 var dataStore = require("../common/datastore");
 var log = require("../common/logger.js");
-
+var helpers = require("../common/helpers.js");
 var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
 
 function datamanager() {
@@ -50,7 +50,7 @@ datamanager.prototype = {
 
       // Register a new node
       this.nodesTable[token] = connector;
-      this.nodesConnections[connector.getConnection()] = token;
+      this.nodesConnections[helpers.getConnectionId(connector.getConnection())] = token;
 
       // Register in persistent datastore
       dataStore.registerNode(
@@ -106,7 +106,7 @@ datamanager.prototype = {
    * Gets a UAToken from a given connection object
    */
   getUAToken: function (connection) {
-    return this.nodesConnections[connection] || null;
+    return this.nodesConnections[helpers.getConnectionId(connection)] || null;
   },
 
   // TODO: Verify that the node exists before add the application
