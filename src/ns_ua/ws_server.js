@@ -43,6 +43,7 @@ function server(ip, port) {
   this.ip = ip;
   this.port = port;
   this.ready = false;
+  this.tokensGenerated = 0;
 }
 
 server.prototype = {
@@ -80,7 +81,6 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    var tokensGenerated = 0;
     var status = null;
     var text = null;
     if (!this.ready) {
@@ -95,6 +95,7 @@ server.prototype = {
       if (url.messageType == 'token') {
         text = token.get();
         status = 200;
+        this.tokensGenerated++;
       } else {
         log.debug("WS::onHTTPMessage --> messageType not recognized");
         text = '{"error": "messageType not recognized for this HTTP API"}';
