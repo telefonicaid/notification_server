@@ -65,8 +65,7 @@ var DataStore = function() {
           if(!err && d) {
             log.debug("datastore::registerNode --> Node inserted/update into MongoDB");
             return callback(true);
-          }
-          else {
+          } else {
             log.debug("datastore::registerNode --> Error inserting/updating node into MongoDB -- " + err);
             return callback(false);
           }
@@ -111,8 +110,7 @@ var DataStore = function() {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Data found, calling callback with data");
             callbackFunc(d, callbackParam);
-          }
-          else if (!d && !err) {
+          } else if (!d && !err) {
             log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> No error, but no nodes to notify");
             callbackFunc(null, callbackParam);
@@ -151,6 +149,48 @@ var DataStore = function() {
           });
       } else {
         log.error("datastore::registerApplication --> there was a problem opening the apps collection");
+        return callback(false);
+      }
+    });
+  },
+
+  /**
+   * Unregister an old application
+   */
+  this.unregisterApplication = function (waToken, nodeToken, pbkbase64, callback) {
+    // Remove from MongoDB
+    this.db.collection("apps", function(err, collection) {
+      if (!err) {
+        collection.findAndModify( { _id: waToken },         // query
+          [],                                               // sort
+          { $pull : { node: nodeToken } },                  // update
+          { new: true },                                    // options
+          function(err,d) {
+            if(!err) {
+              log.debug("datastore::unregisterApplication --> Node removed of the application into MongoDB");
+              if(d.node.length == 0) {
+                log.debug("datastore::unregisterApplication --> No more nodes vinculed to this webapp. Removing app from MongoDB");
+                collection.remove( { _id: waToken },
+                                { safe: true },
+                                function(err,d) {
+                  if(!err) {
+                    log.debug("datastore::unregisterApplication --> Application removed from MongoDB");
+                    return callback(true);
+                  } else {
+                    log.debug("datastore::unregisterApplication --> Error removing application from MongoDB: " + err);
+                    return callback(false);
+                  }
+                });
+              } else {
+                return callback(true);
+              }
+            } else {
+              log.debug("datastore::registerApplication --> Error removing node of the application into MongoDB: " + err);
+              return callback(false);
+            }
+          });
+      } else {
+        log.error("datastore::unregisterApplication --> there was a problem opening the apps collection");
         return callback(false);
       }
     });
@@ -282,6 +322,9 @@ var DataStore = function() {
     });
   },
 
+  /**
+   * Remove a message from the dataStore
+   */
   this.removeMessage = function(messageId) {
     log.debug('dataStore::removeMessage --> Going to remove message with _id=' + messageId);
     this.db.collection("messages", function(err, collection) {

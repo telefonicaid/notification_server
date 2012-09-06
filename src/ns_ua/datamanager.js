@@ -118,6 +118,14 @@ datamanager.prototype = {
     dataStore.registerApplication(appToken, nodeToken, pbkbase64, callback);
   },
 
+ /**
+   * Unregister an old application
+   */
+  unregisterApplication: function (appToken, nodeToken, pbkbase64, callback) {
+    // Remove from persistent storage
+    dataStore.unregisterApplication(appToken, nodeToken, pbkbase64, callback);
+  },
+
   /**
    * Recover a message data and associated UAs
    */
