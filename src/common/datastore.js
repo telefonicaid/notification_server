@@ -132,7 +132,7 @@ var DataStore = function() {
     this.db.collection("apps", function(err, collection) {
       if (!err) {
         collection.update( { _id: waToken },
-          { $addToSet : { node: nodeToken, pbkbase64: pbkbase64 }},
+          { $addToSet : { node: nodeToken }, $set : { pbkbase64: pbkbase64 }},
           {safe: true, upsert: true},
           function(err,d) {
             if(!err) {
