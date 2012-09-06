@@ -143,6 +143,10 @@ datamanager.prototype = {
    */
   getAllMessages: function(uatoken, callback) {
     var callbackParam = false;
+    if (!this.nodesTable[uatoken]) {
+      return callback(true);
+    }
+
     if (this.nodesTable[uatoken].getType() == "UDP") {
       callbackParam = true;
     }
