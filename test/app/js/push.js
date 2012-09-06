@@ -38,6 +38,7 @@ var Push = {
     this.registerAppButton1 = document.getElementById('buttonRegisterApp1');
     this.registerAppButton2 = document.getElementById('buttonRegisterApp2');
     this.pullMessagesButton = document.getElementById('buttonPullMessages');
+    this.unregisterAppButton1 = document.getElementById('buttonUnregisterApp1');
     this.logArea = document.getElementById('logarea');
     this.checkbox = document.getElementById('checkBox');
     this.ip = document.getElementById('ip');
@@ -50,6 +51,7 @@ var Push = {
     this.registerAppButton1.addEventListener('click', this.registerApp1.bind(this));
     this.registerAppButton2.addEventListener('click', this.registerApp2.bind(this));
     this.pullMessagesButton.addEventListener('click', this.pullMessages.bind(this));
+    this.unregisterAppButton1.addEventListener('click', this.unregisterApp1.bind(this));
     this.clearButton.addEventListener('click', this.onclear.bind(this));
 
     this.logMessage('[INIT] Notification server: ' + this.ad);
@@ -105,6 +107,26 @@ var Push = {
     }
   },
 
+  unregisterApp: function(uatoken, watoken, pbkbase64) {
+    var msg = '{"data": {"watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"unregisterWA" }';
+    this.logMessage('Preparing to send: ' + msg);
+
+    if (this.checkbox.checked) {
+      this.logMessage("[DEBUG] WS close ... I'll open it ...");
+      this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
+      this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
+      this.ws.connection.onopen = (function() {
+        this.ws.connection.send(msg);
+        this.logMessage('[REG] Application 1 unregistered');
+        this.ws.connection.close();
+      }).bind(this);
+    } else {
+      this.logMessage('[DEBUG] WS open');
+      this.ws.connection.send(msg);
+      this.logMessage('[REG] Application 1 unregistered');
+    }
+  },
+
   registerApp1: function() {
     var pbk1 = '\
     -----BEGIN PUBLIC KEY-----\n\
@@ -114,6 +136,17 @@ var Push = {
     lx8GvbnYJHO/50QGkQIDAQAB\n\
     -----END PUBLIC KEY-----';
     this.registerApp(this.token, 'app1', utf8_to_b64(pbk1));
+  },
+
+  unregisterApp1: function() {
+    var pbk1 = '\
+    -----BEGIN PUBLIC KEY-----\n\
+    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n\
+    P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
+    PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
+    lx8GvbnYJHO/50QGkQIDAQAB\n\
+    -----END PUBLIC KEY-----';
+    this.unregisterApp(this.token, 'app1', utf8_to_b64(pbk1));
   },
 
   registerApp2: function() {
