@@ -5,15 +5,6 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js");
-var WebSocketServer = require('websocket').server;
-var http = require('http');
-var dataManager = require("./datamanager.js");
-var Connectors = require("./connectors/connector_base.js").getConnectorFactory();
-var token = require("../common/token.js");
-var helpers = require("../common/helpers.js");
-var msgBroker = require("../common/msgbroker.js");
-var config = require("../config.js").NS_UA_WS;
 var log = require("../common/logger.js"),
     WebSocketServer = require('websocket').server,
     http = require('http'),

@@ -5,8 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('../config.js').NS_MSG_MON;
-var log = require("../common/logger.js");
+var config = require('../config.js').NS_MSG_MON,
+    log = require("../common/logger.js");
 
 function NS_MSG_MON_main() {
 }
