@@ -32,7 +32,8 @@ var DataStore = function() {
         ddbbsettings.ddbbname,
         new mongodb.Server(
           ddbbsettings.machines[0][0], //host
-          ddbbsettings.machines[0][1] //port
+          ddbbsettings.machines[0][1], //port
+          {auto_reconnect: true} //options
         )
       );
     }
