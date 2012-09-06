@@ -33,7 +33,7 @@ exports.logger = {
  * Choose your host, port and other self-explanatory options
  */
 exports.queue = {
-  host: 'localhost',
+  host: '127.0.0.1',
   port: 5672, //AMQP default port
   debug: false,
   //Just for rabbitmq
