@@ -163,7 +163,7 @@ server.prototype = {
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
             if (!query.data.watoken) {
               log.debug("WS::onWSMessage::registerWA --> Null WAtoken");
-              connection.sendUTF('{ "error": "Not valid WAtoken sent", "reason": "It\'s null" }');
+              connection.sendUTF('{ "status": "ERROR", "reason": Not valid WAtoken sent" }');
               return connection.close();
             }
             if(!dataManager.getUAToken(connection)) {
@@ -179,7 +179,7 @@ server.prototype = {
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
                 log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {
-                connection.sendUTF('{"status": "ERROR", reason: "Try again later"}');
+                connection.sendUTF('{"status": "ERROR", "reason": "Try again later"}');
                 log.info("WS::onWSMessage::registerWA --> Failing registering WA");
               }
             });
