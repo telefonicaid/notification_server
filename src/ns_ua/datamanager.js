@@ -76,7 +76,7 @@ datamanager.prototype = {
    */
   unregisterNode: function(connection) {
     log.debug('dataManager::unregisterNode --> Going to unregister a node');
-    var token = this.nodesConnections[connection];
+    var token = this.nodesConnections[helpers.getConnectionId(connection)];
     if (!token) {
       console.log("dataManager::unregisterNode --> UDP client disconnected, not removing anything");
     }
