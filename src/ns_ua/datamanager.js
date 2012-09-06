@@ -5,10 +5,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var dataStore = require("../common/datastore");
-var log = require("../common/logger.js");
-var helpers = require("../common/helpers.js");
-var ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
+var dataStore = require("../common/datastore"),
+    log = require("../common/logger.js"),
+    helpers = require("../common/helpers.js"),
+    ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
 
 function datamanager() {
   log.info("dataManager --> In-Memory data manager loaded.");
@@ -29,10 +29,10 @@ datamanager.prototype = {
 
         if(this.nodesTable[p.token]) {
           log.debug("dataManager::registerNode --> Removing old node token " + p.token);
-          delete(this.nodesTable[p.token]);
+          this.nodesTable[p.token] = null;
           for (var i in this.nodesConnections) {
             if (this.nodesConnections[i] == p.token) {
-              delete(this.nodesConnections[i]);
+              this.nodesConnections[i] = null;
               break;
             }
           }
@@ -76,15 +76,15 @@ datamanager.prototype = {
    */
   unregisterNode: function(connection) {
     log.debug('dataManager::unregisterNode --> Going to unregister a node');
-    var token = this.nodesConnections[connection];
+    var token = this.nodesConnections[helpers.getConnectionId(connection)];
     if (!token) {
       console.log("dataManager::unregisterNode --> UDP client disconnected, not removing anything");
     }
     if(token) {
       log.debug("dataManager::unregisterNode --> Removing disconnected node token " + token);
       //Delete from memory
-      delete(this.nodesTable[token]);
-      delete(this.nodesConnections[connection]);
+      this.nodesTable[token] = null;
+      this.nodesConnections[connection] = null;
       //Delete from DDBB
       dataStore.unregisterNode(
         token,

@@ -5,8 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var fs = require('fs');
-var logparams = require("../config.js").logger;
+var fs = require('fs'),
+    logparams = require("../config.js").logger;
 
 function logger() {
   this.consoleOutput = logparams.CONSOLEOUTPUT;

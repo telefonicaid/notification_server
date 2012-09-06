@@ -5,12 +5,12 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var mongodb = require("mongodb");
-var log = require("./logger.js");
-var events = require("events");
-var util = require("util");
-var ddbbsettings = require("../config.js").ddbbsettings;
-var helpers = require("../common/helpers.js");
+var mongodb = require("mongodb"),
+    log = require("./logger.js"),
+    events = require("events"),
+    util = require("util"),
+    ddbbsettings = require("../config.js").ddbbsettings,
+    helpers = require("../common/helpers.js");
 
 var DataStore = function() {
   this.init = function() {
@@ -102,20 +102,18 @@ var DataStore = function() {
    * Gets a node - server relationship
    */
   this.getNode = function (token, callbackFunc, callbackParam) {
+    log.debug('datastore::getNode --> Finding info for node ' + token);
     // Get from MongoDB
     this.db.collection("nodes", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
           if(!err && callbackFunc && d) {
-            log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Data found, calling callback with data");
             callbackFunc(d, callbackParam);
           } else if (!d && !err) {
-            log.debug('Finding info for node ' + token);
-            log.debug("datastore::getNode --> No error, but no nodes found");
+            log.debug("datastore::getNode --> No nodes found");
             callbackFunc(null, callbackParam);
           } else {
-            log.debug('Finding info for node ' + token);
             log.debug("datastore::getNode --> Error finding node into MongoDB: " + err);
             callbackFunc(null, callbackParam);
           }
@@ -228,18 +226,24 @@ var DataStore = function() {
     this.db.collection("apps", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: watoken }, function(err, d){
-          if (!err && d) {
-            var pbkbase64 = d.pbkbase64.toString('base64');
-            log.debug("datastore::getPbkApplication --> Found the pbk (base64) '" + pbkbase64 + "' for the watoken '" + watoken);
-            //WARN: This returns the base64 as saved on the DDBB!!
-            return callback(pbkbase64);
-          }
-          else if (!err && !d){
-            log.debug('datastore::getPbkApplication --> There are no pbk for the WAToken' + watoken);
+          if (err) {
+            log.debug('datastore::getPbkApplication --> There was a problem finding the PbK - ' + err);
             return callback();
           } else {
-            log.debug('datastore::getPbkApplication --> There was a problem finding the pbk for the WAToken');
-            return callback();
+            if (!d) {
+              log.debug('There are no WAtoken=' + watoken + ' in the DDBB');
+              return callback();
+            }
+            else if (d && d.pbkbase64) {
+              var pbkbase64 = d.pbkbase64.toString('base64');
+              log.debug("datastore::getPbkApplication --> Found the pbk (base64) '" + pbkbase64 + "' for the watoken '" + watoken);
+              //WARN: This returns the base64 as saved on the DDBB!!
+              return callback(pbkbase64);
+            }
+            else if (d && !d.pbkbase64) {
+              log.debug('datastore::getPbkApplication --> There are no pbk for the WAToken ' + watoken);
+              return callback();
+            }
           }
         });
       } else {

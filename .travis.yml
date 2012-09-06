@@ -16,12 +16,13 @@ before_install:
 
 before_script:
   - cd src
-  - node start.js &
-  - sleep 10
+  - nohup node start.js > /dev/null &
+  - sleep 5
   - cd ../test
   - node E2Etest.js
+  - cd ..
 
 notifications:
    email:
       - gll@tid.es
-
+      - frsela@tid.es
