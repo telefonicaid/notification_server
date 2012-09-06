@@ -19,9 +19,9 @@ NS_MSG_MON_main.prototype = {
     log.info("NS_MSG_MON server initialized");
   },
 
-  stop: function() {
+  stop: function(callback) {
     log.info("NS_MSG_MON server stopped");
-    // TODO
+    this.server.stop(callback);
   }
 };
 

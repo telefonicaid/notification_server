@@ -37,8 +37,9 @@ var childs = [];
 starts = childs;
 
 //Start servers and keep a reference for each of them
-var started = [];
+var started = new Array(childs.length);
 starts.forEach(function(child) {
+  console.log(child);
   started[child] = new (forever.Monitor)(['node', 'main.js', child], {
     max: 1,
     killTree: true,
@@ -46,19 +47,23 @@ starts.forEach(function(child) {
   });
   started[child].start();
   started[child].on('exit', function() {
-    console.warn(child + ' has closed after 1 restart, check the logs!');
+    console.warn(child + ' has closed!');
   });
+  console.log('asdfasdfasdf' + started.length);
 });
 
 function closeChilds() {
-  started.forEach(function(child) {
+  console.log('Kill signal on start.js -->' + started);
+  started.forEach(function(child, index, started) {
     //Send the exit signal to childs (SIGINT)
+    console.log('Sending signal to ' + child);
     child.exit();
   });
 
   //Wait for a safe time to close this parent.
   //This should be enough to every child to close correctly
   setInterval(function() {
+    console.log('Exiting monitor. Thanks for playing');
     process.exit();
   }, 5000);
 }

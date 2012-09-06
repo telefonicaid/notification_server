@@ -23,6 +23,12 @@ monitor.prototype = {
       var args = {durable: true, autoDelete: false, arguments: {'x-ha-policy': 'all'}};
       msgBroker.subscribe("newMessages", args,  function(msg) {onNewMessage(msg);});
     });
+  },
+
+  stop: function(callback) {
+    msgBroker.close();
+    dataStore.close();
+    callback(null);
   }
 };
 

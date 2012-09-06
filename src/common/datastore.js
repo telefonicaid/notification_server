@@ -44,9 +44,14 @@ var DataStore = function() {
         this.emit('ddbbconnected');
       } else {
         log.error("datastore::starting --> Error connecting to MongoDB ! - " + err);
-        // TODO: Cierre del servidor? Modo alternativo?
+        this.close();
       }
     }.bind(this));
+  },
+
+  this.close = function() {
+    log.info('datastore::close --> Closing connection to DB');
+    this.db.close();
   },
 
   this.registerNode = function (token, serverId, data, callback) {
