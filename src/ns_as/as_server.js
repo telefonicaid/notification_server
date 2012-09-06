@@ -70,12 +70,13 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
+
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
     log.info('NS_AS::init --> HTTP push AS server starting on ' + this.ip + ":" + this.port);
 
-    // Msg Broker events
+    // Events from msgBroker
     msgBroker.on('brokerconnected', function() {
       log.info("NS_AS::init --> MsgBroker ready and connected");
       this.msgbrokerready = true;
@@ -85,17 +86,32 @@ server.prototype = {
       this.msgbrokerready = false;
     }.bind(this));
 
-    // DataStore events
+    //Events from dataStore
     dataStore.on('ddbbconnected', function() {
       log.info("NS_AS::init --> DataStore ready and connected");
       this.ddbbready = true;
     }.bind(this));
 
     //Let's wait one second to start the msgBroker and the dataStore
+    dataStore.on('ddbbdisconnected', function() {
+      log.info("NS_AS::init --> DataStore DISCONNECTED!!");
+      this.ddbbready = false;
+    });
+
+    //Wait until we have setup our events listeners
     setTimeout(function() {
       msgBroker.init();
       dataStore.init();
-    }, 1000);
+    }, 10);
+  },
+
+  stop: function(callback) {
+    this.server.close(function() {
+      log.info('NS_AS::stop --> NS_AS closed correctly');
+      this.ddbbready = false;
+      this.msgbrokerready = false;
+      callback(null);
+    });
   },
 
   //////////////////////////////////////////////

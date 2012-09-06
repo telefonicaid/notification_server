@@ -16,7 +16,6 @@ var dgram = require('dgram');
 
 function onNewMessage(messageId) {
   log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
-  
 	// Recover message from the data store. Body contains the Destination UAToken
 	dataManager.getMessage(JSON.parse(messageId.body).messageId.toString(), onMessage, JSON.parse(messageId.body));
 }

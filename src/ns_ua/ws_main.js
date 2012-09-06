@@ -30,11 +30,10 @@ NS_UA_WS_main.prototype = {
     log.info("NS_UA_WS server initialized");
   },
 
-  stop: function() {
-    this.servers.forEach(function(server) {
-      server.stop();
-    });
-    log.info("NS_UA_WS server stopped");
+  stop: function(callback) {
+    for (var i = this.servers.length - 1; i >= 0; i--) {
+      this.servers[i].stop(callback);
+    }
   }
 };
 
