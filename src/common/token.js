@@ -21,7 +21,7 @@ token.prototype = {
 
     //////////////////////////////////////////////////////////////////////////////////////
     // Due to the Node.JS Crypto library decission (ignore padding) we should add it:
-    // @see https://github.com/joyent/node/blob/master/src/node_crypto.cc#1923
+    // @see https://github.com/joyent/node/blob/master/src/node_crypto.cc#L1923
     /*
      * // local decrypt final without strict padding check
      * // to work with php mcrypt
