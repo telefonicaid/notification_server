@@ -51,7 +51,6 @@ datamanager.prototype = {
       // Register a new node
       this.nodesTable[token] = connector;
       this.nodesConnections[helpers.getConnectionId(connector.getConnection())] = token;
-      log.debug(">>>>>>>>>>>>>>>> " + JSON.stringify(this.nodesConnections));	//return connection.socket.remoteAddress + ":" + connection.socket.remotePort;
 
       // Register in persistent datastore
       dataStore.registerNode(
