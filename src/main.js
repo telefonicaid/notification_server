@@ -6,9 +6,9 @@
  */
 
 // Import logger
-var config = require('./config.js');
-var log = require("./common/logger.js");
-var os = require("os");
+var config = require('./config.js'),
+    log = require("./common/logger.js"),
+    os = require("os");
 
 ////////////////////////////////////////////////////////////////////////////////
 function generateServerId() {
@@ -26,7 +26,7 @@ main.prototype = {
   start: function() {
     // Generate a new server ID
     log.info("Server ID: " + generateServerId());
-    var sel;
+    var sel = null;
     // Look for what server type we are running
     // and start what is needed
     switch(process.argv[2]) {
