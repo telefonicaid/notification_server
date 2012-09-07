@@ -5,10 +5,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js");
-var dataManager = require("./datamanager.js");
-var msgBroker = require("../common/msgbroker.js");
-var dgram = require('dgram');
+var log = require("../common/logger.js"),
+    dataManager = require("./datamanager.js"),
+    msgBroker = require("../common/msgbroker.js"),
+    dgram = require('dgram');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions

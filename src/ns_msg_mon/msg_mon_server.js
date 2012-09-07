@@ -5,10 +5,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js");
-var crypto = require("../common/cryptography.js");
-var msgBroker = require("../common/msgbroker.js");
-var dataStore = require("../common/datastore.js");
+var log = require("../common/logger.js"),
+    crypto = require("../common/cryptography.js"),
+    msgBroker = require("../common/msgbroker.js"),
+    dataStore = require("../common/datastore.js");
 
 function monitor() {
 }

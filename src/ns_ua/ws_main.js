@@ -5,8 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('../config.js').NS_UA_WS;
-var log = require("../common/logger.js");
+var config = require('../config.js').NS_UA_WS,
+    log = require("../common/logger.js");
 
 function NS_UA_WS_main() {
   this.servers = [];

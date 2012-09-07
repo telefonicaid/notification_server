@@ -5,11 +5,11 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
- var amqp = require('amqp');
- var log = require("./logger.js");
- var queueconf = require("../config.js").queue;
- var events = require("events");
- var util = require("util");
+var amqp = require('amqp'),
+    log = require("./logger.js"),
+    queueconf = require("../config.js").queue,
+    events = require("events"),
+    util = require("util");
 
  var MsgBroker = function() {
   events.EventEmitter.call(this);
