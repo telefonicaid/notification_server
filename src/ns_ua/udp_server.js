@@ -5,10 +5,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js");
-var dataManager = require("./datamanager.js");
-var msgBroker = require("../common/msgbroker.js");
-var dgram = require('dgram');
+var log = require("../common/logger.js"),
+    dataManager = require("./datamanager.js"),
+    msgBroker = require("../common/msgbroker.js"),
+    dgram = require('dgram');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -33,7 +33,7 @@ function onMessage(messageData) {
     var message = new Buffer("NOTIFY " + JSON.stringify(messageData));
     var client = dgram.createSocket("udp4");
     client.send(
-      message, 0, message.length, 
+      message, 0, message.length,
       messageData.data.data.interface.port, messageData.data.data.interface.ip,
       function(err, bytes) {
         client.close();

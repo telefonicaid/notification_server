@@ -5,8 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var forever = require('forever-monitor');
-var starts = require("./config.js").servers;
+var forever = require('forever-monitor'),
+    starts = require("./config.js").servers;
 
 // Show license
 console.log(

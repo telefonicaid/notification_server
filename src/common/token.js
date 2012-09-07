@@ -5,9 +5,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var uuid = require("node-uuid");
-var crypto = require("./cryptography.js");
-var server_info = require("../config.js").NS_AS.server_info;
+var uuid = require("node-uuid"),
+    crypto = require("./cryptography.js"),
+    server_info = require("../config.js").NS_AS.server_info;
 
 function token() {}
 

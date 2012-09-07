@@ -5,8 +5,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('../config.js').NS_AS;
-var log = require("../common/logger.js");
+var config = require('../config.js').NS_AS,
+    log = require("../common/logger.js");
 
 function NS_AS_main() {
   this.servers = [];
