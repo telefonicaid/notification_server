@@ -17,9 +17,7 @@ NS_UA_WS_main.prototype = {
     var server = require('./ws_server.js').server;
 
     if (!config.interfaces) {
-      log.error("NS_UA_WS interfaces not configured");
-      this.stop();
-      return;
+      return log.error("NS_UA_WS interfaces not configured");
     }
 
     // Start servers

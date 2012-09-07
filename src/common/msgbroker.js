@@ -11,7 +11,7 @@ var amqp = require('amqp'),
     events = require("events"),
     util = require("util");
 
- var MsgBroker = function() {
+var MsgBroker = function() {
   events.EventEmitter.call(this);
   this.init = function(onConnect) {
     log.info('msgBroker::queue.init --> Connecting to the queue server');
@@ -52,7 +52,7 @@ var amqp = require('amqp'),
 
   this.subscribe = function(queueName, args, callback) {
     this.queue.queue(queueName, args, function(q) {
-      log.debug("msgbroker::subscribe --> Subscribed to queue " + queueName);
+      log.info("msgbroker::subscribe --> Subscribed to queue " + queueName);
       q.bind('#');
       q.subscribe(function (message) {
         return callback(message.data);
@@ -63,8 +63,8 @@ var amqp = require('amqp'),
   /**
    * Insert a new message into the queue
    */
-   this.push = function(queueName, body) {
-    log.debug('msgbroker::push --> Going to send ' + JSON.stringify(body));
+  this.push = function(queueName, body) {
+    log.debug('msgbroker::push --> Sending ' + JSON.stringify(body) + ' to the queue ' + queueName);
     this.queue.publish(queueName, JSON.stringify(body));
   };
 };

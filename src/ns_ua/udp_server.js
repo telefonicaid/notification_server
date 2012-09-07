@@ -33,7 +33,7 @@ function onMessage(messageData) {
     var message = new Buffer("NOTIFY " + JSON.stringify(messageData));
     var client = dgram.createSocket("udp4");
     client.send(
-      message, 0, message.length, 
+      message, 0, message.length,
       messageData.data.data.interface.port, messageData.data.data.interface.ip,
       function(err, bytes) {
         client.close();
