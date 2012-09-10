@@ -34,7 +34,7 @@
     var req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
-        debug(chunk.toString());
+        debug(chunk);
         PushTest.token = chunk.toString();
       });
     });
@@ -152,7 +152,7 @@
   }
 };
 
-var DEBUG = true;
+var DEBUG = false;
 debug = function(text) {
   if (DEBUG) {
     console.log(text);
