@@ -72,8 +72,8 @@ server.prototype = {
     // Subscribe to my own Quesue
     var self = this;
     msgBroker.init(function() {
-      var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
-      msgBroker.subscribe(process.serverId, args, function(msg) { onNewMessage(msg); });
+      var args = {durable: false, autoDelete: true, arguments: {'x-ha-policy': 'all'}};
+      msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
       self.ready = true;
     });
   },
@@ -167,14 +167,18 @@ server.prototype = {
               connection.sendUTF('{ "status": "ERROR", "reason": Not valid WAtoken sent" }');
               return connection.close();
             }
-            if(!dataManager.getUAToken(connection)) {
+            var uatoken = dataManager.getUAToken(connection);
+            if(!uatoken) {
               log.error("No UAToken found for this connection !");
-              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
-              break;
+              // TODO: Read the uatoken from the message for UDP clients. Check if the UA stored on DB is also a UDP one
+//              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
+//              break;
+              uatoken = query.data.uatoken;
+              // End of patch
             }
-            log.debug("WS::onWSMessage::registerWA UAToken: " + dataManager.getUAToken(connection));
+            log.debug("WS::onWSMessage::registerWA UAToken: " + uatoken);
             appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
-            dataManager.registerApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
+            dataManager.registerApplication(appToken, uatoken, query.data.pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
