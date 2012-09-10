@@ -34,7 +34,7 @@
     var req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
-        debug(chunk);
+        debug(chunk.toString());
         PushTest.token = chunk.toString();
       });
     });
@@ -97,7 +97,7 @@
   },
 
   registerWA: function registerWA() {
-    var msg = '{"data": {"uatoken":"' + PushTest.token + '", "watoken": "testApp"}, "messageType":"registerWA" }';
+    var msg = '{"data": {"watoken": "testApp"}, "messageType":"registerWA" }';
     PushTest.connection.sendUTF(msg.toString());
   },
 
@@ -152,7 +152,7 @@
   }
 };
 
-var DEBUG = false;
+var DEBUG = true;
 debug = function(text) {
   if (DEBUG) {
     console.log(text);
