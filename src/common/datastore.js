@@ -199,13 +199,14 @@ var DataStore = function() {
    */
   this.getApplication = function (token, callbackFunc, callbackParam) {
     // Get from MongoDB
+    log.debug("datastore::getApplication --> Going to find application with token: " + token);
     this.db.collection("apps", function(err, collection) {
       if (!err) {
         collection.findOne( { _id: token }, function(err,d) {
           if(!err && callbackFunc && d) {
             callbackFunc(d, callbackParam);
           } else {
-            log.debug("datastore::getApplication -->Error finding application from MongoDB: " + err);
+            log.debug("datastore::getApplication --> Error finding application from MongoDB: " + err);
             callbackFunc(null, callbackParam);
           }
         });
@@ -287,10 +288,10 @@ var DataStore = function() {
         collection.findOne( { 'MsgId': id }, function(err,d) {
           if(!err) {
             if (callback && d) {
-              log.debug("datastore::getMessage --> The message has been inserted. Calling callback");
+              log.debug("datastore::getMessage --> The message has been recovered. Calling callback");
               return callback(d, callbackParam);
             } else {
-              log.debug("datastore::getMessage --> The message has been inserted.");
+              log.debug("datastore::getMessage --> The message has been recovered.");
               return d;
             }
           } else {
