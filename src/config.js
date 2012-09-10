@@ -143,3 +143,21 @@ exports.NS_UA_WS = {
 exports.NS_UA_UDP = {
   logfile: "/tmp/NS_UA_UDP.log"
 };
+
+/********************* NS_WakeUp *************************************/
+
+exports.NS_WakeUp = {
+  logfile: "/tmp/NS_WakeUp.log",
+
+  /**
+   * Binding interfaces and ports
+   * [ iface, port ]
+   */
+  interfaces: [
+    // Internal network
+    {
+      ip: "0.0.0.0",
+      port: 8090
+    }
+  ],
+};
