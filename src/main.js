@@ -58,6 +58,13 @@ main.prototype = {
         this.server = new sel.NS_MSG_MON_main();
         this.server.start();
         break;
+      case "NS_WakeUp":
+        log.init(config.NS_WakeUp.logfile, "NS_WakeUp", 1);
+        log.info("Starting as NS_WakeUp server");
+        sel = require('./ns_wakeup/wakeup_main.js');
+        this.server = new sel.NS_WakeUp_main();
+        this.server.start();
+        break;
       default:
         log.init("/tmp/push.log", "PUSH", 1);
         log.error("No server provided");
