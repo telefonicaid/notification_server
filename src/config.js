@@ -77,7 +77,7 @@ exports.ddbbsettings = {
  */
 exports.NS_AS = {
   publicBaseURL: "http://localhost:8081",
-  logfile: "/tmp/NS_AS.log",
+  logfile: "/var/log/push_server/NS_AS.log",
 
   /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
@@ -102,13 +102,13 @@ exports.NS_AS = {
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: "/tmp/NS_Monitor.log"
+  logfile: "/var/log/push_server/NS_Monitor.log"
 };
 
 /********************* NS_UA_WS **************************************/
 
 exports.NS_UA_WS = {
-  logfile: "/tmp/NS_UA_WS.log",
+  logfile: "/var/log/push_server/NS_UA_WS.log",
 
   /**
    * Binding interfaces and ports
@@ -141,5 +141,5 @@ exports.NS_UA_WS = {
 /********************* NS_UA_UDP *************************************/
 
 exports.NS_UA_UDP = {
-  logfile: "/tmp/NS_UA_UDP.log"
+  logfile: "/var/log/push_server/NS_UA_UDP.log"
 };
