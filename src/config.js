@@ -147,7 +147,7 @@ exports.NS_UA_UDP = {
 /********************* NS_WakeUp *************************************/
 
 exports.NS_WakeUp = {
-  logfile: "/tmp/NS_WakeUp.log",
+  logfile: "/var/log/push_server/NS_WakeUp.log",
 
   /**
    * Binding interfaces and ports
