@@ -39,11 +39,16 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    var msg = "";
     log.debug('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
     if(!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
-      response.write('{"status": "ERROR", "reason": "URL Format Error"}');
+      msg = '{"status": "ERROR", "reason": "URL Format Error"}';
+      response.write(msg);
+      response.statusCode = 404;
+      response.setHeader("Content-Type", "text/plain");
+      response.write(msg);
       return response.end();
     }
 
@@ -60,6 +65,8 @@ server.prototype = {
       }
     );
 
+    response.statusCode = 200;
+    response.setHeader("Content-Type", "text/plain");
     response.write('{"status": "OK"}');
     return response.end();
   },
