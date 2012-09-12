@@ -2,7 +2,7 @@ language: "node_js"
 
 node_js:
   - 0.8
-  
+
 services:
   - rabbitmq # will start rabbitmq-server
   - mongodb # will start mongodb
@@ -16,11 +16,14 @@ before_install:
 
 before_script:
   - cd src
-  - sudo nohup node start.js > /dev/null &
+  - sudo nohup node start.js &
   - sleep 5
   - cd ../test
   - node E2Etest.js
   - cd ..
+
+after_script:
+  - sudo pkill node
 
 notifications:
    email:
