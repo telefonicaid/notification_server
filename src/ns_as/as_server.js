@@ -34,7 +34,7 @@ function onNewPushMessage(notification, watoken, callback) {
       message = json.message;
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
     log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
-    return callback('{"status":"ERROR", "reason":"Body too big"}', 200);
+    return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
   }
   dataStore.getPbkApplication(watoken, function(pbkbase64) {
     if (pbkbase64) {
