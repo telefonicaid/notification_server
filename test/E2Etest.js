@@ -97,7 +97,7 @@
   },
 
   registerWA: function registerWA() {
-    var msg = '{"data": {"uatoken":"' + PushTest.token + '", "watoken": "testApp"}, "messageType":"registerWA" }';
+    var msg = '{"data": {"watoken": "testApp"}, "messageType":"registerWA" }';
     PushTest.connection.sendUTF(msg.toString());
   },
 
