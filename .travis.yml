@@ -17,7 +17,7 @@ before_install:
 
 before_script:
   - cd src
-  - sudo node start.js &
+  - sudo nohup node start.js > /dev/null &
   - sleep 5
   - cd ../test
   - node E2Etest.js
