@@ -38,16 +38,16 @@ function onNewMessage(message) {
   };
 
   var req = http.request(options, function(res) {
-    console.log('STATUS: ' + res.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(res.headers));
+    log.debug('STATUS: ' + res.statusCode);
+    log.debug('HEADERS: ' + JSON.stringify(res.headers));
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
-      console.log('BODY: ' + chunk);
+      log.debug('BODY: ' + chunk);
     });
   });
 
   req.on('error', function(e) {
-    console.log('problem with request: ' + e.message);
+    log.debug('problem with request: ' + e.message);
   });
 
   req.end();
