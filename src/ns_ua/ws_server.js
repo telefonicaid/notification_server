@@ -104,12 +104,13 @@ server.prototype = {
         status = 404;
       }
     }
-      // Close connection
-      response.statusCode = status;
-      response.setHeader("Content-Type", "text/plain");
-      response.setHeader("access-control-allow-origin", "*");
-      response.write(text);
-      return response.end();
+
+    // Close connection
+    response.statusCode = status;
+    response.setHeader("Content-Type", "text/plain");
+    response.setHeader("access-control-allow-origin", "*");
+    response.write(text);
+    return response.end();
   },
 
   //////////////////////////////////////////////
