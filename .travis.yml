@@ -13,7 +13,7 @@ branches:
 
 before_install:
   - npm rebuild
-  - sudo mkdir -p /var/log/
+  - sudo mkdir -p /var/log/push_server/
 
 before_script:
   - cd src
