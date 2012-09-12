@@ -38,12 +38,7 @@ function onNewMessage(message) {
   };
 
   var req = http.request(options, function(res) {
-    log.debug('STATUS: ' + res.statusCode);
-    log.debug('HEADERS: ' + JSON.stringify(res.headers));
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-      log.debug('BODY: ' + chunk);
-    });
+    log.debug('Message status: ' + res.statusCode);
   });
 
   req.on('error', function(e) {
