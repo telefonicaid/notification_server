@@ -169,12 +169,17 @@ server.prototype = {
             }
             var uatoken = dataManager.getUAToken(connection);
             if(!uatoken) {
-              log.error("No UAToken found for this connection !");
-              // TODO: Read the uatoken from the message for UDP clients. Check if the UA stored on DB is also a UDP one
-//              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
-//              break;
+              log.info("No UAToken found for this connection - looking in the message");
               uatoken = query.data.uatoken;
-              // End of patch
+              if(uatoken && !token.verify(uatoken)) {
+                log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
+                connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
+                return connection.close();
+              }
+              if(!uatoken) {
+                connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
+                return connection.close();
+              }
             }
             log.debug("WS::onWSMessage::registerWA UAToken: " + uatoken);
             appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
