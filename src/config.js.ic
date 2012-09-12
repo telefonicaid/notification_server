@@ -13,7 +13,8 @@ exports.servers = {
   NS_AS: true,
   NS_MSG_monitor: true,
   NS_UA_WS: true,
-  NS_UA_UDP: false
+  NS_UA_UDP: true,
+  NS_WakeUp: true
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -139,4 +140,22 @@ exports.NS_UA_WS = {
 
 exports.NS_UA_UDP = {
   logfile: "/var/log/push_server/NS_UA_UDP.log"
+};
+
+/********************* NS_WakeUp *************************************/
+
+exports.NS_WakeUp = {
+  logfile: "/var/log/push_server/NS_WakeUp.log",
+
+  /**
+   * Binding interfaces and ports
+   * [ iface, port ]
+   */
+  interfaces: [
+    // Internal network
+    {
+      ip: "0.0.0.0",
+      port: 8090
+    }
+  ],
 };

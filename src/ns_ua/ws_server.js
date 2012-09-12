@@ -72,8 +72,8 @@ server.prototype = {
     // Subscribe to my own Quesue
     var self = this;
     msgBroker.init(function() {
-      var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
-      msgBroker.subscribe(process.serverId, args, function(msg) { onNewMessage(msg); });
+      var args = {durable: false, autoDelete: true, arguments: {'x-ha-policy': 'all'}};
+      msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
       self.ready = true;
     });
   },
@@ -104,12 +104,13 @@ server.prototype = {
         status = 404;
       }
     }
-      // Close connection
-      response.statusCode = status;
-      response.setHeader("Content-Type", "text/plain");
-      response.setHeader("access-control-allow-origin", "*");
-      response.write(text);
-      return response.end();
+
+    // Close connection
+    response.statusCode = status;
+    response.setHeader("Content-Type", "text/plain");
+    response.setHeader("access-control-allow-origin", "*");
+    response.write(text);
+    return response.end();
   },
 
   //////////////////////////////////////////////
@@ -167,14 +168,23 @@ server.prototype = {
               connection.sendUTF('{ "status": "ERROR", "reason": Not valid WAtoken sent" }');
               return connection.close();
             }
-            if(!dataManager.getUAToken(connection)) {
-              log.error("No UAToken found for this connection !");
-              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
-              break;
+            var uatoken = dataManager.getUAToken(connection);
+            if(!uatoken) {
+              log.info("No UAToken found for this connection - looking in the message");
+              uatoken = query.data.uatoken;
+              if(uatoken && !token.verify(uatoken)) {
+                log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
+                connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
+                return connection.close();
+              }
+              if(!uatoken) {
+                connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
+                return connection.close();
+              }
             }
-            log.debug("WS::onWSMessage::registerWA UAToken: " + dataManager.getUAToken(connection));
+            log.debug("WS::onWSMessage::registerWA UAToken: " + uatoken);
             appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
-            dataManager.registerApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
+            dataManager.registerApplication(appToken, uatoken, query.data.pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');

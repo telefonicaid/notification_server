@@ -6,39 +6,46 @@
  */
 
 var log = require("../common/logger.js"),
-    dataManager = require("./datamanager.js"),
     msgBroker = require("../common/msgbroker.js"),
-    dgram = require('dgram');
+    http = require('http');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 
-function onNewMessage(messageId) {
-  log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
-	// Recover message from the data store. Body contains the Destination UAToken
-	dataManager.getMessage(JSON.parse(messageId.body).messageId.toString(), onMessage, JSON.parse(messageId.body));
-}
-
-function onMessage(messageData) {
-  log.debug("Message data: " + JSON.stringify(messageData));
-  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
+function onNewMessage(message) {
+  log.debug("MB: " + message);
+  var messageData = {};
+  try {
+    messageData = JSON.parse(message);
+  } catch(e) {
+    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
+    return;
+  }
 
   // Notify the hanset with the associated Data
-  console.log("Notify to " +
-      messageData.data.data.interface.ip + ":" + messageData.data.data.interface.port
+  log.debug("Notifying node: " + JSON.stringify(messageData.uatoken));
+  log.debug("Notify to " +
+      messageData.data.interface.ip + ":" + messageData.data.interface.port
   );
 
-  // UDP Notification Message
-    var message = new Buffer("NOTIFY " + JSON.stringify(messageData));
-    var client = dgram.createSocket("udp4");
-    client.send(
-      message, 0, message.length,
-      messageData.data.data.interface.port, messageData.data.data.interface.ip,
-      function(err, bytes) {
-        client.close();
-      }
-    );
+  // HTTP Notification Message
+  var options = {
+    host: 'localhost',
+    port: 8090,
+    path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
+    method: 'GET'
+  };
+
+  var req = http.request(options, function(res) {
+    log.debug('Message status: ' + res.statusCode);
+  });
+
+  req.on('error', function(e) {
+    log.debug('problem with request: ' + e.message);
+  });
+
+  req.end();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,6 +66,16 @@ server.prototype = {
       var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
       msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
+  },
+
+  stop: function(callback) {
+    log.info("UDP::stop --> Closing UDP server");
+
+    //Closing connection with msgBroker
+    msgBroker.close();
+
+    //Calling the callback
+    callback(null);
   }
 };
 
