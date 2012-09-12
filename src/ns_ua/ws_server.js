@@ -82,12 +82,11 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    var tokensGenerated = 0;
     var status = null;
     var text = null;
     if (!this.ready) {
       log.error('WS:onHTTPMessage --> Request received but not ready yet');
-      text = '{"error": "Server not ready. Try again."}';
+      text = '{"status": "ERROR", "reason": "Server not ready. Try again."}';
       status = 404;
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
