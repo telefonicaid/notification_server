@@ -7,6 +7,7 @@
 
 var log = require("../common/logger.js"),
     msgBroker = require("../common/msgbroker.js"),
+    mn = require("../common/mobilenetwork.js"),
     http = require('http');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -26,26 +27,36 @@ function onNewMessage(message) {
   // Notify the hanset with the associated Data
   log.debug("Notifying node: " + JSON.stringify(messageData.uatoken));
   log.debug("Notify to " +
-      messageData.data.interface.ip + ":" + messageData.data.interface.port
+      messageData.data.interface.ip + ":" + messageData.data.interface.port +
+      " on network " +
+      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
   );
 
-  // HTTP Notification Message
-  var options = {
-    host: 'localhost',
-    port: 8090,
-    path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
-    method: 'GET'
-  };
+  mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {
+    if(op && op.wakeup) {
+      log.debug("onNewMessage: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
 
-  var req = http.request(options, function(res) {
-    log.debug('Message status: ' + res.statusCode);
-  });
+      // Send HTTP Notification Message
+      var options = {
+        host: op.wakeup.split(":")[0],
+        port: op.wakeup.split(":")[1],
+        path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
+        method: 'GET'
+      };
 
-  req.on('error', function(e) {
-    log.debug('problem with request: ' + e.message);
-  });
+      var req = http.request(options, function(res) {
+        log.debug('Message status: ' + res.statusCode);
+      });
 
-  req.end();
+      req.on('error', function(e) {
+        log.debug('problem with request: ' + e.message);
+      });
+
+      req.end();
+    } else {
+      log.error("onNewMessage: No WakeUp server found");
+    }
+  }.bind(this));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

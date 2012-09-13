@@ -345,7 +345,37 @@ var DataStore = function() {
         log.error("datastore::removeMessage --> There was a problem opening the messages collection");
       }
     });
-  };
+  },
+
+  /**
+   * Recovers an operator from the dataStore
+   */
+  this.getOperator = function(mcc, mnc, callback) {
+    var id = helpers.padNumber(mcc,3) + "-" + helpers.padNumber(mnc,2);
+    log.debug("Looking for operator " + id);
+    // Get from MongoDB
+    this.db.collection("operators", function(err, collection) {
+      if (!err) {
+        collection.findOne( { '_id': id }, function(err,d) {
+          if(!err) {
+            if (d) {
+              log.debug("datastore::getOperator --> The operator has been recovered. Calling callback");
+              return callback(d);
+            } else {
+              log.debug("datastore::getOperator --> No operator found. Calling callback");
+              return callback(null);
+            }
+          } else {
+            log.debug("datastore::getOperator --> Error finding operator from MongoDB: " + err);
+            return callback(null);
+          }
+        });
+      } else {
+        log.error("datastore::getOperator --> There was a problem opening the messages collection");
+        return callback(null);
+      }
+    });
+  }
 };
 
 ///////////////////////////////////////////

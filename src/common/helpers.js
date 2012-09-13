@@ -33,3 +33,12 @@ function getAppToken(watoken, pbkbase64) {
   return crypto.hashSHA256(watoken + pbkbase64);
 }
 exports.getAppToken = getAppToken;
+
+function padNumber(number,len) {
+    var str = '' + number;
+    while (str.length < len) {
+        str = '0' + str;
+    }
+    return str;
+}
+exports.padNumber = padNumber;
