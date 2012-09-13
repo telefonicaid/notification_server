@@ -46,7 +46,8 @@ datamanager.prototype = {
           dataStore.registerNode(
             p.token,                                      // UAToken
             "UDP",                                        // Queue name
-            {"interface": p.connector.getInterface()},    // UDP Interface data
+            {"interface": p.connector.getInterface(),     // UDP Interface data
+             "mobilenetwork": p.connector.getMobileNetwork()},  // MCC, MNC
             p.callback
           );
         } else {

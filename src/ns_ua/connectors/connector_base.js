@@ -5,7 +5,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var conn_ws = require("./connector_ws.js"),
+var mn = require("../../common/mobilenetwork.js"),
+    log = require("../../common/logger.js"),
+    conn_ws = require("./connector_ws.js"),
     conn_udp = require("./connector_udp.js");
 
 function connector_base() {
@@ -15,15 +17,26 @@ connector_base.prototype = {
   /**
    * Create and return a connector object based on the data received
    */
-  getConnector: function(data,conn) {
-    // TODO: Por ahora sólo devolvemos websocket connector
-    // TODO: En funcion de la IP, deberemos decidir si ir por uno u otro conector
-    var c = null;
-    if(data.interface != null && data.interface.ip != null && data.interface.port != null)
-      c = new conn_udp(data,conn);
-    else
-      c = new conn_ws(data,conn);
-    return c;
+  getConnector: function(data,conn,callback) {
+    if(data.interface && data.interface.ip && data.interface.port &&
+       data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc) {
+      mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(op) {
+        if(op && op.wakeup) {
+          log.debug("getConnector: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
+          callback(null,new conn_udp(data,conn));
+        } else {
+          if(op && op.operator) {
+            log.debug("getConnector: No UDP WakeUp server found for " + op.operator);
+          } else {
+            log.debug("getConnector: No operator found for MCC=" +
+              data.mobilenetwork.mcc + " and MNC=" + data.mobilenetwork.mnc);
+          }
+          callback(null,new conn_ws(data,conn));
+        }
+      }.bind(this));
+    } else {
+      callback(null,new conn_ws(data,conn));
+    }
   }
 };
 
