@@ -80,12 +80,12 @@ function test9() {
 
 function test10() {
   console.log("[Test MobileNetwork]: 10.- Recovering telefonica españa with number parameters (testing padding)");
-  mn.getNetwork(217, 4, result);
+  mn.getNetwork(214, 7, result);
 }
 
 function test11() {
   console.log("[Test MobileNetwork]: 11.- Calling without callback (telefonica españa)");
-  mn.getNetwork("217", "04");
+  mn.getNetwork("214", "07");
 }
 
 function test12() {

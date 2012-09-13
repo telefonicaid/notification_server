@@ -6,7 +6,8 @@
  */
 
 var datastore = require("./datastore.js"),
-    log = require("../common/logger.js");
+    log = require("../common/logger.js")
+    helpers = require("./helpers.js");
 
 function MobileNetwork() {
   this.cache = {};
@@ -28,8 +29,7 @@ MobileNetwork.prototype = {
       return log.error("[MobileNetwork]: No callback method provided !");
     }
 
-    // TODO: Check the lenght of mcc & mnc and add padding if necessary
-    var index = mcc + "-" + mnc;
+    var index = helpers.padNumber(mcc,3) + "-" + helpers.padNumber(mnc,2);
     var value = {};
 
     log.debug("[MobileNetwork] looking for MCC-MNC: " + index);
