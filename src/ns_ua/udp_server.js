@@ -32,7 +32,6 @@ function onNewMessage(message) {
       messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
   );
 
-  // TODO: Check the WakeUp server IP based on MCC and MNC
   mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {
     if(op && op.wakeup) {
       log.debug("onNewMessage: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
