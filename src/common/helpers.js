@@ -1,5 +1,5 @@
 /**
- * PUSH Notification server V 0.3
+ * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>

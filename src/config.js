@@ -1,5 +1,5 @@
 /**
- * PUSH Notification server V 0.2
+ * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
  * License: GNU Affero V3 (see LICENSE file)
  * Fernando Rodríguez Sela <frsela@tid.es>
