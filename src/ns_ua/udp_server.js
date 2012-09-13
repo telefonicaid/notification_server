@@ -39,8 +39,8 @@ function onNewMessage(message) {
 
       // Send HTTP Notification Message
       var options = {
-        host: 'localhost',
-        port: 8090,
+        host: op.wakeup.split(":")[0],
+        port: op.wakeup.split(":")[1],
         path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
         method: 'GET'
       };
