@@ -41,13 +41,13 @@ MobileNetwork.prototype = {
 
     // Check if the network if it's in the database and update cache
     datastore.getOperator(mcc,mnc,function(d) {
-      if(d != null) {
+      if(d) {
         log.debug("[MobileNetwork] found on database: " + JSON.stringify(d));
         this.cache[index] = d;
         return callback(d);
       }
       log.debug("[MobileNetwork] Not found on database");
-      return callback({});
+      return callback(null);
     }.bind(this));
   }
 }
