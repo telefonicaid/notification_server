@@ -145,19 +145,26 @@ server.prototype = {
               return connection.close();
             }
             // New UA registration
-            dataManager.registerNode(
-              query.data.uatoken,
-              Connectors.getConnector(query.data, connection),
-              function(ok) {
-                if (ok) {
-                  connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
-                  log.debug("WS::onWSMessage --> OK register UA");
-                } else {
+            Connectors.getConnector(query.data, connection, function(err,c) {
+              if(err) {
                   connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
-                  log.info("WS::onWSMessage --> Failing registering UA");
-                }
+                  return log.error("WS::onWSMessage --> Error getting connection object");
               }
-            );
+
+              dataManager.registerNode(
+                query.data.uatoken,
+                c,
+                function(ok) {
+                  if (ok) {
+                    connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
+                    log.debug("WS::onWSMessage --> OK register UA");
+                  } else {
+                    connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
+                    log.info("WS::onWSMessage --> Failing registering UA");
+                  }
+                }
+              );
+            }.bind(this));
             break;
 
           case "registerWA":
@@ -279,7 +286,7 @@ server.prototype = {
     }
 
     var connection = request.accept('push-notification', request.origin);
-    log.debug('WS::onHTTPMessage --> Connection accepted.');
+    log.debug('WS::onWSRequest --> Connection accepted.');
     connection.on('message', this.onWSMessage);
     connection.on('close', this.onWSClose);
   },

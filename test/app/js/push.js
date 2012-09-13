@@ -43,6 +43,8 @@ var Push = {
     this.checkbox = document.getElementById('checkBox');
     this.ip = document.getElementById('ip');
     this.port = document.getElementById('port');
+    this.mcc = document.getElementById('mcc');
+    this.mnc = document.getElementById('mnc');
     this.tokenPlace = document.getElementById('token');
 
     this.getTokenButton.addEventListener('click', this.getToken.bind(this));
@@ -62,21 +64,19 @@ var Push = {
   },
 
   getToken: function() {
-    if (this.token === null) {
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = (function() {
-        if (xmlhttp.readyState == 4) {
-          if (xmlhttp.status == 200) {
-            this.token = xmlhttp.responseText;
-            this.tokenPlace.value = this.token;
-          } else {
-            this.logMessage('[TOK] The notification server is not working');
-          }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = (function() {
+      if (xmlhttp.readyState == 4) {
+        if (xmlhttp.status == 200) {
+          this.token = xmlhttp.responseText;
+          this.tokenPlace.value = this.token;
+        } else {
+          this.logMessage('[TOK] The notification server is not working');
         }
-      }.bind(this));
-      xmlhttp.open('GET', this.ad_http + '/token', true);
-      xmlhttp.send(null);
-    }
+      }
+    }.bind(this));
+    xmlhttp.open('GET', this.ad_http + '/token', true);
+    xmlhttp.send(null);
   },
 
   registerDevice: function() {
@@ -202,7 +202,7 @@ var Push = {
     this.ws.ready = true;
     this.logMessage('[REG] Started registration to the notification server');
     if (this.checkbox.checked) {
-      this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" }, "mobilenetwork": { "mcc": "214", "mnc": "07" } }, "messageType":"registerUA"}');
+      this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" }, "mobilenetwork": { "mcc": "' + this.mcc.value + '", "mnc": "' + this.mnc.value + '" } }, "messageType":"registerUA"}');
     } else {
       this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "messageType":"registerUA"}');
     }
