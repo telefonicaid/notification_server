@@ -14,7 +14,8 @@ var log = require("../common/logger.js"),
     token = require("../common/token.js"),
     helpers = require("../common/helpers.js"),
     msgBroker = require("../common/msgbroker.js"),
-    config = require("../config.js").NS_UA_WS;
+    config = require("../config.js").NS_UA_WS,
+    consts = require("../consts.js");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -93,20 +94,43 @@ server.prototype = {
       var url = this.parseURL(request.url);
 
       log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
-      if (url.messageType == 'token') {
+      switch (url.messageType) {
+      case 'token':
         text = token.get();
+        response.setHeader("Content-Type", "text/plain");
         status = 200;
         this.tokensGenerated++;
-      } else {
+        break;
+
+      case 'about':
+        if(consts.PREPRODUCTION_MODE) {
+          try {
+            var fs = require("fs");
+            text = "Push Notification Server (User Agent Frontend)<br />";
+            text += "&copy; Telef&oacute;nica Digital, 2012<br />";
+            text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
+            text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
+            response.setHeader("Content-Type", "text/html");
+          } catch(e) {
+            text = "No version.info file";
+          }
+          status = 200;
+        } else {
+          status = 404;
+          text = '{"status": "ERROR", "reason": "Not allowed on production system"}';
+        }
+        break;
+
+      default:
         log.debug("WS::onHTTPMessage --> messageType not recognized");
         text = '{"status": "ERROR", "reason": "messageType not recognized for this HTTP API"}';
+        response.setHeader("Content-Type", "text/plain");
         status = 404;
       }
     }
 
     // Close connection
     response.statusCode = status;
-    response.setHeader("Content-Type", "text/plain");
     response.setHeader("access-control-allow-origin", "*");
     response.write(text);
     return response.end();

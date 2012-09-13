@@ -7,4 +7,5 @@
 
 module.exports = {
   MAX_PAYLOAD_SIZE: 1024,
+  PREPRODUCTION_MODE: true
 };
