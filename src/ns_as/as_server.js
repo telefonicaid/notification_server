@@ -124,16 +124,40 @@ server.prototype = {
       response.write('{"status": "ERROR", "reason": "Try again later"}');
       return response.end();
     }
+
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
     var url = this.parseURL(request.url);
-    if (!url.token) {
-      log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
-      response.statusCode = 404;
-      response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
-      return response.end();
-    }
     log.debug("NS_AS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
-    if (url.messageType == 'notify') {
+    switch (url.messageType) {
+    case 'about':
+      if(consts.PREPRODUCTION_MODE) {
+        try {
+          var fs = require("fs");
+          text = "Push Notification Server (Application Server Frontend)<br />";
+          text += "&copy; Telef&oacute;nica Digital, 2012<br />";
+          text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
+          text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
+        } catch(e) {
+          text = "No version.info file";
+        }
+        response.setHeader("Content-Type", "text/html");
+        response.statusCode = 200;
+        response.write(text);
+        return response.end();
+      } else {
+        response.statusCode = 404;
+        response.write('{"status": "ERROR", "reason": "Not allowed on production system"}');
+        return response.end();
+      }
+
+    case 'notify':
+      if (!url.token) {
+        log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
+        response.statusCode = 404;
+        response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
+        return response.end();
+      }
+
       log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
       request.on("data", function(notification) {
         onNewPushMessage(notification, url.token, function(body, code) {
@@ -144,7 +168,9 @@ server.prototype = {
             return response.end();
         });
       });
-    } else {
+      break;
+
+    default:
       log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
       response.statusCode = 404;
       response.setHeader("Content-Type", "text/plain");
