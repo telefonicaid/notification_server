@@ -5,7 +5,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var mb = require("../../common/mobilenetwork.js"),
+var mn = require("../../common/mobilenetwork.js"),
     log = require("../../common/logger.js"),
     conn_ws = require("./connector_ws.js"),
     conn_udp = require("./connector_udp.js");
@@ -20,7 +20,7 @@ connector_base.prototype = {
   getConnector: function(data,conn,callback) {
     if(data.interface && data.interface.ip && data.interface.port &&
        data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc) {
-      mb.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(op) {
+      mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(op) {
         if(op && op.wakeup) {
           log.debug("getConnector: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
           callback(null,new conn_udp(data,conn));

@@ -7,6 +7,7 @@
 
 var log = require("../common/logger.js"),
     msgBroker = require("../common/msgbroker.js"),
+    mn = require("../common/mobilenetwork.js"),
     http = require('http');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,24 +33,31 @@ function onNewMessage(message) {
   );
 
   // TODO: Check the WakeUp server IP based on MCC and MNC
+  mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {
+    if(op && op.wakeup) {
+      log.debug("onNewMessage: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
 
-  // HTTP Notification Message
-  var options = {
-    host: 'localhost',
-    port: 8090,
-    path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
-    method: 'GET'
-  };
+      // Send HTTP Notification Message
+      var options = {
+        host: 'localhost',
+        port: 8090,
+        path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
+        method: 'GET'
+      };
 
-  var req = http.request(options, function(res) {
-    log.debug('Message status: ' + res.statusCode);
-  });
+      var req = http.request(options, function(res) {
+        log.debug('Message status: ' + res.statusCode);
+      });
 
-  req.on('error', function(e) {
-    log.debug('problem with request: ' + e.message);
-  });
+      req.on('error', function(e) {
+        log.debug('problem with request: ' + e.message);
+      });
 
-  req.end();
+      req.end();
+    } else {
+      log.error("onNewMessage: No WakeUp server found");
+    }
+  }.bind(this));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
