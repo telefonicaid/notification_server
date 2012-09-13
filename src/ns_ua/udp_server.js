@@ -26,8 +26,12 @@ function onNewMessage(message) {
   // Notify the hanset with the associated Data
   log.debug("Notifying node: " + JSON.stringify(messageData.uatoken));
   log.debug("Notify to " +
-      messageData.data.interface.ip + ":" + messageData.data.interface.port
+      messageData.data.interface.ip + ":" + messageData.data.interface.port +
+      " on network " +
+      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
   );
+
+  // TODO: Check the WakeUp server IP based on MCC and MNC
 
   // HTTP Notification Message
   var options = {

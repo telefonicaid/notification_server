@@ -202,7 +202,7 @@ var Push = {
     this.ws.ready = true;
     this.logMessage('[REG] Started registration to the notification server');
     if (this.checkbox.checked) {
-      this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "messageType":"registerUA"}');
+      this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" }, "mobilenetwork": { "mcc": "214", "mnc": "07" } }, "messageType":"registerUA"}');
     } else {
       this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "messageType":"registerUA"}');
     }

@@ -19,10 +19,15 @@ connector_base.prototype = {
     // TODO: Por ahora sólo devolvemos websocket connector
     // TODO: En funcion de la IP, deberemos decidir si ir por uno u otro conector
     var c = null;
-    if(data.interface != null && data.interface.ip != null && data.interface.port != null)
+    if(data.interface != null &&
+        data.interface.ip != null && data.interface.port != null &&
+       data.mobilenetwork != null &&
+        data.mobilenetwork.mcc != null && data.mobilenetwork.mnc != null) {
+      // TODO: Verify if the MCC and MNC is managed by us
       c = new conn_udp(data,conn);
-    else
+    } else {
       c = new conn_ws(data,conn);
+    }
     return c;
   }
 };
