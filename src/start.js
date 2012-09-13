@@ -6,6 +6,7 @@
  */
 
 var forever = require('forever-monitor'),
+    fs = require("fs"),
     starts = require("./config.js").servers;
 
 // Show license
@@ -26,6 +27,14 @@ console.log(
     You should have received a copy of the GNU Affero General Public License \n\
     along with this program.  If not, see <http://www.gnu.org/licenses/>. \n\
 \n\n\n\n");
+
+// Show version
+try {
+  var version = fs.readFileSync("version.info");
+  console.log("PUSH Notification Server Version: " + version);
+} catch(e) {
+  console.error("No version.info file, please run make");
+}
 
 //Fill what server should be started
 var childs = [];
