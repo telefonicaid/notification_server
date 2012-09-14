@@ -122,10 +122,10 @@
             <success>true</success>
             <label>true</label>
             <code>true</code>
-            <message>true</message>
+            <message>false</message>
             <threadName>true</threadName>
             <dataType>true</dataType>
-            <encoding>true</encoding>
+            <encoding>false</encoding>
             <assertions>false</assertions>
             <subresults>false</subresults>
             <responseData>false</responseData>
@@ -139,7 +139,6 @@
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
             <url>true</url>
-            <fileName>true</fileName>
             <hostname>true</hostname>
             <threadCounts>true</threadCounts>
             <sampleCount>true</sampleCount>
