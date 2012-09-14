@@ -123,7 +123,7 @@
             <label>true</label>
             <code>true</code>
             <message>false</message>
-            <threadName>false</threadName>
+            <threadName>true</threadName>
             <dataType>false</dataType>
             <encoding>false</encoding>
             <assertions>false</assertions>
@@ -138,7 +138,6 @@
             <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
-            <hostname>true</hostname>
             <sampleCount>true</sampleCount>
           </value>
         </objProp>
@@ -206,7 +205,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">${ResultsPath}/localhost.log</stringProp>
+        <stringProp name="filename">${ResultsPath}/localhost.csv</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
@@ -974,7 +973,7 @@
             <threadName>true</threadName>
             <dataType>true</dataType>
             <encoding>false</encoding>
-            <assertions>true</assertions>
+            <assertions>false</assertions>
             <subresults>true</subresults>
             <responseData>false</responseData>
             <samplerData>false</samplerData>
