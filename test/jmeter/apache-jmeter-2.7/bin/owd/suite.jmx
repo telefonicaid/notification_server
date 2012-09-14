@@ -44,7 +44,7 @@
           </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
-            <stringProp name="Argument.value">${__property(Resultspath)}</stringProp>
+            <stringProp name="Argument.value">${__property(ResultsPath)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
