@@ -116,27 +116,33 @@
         <objProp>
           <name>saveConfig</name>
           <value class="SampleSaveConfiguration">
-            <time>false</time>
-            <latency>false</latency>
-            <timestamp>false</timestamp>
-            <success>false</success>
-            <label>false</label>
-            <code>false</code>
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
             <message>false</message>
-            <threadName>false</threadName>
+            <threadName>true</threadName>
             <dataType>false</dataType>
             <encoding>false</encoding>
             <assertions>false</assertions>
-            <subresults>true</subresults>
+            <subresults>false</subresults>
             <responseData>false</responseData>
-            <samplerData>true</samplerData>
+            <samplerData>false</samplerData>
             <xml>true</xml>
             <fieldNames>false</fieldNames>
             <responseHeaders>false</responseHeaders>
             <requestHeaders>false</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <url>true</url>
+            <hostname>true</hostname>
+            <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
+            <idleTime>true</idleTime>
           </value>
         </objProp>
         <stringProp name="filename">${ResultsPath}/results.jtl</stringProp>
@@ -553,27 +559,8 @@
           </RegexExtractor>
           <hashTree/>
         </hashTree>
-        <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write token to disk" enabled="true">
-          <boolProp name="WAITING">false</boolProp>
-          <boolProp name="SUCCESFULL">true</boolProp>
-          <stringProp name="RESPONSE_CODE">200</stringProp>
-          <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
-          <stringProp name="REQUEST_DATA"></stringProp>
-          <stringProp name="RESPONSE_DATA">${token}</stringProp>
-          <stringProp name="RESPONSE_TIME"></stringProp>
-          <stringProp name="LATENCY"></stringProp>
-        </kg.apc.jmeter.samplers.DummySampler>
-        <hashTree>
-          <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token to text file" enabled="true">
-            <stringProp name="filename">${ResultsPath}/tokens_new.txt</stringProp>
-            <stringProp name="columns">responseData|\r\n</stringProp>
-            <boolProp name="overwrite">false</boolProp>
-            <stringProp name="header"></stringProp>
-            <stringProp name="footer"></stringProp>
-          </kg.apc.jmeter.reporters.FlexibleFileWriter>
-          <hashTree/>
-        </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="false">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If token is valid" enabled="true">
+          <stringProp name="TestPlan.comments">We check the length of the token only</stringProp>
           <stringProp name="IfController.condition">${__javaScript(&apos;${token}&apos;.length)}==320</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
