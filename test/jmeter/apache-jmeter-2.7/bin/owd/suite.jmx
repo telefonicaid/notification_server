@@ -42,6 +42,11 @@
             <stringProp name="Argument.value">${__property(TEST_registerApp_stepIncrement)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="TEST_receiveNotification_stepIncrement" elementType="Argument">
+            <stringProp name="Argument.name">TEST_receiveNotification_stepIncrement</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_receiveNotification_stepIncrement)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
             <stringProp name="Argument.value">${__property(Resultspath)}</stringProp>
@@ -52,61 +57,56 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="false">
         <collectionProp name="Arguments.arguments">
           <elementProp name="FrontEndServer1" elementType="Argument">
             <stringProp name="Argument.name">FrontEndServer1</stringProp>
             <stringProp name="Argument.value">owd-push-qa-fe1.hi.inet</stringProp>
-            <stringProp name="Argument.desc">This is the front end server under load</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontEndServer2" elementType="Argument">
             <stringProp name="Argument.name">FrontEndServer2</stringProp>
             <stringProp name="Argument.value">owd-push-qa-fe2.hi.inet</stringProp>
-            <stringProp name="Argument.desc">This is the front end that runs the POST to websocket node</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackEndServer1" elementType="Argument">
             <stringProp name="Argument.name">BackEndServer1</stringProp>
             <stringProp name="Argument.value">owd-push-qa-be1.hi.inet</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Master back end</stringProp>
           </elementProp>
           <elementProp name="BackEndServer2" elementType="Argument">
             <stringProp name="Argument.name">BackEndServer2</stringProp>
             <stringProp name="Argument.value">owd-push-qa-be2.hi.inet</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Slave back end</stringProp>
           </elementProp>
           <elementProp name="TEST_getTokens_stepIncrement" elementType="Argument">
             <stringProp name="Argument.name">TEST_getTokens_stepIncrement</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
-            <stringProp name="Argument.desc">Additional users per step for the getTokens test</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_registerUA_stepIncrement" elementType="Argument">
             <stringProp name="Argument.name">TEST_registerUA_stepIncrement</stringProp>
             <stringProp name="Argument.value">0</stringProp>
-            <stringProp name="Argument.desc">Additional users per step for the registerUA test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_registerApp_stepIncrement" elementType="Argument">
             <stringProp name="Argument.name">TEST_registerApp_stepIncrement</stringProp>
             <stringProp name="Argument.value">0</stringProp>
-            <stringProp name="Argument.desc">Additional users per step for the registerApp test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_receiveNotification_stepIncrement" elementType="Argument">
             <stringProp name="Argument.name">TEST_receiveNotification_stepIncrement</stringProp>
             <stringProp name="Argument.value">0</stringProp>
+<<<<<<< HEAD
+=======
             <stringProp name="Argument.desc">Additional users per step for the receiveNotification test</stringProp>
+>>>>>>> origin/develop
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
             <stringProp name="Argument.value">owd/results</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Path to store the results relative to jmeter</stringProp>
           </elementProp>
         </collectionProp>
       </Arguments>
@@ -520,9 +520,9 @@
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/token</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
           <boolProp name="HTTPSampler.monitor">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
