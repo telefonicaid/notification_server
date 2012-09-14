@@ -116,27 +116,34 @@
         <objProp>
           <name>saveConfig</name>
           <value class="SampleSaveConfiguration">
-            <time>false</time>
-            <latency>false</latency>
-            <timestamp>false</timestamp>
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
             <success>true</success>
-            <label>false</label>
+            <label>true</label>
             <code>true</code>
-            <message>false</message>
-            <threadName>false</threadName>
-            <dataType>false</dataType>
-            <encoding>false</encoding>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>true</encoding>
             <assertions>false</assertions>
             <subresults>false</subresults>
             <responseData>false</responseData>
             <samplerData>false</samplerData>
             <xml>false</xml>
-            <fieldNames>false</fieldNames>
+            <fieldNames>true</fieldNames>
             <responseHeaders>false</responseHeaders>
             <requestHeaders>false</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <url>true</url>
+            <fileName>true</fileName>
+            <hostname>true</hostname>
+            <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
+            <idleTime>true</idleTime>
           </value>
         </objProp>
         <stringProp name="filename">${ResultsPath}/results.jtl</stringProp>
@@ -265,7 +272,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">${ResultsPath}/owd-push-qa-fe1.log</stringProp>
+        <stringProp name="filename">${ResultsPath}/owd-push-qa-fe1.csv</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
@@ -327,7 +334,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">${ResultsPath}/owd-push-qa-fe2.log</stringProp>
+        <stringProp name="filename">${ResultsPath}/owd-push-qa-fe2.csv</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
@@ -389,7 +396,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">${ResultsPath}/owd-push-qa-be1.log</stringProp>
+        <stringProp name="filename">${ResultsPath}/owd-push-qa-be1.csv</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
@@ -451,7 +458,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename">${ResultsPath}/owd-push-qa-be2.log</stringProp>
+        <stringProp name="filename">${ResultsPath}/owd-push-qa-be2.csv</stringProp>
         <longProp name="interval_grouping">1000</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
