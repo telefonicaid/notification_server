@@ -98,7 +98,7 @@
           </elementProp>
           <elementProp name="TEST_receiveNotification_stepIncrement" elementType="Argument">
             <stringProp name="Argument.name">TEST_receiveNotification_stepIncrement</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Additional users per step for the receiveNotification test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -171,7 +171,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename"></stringProp>
+        <stringProp name="filename">C:\Users\Iván Fernández\Desktop\reports\result.jtl</stringProp>
       </ResultCollector>
       <hashTree/>
       <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
@@ -985,7 +985,7 @@
             <bytes>true</bytes>
           </value>
         </objProp>
-        <stringProp name="filename"></stringProp>
+        <stringProp name="filename">C:\Users\Iván Fernández\Desktop\results\results.jtl</stringProp>
         <longProp name="interval_grouping">500</longProp>
         <boolProp name="graph_aggregated">false</boolProp>
         <stringProp name="include_sample_labels"></stringProp>
