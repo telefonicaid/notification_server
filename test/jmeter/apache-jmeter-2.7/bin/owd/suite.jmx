@@ -117,14 +117,14 @@
           <name>saveConfig</name>
           <value class="SampleSaveConfiguration">
             <time>true</time>
-            <latency>true</latency>
+            <latency>false</latency>
             <timestamp>true</timestamp>
             <success>true</success>
             <label>true</label>
             <code>true</code>
             <message>false</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
+            <threadName>false</threadName>
+            <dataType>false</dataType>
             <encoding>false</encoding>
             <assertions>false</assertions>
             <subresults>false</subresults>
@@ -135,14 +135,11 @@
             <responseHeaders>false</responseHeaders>
             <requestHeaders>false</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
-            <url>true</url>
             <hostname>true</hostname>
-            <threadCounts>true</threadCounts>
             <sampleCount>true</sampleCount>
-            <idleTime>true</idleTime>
           </value>
         </objProp>
         <stringProp name="filename">${ResultsPath}/results.jtl</stringProp>
