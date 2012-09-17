@@ -1,14 +1,14 @@
 /**
- * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
 // Import logger
-var config = require('./config.js');
-var log = require("./common/logger.js");
-var os = require("os");
+var config = require('./config.js'),
+    log = require("./common/logger.js"),
+    os = require("os");
 
 ////////////////////////////////////////////////////////////////////////////////
 function generateServerId() {
@@ -26,7 +26,7 @@ main.prototype = {
   start: function() {
     // Generate a new server ID
     log.info("Server ID: " + generateServerId());
-    var sel;
+    var sel = null;
     // Look for what server type we are running
     // and start what is needed
     switch(process.argv[2]) {
@@ -58,15 +58,22 @@ main.prototype = {
         this.server = new sel.NS_MSG_MON_main();
         this.server.start();
         break;
+      case "NS_WakeUp":
+        log.init(config.NS_WakeUp.logfile, "NS_WakeUp", 1);
+        log.info("Starting as NS_WakeUp server");
+        sel = require('./ns_wakeup/wakeup_main.js');
+        this.server = new sel.NS_WakeUp_main();
+        this.server.start();
+        break;
       default:
         log.init("/tmp/push.log", "PUSH", 1);
         log.error("No server provided");
     }
   },
 
-  stop: function() {
+  stop: function(callback) {
     log.info('Closing the server correctly');
-    this.server.stop();
+    this.server.stop(callback);
   }
 };
 
@@ -79,15 +86,19 @@ m.start();
 /////////////////////////
 // On close application
 function onClose() {
-    log.info('Received interruption (2) signal');
-    m.stop();
-    process.exit(1);
+  log.info('Received interruption (2) signal');
+  m.stop(function(err) {
+    if (err) process.exit(1);
+    process.exit(0);
+  });
 }
 
 function onKill() {
   log.error('Received kill (9 or 15) signal');
-  m.stop();
-  process.exit(1);
+  m.stop(function(err) {
+    if (err) process.exit(1);
+    process.exit(0);
+  });
 }
 
 process.on('SIGINT', onClose);     // 2

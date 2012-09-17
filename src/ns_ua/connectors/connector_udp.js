@@ -1,6 +1,6 @@
 /**
- * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
@@ -20,6 +20,10 @@ connector_udp.prototype = {
 
   getInterface: function() {
     return this.data.interface;
+  },
+
+  getMobileNetwork: function() {
+    return this.data.mobilenetwork;
   },
 
   getConnection: function() {

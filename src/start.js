@@ -1,12 +1,13 @@
 /**
- * PUSH Notification server V 0.3
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var forever = require('forever-monitor');
-var starts = require("./config.js").servers;
+var forever = require('forever-monitor'),
+    fs = require("fs"),
+    starts = require("./config.js").servers;
 
 // Show license
 console.log(
@@ -27,6 +28,14 @@ console.log(
     along with this program.  If not, see <http://www.gnu.org/licenses/>. \n\
 \n\n\n\n");
 
+// Show version
+try {
+  var version = fs.readFileSync("version.info");
+  console.log("PUSH Notification Server Version: " + version);
+} catch(e) {
+  console.error("No version.info file, please run make");
+}
+
 //Fill what server should be started
 var childs = [];
 (function fillChilds() {
@@ -37,7 +46,7 @@ var childs = [];
 starts = childs;
 
 //Start servers and keep a reference for each of them
-var started = [];
+var started = new Array(childs.length);
 starts.forEach(function(child) {
   started[child] = new (forever.Monitor)(['node', 'main.js', child], {
     max: 1,
@@ -46,19 +55,25 @@ starts.forEach(function(child) {
   });
   started[child].start();
   started[child].on('exit', function() {
-    console.warn(child + ' has closed after 1 restart, check the logs!');
+    console.warn(child + ' has closed!');
   });
 });
 
+var closing = false;
 function closeChilds() {
-  started.forEach(function(child) {
+  if (closing) { return; }
+  closing = true;
+  console.log('Kill signal on start.js -->' + started);
+  started.forEach(function(child, index, started) {
     //Send the exit signal to childs (SIGINT)
+    console.log('Sending signal to ' + child);
     child.exit();
   });
 
   //Wait for a safe time to close this parent.
   //This should be enough to every child to close correctly
   setInterval(function() {
+    console.log('Exiting monitor. Thanks for playing');
     process.exit();
   }, 5000);
 }

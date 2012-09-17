@@ -1,45 +1,62 @@
 /**
- * PUSH Notification server V 0.3
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js");
-var dataManager = require("./datamanager.js");
-var msgBroker = require("../common/msgbroker.js");
-var dgram = require('dgram');
+var log = require("../common/logger.js"),
+    msgBroker = require("../common/msgbroker.js"),
+    mn = require("../common/mobilenetwork.js"),
+    http = require('http');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 
-function onNewMessage(messageId) {
-  log.debug("MB: " + messageId.body + " | Headers: " + messageId.headers['message-id']);
-  
-	// Recover message from the data store. Body contains the Destination UAToken
-	dataManager.getMessage(JSON.parse(messageId.body).messageId.toString(), onMessage, JSON.parse(messageId.body));
-}
-
-function onMessage(messageData) {
-  log.debug("Message data: " + JSON.stringify(messageData));
-  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
+function onNewMessage(message) {
+  log.debug("MB: " + message);
+  var messageData = {};
+  try {
+    messageData = JSON.parse(message);
+  } catch(e) {
+    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
+    return;
+  }
 
   // Notify the hanset with the associated Data
-  console.log("Notify to " +
-      messageData.data.data.interface.ip + ":" + messageData.data.data.interface.port
+  log.debug("Notifying node: " + JSON.stringify(messageData.uatoken));
+  log.debug("Notify to " +
+      messageData.data.interface.ip + ":" + messageData.data.interface.port +
+      " on network " +
+      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
   );
 
-  // UDP Notification Message
-    var message = new Buffer("NOTIFY " + JSON.stringify(messageData));
-    var client = dgram.createSocket("udp4");
-    client.send(
-      message, 0, message.length, 
-      messageData.data.data.interface.port, messageData.data.data.interface.ip,
-      function(err, bytes) {
-        client.close();
-      }
-    );
+  mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {
+    if(op && op.wakeup) {
+      log.debug("onNewMessage: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
+
+      // Send HTTP Notification Message
+      var options = {
+        host: op.wakeup.split(":")[0],
+        port: op.wakeup.split(":")[1],
+        path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
+        method: 'GET'
+      };
+
+      var req = http.request(options, function(res) {
+        log.debug('Message status: ' + res.statusCode);
+      });
+
+      req.on('error', function(e) {
+        log.debug('problem with request: ' + e.message);
+      });
+
+      req.end();
+    } else {
+      log.error("onNewMessage: No WakeUp server found");
+    }
+  }.bind(this));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +77,16 @@ server.prototype = {
       var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
       msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
+  },
+
+  stop: function(callback) {
+    log.info("UDP::stop --> Closing UDP server");
+
+    //Closing connection with msgBroker
+    msgBroker.close();
+
+    //Calling the callback
+    callback(null);
   }
 };
 

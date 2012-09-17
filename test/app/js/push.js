@@ -13,7 +13,7 @@ var Push = {
   MAX_RETRIES: 1,
   actualRetries: 0,
 
-  ad: '10.0.0.1:8080',
+  ad: 'localhost:8080',
   ad_ws: null,
   ad_http: null,
 
@@ -38,10 +38,13 @@ var Push = {
     this.registerAppButton1 = document.getElementById('buttonRegisterApp1');
     this.registerAppButton2 = document.getElementById('buttonRegisterApp2');
     this.pullMessagesButton = document.getElementById('buttonPullMessages');
+    this.unregisterAppButton1 = document.getElementById('buttonUnregisterApp1');
     this.logArea = document.getElementById('logarea');
     this.checkbox = document.getElementById('checkBox');
     this.ip = document.getElementById('ip');
     this.port = document.getElementById('port');
+    this.mcc = document.getElementById('mcc');
+    this.mnc = document.getElementById('mnc');
     this.tokenPlace = document.getElementById('token');
 
     this.getTokenButton.addEventListener('click', this.getToken.bind(this));
@@ -50,6 +53,7 @@ var Push = {
     this.registerAppButton1.addEventListener('click', this.registerApp1.bind(this));
     this.registerAppButton2.addEventListener('click', this.registerApp2.bind(this));
     this.pullMessagesButton.addEventListener('click', this.pullMessages.bind(this));
+    this.unregisterAppButton1.addEventListener('click', this.unregisterApp1.bind(this));
     this.clearButton.addEventListener('click', this.onclear.bind(this));
 
     this.logMessage('[INIT] Notification server: ' + this.ad);
@@ -60,21 +64,19 @@ var Push = {
   },
 
   getToken: function() {
-    if (this.token === null) {
-      var xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = (function() {
-        if (xmlhttp.readyState == 4) {
-          if (xmlhttp.status == 200) {
-            this.token = xmlhttp.responseText;
-            this.tokenPlace.value = this.token;
-          } else {
-            this.logMessage('[TOK] The notification server is not working');
-          }
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.onreadystatechange = (function() {
+      if (xmlhttp.readyState == 4) {
+        if (xmlhttp.status == 200) {
+          this.token = xmlhttp.responseText;
+          this.tokenPlace.value = this.token;
+        } else {
+          this.logMessage('[TOK] The notification server is not working');
         }
-      }.bind(this));
-      xmlhttp.open('GET', this.ad_http + '/token', true);
-      xmlhttp.send(null);
-    }
+      }
+    }.bind(this));
+    xmlhttp.open('GET', this.ad_http + '/token', true);
+    xmlhttp.send(null);
   },
 
   registerDevice: function() {
@@ -86,7 +88,7 @@ var Push = {
   },
 
   registerApp: function(uatoken, watoken, pbkbase64) {
-    var msg = '{"data": {"uatoken":"' + uatoken + '", "watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"registerWA" }';
+    var msg = '{"data": {"uatoken": "' + uatoken + '", "watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"registerWA" }';
     this.logMessage('Preparing to send: ' + msg);
 
     if (this.checkbox.checked) {
@@ -105,6 +107,26 @@ var Push = {
     }
   },
 
+  unregisterApp: function(uatoken, watoken, pbkbase64) {
+    var msg = '{"data": {"watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"unregisterWA" }';
+    this.logMessage('Preparing to send: ' + msg);
+
+    if (this.checkbox.checked) {
+      this.logMessage("[DEBUG] WS close ... I'll open it ...");
+      this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
+      this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
+      this.ws.connection.onopen = (function() {
+        this.ws.connection.send(msg);
+        this.logMessage('[REG] Application 1 unregistered');
+        this.ws.connection.close();
+      }).bind(this);
+    } else {
+      this.logMessage('[DEBUG] WS open');
+      this.ws.connection.send(msg);
+      this.logMessage('[REG] Application 1 unregistered');
+    }
+  },
+
   registerApp1: function() {
     var pbk1 = '\
     -----BEGIN PUBLIC KEY-----\n\
@@ -114,6 +136,17 @@ var Push = {
     lx8GvbnYJHO/50QGkQIDAQAB\n\
     -----END PUBLIC KEY-----';
     this.registerApp(this.token, 'app1', utf8_to_b64(pbk1));
+  },
+
+  unregisterApp1: function() {
+    var pbk1 = '\
+    -----BEGIN PUBLIC KEY-----\n\
+    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n\
+    P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
+    PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
+    lx8GvbnYJHO/50QGkQIDAQAB\n\
+    -----END PUBLIC KEY-----';
+    this.unregisterApp(this.token, 'app1', utf8_to_b64(pbk1));
   },
 
   registerApp2: function() {
@@ -169,7 +202,7 @@ var Push = {
     this.ws.ready = true;
     this.logMessage('[REG] Started registration to the notification server');
     if (this.checkbox.checked) {
-      this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" } }, "messageType":"registerUA"}');
+      this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" }, "mobilenetwork": { "mcc": "' + this.mcc.value + '", "mnc": "' + this.mnc.value + '" } }, "messageType":"registerUA"}');
     } else {
       this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "messageType":"registerUA"}');
     }

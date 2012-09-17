@@ -1,12 +1,12 @@
 /**
- * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('../config.js').NS_UA_WS;
-var log = require("../common/logger.js");
+var config = require('../config.js').NS_UA_WS,
+    log = require("../common/logger.js");
 
 function NS_UA_WS_main() {
   this.servers = [];
@@ -17,9 +17,7 @@ NS_UA_WS_main.prototype = {
     var server = require('./ws_server.js').server;
 
     if (!config.interfaces) {
-      log.error("NS_UA_WS interfaces not configured");
-      this.stop();
-      return;
+      return log.error("NS_UA_WS interfaces not configured");
     }
 
     // Start servers
@@ -30,11 +28,10 @@ NS_UA_WS_main.prototype = {
     log.info("NS_UA_WS server initialized");
   },
 
-  stop: function() {
-    this.servers.forEach(function(server) {
-      server.stop();
-    });
-    log.info("NS_UA_WS server stopped");
+  stop: function(callback) {
+    for (var i = this.servers.length - 1; i >= 0; i--) {
+      this.servers[i].stop(callback);
+    }
   }
 };
 

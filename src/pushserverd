@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# pushserverd - Startup script for pushserver
+
+# processname: pushserverd
+
+. /etc/rc.d/init.d/functions
+
+
+NODE="/usr/bin/node"
+PUSH_SERVER="/opt/pdi/owd/push_server/src/"
+CONFIGFILE="$PUSH_SERVER/config.js"
+OPTIONS=" start"
+PUSHSERVER_USER=push_server
+PUSHSERVER_GROUP=push_server
+
+
+
+start()
+{
+
+
+  echo -n $"Starting push_server. "
+  #daemon --user "$PUSHSERVER_USER" $node $CONFIGFILE
+  cd $PUSH_SERVER
+  case "$1" in
+  NS_AS)
+    nohup $NODE main.js NS_AS >  /dev/null 2>&1 &
+    ;;
+  NS_MSG_monitor)
+    nohup $NODE main.js NS_MSG_monitor >  /dev/null 2>&1 &
+    ;;
+  NS_UA_WS)
+    nohup $NODE main.js NS_UA_WS >  /dev/null 2>&1 &
+    ;;
+  POST_TO_WEBSOCKET)
+    cd $PUSH_SERVER/../other
+    nohup $NODE post-to-websocket.js >  /dev/null 2>&1 & 
+    ;;
+  *)
+    nohup $NODE $OPTIONS >  /dev/null 2>&1 &
+  esac
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && touch /var/lock/subsys/pushserverd
+}
+
+stop()
+{
+  echo -n $"Stopping push_server. "
+  #killproc -p "$PIDFILE" -d 300 /usr/bin/mongod
+  ps h -o pid -C node | tr '\n' ' ' | xargs sudo kill -9
+  RETVAL=$?
+  echo
+  [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/pushserverd
+}
+
+restart () {
+	stop
+	start
+}
+
+
+
+
+ulimit -n 12000
+RETVAL=0
+
+case "$1" in
+  start)
+    start $2
+    ;;
+  stop)
+    stop $2
+    ;;
+  restart|reload|force-reload)
+    restart $2
+    ;;
+  status)
+    status node
+    RETVAL=$?
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|status|restart|reload|force-reload} {NS_AS|NS_MSG_monitor|NS_UA_WS|POST_TO_WEBSOCKET}"
+    RETVAL=1
+esac
+
+exit $RETVAL

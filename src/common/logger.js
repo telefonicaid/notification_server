@@ -1,12 +1,12 @@
 /**
- * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var fs = require('fs');
-var logparams = require("../config.js").logger;
+var fs = require('fs'),
+    logparams = require("../config.js").logger;
 
 function logger() {
   this.consoleOutput = logparams.CONSOLEOUTPUT;
@@ -17,7 +17,7 @@ function logger() {
 logger.prototype = {
   init: function (logfile, appname, consoleOutput) {
     // use {'flags': 'a'} to append and {'flags': 'w'} to erase and write a new file
-    this.logfile = fs.createWriteStream(logfile, { flags: 'a', encoding: null, mode: 666 });
+    this.logfile = fs.createWriteStream(logfile, { flags: 'a', encoding: null, mode: 0666 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
     this.info("---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------");

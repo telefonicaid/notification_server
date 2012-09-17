@@ -1,12 +1,12 @@
 /**
- * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('../config.js').NS_MSG_MON;
-var log = require("../common/logger.js");
+var config = require('../config.js').NS_MSG_MON,
+    log = require("../common/logger.js");
 
 function NS_MSG_MON_main() {
 }
@@ -19,9 +19,9 @@ NS_MSG_MON_main.prototype = {
     log.info("NS_MSG_MON server initialized");
   },
 
-  stop: function() {
+  stop: function(callback) {
     log.info("NS_MSG_MON server stopped");
-    // TODO
+    this.server.stop(callback);
   }
 };
 

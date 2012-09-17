@@ -1,6 +1,6 @@
 /**
- * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
@@ -22,8 +22,9 @@ NS_UA_UDP_main.prototype = {
     log.info("NS_UA_UDP server initialized");
   },
 
-  stop: function() {
+  stop: function(callback) {
     log.info("NS_UA_UDP server stopped");
+    this.servers.stop(callback);
   }
 };
 

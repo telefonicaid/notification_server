@@ -54,3 +54,4 @@ vows.describe('Token tests').addBatch({
     }
   }
 }).export(module);
+

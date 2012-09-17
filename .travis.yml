@@ -3,26 +3,27 @@ language: "node_js"
 node_js:
   - 0.8
 
+services:
+  - rabbitmq # will start rabbitmq-server
+  - mongodb # will start mongodb
+
 branches:
   only:
     - develop
 
 before_install:
   - npm rebuild
+  - sudo mkdir -p /var/log/push_server/
 
 before_script:
   - cd src
-  - nohup node start.js &
-  - sleep 10
+  - sudo nohup node start.js > /dev/null &
+  - sleep 5
   - cd ../test
   - node E2Etest.js
   - cd ..
 
-after_script:
-  - cd src
-  - cat nohup.out
-
 notifications:
    email:
       - gll@tid.es
-
+      - frsela@tid.es

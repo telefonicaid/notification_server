@@ -1,5 +1,5 @@
 /**
- * PUSH Notification server V 0.2
+ * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
  * License: GNU Affero V3 (see LICENSE file)
  * Fernando Rodríguez Sela <frsela@tid.es>
@@ -14,7 +14,8 @@ exports.servers = {
   NS_AS: true,
   NS_MSG_monitor: true,
   NS_UA_WS: true,
-  NS_UA_UDP: false
+  NS_UA_UDP: true,
+  NS_WakeUp: true
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -33,7 +34,7 @@ exports.logger = {
  * Choose your host, port and other self-explanatory options
  */
 exports.queue = {
-  host: 'localhost',
+  host: '127.0.0.1',
   port: 5672, //AMQP default port
   debug: false,
   //Just for rabbitmq
@@ -77,7 +78,7 @@ exports.ddbbsettings = {
  */
 exports.NS_AS = {
   publicBaseURL: "http://localhost:8081",
-  logfile: "/tmp/NS_AS.log",
+  logfile: "/var/log/push_server/NS_AS.log",
 
   /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
@@ -102,13 +103,13 @@ exports.NS_AS = {
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: "/tmp/NS_Monitor.log"
+  logfile: "/var/log/push_server/NS_Monitor.log"
 };
 
 /********************* NS_UA_WS **************************************/
 
 exports.NS_UA_WS = {
-  logfile: "/tmp/NS_UA_WS.log",
+  logfile: "/var/log/push_server/NS_UA_WS.log",
 
   /**
    * Binding interfaces and ports
@@ -141,5 +142,23 @@ exports.NS_UA_WS = {
 /********************* NS_UA_UDP *************************************/
 
 exports.NS_UA_UDP = {
-  logfile: "/tmp/NS_UA_UDP.log"
+  logfile: "/var/log/push_server/NS_UA_UDP.log"
+};
+
+/********************* NS_WakeUp *************************************/
+
+exports.NS_WakeUp = {
+  logfile: "/var/log/push_server/NS_WakeUp.log",
+
+  /**
+   * Binding interfaces and ports
+   * [ iface, port ]
+   */
+  interfaces: [
+    // Internal network
+    {
+      ip: "0.0.0.0",
+      port: 8090
+    }
+  ]
 };

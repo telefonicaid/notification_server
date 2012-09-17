@@ -1,13 +1,13 @@
 /**
- * PUSH Notification server V 0.2
- * (c) Telefonica Digital, 2012 - All rights reserver
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var uuid = require("node-uuid");
-var crypto = require("./cryptography.js");
-var server_info = require("../config.js").NS_AS.server_info;
+var uuid = require("node-uuid"),
+    crypto = require("./cryptography.js"),
+    server_info = require("../config.js").NS_AS.server_info;
 
 function token() {}
 
@@ -21,7 +21,7 @@ token.prototype = {
 
     //////////////////////////////////////////////////////////////////////////////////////
     // Due to the Node.JS Crypto library decission (ignore padding) we should add it:
-    // @see https://github.com/joyent/node/blob/master/src/node_crypto.cc#L1905
+    // @see https://github.com/joyent/node/blob/master/src/node_crypto.cc#L2156
     /*
      * // local decrypt final without strict padding check
      * // to work with php mcrypt
