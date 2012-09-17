@@ -1,0 +1,28 @@
+{
+  "name": "NativePush",
+  "description": "TestApp for Push",
+  "launch_path": "/",
+  "developer": {
+    "name": "Fernando Rodriguez Sela, Guillermo López Leal",
+    "url": "https://pdihub.hi.inet/frsela/notification-server/"
+  },
+  "locales": {
+    "en-US": {
+      "name": "Native Push notification",
+      "description": "Test app for push notifications"
+    },
+    "es": {
+      "name": "Notificaciones push nativas",
+      "description": "Aplicación de pruebas para notificaciones push"
+    }
+  },
+  "default_locale": "en-US",
+  "icons": {
+    "120": "/style/icons/PushIcon.png"
+  },
+  "messages": ["push-notification"],
+  "permissions": [
+    "request-push-notification",
+    "settings"
+  ]
+}
