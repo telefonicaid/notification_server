@@ -1,6 +1,7 @@
 var assert = require('assert'),
     vows = require('vows'),
-    token = require("../src/common/token");
+    token = require('../src/common/token');
+    common = require('./functions/common');
 
 //Internal vars
 var NUM_TOKENS = 50000;
@@ -11,15 +12,6 @@ function getTokens() {
     tokens.push(token.get());
   }
   return tokens;
-}
-
-function allDifferents(l) {
-  var obj = {};
-  for (var i = 0, item; item = l[i]; i++) {
-    if (obj[item]) return false;
-    obj[item] = 1;
-  }
-  return true;
 }
 
 // TESTS //
@@ -50,7 +42,7 @@ vows.describe('Token tests').addBatch({
   'Getting a lot of tokens': {
     topic: getTokens(),
     'all items MUST BE different': function(topic) {
-      assert.isTrue(allDifferents(topic));
+      assert.isTrue(common.allDifferents(topic));
     }
   }
 }).export(module);
