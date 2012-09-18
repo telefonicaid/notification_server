@@ -46,16 +46,10 @@ exports.allDifferents = function allDifferents(l) {
   return true;
 };
 
-exports.debug = function(text) {
-  var DEBUG = false;
-  if (DEBUG) {
-    console.log(text);
-  }
-};
-
-var DEBUG = true;
+var DEBUG = false;
 debug = function(text) {
   if (DEBUG) {
     console.log(text);
   }
 };
+exports.debug = debug;
