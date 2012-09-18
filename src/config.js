@@ -28,6 +28,12 @@ exports.consts = {
   PREPRODUCTION_MODE: true,
 
   /**
+   * Public base URL to receive notifications. This will be the base to
+   * append the /notify/12345abcdef… URL
+   */
+  publicBaseURL: "http://localhost:8081",
+
+  /**
    * This must be shared between all your NS_UA_WS frontends.
    * This is used to verify if the token to register a UA comes from
    * this server
@@ -84,12 +90,7 @@ exports.ddbbsettings = {
 ////////////////////////////////////////////////////////////////////////
 
 /********************* NS_AS *****************************************/
-/**
- * Public base URL to receive notifications. This will be the base to
- * append the /notify/12345abcdef… URL
- */
 exports.NS_AS = {
-  publicBaseURL: "http://localhost:8081",
   logfile: "NS_AS.log",
 
   /**
