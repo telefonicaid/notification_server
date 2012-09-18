@@ -25,7 +25,14 @@ exports.servers = {
 /********************* Constants********************************************/
 exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
-  PREPRODUCTION_MODE: true
+  PREPRODUCTION_MODE: true,
+
+  /**
+   * This must be shared between all your NS_UA_WS frontends.
+   * This is used to verify if the token to register a UA comes from
+   * this server
+   */
+  cryptokey: "12345678901234567890"
 };
 
 /********************* Logger parameters ***********************************/
@@ -36,14 +43,12 @@ exports.logger = {
 
 /********************* Common Queue ***********************************/
 /**
- * This has been tested with ActiveMQ >= 5.6.
  * Choose your host, port and other self-explanatory options
  */
 exports.queue = {
   host: '127.0.0.1',
   port: 5672, //AMQP default port
   debug: false,
-  //Just for rabbitmq
   login: 'guest',
   password: 'guest'
 };
@@ -94,16 +99,7 @@ exports.NS_AS = {
       ip: "0.0.0.0",
       port: 8081
     }
-  ],
-
-  /**
-   * This must be shared between all your NS_AS frontends.
-   * This is used to verify if the token to register a UA comes from
-   * this server
-   */
-  server_info: {
-    key: "12345678901234567890"
-  }
+  ]
 };
 
 /********************* NS_MSG_monitor ********************************/
@@ -125,13 +121,9 @@ exports.NS_UA_WS = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 9080
+      port: 8080
     }
   ],
-
-  server_info: {
-    key: "12345678901234567890"
-  },
 
   /**
    * Websocket configuration

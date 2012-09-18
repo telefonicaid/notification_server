@@ -7,7 +7,7 @@
 
 var uuid = require("node-uuid"),
     crypto = require("./cryptography.js"),
-    server_info = require("../config.js").NS_AS.server_info;
+    cryptokey = require("../config.js").consts.cryptokey;
 
 function token() {}
 
@@ -37,7 +37,7 @@ token.prototype = {
     rawToken += "@" + crypto.hashMD5(rawToken);
 
     // Encrypt token with AES
-    return crypto.encryptAES(rawToken, server_info.key);
+    return crypto.encryptAES(rawToken, cryptokey);
   },
 
   // Verify the given TOKEN
@@ -46,7 +46,7 @@ token.prototype = {
       return false;
 
     // Decrypt token
-    var rawToken = crypto.decryptAES(token, server_info.key).split('@');
+    var rawToken = crypto.decryptAES(token, cryptokey).split('@');
 
     // CRC Verification
     return (rawToken[1] == crypto.hashMD5(rawToken[0]));
