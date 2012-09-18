@@ -19,11 +19,11 @@ NS_UA_UDP_main.prototype = {
     this.servers = new server();
     this.servers.init();
 
-    log.info("NS_UA_UDP server initialized");
+    log.info("NS_UA_UDP server starting");
   },
 
   stop: function(callback) {
-    log.info("NS_UA_UDP server stopped");
+    log.info("NS_UA_UDP server stopping");
     this.servers.stop(callback);
   }
 };

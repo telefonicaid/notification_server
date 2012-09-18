@@ -36,8 +36,6 @@ Diagram:
     |                    |                    |
     |                    | notif(origin, data)|
     |                    |<-------------------|
-    |                    | verifyOrigin       |
-    |                    |------------------->|
     | notfy(origin, data)|                    |
     |<-------------------|                    |
     |                    |                    |

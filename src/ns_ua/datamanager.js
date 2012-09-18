@@ -79,7 +79,7 @@ datamanager.prototype = {
     log.debug('dataManager::unregisterNode --> Going to unregister a node');
     var token = this.nodesConnections[helpers.getConnectionId(connection)];
     if (!token) {
-      console.log("dataManager::unregisterNode --> UDP client disconnected, not removing anything");
+      log.debug("dataManager::unregisterNode --> UDP client disconnected, not removing anything");
     }
     if(token) {
       log.debug("dataManager::unregisterNode --> Removing disconnected node token " + token);
@@ -93,7 +93,7 @@ datamanager.prototype = {
           if (ok) {
             log.debug('dataManager::unregisterNode --> Deleted from DDBB');
           } else {
-            log.info('dataManager::unregisterNode --> There was a problem deleting the token from the DDBB');
+            log.debug('dataManager::unregisterNode --> There was a problem deleting the token from the DDBB');
           }
         }
       );
@@ -119,7 +119,7 @@ datamanager.prototype = {
     return this.nodesConnections[helpers.getConnectionId(connection)] || null;
   },
 
-  // TODO: Verify that the node exists before add the application
+  // TODO: Verify that the node exists before add the application issue #59
   /**
    * Register a new application
    */
