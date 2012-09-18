@@ -22,7 +22,7 @@ before_script:
   - sleep 5 # Wait for everything to settle down
   - cd ..
 
-test:
+script:
   - cd test/functions
   - node getToken.js # Get tokens test (via HTTP)
   # Add more tests in between
