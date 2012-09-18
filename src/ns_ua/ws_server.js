@@ -15,7 +15,7 @@ var log = require("../common/logger.js"),
     helpers = require("../common/helpers.js"),
     msgBroker = require("../common/msgbroker.js"),
     config = require("../config.js").NS_UA_WS,
-    consts = require("../consts.js");
+    consts = require("../config.js").consts;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions

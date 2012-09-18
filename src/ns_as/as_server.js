@@ -6,7 +6,7 @@
  */
 
 var log = require("../common/logger"),
-    consts = require("../consts.js"),
+    consts = require("../config.js").consts,
     http = require('http'),
     uuid = require("node-uuid"),
     crypto = require("../common/cryptography"),
