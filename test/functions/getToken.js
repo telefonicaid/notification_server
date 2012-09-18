@@ -6,6 +6,7 @@
  */
 
 var common = require('./common.js');
+var debug = common.debug;
 
 var times = 0;
 var tokens = [];
@@ -16,13 +17,22 @@ var id = setInterval(function() {
       process.exit(1);
     }
     //If we have 1000 tokens, finish the test
-    if (times++ == 1000) {
+    if (++times == 1000) {
       clearInterval(id);
+      tokens.push(data);
+      finishTest();
     }
     //Add all the tokens!
     tokens.push(data);
   });
 }, 0);
 
-// Once we have 1000 tokens, check if they are all different
-if (!common.allDifferents(tokens)) process.exit(1);
+function finishTest() {
+  if (!common.allDifferents(tokens) || tokens.length != 1000) {
+    debug('KO. Oops, there are at least 2 equal tokens, this is bad. Length=' + tokens.length);
+    process.exit(1);
+  } else {
+    debug('OK, length=' + tokens.length);
+    process.exit(0);
+  }
+}
