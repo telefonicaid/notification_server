@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu+Condensed' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+
+<style type="text/css">
+.graphTitle { font-family: Ubuntu Condensed, Arial, serif; font-size: 18pt; }
+.graphDescription { font-family: Ubuntu, Arial, serif; font-size: 11pt; text-align:justify;}
+</style>
+</head>
+<html>
+<body>
+<div class="summary">
+	<div class="graphTitle">Active threads over time</div>
+	<div class="graphImg"><img src="ActiveThreadsOverTime.png"/></div>
+	<div class="graphDescription">This graph represents the real number of virtual users injected during the test. This graph must be as close as possible to the teorethical injection schedule defined in the test plan. If the real test plan does not closely follow the original it means that the injector had problems because the number of virtual users was too high.</div>
+	</br>
+
+	<div class="graphTitle">Aggregated response times</div>
+	<div class="graphImg"><img src="ResponseTimesDistribution.png"/></div>
+	<div class="graphDescription">These are the response times aggregated in columns. The response time bars should be aggregated in a single group. If there are different groups of columns separated by a significative response time it means that some of the responses took significantly more time to be processed that the others during the test duration. It is good to have all the columns aggregated to the left of the graph.</div>
+	</br>
+
+	<div class="graphTitle">Transactions per second during the test</div>
+	<div class="graphImg"><img src="TransactionsPerSecond.png"/></div>
+	<div class="graphDescription">The number of transactions per second should closely follow the amount of virtual users performing requests during the time taken by the test to run. A deviation from the curve usually means problems in the system under load, that is not able to follow the injection schedule.</div>
+	</br>
+
+	<div class="graphTitle">Estimated transactions per second by virtual users</div>
+	<div class="graphImg"><img src="TransactionThroughputVsThreads.png"/></div>
+	<div class="graphDescription">This graph represents an estimation of the maximum number of transactions per second that the server is able to process depending of the number of enabled virtual users. This graph should represent a line. Ideally, for a server not in the stress zone, twice the threads should lead to twice the transactions per second. A system starts to have problems when the line starts to oscillate. The important values in this graph are those with a huge number of samples. This number of users corresponds to the test steps. For example for a step of 10 virtual users, the most important values will be 10 and 20 users. The red point represents the average of users and transactions per second during the test.</div>
+	</br>
+</div>
+
+<div class="localhost">
+	<div class="graphTitle">Load injector: CPU</div>
+	<div class="graphImg"><img src="Metrics-localhost-CPU.png"/></div>
+	<div class="graphDescription">The injector CPU should always be below 100% usage. This graph represents the total CPU usage adding the CPU usage of all available cores during the test.</div>
+	</br>
+
+	<div class="graphTitle">Load injector: Memory</div>
+	<div class="graphImg"><img src="Metrics-localhost-MEM.png"/></div>
+	<div class="graphDescription">The injector memory should always be below 100% usage.</div>
+	</br>
+
+	<div class="graphTitle">Load injector: SWAP</div>
+	<div class="graphImg"><img src="Metrics-localhost-SWAP.png"/></div>
+	<div class="graphDescription">The injector should never make use of the swap. Using the swap means that there were not enough RAM. If there are swap usage consider adding more RAM to the injector.</div>
+	</br>
+
+	<div class="graphTitle">Load injector: Network usage</div>
+	<div class="graphImg"><img src="Metrics-localhost-NET.png"/></div>
+	<div class="graphDescription">This graph displays the incoming and outcoming network data usage during the test. Neither the incoming nor the outcoming values should have a clear ceiling. If a clear ceiling appears it means that the injector network card acted as a bottleneck and either the load should be reduced or a more capable network connectioin should be added to the injector.</div>
+	</br>
+</div>
+
+
+<div class="[[FrontEndServer1]]">
+	<div class="graphTitle">[[FrontEndServer1]]: CPU</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer1]]-CPU.png"/></div>
+	<div class="graphDescription">The CPU should always be below 100% usage. This graph represents the total CPU usage adding the CPU usage of all available cores in [[FrontEndServer1]] during the test.</div>
+	</br>
+
+	<div class="graphTitle">[[FrontEndServer1]]: Memory</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer1]]-MEM.png"/></div>
+	<div class="graphDescription">The memory should always be below 100% usage.</div>
+	</br>
+
+	<div class="graphTitle">[[FrontEndServer1]]: SWAP</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer1]]-SWAP.png"/></div>
+	<div class="graphDescription">The swap should not be used. Using the swap means that there were not enough RAM. If there are swap usage consider adding more RAM to the [[FrontEndServer1]].</div>
+	</br>
+
+	<div class="graphTitle">[[FrontEndServer1]]: Network usage</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer1]]-NET.png"/></div>
+	<div class="graphDescription">This graph displays the data traffic usage during the test. there should not be a clear ceiling. A ceiling means that the [[FrontEndServer2]] network card acted as a bottleneck and either the load should be reduced or a more capable network connectioin should be added to [[FrontEndServer1]].</div>
+	</br>
+</div>
+
+
+<div class="[[FrontEndServer2]]">
+	<div class="graphTitle">[[FrontEndServer2]]: CPU</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer2]]-CPU.png"/></div>
+	<div class="graphDescription">The CPU should always be below 100% usage. This graph represents the total CPU usage adding the CPU usage of all available cores in [[FrontEndServer2]] during the test.</div>
+	</br>
+
+	<div class="graphTitle">[[FrontEndServer2]]: Memory</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer2]]-MEM.png"/></div>
+	<div class="graphDescription">The memory should always be below 100% usage.</div>
+	</br>
+
+	<div class="graphTitle">[[FrontEndServer2]]: SWAP</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer2]]-SWAP.png"/></div>
+	<div class="graphDescription">The swap should not be used. Using the swap means that there were not enough RAM. If there are swap usage consider adding more RAM to the [[FrontEndServer2]].</div>
+	</br>
+
+	<div class="graphTitle">[[FrontEndServer2]]: Network usage</div>
+	<div class="graphImg"><img src="Metrics-[[FrontEndServer2]]-NET.png"/></div>
+	<div class="graphDescription">This graph displays the data traffic usage during the test. there should not be a clear ceiling. A ceiling means that the [[FrontEndServer2]] network card acted as a bottleneck and either the load should be reduced or a more capable network connectioin should be added to [[FrontEndServer2]].</div>
+	</br>
+</div>
+
+<div class="[[BackEndServer1]]">
+	<div class="graphTitle">[[BackEndServer1]]: CPU</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer1]]-CPU.png"/></div>
+	<div class="graphDescription">The CPU should always be below 100% usage. This graph represents the total CPU usage adding the CPU usage of all available cores in [[BackEndServer1]] during the test.</div>
+	</br>
+
+	<div class="graphTitle">[[BackEndServer1]]: Memory</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer1]]-MEM.png"/></div>
+	<div class="graphDescription">The memory should always be below 100% usage.</div>
+	</br>
+
+	<div class="graphTitle">[[BackEndServer1]]: SWAP</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer1]]-SWAP.png"/></div>
+	<div class="graphDescription">The swap should not be used. Using the swap means that there were not enough RAM. If there are swap usage consider adding more RAM to the [[BackEndServer1]].</div>
+	</br>
+
+	<div class="graphTitle">[[BackEndServer1]]: Network usage</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer1]]-NET.png"/></div>
+	<div class="graphDescription">This graph displays the data traffic usage during the test. there should not be a clear ceiling. A ceiling means that the [[BackEndServer1]] network card acted as a bottleneck and either the load should be reduced or a more capable network connectioin should be added to [[BackEndServer1]].</div>
+	</br>
+</div>
+
+<div class="[[BackEndServer2]]">
+	<div class="graphTitle">[[BackEndServer2]]: CPU</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer2]]-CPU.png"/></div>
+	<div class="graphDescription">The CPU should always be below 100% usage. This graph represents the total CPU usage adding the CPU usage of all available cores in [[BackEndServer2]] during the test.</div>
+	</br>
+
+	<div class="graphTitle">[[BackEndServer2]]: Memory</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer2]]-MEM.png"/></div>
+	<div class="graphDescription">The memory should always be below 100% usage.</div>
+	</br>
+
+	<div class="graphTitle">[[BackEndServer2]]: SWAP</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer2]]-SWAP.png"/></div>
+	<div class="graphDescription">The swap should not be used. Using the swap means that there were not enough RAM. If there are swap usage consider adding more RAM to the [[BackEndServer2]].</div>
+	</br>
+
+	<div class="graphTitle">[[BackEndServer2]]: Network usage</div>
+	<div class="graphImg"><img src="Metrics-[[BackEndServer2]]-NET.png"/></div>
+	<div class="graphDescription">This graph displays the data traffic usage during the test. there should not be a clear ceiling. A ceiling means that the [[BackEndServer2]] network card acted as a bottleneck and either the load should be reduced or a more capable network connectioin should be added to [[BackEndServer2]].</div>
+	</br>
+</div>
+</body>
+</html>
