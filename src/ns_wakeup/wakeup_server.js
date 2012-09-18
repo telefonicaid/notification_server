@@ -7,6 +7,7 @@
 
 var log = require("../common/logger.js"),
     http = require('http'),
+    net = require('net'),
     dgram = require('dgram');
 
 function server(ip, port) {
@@ -45,9 +46,21 @@ server.prototype = {
     if(!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
       msg = '{"status": "ERROR", "reason": "URL Format Error"}';
-      response.write(msg);
-      response.statusCode = 404;
       response.setHeader("Content-Type", "text/plain");
+      response.statusCode = 404;
+      response.write(msg);
+      return response.end();
+    }
+
+    // Check parameters
+    if( !net.isIP(WakeUpHost.ip) ||     // Is a valid IP address
+        isNaN(WakeUpHost.port) ||       // The port is a Number
+        WakeUpHost.port < 0 || WakeUpHost.port > 65535  // The port has a valid value
+    ) {
+      log.debug('NS_WakeUp::onHTTPMessage --> Bad IP/Port');
+      msg = '{"status": "ERROR", "reason": "Bad parameters. Bad IP/Port"}';
+      response.setHeader("Content-Type", "text/plain");
+      response.statusCode = 404;
       response.write(msg);
       return response.end();
     }
