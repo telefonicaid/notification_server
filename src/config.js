@@ -38,7 +38,8 @@ exports.consts = {
 /********************* Logger parameters ***********************************/
 exports.logger = {
   MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
-  CONSOLEOUTPUT: 1
+  CONSOLEOUTPUT: 1,
+  BASE_PATH: "/var/log/push_server/"
 };
 
 /********************* Common Queue ***********************************/
@@ -89,7 +90,7 @@ exports.ddbbsettings = {
  */
 exports.NS_AS = {
   publicBaseURL: "http://localhost:8081",
-  logfile: "/var/log/push_server/NS_AS.log",
+  logfile: "NS_AS.log",
 
   /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
@@ -105,13 +106,13 @@ exports.NS_AS = {
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: "/var/log/push_server/NS_Monitor.log"
+  logfile: "NS_Monitor.log"
 };
 
 /********************* NS_UA_WS **************************************/
 
 exports.NS_UA_WS = {
-  logfile: "/var/log/push_server/NS_UA_WS.log",
+  logfile: "NS_UA_WS.log",
 
   /**
    * Binding interfaces and ports
@@ -128,6 +129,9 @@ exports.NS_UA_WS = {
   /**
    * Websocket configuration
    * @see https://github.com/Worlize/WebSocket-Node/blob/master/lib/WebSocketServer.js
+   * Be sure to know exactly what are you changing. Short keepaliveIntervals
+   * on 3G networks causes a lot of signalling and also dropping too many connections
+   * because timeouts on handset status change time.
    */
   websocket_params: {
     keepalive: true,
@@ -140,13 +144,13 @@ exports.NS_UA_WS = {
 /********************* NS_UA_UDP *************************************/
 
 exports.NS_UA_UDP = {
-  logfile: "/var/log/push_server/NS_UA_UDP.log"
+  logfile: "NS_UA_UDP.log"
 };
 
 /********************* NS_WakeUp *************************************/
 
 exports.NS_WakeUp = {
-  logfile: "/var/log/push_server/NS_WakeUp.log",
+  logfile: "NS_WakeUp.log",
 
   /**
    * Binding interfaces and ports
