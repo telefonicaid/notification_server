@@ -35,8 +35,13 @@ var MsgBroker = function() {
       }
     }));
 
+    this.queue.on('close', (function() {
+      log.critical('msgbroker::queue --> Message Queue disconnected!!!');
+      self.emit('brokerdisconnected');
+    }));
+
     this.queue.on('error', (function(error) {
-      log.error('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error);
+      log.critical('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error);
       self.emit('brokerdisconnected');
       self.close();
     }));
@@ -52,7 +57,7 @@ var MsgBroker = function() {
 
   this.subscribe = function(queueName, args, callback) {
     this.queue.queue(queueName, args, function(q) {
-      log.info("msgbroker::subscribe --> Subscribed to queue " + queueName);
+      log.info("msgbroker::subscribe --> Subscribed to queue: " + queueName);
       q.bind('#');
       q.subscribe(function (message) {
         return callback(message.data);

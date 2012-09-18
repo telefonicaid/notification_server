@@ -16,12 +16,11 @@ function logger() {
 
 logger.prototype = {
   init: function (logfile, appname, consoleOutput) {
-    // use {'flags': 'a'} to append and {'flags': 'w'} to erase and write a new file
-    this.logfile = fs.createWriteStream(logfile, { flags: 'a', encoding: null, mode: 0666 });
+    this.logfile = fs.createWriteStream(logparams.BASE_PATH + logfile, { flags: 'a', encoding: null, mode: 0644 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
-    this.info("---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------");
-    this.info("logger::init --> Logger initialized!");
+    this.log("START", "---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------", false);
+    this.debug("logger::init --> Logger initialized!");
   },
 
   log: function (level, message, trace) {

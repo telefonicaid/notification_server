@@ -22,11 +22,11 @@ NS_WakeUp_main.prototype = {
       this.servers[a].init();
     }
 
-    log.info("NS_WakeUp server initialized");
+    log.info("NS_WakeUp server starting");
   },
 
   stop: function(callback) {
-    log.info("NS_WakeUp server stopped");
+    log.info("NS_WakeUp server stopping");
     (this.servers).forEach(function(server) {
       server.stop(callback);
     });

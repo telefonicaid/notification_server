@@ -20,11 +20,11 @@ NS_AS_main.prototype = {
       this.servers[a] = new server(config.interfaces[a].ip, config.interfaces[a].port);
       this.servers[a].init();
     }
-    log.info("NS_AS::start --> server initialized");
+    log.info("NS_AS::start --> server starting");
   },
 
   stop: function(callback) {
-    log.info("NS_AS::stop --> server stopped");
+    log.info("NS_AS::stop --> server stopping");
     (this.servers).forEach(function(server) {
       server.stop(callback);
     });

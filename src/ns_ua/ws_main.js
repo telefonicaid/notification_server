@@ -17,7 +17,7 @@ NS_UA_WS_main.prototype = {
     var server = require('./ws_server.js').server;
 
     if (!config.interfaces) {
-      return log.error("NS_UA_WS interfaces not configured");
+      return log.critical("NS_UA_WS interfaces not configured");
     }
 
     // Start servers
@@ -25,10 +25,11 @@ NS_UA_WS_main.prototype = {
       this.servers[a] = new server(config.interfaces[a].ip, config.interfaces[a].port);
       this.servers[a].init();
     }
-    log.info("NS_UA_WS server initialized");
+    log.info("NS_UA_WS server starting");
   },
 
   stop: function(callback) {
+    log.info("NS_UA_WS server stopping");
     for (var i = this.servers.length - 1; i >= 0; i--) {
       this.servers[i].stop(callback);
     }

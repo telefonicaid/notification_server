@@ -44,7 +44,7 @@ var DataStore = function() {
         log.info("datastore::starting --> Connected to MongoDB on " + ddbbsettings.machines + ". Database Name: " + ddbbsettings.ddbbname);
         this.emit('ddbbconnected');
       } else {
-        log.error("datastore::starting --> Error connecting to MongoDB ! - " + err);
+        log.critical("datastore::starting --> Error connecting to MongoDB ! - " + err);
         this.close();
       }
     }.bind(this));
@@ -125,7 +125,7 @@ var DataStore = function() {
     });
   },
 
-  // TODO: Verify that the node exists before add the application
+  // TODO: Verify that the node exists before add the application Issue #59
   /**
    * Register a new application
    */

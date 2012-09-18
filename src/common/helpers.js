@@ -5,7 +5,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var publicBaseURL = require('../config.js').NS_AS.publicBaseURL;
+var publicBaseURL = require('../config.js').consts.publicBaseURL;
 var uuid = require("node-uuid");
 var crypto = require("../common/cryptography.js");
 
