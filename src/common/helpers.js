@@ -4,7 +4,7 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
-var publicBaseURL = require('../config.js').NS_AS.publicBaseURL,
+var publicBaseURL = require('../config.js').consts.publicBaseURL,
     uuid = require('node-uuid'),
     crypto = require('../common/cryptography.js');
 
