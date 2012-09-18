@@ -74,6 +74,7 @@ server.prototype = {
       message, 0, message.length,
       WakeUpHost.port, WakeUpHost.ip,
       function(err, bytes) {
+        if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
         client.close();
       }
     );

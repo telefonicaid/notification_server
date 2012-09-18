@@ -31,8 +31,8 @@ connector_udp.prototype = {
   },
 
   notify: function(msgList) {
-    // Notify the hanset with the associated Data
-    console.error("Connector UDP: Notify to " + this.data.interface.ip + " not valid on this server");
+    // Notify the handset with the associated Data
+    log.error("Connector UDP: Notify to " + this.data.interface.ip + " not valid on this server");
   }
 };
 

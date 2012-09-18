@@ -55,6 +55,7 @@ function onNewMessage(message) {
       req.end();
     } else {
       log.error("onNewMessage: No WakeUp server found");
+      // TODO: Remove Node from Mongo issue #63
     }
   }.bind(this));
 }
@@ -70,7 +71,7 @@ server.prototype = {
   //////////////////////////////////////////////
 
   init: function() {
-    log.info("Starting UA-UDP server");
+    log.info("NS_UDP:init --> Starting UA-UDP server");
 
     // Subscribe to the UDP common Queue
     msgBroker.init(function() {
@@ -80,7 +81,7 @@ server.prototype = {
   },
 
   stop: function(callback) {
-    log.info("UDP::stop --> Closing UDP server");
+    log.info("NS_UDP:stop --> Closing UDP server");
 
     //Closing connection with msgBroker
     msgBroker.close();

@@ -26,7 +26,7 @@ MobileNetwork.prototype = {
 
   getNetwork: function(mcc, mnc, callback) {
     if(!callback) {
-      return log.error("[MobileNetwork]: No callback method provided !");
+      return log.debug("[MobileNetwork]: No callback method provided !");
     }
 
     var index = helpers.padNumber(mcc,3) + "-" + helpers.padNumber(mnc,2);

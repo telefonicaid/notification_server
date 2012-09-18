@@ -23,7 +23,7 @@ function onNewPushMessage(notification, watoken, callback) {
   try {
     json = JSON.parse(notification);
   } catch (err) {
-    log.info('NS_AS::onNewPushMessage --> Not valid JSON notification');
+    log.debug('NS_AS::onNewPushMessage --> Not valid JSON notification');
     return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
   }
   //Only accept notification messages
@@ -44,7 +44,7 @@ function onNewPushMessage(notification, watoken, callback) {
       }
       var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
       if (sig && !crypto.verifySignature(message, sig, pbk)) {
-        log.info('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
+        log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
         return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
       }
     }
@@ -82,7 +82,7 @@ server.prototype = {
       this.msgbrokerready = true;
     }.bind(this));
     msgBroker.on('brokerdisconnected', function() {
-      log.error("NS_AS::init --> MsgBroker DISCONNECTED!!");
+      log.critical("NS_AS::init --> MsgBroker DISCONNECTED!!");
       this.msgbrokerready = false;
     }.bind(this));
 
@@ -94,7 +94,7 @@ server.prototype = {
 
     //Let's wait one second to start the msgBroker and the dataStore
     dataStore.on('ddbbdisconnected', function() {
-      log.info("NS_AS::init --> DataStore DISCONNECTED!!");
+      log.critical("NS_AS::init --> DataStore DISCONNECTED!!");
       this.ddbbready = false;
     });
 

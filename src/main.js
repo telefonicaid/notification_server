@@ -101,6 +101,6 @@ function onKill() {
   });
 }
 
-process.on('SIGINT', onClose);     // 2
+process.on('SIGINT', onClose);    // 2
 process.on('SIGKILL', onKill);    // 9
 process.on('SIGTERM', onKill);    // 15

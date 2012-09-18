@@ -93,7 +93,7 @@ datamanager.prototype = {
           if (ok) {
             log.debug('dataManager::unregisterNode --> Deleted from DDBB');
           } else {
-            log.info('dataManager::unregisterNode --> There was a problem deleting the token from the DDBB');
+            log.debug('dataManager::unregisterNode --> There was a problem deleting the token from the DDBB');
           }
         }
       );
@@ -119,7 +119,7 @@ datamanager.prototype = {
     return this.nodesConnections[helpers.getConnectionId(connection)] || null;
   },
 
-  // TODO: Verify that the node exists before add the application
+  // TODO: Verify that the node exists before add the application issue #59
   /**
    * Register a new application
    */
