@@ -23,11 +23,12 @@ before_script:
   - cd ..
 
 test:
-  - npm test # Unit tests
   - cd test/functions
   - node getToken.js # Get tokens test (via HTTP)
   # Add more tests in between
   - node E2E.js # E2E test
+  - cd ../..
+  - npm test # Unit tests
 
 notifications:
    email:
