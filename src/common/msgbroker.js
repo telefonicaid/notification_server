@@ -4,11 +4,12 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
+
 var amqp = require('amqp'),
-    log = require('./logger.js'),
-    queueconf = require('../config.js').queue,
-    events = require('events'),
-    util = require('util');
+    log = require("./logger.js"),
+    queueconf = require("../config.js").queue,
+    events = require("events"),
+    util = require("util");
 
 var MsgBroker = function() {
   events.EventEmitter.call(this);
@@ -26,10 +27,10 @@ var MsgBroker = function() {
     // Queue Events
     var self = this;
     this.queue.on('ready', (function() {
-      log.info('msgbroker::queue.ready --> Connected to Message Broker');
+      log.info("msgbroker::queue.ready --> Connected to Message Broker");
       //TODO: use Events instead of callbacks here
       self.emit('brokerconnected');
-      if (typeof onConnect === 'function') {
+      if (onConnect) {
         return onConnect();
       }
     }));
@@ -47,7 +48,7 @@ var MsgBroker = function() {
   };
 
   this.close = function() {
-    if (this.queue) {
+    if(this.queue) {
       this.queue.end();
       this.queue = null;
     }
@@ -55,10 +56,10 @@ var MsgBroker = function() {
   };
 
   this.subscribe = function(queueName, args, callback) {
-    this.queue.queue(queueName, args, function(q)  {
-      log.info('msgbroker::subscribe --> Subscribed to queue: ' + queueName);
+    this.queue.queue(queueName, args, function(q) {
+      log.info("msgbroker::subscribe --> Subscribed to queue: " + queueName);
       q.bind('#');
-      q.subscribe(function(message) {
+      q.subscribe(function (message) {
         return callback(message.data);
       });
     });
@@ -79,8 +80,7 @@ var MsgBroker = function() {
 util.inherits(MsgBroker, events.EventEmitter);
 
 var _msgbroker = new MsgBroker();
-
-function getMsgBroker() {
+function getMsgBroker () {
   return _msgbroker;
 }
 

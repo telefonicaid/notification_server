@@ -4,7 +4,8 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
-var log = require('../common/logger.js'),
+
+var log = require("../common/logger.js"),
     http = require('http'),
     net = require('net'),
     dgram = require('dgram');
@@ -20,12 +21,12 @@ server.prototype = {
   //////////////////////////////////////////////
 
   init: function() {
-    log.info('Starting WakeUp server');
+    log.info("Starting WakeUp server");
 
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('NS_WakeUp::init --> HTTP push WakeUp server starting on ' + this.ip + ':' + this.port);
+    log.info('NS_WakeUp::init --> HTTP push WakeUp server starting on ' + this.ip + ":" + this.port);
   },
 
   stop: function(callback) {
@@ -39,26 +40,26 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    var msg = '';
+    var msg = "";
     log.debug('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
-    if (!WakeUpHost.ip || !WakeUpHost.port) {
+    if(!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
       msg = '{"status": "ERROR", "reason": "URL Format Error"}';
-      response.setHeader('Content-Type', 'text/plain');
+      response.setHeader("Content-Type", "text/plain");
       response.statusCode = 404;
       response.write(msg);
       return response.end();
     }
 
     // Check parameters
-    if (!net.isIP(WakeUpHost.ip) || // Is a valid IP address
-        isNaN(WakeUpHost.port) || // The port is a Number
-        WakeUpHost.port < 0 || WakeUpHost.port > 65535 // The port has a valid value
+    if( !net.isIP(WakeUpHost.ip) ||     // Is a valid IP address
+        isNaN(WakeUpHost.port) ||       // The port is a Number
+        WakeUpHost.port < 0 || WakeUpHost.port > 65535  // The port has a valid value
     ) {
       log.debug('NS_WakeUp::onHTTPMessage --> Bad IP/Port');
       msg = '{"status": "ERROR", "reason": "Bad parameters. Bad IP/Port"}';
-      response.setHeader('Content-Type', 'text/plain');
+      response.setHeader("Content-Type", "text/plain");
       response.statusCode = 404;
       response.write(msg);
       return response.end();
@@ -67,19 +68,19 @@ server.prototype = {
     log.debug('NS_WakeUp::onHTTPMessage --> WakeUp IP = ' + WakeUpHost.ip + ':' + WakeUpHost.port);
 
     // UDP Notification Message
-    var message = new Buffer('NOTIFY ' + JSON.stringify(WakeUpHost));
-    var client = dgram.createSocket('udp4');
+    var message = new Buffer("NOTIFY " + JSON.stringify(WakeUpHost));
+    var client = dgram.createSocket("udp4");
     client.send(
-        message, 0, message.length,
-        WakeUpHost.port, WakeUpHost.ip,
-
-        function(err, bytes) {
-          if (err) log.info('Error sending UDP Datagram to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
-          client.close();
-        });
+      message, 0, message.length,
+      WakeUpHost.port, WakeUpHost.ip,
+      function(err, bytes) {
+        if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
+        client.close();
+      }
+    );
 
     response.statusCode = 200;
-    response.setHeader('Content-Type', 'text/plain');
+    response.setHeader("Content-Type", "text/plain");
     response.write('{"status": "OK"}');
     return response.end();
   },
@@ -90,7 +91,7 @@ server.prototype = {
   parseURL: function(url) {
     var urlparser = require('url'),
         data = {};
-    data.parsedURL = urlparser.parse(url, true);
+    data.parsedURL = urlparser.parse(url,true);
     return data;
   }
 };

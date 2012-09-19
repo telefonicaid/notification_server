@@ -5,17 +5,17 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require('../common/logger.js'),
+var log = require("../common/logger.js"),
     WebSocketServer = require('websocket').server,
     http = require('http'),
-    crypto = require('../common/cryptography.js'),
-    dataManager = require('./datamanager.js'),
-    Connectors = require('./connectors/connector_base.js').getConnectorFactory(),
-    token = require('../common/token.js'),
-    helpers = require('../common/helpers.js'),
-    msgBroker = require('../common/msgbroker.js'),
-    config = require('../config.js').NS_UA_WS,
-    consts = require('../config.js').consts;
+    crypto = require("../common/cryptography.js"),
+    dataManager = require("./datamanager.js"),
+    Connectors = require("./connectors/connector_base.js").getConnectorFactory(),
+    token = require("../common/token.js"),
+    helpers = require("../common/helpers.js"),
+    msgBroker = require("../common/msgbroker.js"),
+    config = require("../config.js").NS_UA_WS,
+    consts = require("../config.js").consts;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -25,17 +25,17 @@ function onNewMessage(message) {
   var json = {};
   try {
     json = JSON.parse(message);
-  } catch (e) {
+  } catch(e) {
     log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
-  log.debug('WS::Queue::onNewMessage --> Notifying node: ' + JSON.stringify(json.uatoken));
+  log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
   dataManager.getNode(json.uatoken, function(nodeConnector) {
-    if (nodeConnector) {
-      log.debug('WS::Queue::onNewMessage --> Sending messages: ' + JSON.stringify(json.payload.payload));
+    if(nodeConnector) {
+      log.debug("WS::Queue::onNewMessage --> Sending messages: " + JSON.stringify(json.payload.payload));
       nodeConnector.notify(new Array(json.payload.payload));
     } else {
-      log.debug('WS::Queue::onNewMessage --> No node found');
+      log.debug("WS::Queue::onNewMessage --> No node found");
     }
   });
 }
@@ -56,7 +56,7 @@ server.prototype = {
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ':' + this.port);
+    log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ":" + this.port);
 
     // Websocket init
     this.wsServer = new WebSocketServer({
@@ -65,23 +65,15 @@ server.prototype = {
       keepaliveInterval: config.websocket_params.keepaliveInterval,
       dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
       keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
-      autoAcceptConnections: false // false => Use verify originIsAllowed method
+      autoAcceptConnections: false    // false => Use verify originIsAllowed method
     });
     this.wsServer.on('request', this.onWSRequest);
 
     // Subscribe to my own Quesue
     var self = this;
     msgBroker.init(function() {
-      var args = {
-        durable: false,
-        autoDelete: true,
-        arguments: {
-          'x-ha-policy': 'all'
-        }
-      };
-      msgBroker.subscribe(process.serverId, args, function(msg) {
-        onNewMessage(msg);
-      });
+      var args = {durable: false, autoDelete: true, arguments: {'x-ha-policy': 'all'}};
+      msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
       self.ready = true;
     });
   },
@@ -100,45 +92,45 @@ server.prototype = {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
       var url = this.parseURL(request.url);
 
-      log.debug('WS::onHTTPMessage --> Parsed URL: ' + JSON.stringify(url));
+      log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
       switch (url.messageType) {
-        case 'token':
-          text = token.get();
-          response.setHeader('Content-Type', 'text/plain');
-          status = 200;
-          this.tokensGenerated++;
-          break;
+      case 'token':
+        text = token.get();
+        response.setHeader("Content-Type", "text/plain");
+        status = 200;
+        this.tokensGenerated++;
+        break;
 
-        case 'about':
-          if (consts.PREPRODUCTION_MODE) {
-            try {
-              var fs = require('fs');
-              text = 'Push Notification Server (User Agent Frontend)<br />';
-              text += '&copy; Telef&oacute;nica Digital, 2012<br />';
-              text += 'Version: ' + fs.readFileSync('version.info') + '<br /><br />';
-              text += '<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />';
-              response.setHeader('Content-Type', 'text/html');
-            } catch (e) {
-              text = 'No version.info file';
-            }
-            status = 200;
-          } else {
-            status = 404;
-            text = '{"status": "ERROR", "reason": "Not allowed on production system"}';
+      case 'about':
+        if(consts.PREPRODUCTION_MODE) {
+          try {
+            var fs = require("fs");
+            text = "Push Notification Server (User Agent Frontend)<br />";
+            text += "&copy; Telef&oacute;nica Digital, 2012<br />";
+            text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
+            text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
+            response.setHeader("Content-Type", "text/html");
+          } catch(e) {
+            text = "No version.info file";
           }
-          break;
-
-        default:
-          log.debug('WS::onHTTPMessage --> messageType not recognized');
-          text = '{"status": "ERROR", "reason": "messageType not recognized for this HTTP API"}';
-          response.setHeader('Content-Type', 'text/plain');
+          status = 200;
+        } else {
           status = 404;
+          text = '{"status": "ERROR", "reason": "Not allowed on production system"}';
+        }
+        break;
+
+      default:
+        log.debug("WS::onHTTPMessage --> messageType not recognized");
+        text = '{"status": "ERROR", "reason": "messageType not recognized for this HTTP API"}';
+        response.setHeader("Content-Type", "text/plain");
+        status = 404;
       }
     }
 
     // Close connection
     response.statusCode = status;
-    response.setHeader('access-control-allow-origin', '*');
+    response.setHeader("access-control-allow-origin", "*");
     response.write(text);
     return response.end();
   },
@@ -159,83 +151,83 @@ server.prototype = {
         var query = null;
         try {
           query = JSON.parse(message.utf8Data);
-        } catch (e) {
-          log.debug('WS::onWSMessage --> Data received is not a valid JSON package');
+        } catch(e) {
+          log.debug("WS::onWSMessage --> Data received is not a valid JSON package");
           connection.sendUTF('{ "status": "ERROR", "reason": "Data received is not a valid JSON package" }');
           return connection.close();
         }
 
-        switch (query.messageType) {
-          case 'registerUA':
-            log.debug('WS::onWSMessage --> UA registration message');
+        switch(query.messageType) {
+          case "registerUA":
+            log.debug("WS::onWSMessage --> UA registration message");
             // Token verification
-            if (!token.verify(query.data.uatoken)) {
-              log.debug('WS::onWSMessage --> Token not valid (Checksum failed)');
+            if(!token.verify(query.data.uatoken)) {
+              log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
               connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
               return connection.close();
             }
             // New UA registration
-            Connectors.getConnector(query.data, connection, function(err, c) {
-              if (err) {
-                connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
-                return log.error('WS::onWSMessage --> Error getting connection object');
+            Connectors.getConnector(query.data, connection, function(err,c) {
+              if(err) {
+                  connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
+                  return log.error("WS::onWSMessage --> Error getting connection object");
               }
 
               dataManager.registerNode(
-                  query.data.uatoken,
-                  c,
-
-                  function(ok) {
-                    if (ok) {
-                      connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
-                      log.debug('WS::onWSMessage --> OK register UA');
-                    } else {
-                      connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
-                      log.debug('WS::onWSMessage --> Failing registering UA');
-                    }
-                  });
+                query.data.uatoken,
+                c,
+                function(ok) {
+                  if (ok) {
+                    connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
+                    log.debug("WS::onWSMessage --> OK register UA");
+                  } else {
+                    connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
+                    log.debug("WS::onWSMessage --> Failing registering UA");
+                  }
+                }
+              );
             }.bind(this));
             break;
 
-          case 'registerWA':
-            log.debug('WS::onWSMessage::registerWA --> Application registration message');
+          case "registerWA":
+            log.debug("WS::onWSMessage::registerWA --> Application registration message");
             if (!query.data.watoken) {
-              log.debug('WS::onWSMessage::registerWA --> Null WAtoken');
+              log.debug("WS::onWSMessage::registerWA --> Null WAtoken");
               connection.sendUTF('{ "status": "ERROR", "reason": Not valid WAtoken sent" }');
               return connection.close();
             }
             var uatoken = dataManager.getUAToken(connection);
-            if (!uatoken) {
-              log.debug('No UAToken found for this connection - looking in the message');
+            if(!uatoken) {
+              log.debug("No UAToken found for this connection - looking in the message");
               uatoken = query.data.uatoken;
-              if (uatoken && !token.verify(uatoken)) {
-                log.debug('WS::onWSMessage --> Token not valid (Checksum failed)');
+              if(uatoken && !token.verify(uatoken)) {
+                log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
                 connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
                 return connection.close();
               }
-              if (!uatoken) {
+              if(!uatoken) {
                 connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
                 return connection.close();
               }
             }
-            log.debug('WS::onWSMessage::registerWA UAToken: ' + uatoken);
+            log.debug("WS::onWSMessage::registerWA UAToken: " + uatoken);
             appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
             dataManager.registerApplication(appToken, uatoken, query.data.pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
-                log.debug('WS::onWSMessage::registerWA --> OK registering WA');
+                log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {
                 connection.sendUTF('{"status": "ERROR", "reason": "Try again later"}');
-                log.debug('WS::onWSMessage::registerWA --> Failing registering WA');
+                log.debug("WS::onWSMessage::registerWA --> Failing registering WA");
               }
             });
             break;
 
-          case 'unregisterWA':
-            log.debug('WS::onWSMessage::unregisterWA --> Application un-registration message');
-            if (!dataManager.getUAToken(connection)) {
-              log.debug('No UAToken found for this connection !');
+          case "unregisterWA":
+            log.debug("WS::onWSMessage::unregisterWA --> Application un-registration message");
+            if(!dataManager.getUAToken(connection)) {
+              log.debug("No UAToken found for this connection !");
               connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
               break;
             }
@@ -245,23 +237,23 @@ server.prototype = {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.sendUTF('{"status": "UNREGISTERED", "url": "' + notifyURL + '", "messageType": "unregisterWA"}');
-                log.debug('WS::onWSMessage::unregisterWA --> OK unregistering WA');
+                log.debug("WS::onWSMessage::unregisterWA --> OK unregistering WA");
               } else {
                 connection.sendUTF('{"status": "ERROR", "reason": "Try again later"}');
-                log.debug('WS::onWSMessage::unregisterWA --> Failing unregistering WA');
+                log.debug("WS::onWSMessage::unregisterWA --> Failing unregistering WA");
               }
             });
             break;
 
-          case 'getAllMessages':
-            if (!query.data.uatoken) {
-              log.debug('WS::onWSMessage::getAllMessages --> No UAtoken sent');
+          case "getAllMessages":
+            if(!query.data.uatoken) {
+              log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
               connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken sent" }');
               return connection.close();
             }
-            log.debug('WS::onWSMessage::getAllMessages --> Recovering messages for ' + query.data.uatoken);
-            if (!token.verify(query.data.uatoken)) {
-              log.debug('WS::onWSMessage::getAllMessages --> Token not valid (Checksum failed)');
+            log.debug("WS::onWSMessage::getAllMessages --> Recovering messages for " + query.data.uatoken);
+            if(!token.verify(query.data.uatoken)) {
+              log.debug("WS::onWSMessage::getAllMessages --> Token not valid (Checksum failed)");
               connection.sendUTF('{ "status": "ERROR", "reason": "Token received is not accepted. Please get a valid one" }');
               return connection.close();
             } else {
@@ -273,14 +265,14 @@ server.prototype = {
             }
             break;
 
-          case 'ack':
-            if (query.messageId) {
+          case "ack":
+            if(query.messageId) {
               dataManager.removeMessage(query.messageId);
             }
             break;
 
           default:
-            log.debug('WS::onWSMessage::default --> messageType not recognized');
+            log.debug("WS::onWSMessage::default --> messageType not recognized");
             connection.sendUTF('{"status": "ERROR", "reason": "messageType not recognized" }');
             return connection.close();
         }
@@ -328,10 +320,10 @@ server.prototype = {
     // TODO: Review logic of this method. Issue #65
     var urlparser = require('url');
     var data = {};
-    data.parsedURL = urlparser.parse(url, true);
-    var path = data.parsedURL.pathname.split('/');
+    data.parsedURL = urlparser.parse(url,true);
+    var path = data.parsedURL.pathname.split("/");
     data.messageType = path[1];
-    if (path.length > 2) {
+    if(path.length > 2) {
       data.token = path[2];
     } else {
       data.token = data.parsedURL.query.token;
@@ -340,7 +332,7 @@ server.prototype = {
   },
 
   stop: function(callback) {
-    log.info('WS::stop --> Closing WS server');
+    log.info("WS::stop --> Closing WS server");
     //Server not ready
     this.ready = false;
     //Closing connection with msgBroker

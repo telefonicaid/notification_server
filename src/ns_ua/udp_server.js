@@ -4,9 +4,10 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
-var log = require('../common/logger.js'),
-    msgBroker = require('../common/msgbroker.js'),
-    mn = require('../common/mobilenetwork.js'),
+
+var log = require("../common/logger.js"),
+    msgBroker = require("../common/msgbroker.js"),
+    mn = require("../common/mobilenetwork.js"),
     http = require('http');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,27 +15,31 @@ var log = require('../common/logger.js'),
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewMessage(message) {
-  log.debug('MB: ' + message);
+  log.debug("MB: " + message);
   var messageData = {};
   try {
     messageData = JSON.parse(message);
-  } catch (e) {
+  } catch(e) {
     log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
 
   // Notify the hanset with the associated Data
-  log.debug('Notifying node: ' + JSON.stringify(messageData.uatoken));
-  log.debug('Notify to ' + messageData.data.interface.ip + ':' + messageData.data.interface.port + ' on network ' + messageData.data.mobilenetwork.mcc + '-' + messageData.data.mobilenetwork.mnc);
+  log.debug("Notifying node: " + JSON.stringify(messageData.uatoken));
+  log.debug("Notify to " +
+      messageData.data.interface.ip + ":" + messageData.data.interface.port +
+      " on network " +
+      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
+  );
 
   mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {
-    if (op && op.wakeup) {
-      log.debug('onNewMessage: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
+    if(op && op.wakeup) {
+      log.debug("onNewMessage: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
 
       // Send HTTP Notification Message
       var options = {
-        host: op.wakeup.split(':')[0],
-        port: op.wakeup.split(':')[1],
+        host: op.wakeup.split(":")[0],
+        port: op.wakeup.split(":")[1],
         path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
         method: 'GET'
       };
@@ -49,7 +54,7 @@ function onNewMessage(message) {
 
       req.end();
     } else {
-      log.error('onNewMessage: No WakeUp server found');
+      log.error("onNewMessage: No WakeUp server found");
       // TODO: Remove Node from Mongo issue #63
     }
   }.bind(this));
@@ -57,7 +62,8 @@ function onNewMessage(message) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function server() {}
+function server() {
+}
 
 server.prototype = {
   //////////////////////////////////////////////
@@ -65,25 +71,17 @@ server.prototype = {
   //////////////////////////////////////////////
 
   init: function() {
-    log.info('NS_UDP:init --> Starting UA-UDP server');
+    log.info("NS_UDP:init --> Starting UA-UDP server");
 
     // Subscribe to the UDP common Queue
     msgBroker.init(function() {
-      var args = {
-        durable: false,
-        autoDelete: true,
-        arguments: {
-          'x-ha-policy': 'all'
-        }
-      };
-      msgBroker.subscribe('UDP', args, function(msg) {
-        onNewMessage(msg);
-      });
+      var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
+      msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
   },
 
   stop: function(callback) {
-    log.info('NS_UDP:stop --> Closing UDP server');
+    log.info("NS_UDP:stop --> Closing UDP server");
 
     //Closing connection with msgBroker
     msgBroker.close();

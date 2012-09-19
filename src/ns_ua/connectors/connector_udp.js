@@ -7,7 +7,7 @@
 
 var dgram = require('dgram');
 
-function connector_udp(data, conn) {
+function connector_udp(data,conn) {
   this.data = data;
   this.connection = conn;
   this.connection.close();
@@ -15,7 +15,7 @@ function connector_udp(data, conn) {
 
 connector_udp.prototype = {
   getType: function() {
-    return 'UDP';
+    return "UDP";
   },
 
   getInterface: function() {
@@ -32,7 +32,7 @@ connector_udp.prototype = {
 
   notify: function(msgList) {
     // Notify the handset with the associated Data
-    log.error('Connector UDP: Notify to ' + this.data.interface.ip + ' not valid on this server');
+    log.error("Connector UDP: Notify to " + this.data.interface.ip + " not valid on this server");
   }
 };
 

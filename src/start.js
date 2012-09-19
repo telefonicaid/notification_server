@@ -6,32 +6,34 @@
  */
 
 var forever = require('forever-monitor'),
-    fs = require('fs'),
-    starts = require('./config.js').servers;
+    fs = require("fs"),
+    starts = require("./config.js").servers;
 
 // Show license
-var license = 'PUSH Notification Server \n';
-license += 'Copyright (C) 2012  Telefonica PDI \n\n';
-license += 'This program is free software: you can redistribute it and/or modify \n';
-license += 'it under the terms of the GNU Affero General Public License as published by \n';
-license += 'the Free Software Foundation, either version 3 of the License, or \n';
-license += '(at your option) any later version. \n';
-license += 'This program is distributed in the hope that it will be useful, \n';
-license += 'but WITHOUT ANY WARRANTY; without even the implied warranty of \n';
-license += 'MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \n';
-license += 'GNU Affero General Public License for more details. \n';
-license += 'You should have received a copy of the GNU Affero General Public License \n';
-license += 'along with this program.  If not, see <http://www.gnu.org/licenses/>. \n';
-license += '\n\n\n\n';
-
-console.log(license);
+console.log(
+"    PUSH Notification Server \n\
+    Copyright (C) 2012  Telefonica PDI \n\
+ \n\
+    This program is free software: you can redistribute it and/or modify \n\
+    it under the terms of the GNU Affero General Public License as published by \n\
+    the Free Software Foundation, either version 3 of the License, or \n\
+    (at your option) any later version. \n\
+ \n\
+    This program is distributed in the hope that it will be useful, \n\
+    but WITHOUT ANY WARRANTY; without even the implied warranty of \n\
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \n\
+    GNU Affero General Public License for more details. \n\
+ \n\
+    You should have received a copy of the GNU Affero General Public License \n\
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. \n\
+\n\n\n\n");
 
 // Show version
 try {
-  var version = fs.readFileSync('version.info');
-  console.log('PUSH Notification Server Version: ' + version);
-} catch (e) {
-  console.error('No version.info file, please run make');
+  var version = fs.readFileSync("version.info");
+  console.log("PUSH Notification Server Version: " + version);
+} catch(e) {
+  console.error("No version.info file, please run make");
 }
 
 //Fill what server should be started
@@ -46,7 +48,7 @@ starts = childs;
 //Start servers and keep a reference for each of them
 var started = new Array(childs.length);
 starts.forEach(function(child) {
-  started[child] = new(forever.Monitor)(['node', 'main.js', child], {
+  started[child] = new (forever.Monitor)(['node', 'main.js', child], {
     max: 1,
     killTree: true,
     silent: false
@@ -58,11 +60,8 @@ starts.forEach(function(child) {
 });
 
 var closing = false;
-
 function closeChilds() {
-  if (closing) {
-    return;
-  }
+  if (closing) { return; }
   closing = true;
   console.log('Kill signal on start.js -->' + started);
   started.forEach(function(child, index, started) {

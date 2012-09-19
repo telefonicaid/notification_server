@@ -18,12 +18,13 @@ cryptography.prototype = {
   /**
    * Simmetric Encrypt
    */
-  _encrypt: function(data, key, algorithm) {
+  _encrypt: function(data, key, algorithm)
+  {
     var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex'; // hex, base64
+    var cipherEncoding = 'hex';            // hex, base64
 
     var cipher = crypto.createCipher(algorithm, key);
-    var ciphertext = '';
+    var ciphertext = "";
     ciphertext = cipher.update(data, clearEncoding, cipherEncoding);
     ciphertext += cipher.final(cipherEncoding);
 
@@ -35,10 +36,10 @@ cryptography.prototype = {
    */
   _decrypt: function(ciphertext, key, algorithm) {
     var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex'; // hex, base64
+    var cipherEncoding = 'hex';            // hex, base64
 
     var decipher = crypto.createDecipher(algorithm, key);
-    var data = '';
+    var data = "";
     try {
       data = decipher.update(ciphertext, cipherEncoding, clearEncoding);
       data += decipher.final(cipherEncoding);
@@ -51,7 +52,7 @@ cryptography.prototype = {
    */
   encryptAES: function(data, key) {
     var algorithm = 'aes-128-cbc';
-    return this._encrypt(data, key, algorithm);
+    return this._encrypt(data,key,algorithm);
   },
 
   /**
@@ -81,7 +82,7 @@ cryptography.prototype = {
    *  http://www.openssl.org/docs/HOWTO/keys.txt
    *  http://www.codealias.info/technotes/openssl_rsa_sign_and_verify_howto
    */
-  verifySignature: function(data, signature, publicKey) {
+  verifySignature: function(data,signature,publicKey) {
     var algorithm = 'RSA-SHA256';
     var verifier = crypto.createVerify(algorithm);
     verifier.update(data);
@@ -108,7 +109,6 @@ cryptography.prototype = {
 // Singleton
 ///////////////////////////////////////////
 var crypt = new cryptography();
-
 function getCrypto() {
   return crypt;
 }
