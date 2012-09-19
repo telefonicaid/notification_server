@@ -72,7 +72,13 @@ server.prototype = {
     // Subscribe to my own Quesue
     var self = this;
     msgBroker.init(function() {
-      var args = {durable: false, autoDelete: true, arguments: {'x-ha-policy': 'all'}};
+      var args = {
+        durable: false,
+        autoDelete: true,
+        arguments: {
+          'x-ha-policy': 'all'
+        }
+      };
       msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
       self.ready = true;
     });
@@ -191,8 +197,17 @@ server.prototype = {
 
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
-            if (!query.data.watoken) {
+            // Close the connection if the
+            var watoken = query.data.watoken;
+            if (!watoken) {
               log.debug("WS::onWSMessage::registerWA --> Null WAtoken");
+              return connection.sendUTF('{ "status": "ERROR",' +
+                                          '"reason": Not valid WAtoken sent"');
+            }
+            var pbkbase64 = query.data.pbkbase64;
+            //TODO: check if the pbk sent is valid. Issue 81
+            if (!pbkbase64) {
+              log.debug("WS::onWSMessage::registerWA --> Null pbk");
               connection.sendUTF('{ "status": "ERROR", "reason": Not valid WAtoken sent" }');
               return connection.close();
             }
@@ -211,8 +226,8 @@ server.prototype = {
               }
             }
             log.debug("WS::onWSMessage::registerWA UAToken: " + uatoken);
-            appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
-            dataManager.registerApplication(appToken, uatoken, query.data.pbkbase64, function(ok) {
+            appToken = helpers.getAppToken(watoken, pbkbase64);
+            dataManager.registerApplication(appToken, uatoken, pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
