@@ -18,7 +18,7 @@ before_install:
 
 script:
   - cd src
-  - node start.js & # Start the server
+  - sudo node start.js & # Start the server
   - cd ..
   - sleep 5 # Wait for everything to settle down
   #- npm test # Unit tests
