@@ -6,6 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+
 /******************* Servers to run on this machine ********************/
 /**
  * Put to true what you want to run
@@ -22,6 +23,7 @@ exports.servers = {
 // Common configuration parameters
 ////////////////////////////////////////////////////////////////////////
 
+
 /********************* Constants********************************************/
 exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
@@ -31,22 +33,24 @@ exports.consts = {
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: "http://localhost:8081",
+  publicBaseURL: 'http://localhost:8081',
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
    * This is used to verify if the token to register a UA comes from
    * this server
    */
-  cryptokey: "12345678901234567890"
+  cryptokey: '12345678901234567890'
 };
+
 
 /********************* Logger parameters ***********************************/
 exports.logger = {
   MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
   CONSOLEOUTPUT: 1,
-  BASE_PATH: "/var/log/push_server/"
+  BASE_PATH: '/var/log/push_server/'
 };
+
 
 /********************* Common Queue ***********************************/
 /**
@@ -79,9 +83,9 @@ exports.queue = {
 //DDBB defaults to use a single MongoDB instance
 exports.ddbbsettings = {
   machines: [
-    ["127.0.0.1", 27017]
+    ['127.0.0.1', 27017]
   ],
-  ddbbname: "push_notification_server",
+  ddbbname: 'push_notification_server',
   replicasetName: null
 };
 
@@ -89,31 +93,30 @@ exports.ddbbsettings = {
 //Different configurations for the servers
 ////////////////////////////////////////////////////////////////////////
 
+
 /********************* NS_AS *****************************************/
 exports.NS_AS = {
-  logfile: "NS_AS.log",
+  logfile: 'NS_AS.log',
 
   /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
    */
-  interfaces: [
-    {
-      ip: "0.0.0.0",
-      port: 8081
-    }
-  ]
+  interfaces: [{
+    ip: '0.0.0.0',
+    port: 8081
+  }]
 };
 
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: "NS_Monitor.log"
+  logfile: 'NS_Monitor.log'
 };
 
 /********************* NS_UA_WS **************************************/
 
 exports.NS_UA_WS = {
-  logfile: "NS_UA_WS.log",
+  logfile: 'NS_UA_WS.log',
 
   /**
    * Binding interfaces and ports
@@ -122,10 +125,9 @@ exports.NS_UA_WS = {
   interfaces: [
     // Internal network
     {
-      ip: "0.0.0.0",
+      ip: '0.0.0.0',
       port: 8080
-    }
-  ],
+    }],
 
   /**
    * Websocket configuration
@@ -145,13 +147,13 @@ exports.NS_UA_WS = {
 /********************* NS_UA_UDP *************************************/
 
 exports.NS_UA_UDP = {
-  logfile: "NS_UA_UDP.log"
+  logfile: 'NS_UA_UDP.log'
 };
 
 /********************* NS_WakeUp *************************************/
 
 exports.NS_WakeUp = {
-  logfile: "NS_WakeUp.log",
+  logfile: 'NS_WakeUp.log',
 
   /**
    * Binding interfaces and ports
@@ -160,8 +162,7 @@ exports.NS_WakeUp = {
   interfaces: [
     // Internal network
     {
-      ip: "0.0.0.0",
+      ip: '0.0.0.0',
       port: 8090
-    }
-  ]
+    }]
 };

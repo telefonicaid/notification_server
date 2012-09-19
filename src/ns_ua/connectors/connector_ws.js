@@ -5,14 +5,14 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-function connector_websocket(data,conn) {
+function connector_websocket(data, conn) {
   this.data = data;
   this.connection = conn;
 }
 
 connector_websocket.prototype = {
   getType: function() {
-    return "WS";
+    return 'WS';
   },
 
   getConnection: function() {

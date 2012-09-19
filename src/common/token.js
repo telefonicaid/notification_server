@@ -4,10 +4,9 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
-
-var uuid = require("node-uuid"),
-    crypto = require("./cryptography.js"),
-    cryptokey = require("../config.js").consts.cryptokey;
+var uuid = require('node-uuid'),
+    crypto = require('./cryptography.js'),
+    cryptokey = require('../config.js').consts.cryptokey;
 
 function token() {}
 
@@ -17,7 +16,7 @@ token.prototype = {
   // The TOKEN shall be unique
   get: function() {
     // SerialNumber + TimeStamp + NotificationServer_Id + CRC -> RAWToken
-    var rawToken = this.serialNumber++ + "#" + Date.now() + "#" + process.serverId + "_" + uuid.v1();
+    var rawToken = this.serialNumber+++ '#' + Date.now() + '#' + process.serverId + '_' + uuid.v1();
 
     //////////////////////////////////////////////////////////////////////////////////////
     // Due to the Node.JS Crypto library decission (ignore padding) we should add it:
@@ -30,11 +29,11 @@ token.prototype = {
      *                         unsigned char *out,
      *                         int *outl) {
      */
-    while( (rawToken.length - 32) % 16 > 0 ) rawToken+="#";    // 32 == MD5 length
+    while ((rawToken.length - 32) % 16 > 0) rawToken += '#'; // 32 == MD5 length
     //////////////////////////////////////////////////////////////////////////////////////
 
     // CRC
-    rawToken += "@" + crypto.hashMD5(rawToken);
+    rawToken += '@' + crypto.hashMD5(rawToken);
 
     // Encrypt token with AES
     return crypto.encryptAES(rawToken, cryptokey);
@@ -42,8 +41,7 @@ token.prototype = {
 
   // Verify the given TOKEN
   verify: function(token) {
-    if(!token)
-      return false;
+    if (!token) return false;
 
     // Decrypt token
     var rawToken = crypto.decryptAES(token, cryptokey).split('@');
@@ -57,6 +55,7 @@ token.prototype = {
 // Singleton
 ///////////////////////////////////////////
 var token = new token();
+
 function getToken() {
   return token;
 }
