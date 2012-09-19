@@ -261,6 +261,12 @@ server.prototype = {
             break;
 
           case "getAllMessages":
+            if(dataManager.getUAToken(connection)) {
+              log.debug('WS::onWSMessage::getAllMessages --> No getAllMessages from WS connections');
+              connection.sendUTF('{"status": "ERROR",' +
+                                  '"reason": "Command not allowed in this connection",' +
+                                  '"messageType": "getAllMessages"}');
+            }
             if(!query.data.uatoken) {
               log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
               connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken sent" }');
