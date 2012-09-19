@@ -4,14 +4,13 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
-
-var log = require("../common/logger"),
-    consts = require("../config.js").consts,
+var log = require('../common/logger'),
+    consts = require('../config.js').consts,
     http = require('http'),
-    uuid = require("node-uuid"),
-    crypto = require("../common/cryptography"),
-    msgBroker = require("../common/msgbroker"),
-    dataStore = require("../common/datastore");
+    uuid = require('node-uuid'),
+    crypto = require('../common/cryptography'),
+    msgBroker = require('../common/msgbroker'),
+    dataStore = require('../common/datastore');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -27,7 +26,7 @@ function onNewPushMessage(notification, watoken, callback) {
     return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
   }
   //Only accept notification messages
-  if (json.messageType != "notification") {
+  if (json.messageType != 'notification') {
     return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
   }
   var sig = json.signature,
@@ -39,7 +38,7 @@ function onNewPushMessage(notification, watoken, callback) {
   dataStore.getPbkApplication(watoken, function(pbkbase64) {
     if (pbkbase64) {
       if (!sig) {
-        log.debug("NS_AS::onNewPushMessage --> Notification not signed where it must.");
+        log.debug('NS_AS::onNewPushMessage --> Notification not signed where it must.');
         return callback('{"status":"ERROR", "reason":"You must sign your message with your Private Key"}', 400);
       }
       var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
@@ -53,7 +52,7 @@ function onNewPushMessage(notification, watoken, callback) {
     // Store on persistent database
     var msg = dataStore.newMessage(id, watoken, json);
     // Also send to the newMessages Queue
-    msgBroker.push("newMessages", msg);
+    msgBroker.push('newMessages', msg);
     return callback('{"status": "ACCEPTED"}', 200);
   });
 }
@@ -74,31 +73,30 @@ server.prototype = {
     // Create a new HTTP Server
     this.server = http.createServer(this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('NS_AS::init --> HTTP push AS server starting on ' + this.ip + ":" + this.port);
+    log.info('NS_AS::init --> HTTP push AS server starting on ' + this.ip + ':' + this.port);
 
     // Events from msgBroker
     msgBroker.on('brokerconnected', function() {
-      log.info("NS_AS::init --> MsgBroker ready and connected");
+      log.info('NS_AS::init --> MsgBroker ready and connected');
       this.msgbrokerready = true;
     }.bind(this));
     msgBroker.on('brokerdisconnected', function() {
-      log.critical("NS_AS::init --> MsgBroker DISCONNECTED!!");
+      log.critical('NS_AS::init --> MsgBroker DISCONNECTED!!');
       this.msgbrokerready = false;
     }.bind(this));
 
     //Events from dataStore
     dataStore.on('ddbbconnected', function() {
-      log.info("NS_AS::init --> DataStore ready and connected");
+      log.info('NS_AS::init --> DataStore ready and connected');
       this.ddbbready = true;
     }.bind(this));
-
-    //Let's wait one second to start the msgBroker and the dataStore
     dataStore.on('ddbbdisconnected', function() {
-      log.critical("NS_AS::init --> DataStore DISCONNECTED!!");
+      log.critical('NS_AS::init --> DataStore DISCONNECTED!!');
       this.ddbbready = false;
     });
 
     //Wait until we have setup our events listeners
+    //Let's start the msgBroker and the dataStore
     setTimeout(function() {
       msgBroker.init();
       dataStore.init();
@@ -127,56 +125,57 @@ server.prototype = {
 
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
     var url = this.parseURL(request.url);
-    log.debug("NS_AS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
+    log.debug('NS_AS::onHTTPMessage --> Parsed URL: ' + JSON.stringify(url));
     switch (url.messageType) {
-    case 'about':
-      if(consts.PREPRODUCTION_MODE) {
-        try {
-          var fs = require("fs");
-          text = "Push Notification Server (Application Server Frontend)<br />";
-          text += "&copy; Telef&oacute;nica Digital, 2012<br />";
-          text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
-          text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
-        } catch(e) {
-          text = "No version.info file";
+      case 'about':
+        if (consts.PREPRODUCTION_MODE) {
+          try {
+            var fs = require('fs');
+            text = 'Push Notification Server (Application Server Frontend)<br />';
+            text += '&copy; Telef&oacute;nica Digital, 2012<br />';
+            text += 'Version: ' + fs.readFileSync('version.info') + '<br /><br />';
+            text += '<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />';
+          } catch (e) {
+            text = 'No version.info file';
+          }
+          response.setHeader('Content-Type', 'text/html');
+          response.statusCode = 200;
+          response.write(text);
+          return response.end();
+        } else {
+          response.statusCode = 404;
+          response.write('{"status": "ERROR", "reason": "Not allowed on production system"}');
+          return response.end();
         }
-        response.setHeader("Content-Type", "text/html");
-        response.statusCode = 200;
-        response.write(text);
-        return response.end();
-      } else {
-        response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "Not allowed on production system"}');
-        return response.end();
-      }
+        break;
 
-    case 'notify':
-      if (!url.token) {
-        log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
-        response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
-        return response.end();
-      }
+      case 'notify':
+        if (!url.token) {
+          log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
+          response.statusCode = 404;
+          response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
+          return response.end();
+        }
 
-      log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
-      request.on("data", function(notification) {
-        onNewPushMessage(notification, url.token, function(body, code) {
+        log.debug('NS_AS::onHTTPMessage --> Notification for ' + url.token);
+        request.on('data', function(notification) {
+          onNewPushMessage(notification, url.token, function(body, code) {
             response.statusCode = code;
-            response.setHeader("Content-Type", "text/plain");
-            response.setHeader("access-control-allow-origin", "*");
+            response.setHeader('Content-Type', 'text/plain');
+            response.setHeader('access-control-allow-origin', '*');
             response.write(body);
             return response.end();
+          });
         });
-      });
-      break;
+        break;
 
-    default:
-      log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
-      response.statusCode = 404;
-      response.setHeader("Content-Type", "text/plain");
-      response.setHeader("access-control-allow-origin", "*");
-      response.write('{"status": "ERROR", "reason": "Only notify by this interface"}');
-      return response.end();
+      default:
+        log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
+        response.statusCode = 404;
+        response.setHeader('Content-Type', 'text/plain');
+        response.setHeader('access-control-allow-origin', '*');
+        response.write('{"status": "ERROR", "reason": "Only notify by this interface"}');
+        return response.end();
     }
   },
 
@@ -186,10 +185,10 @@ server.prototype = {
   parseURL: function(url) {
     var urlparser = require('url'),
         data = {};
-    data.parsedURL = urlparser.parse(url,true);
-    var path = data.parsedURL.pathname.split("/");
+    data.parsedURL = urlparser.parse(url, true);
+    var path = data.parsedURL.pathname.split('/');
     data.messageType = path[1];
-    if(path.length > 2) {
+    if (path.length > 2) {
       data.token = path[2];
     } else {
       data.token = data.parsedURL.query.token;
