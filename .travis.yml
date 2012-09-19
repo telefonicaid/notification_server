@@ -10,18 +10,24 @@ services:
 branches:
   only:
     - develop
+    - master
 
 before_install:
   - npm rebuild
-  - sudo mkdir -p /var/log/push_server/
+  - sudo mkdir -p /var/log/push_server/ # To store log files
 
 before_script:
   - cd src
-  - sudo nohup node start.js > /dev/null &
-  - sleep 5
-  - cd ../test
-  - node E2Etest.js
+  - nohup node start.js > /dev/null & # Start the server
+  - sleep 5 # Wait for everything to settle down
   - cd ..
+
+test:
+  - npm test # Unit tests
+  - cd test/functions
+  - node getToken.js # Get tokens test (via HTTP)
+  # Add more tests in between
+  - node E2E.js # E2E test
 
 notifications:
    email:
