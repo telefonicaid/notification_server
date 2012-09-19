@@ -16,15 +16,15 @@ before_install:
   - npm rebuild
   - sudo mkdir -p /var/log/push_server/ # To store log files
 
-before_script:
+script:
   - cd src
-  - nohup node start.js > /dev/null & # Start the server
-  - sleep 5 # Wait for everything to settle down
+  - sudo nohup node start.js > /dev/null & # Start the server
   - cd ..
-
-test:
+  - sleep 5 # Wait for everything to settle down
   - npm test # Unit tests
-  - cd test/functions
+  - cd test
+  - node E2Etest.js
+  - cd functions
   - node getToken.js # Get tokens test (via HTTP)
   # Add more tests in between
   - node E2E.js # E2E test
