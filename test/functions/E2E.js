@@ -24,7 +24,7 @@ var debug = require('./common').debug;
   getToken: function getToken() {
     PushTest.port =  require('../../src/config.js').NS_UA_WS.interfaces[0].port;
     PushTest.host = '127.0.0.1';
-    PushTest.NOTIFICATION = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}';
+    PushTest.NOTIFICATION = '{"messageType":"notification","id":1234,"message":"Hola","signature":"691cb72015afdba8742349431500b497fe689523c7bd8b9ab9d905160efed20e8c70e7ba1aec112c494721f253b8874f90d611b8ebd78e5017aaf971f0f01503e2d3ba1949cd11c145f0537b7c80a7933368f405d12b723f8107c92af1e1d58a93c48a9af3f55ee519719b8ba1632e1fd12f9d3eb99846abb849793516bf1fa0","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}';
 
     var http = require("http");
     var options = {
@@ -71,13 +71,14 @@ var debug = require('./common').debug;
           var msg = JSON.parse(message.utf8Data);
           debug(msg);
           var notificationJSON = JSON.parse(PushTest.NOTIFICATION);
-          if (msg.status == 'REGISTERED' && msg.messageType == "registerUA") {
+          if (!Array.isArray(msg)) msg = [msg];
+          if (msg[0].status == 'REGISTERED' && msg[0].messageType == "registerUA") {
             PushTest.registerUAOK = true;
             debug("UA registered");
-          } else if (msg.status == 'REGISTERED' && msg.messageType == 'registerWA') {
+          } else if (msg[0].status == 'REGISTERED' && msg[0].messageType == 'registerWA') {
             PushTest.registerWAOK = true;
-            PushTest.url = msg.url;
-            debug("WA registered with url -- " + msg.url);
+            PushTest.url = msg[0].url;
+            debug("WA registered with url -- " + msg[0].url);
           } else if (msg[0].messageType == 'notification') {
             PushTest.gotNotification = true;
             PushTest.connection.sendUTF('{"messageType": "ack", "messageId": "' + msg[0].messageId+ '"}');
@@ -99,18 +100,22 @@ var debug = require('./common').debug;
   },
 
   registerWA: function registerWA() {
-    var msg = '{"data": {"watoken": "testApp"}, "messageType":"registerWA" }';
+    var pbkbase64 = 'ICAgIC0tLS0tQkVHSU4gUFVCTElDIEtFWS0tLS0tCiAgICBNSUdmTUEwR0NTcUdTSWIzRFFFQkFRVUFBNEdOQURDQmlRS0JnUURGVzE0U25pd0NmSlMvL29LeFNIaW4vdUMxCiAgICBQNklCSGlJdllyMk1taEJSY1J5MGp1TkpIOE9WZ3ZpRktFVjNpaEhpVExVU2o5NG1nZmxqOVJ4elEvMFhSOHR6CiAgICBQeXdLSHhTR3c0QW1mN2pLRjFac2hDVWR5ck9pOGNMZnpkd0l6MW5QdkRGNHd3YmkyZnFzZVg1WTdZbFl4ZnBGCiAgICBseDhHdmJuWUpITy81MFFHa1FJREFRQUIKICAgIC0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQ==';
+    var msg = '{"data": {"watoken": "testApp", "pbkbase64":"' + pbkbase64 + '"}, "messageType":"registerWA" }';
     PushTest.connection.sendUTF(msg.toString());
   },
 
   _parseURL: function _parseURL() {
     var url = require('url');
+    debug('E2E::_pushURL --> ' + PushTest.url);
+    if (!PushTest.url) return;
     return url.parse(PushTest.url);
   },
 
   sendNotification: function sendNotification() {
     var http = require("http");
     var urlData = PushTest._parseURL();
+    if (!urlData) return;
     var options = {
       host: urlData.hostname,
       port: urlData.port,
@@ -118,7 +123,12 @@ var debug = require('./common').debug;
       method: 'POST'
     };
 
-    var req = http.request(options, function(res) {});
+    var req = http.request(options, function(res) {
+      res.on('data', function(chunk) {
+        debug('E2E::sendNotification::request --> ' + chunk);
+        debug('E2E::sendNotification::request --> ' + res.statusCode);
+      });
+    });
 
     req.on('error', function(e) {
       console.log('problem with request: ' + e.message);
