@@ -224,7 +224,7 @@ server.prototype = {
               //In this case, there is a problem, but there are no PbK. We just reject
               //the registration but we do not close the connection
               return connection.sendUTF('{"status": "ERROR",' +
-                                         '"reason": Not valid PbK sent",' +
+                                         '"reason": "Not valid PbK sent",' +
                                          '"watoken":"' + watoken + '",' +
                                          '"messageType" : "registerWA"}"');
             }
@@ -255,7 +255,7 @@ server.prototype = {
             dataManager.registerApplication(appToken, uatoken, pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
-                connection.sendUTF('{"status": "REGISTERED",' +
+                connection.sendUTF('{ "status": "REGISTERED",' +
                                      '"url": "' + notifyURL + '",' +
                                      '"messageType": "registerWA",' +
                                      '"watoken":"' + watoken + '"}');
