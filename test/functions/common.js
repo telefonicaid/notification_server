@@ -19,10 +19,11 @@ exports.getToken = function getToken(callback) {
     method: 'GET'
   };
 
-  debug('common::getToken --> ' + JSON.stringify(options));
   var req = http.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
+        debug('common::getToken --> ' + JSON.stringify(options));
+        debug('common::getToken::response --> ' + chunk);
         callback(null, chunk);
       });
   });
