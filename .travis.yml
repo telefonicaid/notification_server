@@ -19,14 +19,14 @@ before_install:
 script:
   - cd src
   - nohup node start.js > /dev/null & # Start the server
-  - sleep 5 # Wait for everything to settle down
   - cd ..
+  - sleep 5 # Wait for everything to settle down
+  - npm test # Unit tests
   - cd test/functions
   - node getToken.js # Get tokens test (via HTTP)
   # Add more tests in between
   - node E2E.js # E2E test
   - cd ../..
-  - npm test # Unit tests
 
 notifications:
    email:
