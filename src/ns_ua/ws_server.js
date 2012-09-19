@@ -225,8 +225,8 @@ server.prototype = {
               //the registration but we do not close the connection
               return connection.sendUTF('{"status": "ERROR",' +
                                          '"reason": "Not valid PbK sent",' +
-                                         '"watoken":"' + watoken + '",' +
-                                         '"messageType" : "registerWA"}"');
+                                         '"watoken": "' + watoken + '",' +
+                                         '"messageType": "registerWA"}');
             }
 
             var uatoken = dataManager.getUAToken(connection);
@@ -300,10 +300,11 @@ server.prototype = {
 
           case "getAllMessages":
             if(dataManager.getUAToken(connection)) {
-              log.debug('WS::onWSMessage::getAllMessages --> No getAllMessages from WS connections');
+              log.debug('WS::onWSMessage::getAllMessages --> Not allowed on WS connections');
               connection.sendUTF('{"status": "ERROR",' +
                                   '"reason": "Command not allowed in this connection",' +
                                   '"messageType": "getAllMessages"}');
+              return;
             }
             if(!query.data.uatoken) {
               log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
