@@ -7,7 +7,8 @@ exports.serverData = {
   host: '127.0.0.1'
 };
 
-exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}';
+var date = new Date().getTime();
+exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"' + date + '","priority":1}';
 
 exports.getToken = function getToken(callback) {
   var http = require("http");
