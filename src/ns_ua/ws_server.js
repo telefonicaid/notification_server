@@ -238,14 +238,14 @@ server.prototype = {
                 connection.sendUTF('{ "status": "ERROR",' +
                                      '"reason": "UAtoken not valid for this server",' +
                                      '"watoken":"' + watoken + '",' +
-                                     '"messageType" : "registerWA"}"');
+                                     '"messageType" : "registerWA"}');
                 return connection.close();
               }
               if(!uatoken) {
                 connection.sendUTF('{ "status": "ERROR",' +
                                      '"reason": "No UAToken found for this connection!",' +
                                      '"watoken":"' + watoken + '",' +
-                                     '"messageType" : "registerWA"}"');
+                                     '"messageType" : "registerWA"}');
                 return connection.close();
               }
             }
