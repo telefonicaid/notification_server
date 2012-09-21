@@ -66,7 +66,6 @@ datamanager.prototype = {
           );
         }
       } else {
-        log.debug("dataManager::registerNode --> Node registered");
         p.callback(false);
       }
     }.bind(this), {token: _token, connector: _connector, callback: _callback});

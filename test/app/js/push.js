@@ -128,24 +128,22 @@ var Push = {
   },
 
   registerApp1: function() {
-    var pbk1 = '\
-    -----BEGIN PUBLIC KEY-----\n\
-    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n\
-    P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
-    PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
-    lx8GvbnYJHO/50QGkQIDAQAB\n\
-    -----END PUBLIC KEY-----';
+    var pbk1 = '-----BEGIN PUBLIC KEY-----\n' +
+               'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n' +
+               'P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n' +
+               'PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n' +
+               'lx8GvbnYJHO/50QGkQIDAQAB\n' +
+               '-----END PUBLIC KEY-----';
     this.registerApp(this.token, 'app1', utf8_to_b64(pbk1));
   },
 
   unregisterApp1: function() {
-    var pbk1 = '\
-    -----BEGIN PUBLIC KEY-----\n\
-    MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n\
-    P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n\
-    PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n\
-    lx8GvbnYJHO/50QGkQIDAQAB\n\
-    -----END PUBLIC KEY-----';
+    var pbk1 = '-----BEGIN PUBLIC KEY-----\n' +
+               'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDFW14SniwCfJS//oKxSHin/uC1\n' +
+               'P6IBHiIvYr2MmhBRcRy0juNJH8OVgviFKEV3ihHiTLUSj94mgflj9RxzQ/0XR8tz\n' +
+               'PywKHxSGw4Amf7jKF1ZshCUdyrOi8cLfzdwIz1nPvDF4wwbi2fqseX5Y7YlYxfpF\n' +
+               'lx8GvbnYJHO/50QGkQIDAQAB\n' +
+               '-----END PUBLIC KEY-----';
     this.unregisterApp(this.token, 'app1', utf8_to_b64(pbk1));
   },
 

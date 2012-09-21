@@ -38,6 +38,34 @@ exports.registerUA = function registerUA(connection, token, callback) {
 
 };
 
+exports.sendNotification = function sendNotification(url, text, callback) {
+  var http = require("http");
+  var urllib = require('url');
+  var urlData = urllib.parse(url);
+  var options = {
+    host: urlData.hostname,
+    port: urlData.port,
+    path: urlData.pathname,
+    method: 'POST'
+  };
+
+  var req = http.request(options, function(res) {
+    res.setEncoding('utf8');
+    res.on('data', function(chunk) {
+      callback(null, res.statusCode, chunk, text);
+    });
+  });
+
+  req.on('error', function(e) {
+    debug('problem with request: ' + e.message);
+    callback(e.message, null, null, text);
+  });
+
+  // write data to request body
+  req.write(text);
+  req.end();
+};
+
 exports.allDifferents = function allDifferents(l) {
   var obj = {};
   for (var i = 0, item; item = l[i]; i++) {

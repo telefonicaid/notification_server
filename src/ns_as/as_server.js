@@ -28,25 +28,28 @@ function onNewPushMessage(notification, watoken, callback) {
   }
   //Only accept notification messages
   if (json.messageType != "notification") {
+    log.debug('NS_AS::onNewPushMessage --> Not valid messageType');
     return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
   }
-  var sig = json.signature,
-      message = json.message;
+  //If not signed, reject
+  var sig = json.signature;
+  if (!sig) {
+    log.debug('NS_AS::onNewPushMessage --> Not signed');
+    return callback('{"status":"ERROR", "reason":"Not signed"}', 400);
+  }
+  var message = json.message || '';
+  if (!message) {
+    json.message = '';
+  }
   if (message.length > consts.MAX_PAYLOAD_SIZE) {
     log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
   }
   dataStore.getPbkApplication(watoken, function(pbkbase64) {
-    if (pbkbase64) {
-      if (!sig) {
-        log.debug("NS_AS::onNewPushMessage --> Notification not signed where it must.");
-        return callback('{"status":"ERROR", "reason":"You must sign your message with your Private Key"}', 400);
-      }
-      var pbk = new Buffer(pbkbase64, 'base64').toString('ascii');
-      if (sig && !crypto.verifySignature(message, sig, pbk)) {
-        log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
-        return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
-      }
+    var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
+    if (!crypto.verifySignature(message, sig, pbk)) {
+      log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
+      return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
     }
     var id = uuid.v1();
     log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
@@ -149,6 +152,7 @@ server.prototype = {
         response.write('{"status": "ERROR", "reason": "Not allowed on production system"}');
         return response.end();
       }
+      break;
 
     case 'notify':
       if (!url.token) {
