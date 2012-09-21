@@ -72,7 +72,13 @@ server.prototype = {
     // Subscribe to my own Quesue
     var self = this;
     msgBroker.init(function() {
-      var args = {durable: false, autoDelete: true, arguments: {'x-ha-policy': 'all'}};
+      var args = {
+        durable: false,
+        autoDelete: true,
+        arguments: {
+          'x-ha-policy': 'all'
+        }
+      };
       msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
       self.ready = true;
     });
@@ -153,7 +159,9 @@ server.prototype = {
           query = JSON.parse(message.utf8Data);
         } catch(e) {
           log.debug("WS::onWSMessage --> Data received is not a valid JSON package");
-          connection.sendUTF('{ "status": "ERROR", "reason": "Data received is not a valid JSON package" }');
+          connection.sendUTF('{ "status": "ERROR",' +
+                               '"reason": "Data received is not a valid JSON package",' +
+                               '"messageType":"registerUA" }');
           return connection.close();
         }
 
@@ -163,13 +171,17 @@ server.prototype = {
             // Token verification
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
-              connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
+              connection.sendUTF('{ "status": "ERROR",' +
+                                   '"reason": "Token not valid for this server",' +
+                                   '"messageType": "registerUA" }');
               return connection.close();
             }
             // New UA registration
             Connectors.getConnector(query.data, connection, function(err,c) {
               if(err) {
-                  connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
+                  connection.sendUTF('{"status":"ERROR",' +
+                                      '"reason": "Try again later",' +
+                                      '"messageType":"registerUA"}');
                   return log.error("WS::onWSMessage --> Error getting connection object");
               }
 
@@ -181,7 +193,9 @@ server.prototype = {
                     connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
                     log.debug("WS::onWSMessage --> OK register UA");
                   } else {
-                    connection.sendUTF('{"status":"ERROR", "reason": "Try again later"}');
+                    connection.sendUTF('{"status":"ERROR",' +
+                                        '"reason": "Try again later",' +
+                                        '"messageType":"registerUA"}');
                     log.debug("WS::onWSMessage --> Failing registering UA");
                   }
                 }
@@ -191,34 +205,66 @@ server.prototype = {
 
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
-            if (!query.data.watoken) {
+            // Close the connection if the
+            var watoken = query.data.watoken;
+            if (!watoken) {
               log.debug("WS::onWSMessage::registerWA --> Null WAtoken");
-              connection.sendUTF('{ "status": "ERROR", "reason": Not valid WAtoken sent" }');
-              return connection.close();
+              connection.sendUTF('{"status": "ERROR",' +
+                                  '"reason": "Not valid WAtoken sent",' +
+                                  '"messageType" : "registerWA"}"');
+              //There must be a problem on the client, because WAtoken is the way to identify an app
+              //Close in this case.
+              connection.close();
             }
+
+            var pbkbase64 = query.data.pbkbase64;
+            //TODO: check if the pbk sent is valid. Issue 81
+            if (!pbkbase64) {
+              log.debug("WS::onWSMessage::registerWA --> Null pbk");
+              //In this case, there is a problem, but there are no PbK. We just reject
+              //the registration but we do not close the connection
+              return connection.sendUTF('{"status": "ERROR",' +
+                                         '"reason": "Not valid PbK sent",' +
+                                         '"watoken": "' + watoken + '",' +
+                                         '"messageType": "registerWA"}');
+            }
+
             var uatoken = dataManager.getUAToken(connection);
             if(!uatoken) {
               log.debug("No UAToken found for this connection - looking in the message");
               uatoken = query.data.uatoken;
               if(uatoken && !token.verify(uatoken)) {
                 log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
-                connection.sendUTF('{ "status": "ERROR", "reason": "Token not valid for this server" }');
+                connection.sendUTF('{ "status": "ERROR",' +
+                                     '"reason": "UAtoken not valid for this server",' +
+                                     '"watoken":"' + watoken + '",' +
+                                     '"messageType" : "registerWA"}');
                 return connection.close();
               }
               if(!uatoken) {
-                connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
+                connection.sendUTF('{ "status": "ERROR",' +
+                                     '"reason": "No UAToken found for this connection!",' +
+                                     '"watoken":"' + watoken + '",' +
+                                     '"messageType" : "registerWA"}');
                 return connection.close();
               }
             }
+
             log.debug("WS::onWSMessage::registerWA UAToken: " + uatoken);
-            appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
-            dataManager.registerApplication(appToken, uatoken, query.data.pbkbase64, function(ok) {
+            appToken = helpers.getAppToken(watoken, pbkbase64);
+            dataManager.registerApplication(appToken, uatoken, pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
-                connection.sendUTF('{"status": "REGISTERED", "url": "' + notifyURL + '", "messageType": "registerWA"}');
+                connection.sendUTF('{ "status": "REGISTERED",' +
+                                     '"url": "' + notifyURL + '",' +
+                                     '"messageType": "registerWA",' +
+                                     '"watoken":"' + watoken + '"}');
                 log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {
-                connection.sendUTF('{"status": "ERROR", "reason": "Try again later"}');
+                connection.sendUTF('{"status": "ERROR"' +
+                                    '"reason": "Try again later",' +
+                                    '"watoken":"' + watoken + '",' +
+                                    '"messageType" : "registerWA"}"');
                 log.debug("WS::onWSMessage::registerWA --> Failing registering WA");
               }
             });
@@ -228,7 +274,10 @@ server.prototype = {
             log.debug("WS::onWSMessage::unregisterWA --> Application un-registration message");
             if(!dataManager.getUAToken(connection)) {
               log.debug("No UAToken found for this connection !");
-              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken found for this connection !" }');
+              connection.sendUTF('{ "status": "ERROR",' +
+                                 '"reason": "No UAToken found for this connection!",' +
+                                 '"messageType":"unregisterWA" }');
+              connection.close();
               break;
             }
 
@@ -236,25 +285,40 @@ server.prototype = {
             dataManager.unregisterApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
-                connection.sendUTF('{"status": "UNREGISTERED", "url": "' + notifyURL + '", "messageType": "unregisterWA"}');
+                connection.sendUTF('{"status": "UNREGISTERED",' +
+                                    '"url": "' + notifyURL + '",' +
+                                    '"messageType": "unregisterWA"}');
                 log.debug("WS::onWSMessage::unregisterWA --> OK unregistering WA");
               } else {
-                connection.sendUTF('{"status": "ERROR", "reason": "Try again later"}');
+                connection.sendUTF('{"status": "ERROR",' +
+                                    '"reason": "Try again later",' +
+                                    '"messageType": "unregisterWA"}');
                 log.debug("WS::onWSMessage::unregisterWA --> Failing unregistering WA");
               }
             });
             break;
 
           case "getAllMessages":
+            if(dataManager.getUAToken(connection)) {
+              log.debug('WS::onWSMessage::getAllMessages --> Not allowed on WS connections');
+              connection.sendUTF('{"status": "ERROR",' +
+                                  '"reason": "Command not allowed in this connection",' +
+                                  '"messageType": "getAllMessages"}');
+              return;
+            }
             if(!query.data.uatoken) {
               log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
-              connection.sendUTF('{ "status": "ERROR", "reason": "No UAToken sent" }');
+              connection.sendUTF('{"status": "ERROR",' +
+                                  '"reason": "No UAtoken sent",' +
+                                  '"messageType": "getAllMessages"}');
               return connection.close();
             }
             log.debug("WS::onWSMessage::getAllMessages --> Recovering messages for " + query.data.uatoken);
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage::getAllMessages --> Token not valid (Checksum failed)");
-              connection.sendUTF('{ "status": "ERROR", "reason": "Token received is not accepted. Please get a valid one" }');
+              connection.sendUTF('{"status": "ERROR",' +
+                                  '"reason": "Token not valid, get a new one",' +
+                                  '"messageType": "getAllMessages"}');
               return connection.close();
             } else {
               dataManager.getAllMessages(query.data.uatoken, function(messages, close) {

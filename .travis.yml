@@ -26,13 +26,7 @@ script:
   - cd functions
   - node getToken.js # Get tokens test (via HTTP)
   # Add more tests in between
-  - node E2E.js # E2E test
-
-test:
-  - npm test # Unit tests
-  - cd test/functions
-  - node getToken.js # Get tokens test (via HTTP)
-  # Add more tests in between
+  - node notification.js # Test error codes and bodies while sending notifications
   - node E2E.js # E2E test
 
 notifications:
