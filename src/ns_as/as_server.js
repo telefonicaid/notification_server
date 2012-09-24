@@ -16,7 +16,7 @@ var log = require("../common/logger"),
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-function onNewPushMessage(notification, watoken, callback) {
+function onNewPushMessage(notification, apptoken, callback) {
   var json = null;
 
   //Only accept valid JSON messages
@@ -45,16 +45,16 @@ function onNewPushMessage(notification, watoken, callback) {
     log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
   }
-  dataStore.getPbkApplication(watoken, function(pbkbase64) {
+  dataStore.getPbkApplication(apptoken, function(pbkbase64) {
     var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
     if (!crypto.verifySignature(message, sig, pbk)) {
       log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
       return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
     }
     var id = uuid.v1();
-    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
+    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(json) + "' for the '" + apptoken + "'' apptoken. Internal Id: " + id);
     // Store on persistent database
-    var msg = dataStore.newMessage(id, watoken, json);
+    var msg = dataStore.newMessage(id, apptoken, json);
     // Also send to the newMessages Queue
     msgBroker.push("newMessages", msg);
     return callback('{"status": "ACCEPTED"}', 200);
@@ -156,9 +156,9 @@ server.prototype = {
 
     case 'notify':
       if (!url.token) {
-        log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
+        log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
         response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
+        response.write('{"status": "ERROR", "reason": "No valid apptoken"}');
         return response.end();
       }
 
