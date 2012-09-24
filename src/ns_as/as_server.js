@@ -16,7 +16,7 @@ var log = require("../common/logger"),
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-function onNewPushMessage(notification, watoken, callback) {
+function onNewPushMessage(notification, apptoken, callback) {
   var json = null;
 
   //Only accept valid JSON messages

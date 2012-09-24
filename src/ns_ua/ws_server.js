@@ -229,25 +229,25 @@ server.prototype = {
                                          '"messageType": "registerWA"}');
             }
 
-            var uatoken = dataManager.getUAToken(connection);
+            // Check if we have a token (in the connection or in the message)
+            var uatoken = dataManager.getUAToken(connection) || query.data.uatoken;
             if(!uatoken) {
-              log.debug("No UAToken found for this connection - looking in the message");
-              uatoken = query.data.uatoken;
-              if(uatoken && !token.verify(uatoken)) {
-                log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
-                connection.sendUTF('{ "status": "ERROR",' +
-                                     '"reason": "UAtoken not valid for this server",' +
-                                     '"watoken":"' + watoken + '",' +
-                                     '"messageType" : "registerWA"}');
-                return connection.close();
-              }
-              if(!uatoken) {
-                connection.sendUTF('{ "status": "ERROR",' +
-                                     '"reason": "No UAToken found for this connection!",' +
-                                     '"watoken":"' + watoken + '",' +
-                                     '"messageType" : "registerWA"}');
-                return connection.close();
-              }
+              log.debug("No UAToken found for this connection");
+              connection.sendUTF('{ "status": "ERROR",' +
+                                   '"reason": "No UAToken found for this connection!",' +
+                                   '"watoken":"' + watoken + '",' +
+                                   '"messageType" : "registerWA"}');
+              return connection.close();
+            }
+
+            // Check if the token is correct
+            if(!token.verify(uatoken)) {
+              log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
+              connection.sendUTF('{ "status": "ERROR",' +
+                                   '"reason": "UAtoken not valid for this server",' +
+                                   '"watoken":"' + watoken + '",' +
+                                   '"messageType" : "registerWA"}');
+              return connection.close();
             }
 
             log.debug("WS::onWSMessage::registerWA UAToken: " + uatoken);
