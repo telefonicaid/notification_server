@@ -106,9 +106,10 @@ datamanager.prototype = {
   getNode: function (token, callback) {
     log.debug("dataManager::getNode --> getting node from memory");
     if(this.nodesTable[token]) {
+      log.debug('dataManager::getNode --> Node found: ' + token);
       return callback(this.nodesTable[token]);
     }
-    return callback(false);
+    return callback(null);
   },
 
   /**
