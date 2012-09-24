@@ -166,7 +166,7 @@ var DataStore = function() {
           function(err,d) {
             if(!err) {
               log.debug("datastore::unregisterApplication --> Node removed of the application into MongoDB");
-              if(d.node.length == 0) {
+              if(!d.node.length) {
                 log.debug("datastore::unregisterApplication --> No more nodes vinculed to this webapp. Removing app from MongoDB");
                 collection.remove( { _id: waToken },
                                 { safe: true },
@@ -258,10 +258,10 @@ var DataStore = function() {
    * Save a new message
    * @return New message as stored on DB
    */
-  this.newMessage = function (id, watoken, message) {
+  this.newMessage = function (id, apptoken, message) {
     message.messageId = id;
-    message.url = helpers.getNotificationURL(watoken);
-    var msg = { _id: id, watoken: watoken, payload: message };
+    message.url = helpers.getNotificationURL(apptoken);
+    var msg = { _id: id, watoken: apptoken, payload: message };
     this.db.collection("messages", function(err, collection) {
       if (!err) {
         collection.save(msg, { safe: true }, function(err, d) {
@@ -375,7 +375,7 @@ var DataStore = function() {
         return callback(null);
       }
     });
-  }
+  };
 };
 
 ///////////////////////////////////////////
