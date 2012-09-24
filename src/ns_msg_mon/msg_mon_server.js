@@ -37,7 +37,35 @@ function onNewMessage(msg) {
   try {
     json = JSON.parse(msg);
   } catch(e) {
-    return log.debug('MSG_mon::onNewMessage --> Error parsing JSON, aborting.');
+    return log.error('MSG_mon::onNewMessage --> newMessages queue recived a bad JSON. Check');
+  }
+
+  /**
+   * Messages are formed like this:
+   * { "messageId": "UUID",
+   *   "uatoken": "UATOKEN",
+   *   "data": {
+   *     "fillmein"
+   *   },
+   *   "payload": {
+   *      "_id": "internalMongoDBidentifier",
+   *      "watoken": "WATOKEN",
+   *      "payload": {
+   *        //Standard notification
+   *        "id",
+   *        "message": "original Payload",
+   *        "ttl",
+   *        "timestamp",
+   *        "priority",
+   *        "messageId": "equals the first messageId",
+   *        "url": URL_TO_PUSH
+   *     }
+   *   }
+   * }
+   */
+
+  if (!json.watoken) {
+    return log.error('MSG_mon::onNewMessage --> newMessages has a message without WAtoken attribute');
   }
   log.debug('MSG_mon::onNewMessage --> Mensaje desde la cola:' + JSON.stringify(json));
   dataStore.getApplication(json.watoken.toString(), onApplicationData, json);

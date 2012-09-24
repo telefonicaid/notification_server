@@ -26,35 +26,59 @@ function onNewPushMessage(notification, watoken, callback) {
     log.debug('NS_AS::onNewPushMessage --> Not valid JSON notification');
     return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
   }
+
+  //Get all attributes and save it to a new normalized notification
+  //Also, set not initialized variables.
+  var normalizedNotification = {};
+
+  //These are mandatory
+  normalizedNotification.messageType = json.messageType;
+  //normalizedNotification.sig = json.signature;
+  normalizedNotification.id = json.id;
+
+  //This are optional, but we set to default parameters
+  normalizedNotification.message = json.message || '';
+  normalizedNotification.ttl = json.ttl || consts.MAX_TTL;
+  normalizedNotification.timestamp = json.timestamp || (new Date()).getTime();
+  normalizedNotification.priority = json.priority || '4';
+
   //Only accept notification messages
-  if (json.messageType != "notification") {
+  if (normalizedNotification.messageType != "notification") {
     log.debug('NS_AS::onNewPushMessage --> Not valid messageType');
     return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
   }
+
   //If not signed, reject
-  var sig = json.signature;
-  if (!sig) {
+  if (!json.signature) {
     log.debug('NS_AS::onNewPushMessage --> Not signed');
     return callback('{"status":"ERROR", "reason":"Not signed"}', 400);
   }
-  var message = json.message || '';
-  if (!message) {
-    json.message = '';
+
+  //If not id, reject
+  if (!normalizedNotification.id) {
+    log.debug('NS_AS::onNewPushMessage --> Not id');
+    return callback('{"status":"ERROR", "reason":"Not id"}', 400);
   }
-  if (message.length > consts.MAX_PAYLOAD_SIZE) {
-    log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+
+  //Reject notifications with big attributes
+  if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
+      (normalizedNotification.id.length > consts.MAX_PAYLOAD_SIZE)) {
+    log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
   }
-  dataStore.getPbkApplication(watoken, function(pbkbase64) {
+
+  //Get the PbK for the apptoken in the database
+  dataStore.getPbkApplication(apptoken, function(pbkbase64) {
     var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
-    if (!crypto.verifySignature(message, sig, pbk)) {
+    if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
       log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
       return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
     }
+
     var id = uuid.v1();
-    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(json) + "' for the '" + watoken + "'' WAtoken. Internal Id: " + id);
+    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(normalizedNotification) + "' for the '" + apptoken + "'' WAtoken. Internal Id: " + id);
     // Store on persistent database
-    var msg = dataStore.newMessage(id, watoken, json);
+    var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
     msgBroker.push("newMessages", msg);
     return callback('{"status": "ACCEPTED"}', 200);

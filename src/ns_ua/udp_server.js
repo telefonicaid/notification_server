@@ -20,12 +20,41 @@ function onNewMessage(message) {
   try {
     messageData = JSON.parse(message);
   } catch(e) {
-    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
+    log.debug('UDP::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
 
+  /**
+   * Messages are formed like this:
+   * { "data": {
+   *    "uatoken": "UATOKEN",
+   *    "interface": {
+   *      "ip": "IP",
+   *      "port": "PORT"
+   *    },
+   *    "mobilenetwork": {
+   *      "mcc": "MCC",
+   *      "mnc": "MNC"
+   *    }
+   *  },
+   *  "messageType": "registerUA"
+   * }
+   */
+
+  // If message does not follow the above standard, return.
+  if(!messageData.data ||
+     !messageData.data.uatoken ||
+     !messageData.data.interface ||
+     !messageData.data.interface.ip ||
+     !messageData.data.interface.port ||
+     !messageData.data.mobilenetwork ||
+     !messageData.data.mobilenetwork.mcc ||
+     !messageData.data.mobilenetwork.mnc) {
+    return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
+  }
+
   // Notify the hanset with the associated Data
-  log.debug("Notifying node: " + JSON.stringify(messageData.uatoken));
+  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
   log.debug("Notify to " +
       messageData.data.interface.ip + ":" + messageData.data.interface.port +
       " on network " +
@@ -75,7 +104,13 @@ server.prototype = {
 
     // Subscribe to the UDP common Queue
     msgBroker.init(function() {
-      var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
+      var args = {
+        durable: false,
+        autoDelete: true,
+        arguments: {
+          'x-ha-policy': 'all'
+        }
+      };
       msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
   },
@@ -86,7 +121,7 @@ server.prototype = {
     //Closing connection with msgBroker
     msgBroker.close();
 
-    //Calling the callback
+    //Calling the callback (no error)
     callback(null);
   }
 };
