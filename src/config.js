@@ -26,6 +26,7 @@ exports.servers = {
 exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
   PREPRODUCTION_MODE: true,
+  MAX_TTL: 2592000000, // 30 days, in milliseconds (1000*60*60*24*30)
 
   /**
    * Public base URL to receive notifications. This will be the base to

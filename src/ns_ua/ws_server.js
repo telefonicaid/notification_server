@@ -29,6 +29,12 @@ function onNewMessage(message) {
     log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
+  // If we don't have enough data, return
+  if (!json.uatoken ||
+      !json.payload ||
+      !json.payload.payload) {
+    return log.error('WS::queue::onNewMessage --> Not enough data!');
+  }
   log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
   dataManager.getNode(json.uatoken, function(nodeConnector) {
     if(nodeConnector) {
