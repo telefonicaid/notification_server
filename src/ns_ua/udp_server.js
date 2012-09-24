@@ -54,7 +54,7 @@ function onNewMessage(message) {
   }
 
   // Notify the hanset with the associated Data
-  log.debug("Notifying node: " + JSON.stringify(messageData.uatoken));
+  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
   log.debug("Notify to " +
       messageData.data.interface.ip + ":" + messageData.data.interface.port +
       " on network " +
@@ -104,7 +104,13 @@ server.prototype = {
 
     // Subscribe to the UDP common Queue
     msgBroker.init(function() {
-      var args = { durable: false, autoDelete: true, arguments: { 'x-ha-policy': 'all' } };
+      var args = {
+        durable: false,
+        autoDelete: true,
+        arguments: {
+          'x-ha-policy': 'all'
+        }
+      };
       msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
   },
@@ -115,7 +121,7 @@ server.prototype = {
     //Closing connection with msgBroker
     msgBroker.close();
 
-    //Calling the callback
+    //Calling the callback (no error)
     callback(null);
   }
 };
