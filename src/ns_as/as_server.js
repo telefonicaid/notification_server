@@ -30,9 +30,13 @@ function onNewPushMessage(notification, watoken, callback) {
   //Get all attributes and save it to a new normalized notification
   //Also, set not initialized variables.
   var normalizedNotification = {};
+
+  //These are mandatory
   normalizedNotification.messageType = json.messageType;
-  normalizedNotification.sig = json.signature;
+  //normalizedNotification.sig = json.signature;
   normalizedNotification.id = json.id;
+
+  //This are optional, but we set to default parameters
   normalizedNotification.message = json.message || '';
   normalizedNotification.ttl = json.ttl || consts.MAX_TTL;
   normalizedNotification.timestamp = json.timestamp || (new Date()).getTime();
@@ -45,7 +49,7 @@ function onNewPushMessage(notification, watoken, callback) {
   }
 
   //If not signed, reject
-  if (!normalizedNotification.sig) {
+  if (!json.signature) {
     log.debug('NS_AS::onNewPushMessage --> Not signed');
     return callback('{"status":"ERROR", "reason":"Not signed"}', 400);
   }
@@ -66,12 +70,10 @@ function onNewPushMessage(notification, watoken, callback) {
   //Get the PbK for the apptoken in the database
   dataStore.getPbkApplication(apptoken, function(pbkbase64) {
     var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
-    if (!crypto.verifySignature(normalizedNotification.message, normalizedNotification.sig, pbk)) {
+    if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
       log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
       return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
     }
-    //We do not want the signature in the DDBB, was used just for verify the origin
-    delete normalizedNotification.sig;
 
     var id = uuid.v1();
     log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(normalizedNotification) + "' for the '" + apptoken + "'' WAtoken. Internal Id: " + id);
