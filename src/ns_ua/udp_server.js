@@ -20,8 +20,37 @@ function onNewMessage(message) {
   try {
     messageData = JSON.parse(message);
   } catch(e) {
-    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
+    log.debug('UDP::Queue::onNewMessage --> Not a valid JSON');
     return;
+  }
+
+  /**
+   * Messages are formed like this:
+   * { "data": {
+   *    "uatoken": "UATOKEN",
+   *    "interface": {
+   *      "ip": "IP",
+   *      "port": "PORT"
+   *    },
+   *    "mobilenetwork": {
+   *      "mcc": "MCC",
+   *      "mnc": "MNC"
+   *    }
+   *  },
+   *  "messageType": "registerUA"
+   * }
+   */
+
+  // If message does not follow the above standard, return.
+  if(!messageData.uatoken ||
+     !messageData.data ||
+     !messageData.data.interface ||
+     !messageData.data.interface.ip ||
+     !messageData.data.interface.port ||
+     !messageData.data.mobilenetwork ||
+     !messageData.data.mobilenetwork.mcc ||
+     !messageData.data.mobilenetwork.mnc) {
+    return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
   }
 
   // Notify the hanset with the associated Data
