@@ -16,7 +16,7 @@ var log = require("../common/logger"),
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-function onNewPushMessage(notification, watoken, callback) {
+function onNewPushMessage(notification, apptoken, callback) {
   var json = null;
 
   //Only accept valid JSON messages
@@ -76,7 +76,7 @@ function onNewPushMessage(notification, watoken, callback) {
     }
 
     var id = uuid.v1();
-    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(normalizedNotification) + "' for the '" + apptoken + "'' WAtoken. Internal Id: " + id);
+    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(normalizedNotification) + "' for the '" + apptoken + "'' apptoken. Internal Id: " + id);
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
@@ -180,9 +180,9 @@ server.prototype = {
 
     case 'notify':
       if (!url.token) {
-        log.debug('NS_AS::onHTTPMessage --> No valid url (no watoken)');
+        log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
         response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "No valid WAtoken"}');
+        response.write('{"status": "ERROR", "reason": "No valid apptoken"}');
         return response.end();
       }
 
