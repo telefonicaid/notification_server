@@ -42,8 +42,8 @@ function onNewMessage(message) {
    */
 
   // If message does not follow the above standard, return.
-  if(!messageData.uatoken ||
-     !messageData.data ||
+  if(!messageData.data ||
+     !messageData.data.uatoken ||
      !messageData.data.interface ||
      !messageData.data.interface.ip ||
      !messageData.data.interface.port ||
