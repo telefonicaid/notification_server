@@ -178,3 +178,9 @@ exports.NS_WakeUp = {
     }
   ]
 };
+
+/********************* NS start.js ***********************************/
+
+exports.NS = {
+  logfile: "NS.log"
+};
