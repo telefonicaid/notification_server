@@ -7,7 +7,12 @@
 
 var forever = require('forever-monitor'),
     fs = require("fs"),
-    starts = require("./config.js").servers;
+    starts = require("./config.js").servers,
+    config = require('./config.js'),
+    log = require("./common/logger.js");
+
+
+log.init(config.NS.logfile, "NS", 1);
 
 // Show license
 console.log(
@@ -55,27 +60,29 @@ starts.forEach(function(child) {
   });
   started[child].start();
   started[child].on('exit', function() {
-    console.warn(child + ' has closed!');
+    log.debug((child + ' has closed!'));
   });
 });
 
 var closing = false;
 function closeChilds() {
-  if (closing) { return; }
+  if (closing) {
+    log.debug('NS::closeChilds --> We were closing, abort this signal');
+    return;
+  }
   closing = true;
-  console.log('Kill signal on start.js -->' + started);
-  started.forEach(function(child, index, started) {
+  log.debug('NS::closeChilds --> Kill signal on start.js, killing childs');
+  started.forEach(function(child) {
     //Send the exit signal to childs (SIGINT)
-    console.log('Sending signal to ' + child);
     child.exit();
   });
 
   //Wait for a safe time to close this parent.
   //This should be enough to every child to close correctly
   setInterval(function() {
-    console.log('Exiting monitor. Thanks for playing');
+    log.info('NS::closeChilds --> Exiting monitor. Thanks for playing');
     process.exit();
-  }, 5000);
+  }, 2000);
 }
 
 process.on('SIGTERM', closeChilds);

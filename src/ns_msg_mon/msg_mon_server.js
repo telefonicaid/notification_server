@@ -15,14 +15,20 @@ function monitor() {
 
 monitor.prototype = {
   init: function() {
-    // Connect to the message broker
-    msgBroker.init(function() {
+    msgBroker.on('brokerconnected', function() {
       log.info('MSG_mon::init --> MSG monitor server running');
       //We want a durable queue, that do not autodeletes on last closed connection, and
       // with HA activated (mirrored in each rabbit server)
       var args = {durable: true, autoDelete: false, arguments: {'x-ha-policy': 'all'}};
       msgBroker.subscribe("newMessages", args,  function(msg) {onNewMessage(msg);});
     });
+
+    msgBroker.on('brokerdisconnected', function() {
+      log.critical('ns_msg_monitor::init --> Broker DISCONNECTED!!');
+    });
+
+    // Connect to the message broker
+    msgBroker.init();
   },
 
   stop: function(callback) {

@@ -53,13 +53,25 @@ exports.logger = {
 /**
  * Choose your host, port and other self-explanatory options
  */
-exports.queue = {
-  host: '127.0.0.1',
-  port: 5672, //AMQP default port
-  debug: false,
-  login: 'guest',
-  password: 'guest'
-};
+exports.queue = [{
+    host: '127.0.0.1',
+    port: 5672, //AMQP default port
+    login: 'guest',
+    password: 'guest'
+  },
+  {
+    host: '127.0.0.1',
+    port: 5672, //AMQP default port
+    login: 'guest',
+    password: 'guest'
+  },
+  {
+    host: '127.0.0.1',
+    port: 5672, //AMQP default port
+    login: 'guest',
+    password: 'guest'
+  }
+];
 
 /********************* Database configuration *************************/
 /**
@@ -165,4 +177,10 @@ exports.NS_WakeUp = {
       port: 8090
     }
   ]
+};
+
+/********************* NS start.js ***********************************/
+
+exports.NS = {
+  logfile: "NS.log"
 };
