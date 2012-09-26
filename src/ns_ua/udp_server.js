@@ -102,8 +102,7 @@ server.prototype = {
   init: function() {
     log.info("NS_UDP:init --> Starting UA-UDP server");
 
-    // Subscribe to the UDP common Queue
-    msgBroker.init(function() {
+    msgBroker.on('brokerconnected', function() {
       var args = {
         durable: false,
         autoDelete: true,
@@ -113,6 +112,14 @@ server.prototype = {
       };
       msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
+
+    var self = this;
+    msgBroker.on('brokerdisconnected', function() {
+      log.critical('ns_udp::init --> Broker DISCONNECTED!!');
+    });
+
+    // Subscribe to the UDP common Queue
+    msgBroker.init();
   },
 
   stop: function(callback) {

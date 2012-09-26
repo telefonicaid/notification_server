@@ -7,60 +7,88 @@
 
 var amqp = require('amqp'),
     log = require("./logger.js"),
-    queueconf = require("../config.js").queue,
+    queuesConf = require("../config.js").queue,
     events = require("events"),
     util = require("util");
 
 var MsgBroker = function() {
   events.EventEmitter.call(this);
-  this.init = function(onConnect) {
-    log.info('msgBroker::queue.init --> Connecting to the queue server');
+  var self = this;
+
+  this.init = function() {
+    log.info('msgBroker::queue.init --> Connecting to the queue servers');
 
     //Create connection to the broker
-    this.queue = amqp.createConnection({
-      port: queueconf.port,
-      host: queueconf.host,
-      login: queueconf.login,
-      password: queueconf.password
-    });
+    self.queues = [];
+    if (!Array.isArray(queuesConf)) queuesConf = [queuesConf];
+    for (var i = queuesConf.length - 1; i >= 0; i--) {
+      var conn = amqp.createConnection({
+        port: queuesConf[i].port,
+        host: queuesConf[i].host,
+        login: queuesConf[i].login,
+        password: queuesConf[i].password
+      });
 
-    // Queue Events
-    var self = this;
-    this.queue.on('ready', (function() {
-      log.info("msgbroker::queue.ready --> Connected to Message Broker");
-      //TODO: use Events instead of callbacks here
-      self.emit('brokerconnected');
-      if (onConnect) {
-        return onConnect();
-      }
-    }));
+      // Events for this queue
+      conn.on('ready', (function() {
+        log.info("msgbroker::queue.ready --> Connected to one Message Broker");
+        self.queues.push(conn);
+        self.emit('queueconnected');
+      }));
 
-    this.queue.on('close', (function() {
-      log.critical('msgbroker::queue --> Message Queue disconnected!!!');
-      self.emit('brokerdisconnected');
-    }));
+      conn.on('close', (function() {
+        log.error('msgbroker::queue --> one message broker disconnected!!!');
+        self.emit('queuedisconnected');
+        var index = self.queues.indexOf(conn);
+        if (index >= 0) {
+          self.queues.splice(index, 1);
+        }
+      }));
 
-    this.queue.on('error', (function(error) {
-      log.critical('msgbroker::queue.onerror --> We cannot connect to the message broker on ' + queueconf.host + ':' + queueconf.port + ' -- ' + error);
-      self.emit('brokerdisconnected');
-      self.close();
-    }));
+      conn.on('error', (function(error) {
+        log.error('msgbroker::queue.onerror --> There was an error in one of the connections: ' + error);
+        var index = self.queues.indexOf(conn);
+        if (index >= 0) {
+          self.queues.splice(index, 1);
+        }
+      }));
+    }
   };
 
+  // Get some events love
+  this.on('queueconnected', function() {
+    log.debug('msgBroker::queueconnected --> New queue connected, we have ' + self.queues.length + ' connections opened');
+    if (self.queues.length === 1) {
+      self.emit('brokerconnected');
+    }
+  });
+
+  this.on('queuedisconnected', function() {
+    log.debug('msgBroker::queuedisconnected --> Queue disconnected, we have  ' + self.queues.length + ' connections opened');
+    if (!self.queues.length) {
+      self.emit('brokerdisconnected');
+      self.close();
+    }
+  });
+
   this.close = function() {
-    if(this.queue) {
-      this.queue.end();
-      this.queue = null;
+    for (var i = self.queues.length - 1; i >= 0; i--) {
+      if (self.queues[i].queue) self.queues[i].end();
+      delete self.queues[i];
     }
     log.info('msgbroker::close --> Closing connection to msgBroker');
   };
 
   this.subscribe = function(queueName, args, callback) {
-    this.queue.queue(queueName, args, function(q) {
-      log.info("msgbroker::subscribe --> Subscribed to queue: " + queueName);
-      q.bind('#');
-      q.subscribe(function (message) {
-        return callback(message.data);
+    this.queues.forEach(function(connection) {
+      if (!connection) return;
+      var conn = connection;
+      conn.queue(queueName, args, function(q) {
+        log.info("msgbroker::subscribe --> Subscribed to queue: " + queueName);
+        q.bind('#');
+        q.subscribe(function (message) {
+          return callback(message.data);
+        });
       });
     });
   };
@@ -70,7 +98,13 @@ var MsgBroker = function() {
    */
   this.push = function(queueName, body) {
     log.debug('msgbroker::push --> Sending ' + JSON.stringify(body) + ' to the queue ' + queueName);
-    this.queue.publish(queueName, JSON.stringify(body));
+    //Send to one of the connections that is connected to a queue
+    //TODO: send randomly , not to the first one (which is the easiest 'algorithm')
+    this.queues.forEach(function(connection) {
+      if(connection) {
+        connection.publish(queueName, JSON.stringify(body));
+      }
+    });
   };
 };
 
