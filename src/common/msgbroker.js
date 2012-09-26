@@ -15,7 +15,7 @@ var MsgBroker = function() {
   events.EventEmitter.call(this);
   var self = this;
 
-  this.init = function(onConnect) {
+  this.init = function() {
     log.info('msgBroker::queue.init --> Connecting to the queue servers');
 
     //Create connection to the broker
@@ -32,14 +32,8 @@ var MsgBroker = function() {
       // Events for this queue
       conn.on('ready', (function() {
         log.info("msgbroker::queue.ready --> Connected to one Message Broker");
-        self.emit('queueconnected');
         self.queues.push(conn);
-        if (typeof(onConnect) === 'function') {
-          // Call the callback, once
-          var callback = onConnect;
-          onConnect = function() {};
-          return callback();
-        }
+        self.emit('queueconnected');
       }));
 
       conn.on('close', (function() {
