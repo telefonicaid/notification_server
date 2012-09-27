@@ -99,10 +99,12 @@ var MsgBroker = function() {
   this.push = function(queueName, body) {
     log.debug('msgbroker::push --> Sending ' + JSON.stringify(body) + ' to the queue ' + queueName);
     //Send to one of the connections that is connected to a queue
-    //TODO: send randomly , not to the first one (which is the easiest 'algorithm')
+    //TODO: send randomly , not to the first open connection (which is the easiest 'algorithm')
+    var sent = false;
     this.queues.forEach(function(connection) {
-      if(connection) {
+      if(connection && !sent) {
         connection.publish(queueName, JSON.stringify(body));
+        sent = true;
       }
     });
   };

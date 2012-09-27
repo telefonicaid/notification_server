@@ -1,6 +1,6 @@
 TIMESTAMP=`date +%s`
 
-curl -d "{ \"messageType\": \"notification\",
+curl -k -d "{ \"messageType\": \"notification\",
 		   \"id\": 1234,
 		   \"message\": \"$2\",
 		   \"signature\": \"$3\",

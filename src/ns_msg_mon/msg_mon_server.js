@@ -115,9 +115,7 @@ function onApplicationData(appData, json) {
 
 function onNodeData(nodeData, json) {
   if (!nodeData) {
-    log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
-    dataStore.removeMessage(json._id);
-    return log.debug("MSG_mon::onNodeData --> Node data is empty, message removed and aborting");
+    return log.debug("No node info found!");
   }
 
   log.debug("MSG_mon::onNodeData --> Node data recovered: " + JSON.stringify(nodeData));
