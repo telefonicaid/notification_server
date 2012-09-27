@@ -1,4 +1,12 @@
 /**
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
+ * License: GNU Affero V3 (see LICENSE file)
+ * Fernando Rodríguez Sela <frsela@tid.es>
+ * Guillermo Lopez Leal <gll@tid.es>
+ */
+
+/**
  * E2E test for Push Notifications.
  * This is not a unit test. Just first run the server with the default
  * configurations (in config.js.template in the src/ dir)
