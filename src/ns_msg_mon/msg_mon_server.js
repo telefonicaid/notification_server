@@ -46,6 +46,7 @@ monitor.prototype = {
       msgBroker.init();
     }, 10);
 
+    // Check if we are alive
     setTimeout(function() {
       if (!this.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
