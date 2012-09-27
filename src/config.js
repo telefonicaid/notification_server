@@ -26,7 +26,7 @@ exports.servers = {
 exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
   PREPRODUCTION_MODE: true,
-  MAX_TTL: 2592000000, // 30 days, in milliseconds (1000*60*60*24*30)
+  MAX_TTL: 2592000, // 30 days, in seconds (60*60*24*30)
 
   /**
    * This is the Key and the Certificate of the server. Should be shared
