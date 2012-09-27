@@ -41,7 +41,7 @@ exports.consts = {
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: "http://localhost:8081",
+  publicBaseURL: "https://localhost:8081",
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
