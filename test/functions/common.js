@@ -11,7 +11,7 @@ var date = new Date().getTime();
 exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"' + date + '","priority":1}';
 
 exports.getToken = function getToken(callback) {
-  var http = require("http");
+  var https = require("https");
 
   var options = {
     host: exports.serverData.host,
@@ -20,10 +20,9 @@ exports.getToken = function getToken(callback) {
     method: 'GET'
   };
 
-  var req = http.request(options, function(res) {
+  var req = https.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
-        debug('common::getToken --> ' + JSON.stringify(options));
         debug('common::getToken::response --> ' + chunk);
         callback(null, chunk);
       });
@@ -40,7 +39,7 @@ exports.registerUA = function registerUA(connection, token, callback) {
 };
 
 exports.sendNotification = function sendNotification(url, text, callback) {
-  var http = require("http");
+  var https = require("https");
   var urllib = require('url');
   var urlData = urllib.parse(url);
   var options = {
@@ -50,7 +49,7 @@ exports.sendNotification = function sendNotification(url, text, callback) {
     method: 'POST'
   };
 
-  var req = http.request(options, function(res) {
+  var req = https.request(options, function(res) {
     res.setEncoding('utf8');
     res.on('data', function(chunk) {
       callback(null, res.statusCode, chunk, text);

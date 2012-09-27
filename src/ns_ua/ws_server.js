@@ -7,7 +7,8 @@
 
 var log = require("../common/logger.js"),
     WebSocketServer = require('websocket').server,
-    http = require('http'),
+    https = require('https'),
+    fs = require('fs'),
     crypto = require("../common/cryptography.js"),
     dataManager = require("./datamanager.js"),
     Connectors = require("./connectors/connector_base.js").getConnectorFactory(),
@@ -60,7 +61,11 @@ server.prototype = {
   //////////////////////////////////////////////
   init: function() {
     // Create a new HTTP Server
-    this.server = http.createServer(this.onHTTPMessage.bind(this));
+    var options = {
+      key: fs.readFileSync(consts.key),
+      cert: fs.readFileSync(consts.cert)
+    };
+    this.server = https.createServer(options, this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
     log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ":" + this.port);
 

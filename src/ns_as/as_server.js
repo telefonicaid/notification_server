@@ -7,7 +7,8 @@
 
 var log = require("../common/logger"),
     consts = require("../config.js").consts,
-    http = require('http'),
+    https = require('https'),
+    fs = require('fs'),
     uuid = require("node-uuid"),
     crypto = require("../common/cryptography"),
     msgBroker = require("../common/msgbroker"),
@@ -98,8 +99,12 @@ server.prototype = {
   //////////////////////////////////////////////
   init: function() {
 
-    // Create a new HTTP Server
-    this.server = http.createServer(this.onHTTPMessage.bind(this));
+    // Create a new HTTPS Server
+    var options = {
+      key: fs.readFileSync(consts.key),
+      cert: fs.readFileSync(consts.cert)
+    };
+    this.server = https.createServer(options, this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
     log.info('NS_AS::init --> HTTP push AS server starting on ' + this.ip + ":" + this.port);
 
