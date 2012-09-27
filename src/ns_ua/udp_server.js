@@ -92,6 +92,7 @@ function onNewMessage(message) {
 ////////////////////////////////////////////////////////////////////////////////
 
 function server() {
+  this.ready = false;
 }
 
 server.prototype = {
@@ -103,6 +104,7 @@ server.prototype = {
     log.info("NS_UDP:init --> Starting UA-UDP server");
 
     msgBroker.on('brokerconnected', function() {
+      this.ready = true;
       var args = {
         durable: false,
         autoDelete: true,
@@ -115,14 +117,25 @@ server.prototype = {
 
     var self = this;
     msgBroker.on('brokerdisconnected', function() {
+      this.ready = false;
       log.critical('ns_udp::init --> Broker DISCONNECTED!!');
     });
 
     // Subscribe to the UDP common Queue
-    msgBroker.init();
+    setTimeout(function() {
+      msgBroker.init();
+    }, 10);
+
+    //Check if we are alive
+    setTimeout(function() {
+      if (!this.ready)
+        log.critical('30 seconds has passed and we are not ready, closing');
+    }, 30*1000); //Wait 30 seconds
+
   },
 
   stop: function(callback) {
+    this.ready = false;
     log.info("NS_UDP:stop --> Closing UDP server");
 
     //Closing connection with msgBroker
