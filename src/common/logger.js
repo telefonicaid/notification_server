@@ -57,6 +57,7 @@ logger.prototype = {
     if (this.minLogLevel <= 3) {
       this.log("CRITICAL", message, true);
     }
+    this.log("CRITICAL", "WE HAVE A CRITICAL ERROR, WE ARE CLOSING!!!", false);
     // We cannot continue our process, kill it!
     process.exit(1);
   }
