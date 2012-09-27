@@ -28,8 +28,8 @@ var Push = {
   urlApp2: null,
 
   init: function() {
-    this.ad_ws = 'ws://' + this.ad;
-    this.ad_http = 'http://' + this.ad;
+    this.ad_ws = 'wss://' + this.ad;
+    this.ad_http = 'https://' + this.ad;
 
     this.getTokenButton = document.getElementById('buttonGetToken');
     this.registerDeviceButton = document.getElementById('buttonRegisterDevice');

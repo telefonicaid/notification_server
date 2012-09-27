@@ -29,10 +29,19 @@ exports.consts = {
   MAX_TTL: 2592000000, // 30 days, in milliseconds (1000*60*60*24*30)
 
   /**
+   * This is the Key and the Certificate of the server. Should be shared
+   * between all frontends that receive connections (NS_AS, NS_UA_WS).
+   * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
+   */
+
+  key: '../test/scripts/server-key.pem',
+  cert: '../test/scripts/server-cert.pem',
+
+  /**
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: "http://localhost:8081",
+  publicBaseURL: "https://localhost:8081",
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
