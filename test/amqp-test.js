@@ -1,3 +1,11 @@
+/**
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
+ * License: GNU Affero V3 (see LICENSE file)
+ * Fernando Rodríguez Sela <frsela@tid.es>
+ * Guillermo Lopez Leal <gll@tid.es>
+ */
+
 var amqp = require('amqp');
 
 var connection = amqp.createConnection({ host: 'localhost' });

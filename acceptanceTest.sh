@@ -1,6 +1,6 @@
 #!/bin/bash
-cd /opt/pdi/owd/push_server/test
-resultado=$(node E2Etest.js)
+cd /opt/pdi/owd/push_server/test/functions
+resultado=$(node E2E.js)
 
 if [ "$resultado" = "" ]; then
   echo "Todo correcto"
