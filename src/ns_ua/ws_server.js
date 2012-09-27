@@ -53,6 +53,8 @@ function server(ip, port) {
   this.port = port;
   this.ready = false;
   this.tokensGenerated = 0;
+  this.wsConnections = 0;
+  self = this;
 }
 
 server.prototype = {
@@ -78,10 +80,9 @@ server.prototype = {
       keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
       autoAcceptConnections: false    // false => Use verify originIsAllowed method
     });
-    this.wsServer.on('request', this.onWSRequest);
+    this.wsServer.on('request', this.onWSRequest.bind(this));
 
-    // Subscribe to my own Quesue
-    var self = this;
+    // Subscribe to my own Queue
     msgBroker.on('brokerconnected', function() {
       var args = {
         durable: false,
@@ -130,6 +131,10 @@ server.prototype = {
             text += "&copy; Telef&oacute;nica Digital, 2012<br />";
             text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
             text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
+            text += "<ul>";
+            text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
+            text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
+            text += "</ul>";
             response.setHeader("Content-Type", "text/html");
           } catch(e) {
             text = "No version.info file";
@@ -364,7 +369,7 @@ server.prototype = {
     };
 
     this.onWSClose = function(reasonCode, description) {
-      // TODO: De-register this node
+      self.wsConnections--;
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected.');
       return dataManager.unregisterNode(connection);
     };
@@ -387,6 +392,7 @@ server.prototype = {
     }
 
     var connection = request.accept('push-notification', request.origin);
+    this.wsConnections++;
     log.debug('WS::onWSRequest --> Connection accepted.');
     connection.on('message', this.onWSMessage);
     connection.on('close', this.onWSClose);
