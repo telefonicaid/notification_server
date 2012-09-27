@@ -11,24 +11,45 @@ var log = require("../common/logger.js"),
     dataStore = require("../common/datastore.js");
 
 function monitor() {
+  this.ready = false;
 }
 
 monitor.prototype = {
   init: function() {
     msgBroker.on('brokerconnected', function() {
       log.info('MSG_mon::init --> MSG monitor server running');
+      this.ready = true;
       //We want a durable queue, that do not autodeletes on last closed connection, and
       // with HA activated (mirrored in each rabbit server)
-      var args = {durable: true, autoDelete: false, arguments: {'x-ha-policy': 'all'}};
-      msgBroker.subscribe("newMessages", args,  function(msg) {onNewMessage(msg);});
+      var args = {
+        durable: true,
+        autoDelete: false,
+        arguments: {
+          'x-ha-policy': 'all'
+        }
+      };
+      msgBroker.subscribe("newMessages",
+                          args,
+                          function(msg) {
+                            onNewMessage(msg);
+                          }
+      );
     });
 
     msgBroker.on('brokerdisconnected', function() {
+      this.ready = false;
       log.critical('ns_msg_monitor::init --> Broker DISCONNECTED!!');
     });
 
     // Connect to the message broker
-    msgBroker.init();
+    setTimeout(function() {
+      msgBroker.init();
+    }, 10);
+
+    setTimeout(function() {
+      if (!this.ready)
+        log.critical('30 seconds has passed and we are not ready, closing');
+    }, 30*1000); //Wait 30 seconds
   },
 
   stop: function(callback) {

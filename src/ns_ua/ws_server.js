@@ -91,7 +91,18 @@ server.prototype = {
     msgBroker.on('brokerdisconnected', function() {
       log.critical('ns_ws::init --> Broker DISCONNECTED!!');
     });
-    msgBroker.init();
+
+    //Connect to msgBroker
+    setTimeout(function() {
+      msgBroker.init();
+    }, 10);
+
+    //Check if we are alive
+    setTimeout(function() {
+      if (!this.ready)
+        log.critical('30 seconds has passed and we are not ready, closing');
+    }, 30*1000); //Wait 30 seconds
+
   },
 
   //////////////////////////////////////////////
