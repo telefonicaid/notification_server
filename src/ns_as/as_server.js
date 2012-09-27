@@ -130,6 +130,13 @@ server.prototype = {
       msgBroker.init();
       dataStore.init();
     }, 10);
+
+    // Check if we are alive
+    setTimeout(function() {
+      if (!this.ddbbready || !this.msgbrokerready)
+        log.critical('30 seconds has passed and we are not ready, closing');
+    }, 30*1000); //Wait 30 seconds
+
   },
 
   stop: function(callback) {
