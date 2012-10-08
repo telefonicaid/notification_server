@@ -837,7 +837,7 @@
       <hashTree/>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="true"/>
       <hashTree>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
