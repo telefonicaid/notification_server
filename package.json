@@ -1,6 +1,6 @@
 {
     "name": "push-notification-server",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "author": "Telefónica I+D. 2012",
     "description": "a push notification server for desktop and mobile",
     "contributors": [

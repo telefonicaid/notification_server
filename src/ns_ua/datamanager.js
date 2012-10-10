@@ -85,7 +85,7 @@ datamanager.prototype = {
       log.debug("dataManager::unregisterNode --> Removing disconnected node token " + token);
       //Delete from memory
       this.nodesTable[token] = null;
-      this.nodesConnections[connection] = null;
+      this.nodesConnections[helpers.getConnectionId(connection)] = null;
       //Delete from DDBB
       dataStore.unregisterNode(
         token,
