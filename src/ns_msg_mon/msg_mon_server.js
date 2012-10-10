@@ -17,9 +17,10 @@ function monitor() {
 
 monitor.prototype = {
   init: function() {
+    var self = this;
     msgBroker.on('brokerconnected', function() {
       log.info('MSG_mon::init --> MSG monitor server running');
-      this.ready = true;
+      self.ready = true;
       //We want a durable queue, that do not autodeletes on last closed connection, and
       // with HA activated (mirrored in each rabbit server)
       var args = {
@@ -38,7 +39,7 @@ monitor.prototype = {
     });
 
     msgBroker.on('brokerdisconnected', function() {
-      this.ready = false;
+      self.ready = false;
       log.critical('ns_msg_monitor::init --> Broker DISCONNECTED!!');
     });
 
@@ -49,7 +50,7 @@ monitor.prototype = {
 
     // Check if we are alive
     setTimeout(function() {
-      if (!this.ready)
+      if (!self.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
     }, 30*1000); //Wait 30 seconds
   },

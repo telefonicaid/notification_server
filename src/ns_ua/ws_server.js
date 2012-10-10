@@ -106,7 +106,7 @@ server.prototype = {
 
     //Check if we are alive
     setTimeout(function() {
-      if (!this.ready)
+      if (!self.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
     }, 30*1000); //Wait 30 seconds
 

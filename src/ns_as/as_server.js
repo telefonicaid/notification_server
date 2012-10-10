@@ -99,6 +99,7 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
+    var self = this;
 
     // Create a new HTTPS Server
     var options = {
@@ -139,7 +140,7 @@ server.prototype = {
 
     // Check if we are alive
     setTimeout(function() {
-      if (!this.ddbbready || !this.msgbrokerready)
+      if (!self.ddbbready || !self.msgbrokerready)
         log.critical('30 seconds has passed and we are not ready, closing');
     }, 30*1000); //Wait 30 seconds
 

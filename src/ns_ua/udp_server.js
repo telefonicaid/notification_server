@@ -118,7 +118,7 @@ server.prototype = {
 
     var self = this;
     msgBroker.on('brokerdisconnected', function() {
-      this.ready = false;
+      self.ready = false;
       log.critical('ns_udp::init --> Broker DISCONNECTED!!');
     });
 
@@ -129,7 +129,7 @@ server.prototype = {
 
     //Check if we are alive
     setTimeout(function() {
-      if (!this.ready)
+      if (!self.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
     }, 30*1000); //Wait 30 seconds
 
