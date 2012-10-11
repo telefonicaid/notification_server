@@ -27,7 +27,5 @@
 ##
 ##   ==============================================
 
-JVM_ARGS="-Xms4096m -Xmx4096m"
-
 # Add Mac-specific property - should be ignored elsewhere (Bug 47064)
 java $JVM_ARGS -Dapple.laf.useScreenMenuBar=true -jar `dirname $0`/ApacheJMeter.jar "$@"

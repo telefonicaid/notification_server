@@ -27,19 +27,39 @@
             <stringProp name="Argument.value">${__property(BackEndServer2)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_getTokens_stepIncrement" elementType="Argument">
-            <stringProp name="Argument.name">TEST_getTokens_stepIncrement</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_getTokens_stepIncrement)}</stringProp>
+          <elementProp name="TEST_getTokens_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_getTokens_threads</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_getTokens_threads)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_registerUA_stepIncrement" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerUA_stepIncrement</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_registerUA_stepIncrement)}</stringProp>
+          <elementProp name="TEST_getTokens_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_getTokens_duration</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_getTokens_duration)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_registerApp_stepIncrement" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerApp_stepIncrement</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_registerApp_stepIncrement)}</stringProp>
+          <elementProp name="TEST_registerUA_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerUA_threads</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_registerUA_threads)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_registerUA_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerUA_duration</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_registerUA_duration)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_registerApp_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerApp_threads</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_registerApp_threads)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_receiveNotification_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_receiveNotification_threads</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_receiveNotification_threads)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_receiveNotification_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_receiveNotification_duration</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_receiveNotification_duration)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
@@ -83,35 +103,59 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Slave back end</stringProp>
           </elementProp>
-          <elementProp name="TEST_getTokens_stepIncrement" elementType="Argument">
-            <stringProp name="Argument.name">TEST_getTokens_stepIncrement</stringProp>
-            <stringProp name="Argument.value">5</stringProp>
-            <stringProp name="Argument.desc">Additional users per step for the getTokens test</stringProp>
+          <elementProp name="TEST_getTokens_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_getTokens_threads</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.desc">Number of virtual users for the getTokens test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_registerUA_stepIncrement" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerUA_stepIncrement</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
-            <stringProp name="Argument.desc">Additional users per step for the registerUA test</stringProp>
+          <elementProp name="TEST_getTokens_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_getTokens_duration</stringProp>
+            <stringProp name="Argument.value">300</stringProp>
+            <stringProp name="Argument.desc">Duration of the getTokens test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_registerApp_stepIncrement" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerApp_stepIncrement</stringProp>
+          <elementProp name="TEST_registerUA_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerUA_threads</stringProp>
             <stringProp name="Argument.value">0</stringProp>
-            <stringProp name="Argument.desc">Additional users per step for the registerApp test</stringProp>
+            <stringProp name="Argument.desc">Number of virtual users for the registerUA test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_receiveNotification_stepIncrement" elementType="Argument">
-            <stringProp name="Argument.name">TEST_receiveNotification_stepIncrement</stringProp>
+          <elementProp name="TEST_registerUA_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerUA_duration</stringProp>
+            <stringProp name="Argument.value">300</stringProp>
+            <stringProp name="Argument.desc">Duration of the registerUA test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_registerApp_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerApp_threads</stringProp>
             <stringProp name="Argument.value">0</stringProp>
-            <stringProp name="Argument.desc">Additional users per step for the receiveNotification test</stringProp>
+            <stringProp name="Argument.desc">Number of virtual users for the registerApp test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_registerApp_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerApp_duration</stringProp>
+            <stringProp name="Argument.value">300</stringProp>
+            <stringProp name="Argument.desc">Duration of the registerApp test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_receiveNotification_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_receiveNotification_threads</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.desc">Number of virtual users for the receiveNotification test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_receiveNotification_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_receiveNotification_duration</stringProp>
+            <stringProp name="Argument.value">300</stringProp>
+            <stringProp name="Argument.desc">Duration of the receiveNotification test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
             <stringProp name="Argument.value">owd/results</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Path to store the results relative to jmeter</stringProp>
+            <stringProp name="Argument.desc">Path to store the results relative to jmeter binary</stringProp>
           </elementProp>
           <elementProp name="jmeterengine.startlistenerslater" elementType="Argument">
             <stringProp name="Argument.name">jmeterengine.startlistenerslater</stringProp>
@@ -192,18 +236,11 @@
       <hashTree/>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Get token" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="291626625">
-            <stringProp name="-2059196417">${TEST_getTokens_stepIncrement}</stringProp>
+          <collectionProp name="-930322830">
+            <stringProp name="135803609">${TEST_getTokens_threads}</stringProp>
             <stringProp name="48">0</stringProp>
             <stringProp name="1722">60</stringProp>
-            <stringProp name="48873">180</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-          <collectionProp name="-1082884318">
-            <stringProp name="-2059196417">${TEST_getTokens_stepIncrement}</stringProp>
-            <stringProp name="48687">120</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="1722">60</stringProp>
+            <stringProp name="-145682140">${TEST_getTokens_duration}</stringProp>
             <stringProp name="1722">60</stringProp>
           </collectionProp>
         </collectionProp>
@@ -289,18 +326,11 @@
       </hashTree>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Register UA" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-1694659946">
-            <stringProp name="-1518497324">${TEST_registerUA_stepIncrement}</stringProp>
+          <collectionProp name="-1598965108">
+            <stringProp name="1468522606">${TEST_registerUA_threads}</stringProp>
             <stringProp name="48">0</stringProp>
             <stringProp name="1722">60</stringProp>
-            <stringProp name="48873">180</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-          <collectionProp name="1225796407">
-            <stringProp name="-1518497324">${TEST_registerUA_stepIncrement}</stringProp>
-            <stringProp name="48687">120</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="1722">60</stringProp>
+            <stringProp name="-1781066193">${TEST_registerUA_duration}</stringProp>
             <stringProp name="1722">60</stringProp>
           </collectionProp>
         </collectionProp>
@@ -342,7 +372,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Retrieve token from text file" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">../${ResultsPath}/tokens_new.txt</stringProp>
+            <stringProp name="filename">../../../../../${ResultsPath}/tokens_new.txt</stringProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
             <stringProp name="shareMode">All threads</stringProp>
@@ -350,18 +380,18 @@
             <stringProp name="variableNames">token</stringProp>
           </CSVDataSet>
           <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 Assertion" enabled="true">
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Check response" enabled="true">
             <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
+              <stringProp name="1216502566">{&quot;status&quot;:&quot;REGISTERED&quot;, &quot;messageType&quot;: &quot;registerUA&quot;}</stringProp>
             </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
             <boolProp name="Assertion.assume_success">false</boolProp>
             <intProp name="Assertion.test_type">8</intProp>
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If Controller" enabled="true">
-          <stringProp name="IfController.condition">true</stringProp>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If token is registered" enabled="true">
+          <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
         <hashTree>
@@ -389,18 +419,11 @@
       </hashTree>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Register App" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-598707601">
-            <stringProp name="-2111341359">${TEST_registerApp_stepIncrement}</stringProp>
+          <collectionProp name="754134232">
+            <stringProp name="1221135659">${TEST_registerApp_threads}</stringProp>
             <stringProp name="0">0</stringProp>
             <stringProp name="1722">60</stringProp>
-            <stringProp name="48873">180</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-          <collectionProp name="-1922374328">
-            <stringProp name="-2111341359">${TEST_registerApp_stepIncrement}</stringProp>
-            <stringProp name="48687">120</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="60">60</stringProp>
+            <stringProp name="-860126958">${TEST_registerApp_duration}</stringProp>
             <stringProp name="1722">60</stringProp>
           </collectionProp>
         </collectionProp>
@@ -417,7 +440,7 @@
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;data&quot;: {&quot;uatoken&quot;:&quot;${token}&quot;, &quot;watoken&quot;: &quot;${__RandomString(1024, abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890)}&quot;}, &quot;messageType&quot;:&quot;registerWA&quot; }</stringProp>
+                <stringProp name="Argument.value">{&quot;data&quot;:{&quot;uatoken&quot;:&quot;${token}&quot;,&quot;pbkbase64&quot;:&quot;LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRREZXMTRTbml3Q2ZKUy8vb0t4U0hpbi91QzENClA2SUJIaUl2WXIyTW1oQlJjUnkwanVOSkg4T1ZndmlGS0VWM2loSGlUTFVTajk0bWdmbGo5Unh6US8wWFI4dHoNClB5d0tIeFNHdzRBbWY3aktGMVpzaENVZHlyT2k4Y0xmemR3SXoxblB2REY0d3diaTJmcXNlWDVZN1lsWXhmcEYNCmx4OEd2Ym5ZSkhPLzUwUUdrUUlEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t&quot;,&quot;watoken&quot;:&quot;${__RandomString(1024,abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890)}&quot;},&quot;messageType&quot;:&quot;registerWA&quot;}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -442,7 +465,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Retrieve token from text file" enabled="true">
             <stringProp name="delimiter">,</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">../${ResultsPath}/tokens_registered.txt</stringProp>
+            <stringProp name="filename">../../../../../${ResultsPath}/tokens_registered.txt</stringProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
             <stringProp name="shareMode">All threads</stringProp>
@@ -469,41 +492,40 @@
           </RegexExtractor>
           <hashTree/>
         </hashTree>
-        <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write token and URL to disk" enabled="true">
-          <boolProp name="WAITING">false</boolProp>
-          <boolProp name="SUCCESFULL">true</boolProp>
-          <stringProp name="RESPONSE_CODE">200</stringProp>
-          <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
-          <stringProp name="REQUEST_DATA"></stringProp>
-          <stringProp name="RESPONSE_DATA">${token}	${URL}</stringProp>
-          <stringProp name="RESPONSE_TIME">0</stringProp>
-          <stringProp name="LATENCY">0</stringProp>
-        </kg.apc.jmeter.samplers.DummySampler>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If URL is correct" enabled="true">
+          <stringProp name="IfController.condition">&quot;${URL}&quot;!=&quot;failed&quot;</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
         <hashTree>
-          <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token and URL to text file" enabled="true">
-            <stringProp name="filename">${ResultsPath}/tokens_url.txt</stringProp>
-            <stringProp name="columns">responseData|\r\n</stringProp>
-            <boolProp name="overwrite">false</boolProp>
-            <stringProp name="header"></stringProp>
-            <stringProp name="footer"></stringProp>
-          </kg.apc.jmeter.reporters.FlexibleFileWriter>
-          <hashTree/>
+          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write token and URL to disk" enabled="true">
+            <boolProp name="WAITING">false</boolProp>
+            <boolProp name="SUCCESFULL">true</boolProp>
+            <stringProp name="RESPONSE_CODE">200</stringProp>
+            <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
+            <stringProp name="REQUEST_DATA"></stringProp>
+            <stringProp name="RESPONSE_DATA">${token}	${URL}</stringProp>
+            <stringProp name="RESPONSE_TIME">0</stringProp>
+            <stringProp name="LATENCY">0</stringProp>
+          </kg.apc.jmeter.samplers.DummySampler>
+          <hashTree>
+            <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token and URL to text file" enabled="true">
+              <stringProp name="filename">${ResultsPath}/tokens_url.txt</stringProp>
+              <stringProp name="columns">responseData|\r\n</stringProp>
+              <boolProp name="overwrite">false</boolProp>
+              <stringProp name="header"></stringProp>
+              <stringProp name="footer"></stringProp>
+            </kg.apc.jmeter.reporters.FlexibleFileWriter>
+            <hashTree/>
+          </hashTree>
         </hashTree>
       </hashTree>
       <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Receive notification" enabled="true">
         <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-1798148041">
-            <stringProp name="367813089">${TEST_receiveNotification_stepIncrement}</stringProp>
+          <collectionProp name="1479121754">
+            <stringProp name="-1222443461">${TEST_receiveNotification_threads}</stringProp>
             <stringProp name="0">0</stringProp>
             <stringProp name="1722">60</stringProp>
-            <stringProp name="48873">180</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-          <collectionProp name="1173152528">
-            <stringProp name="367813089">${TEST_receiveNotification_stepIncrement}</stringProp>
-            <stringProp name="48687">120</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="60">60</stringProp>
+            <stringProp name="698331650">${TEST_receiveNotification_duration}</stringProp>
             <stringProp name="1722">60</stringProp>
           </collectionProp>
         </collectionProp>
@@ -528,7 +550,7 @@
           <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Retrieve URL from text file" enabled="true">
             <stringProp name="delimiter">\t</stringProp>
             <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">../${ResultsPath}/tokens_url.txt</stringProp>
+            <stringProp name="filename">../../../../../${ResultsPath}/tokens_url.txt</stringProp>
             <boolProp name="quotedData">false</boolProp>
             <boolProp name="recycle">true</boolProp>
             <stringProp name="shareMode">Hilo actual</stringProp>
