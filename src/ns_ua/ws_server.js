@@ -192,8 +192,7 @@ server.prototype = {
         } catch(e) {
           log.debug("WS::onWSMessage --> Data received is not a valid JSON package");
           connection.sendUTF('{ "status": "ERROR",' +
-                               '"reason": "Data received is not a valid JSON package",' +
-                               '"messageType":"registerUA" }');
+                               '"reason": "Data received is not a valid JSON package"}');
           return connection.close();
         }
 
