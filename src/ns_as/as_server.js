@@ -99,8 +99,6 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
-    var self = this;
-
     // Create a new HTTPS Server
     var options = {
       key: fs.readFileSync(consts.key),
@@ -125,12 +123,10 @@ server.prototype = {
       log.info("NS_AS::init --> DataStore ready and connected");
       this.ddbbready = true;
     }.bind(this));
-
-    //Let's wait one second to start the msgBroker and the dataStore
     dataStore.on('ddbbdisconnected', function() {
       log.critical("NS_AS::init --> DataStore DISCONNECTED!!");
       this.ddbbready = false;
-    });
+    }.bind(this));
 
     //Wait until we have setup our events listeners
     setTimeout(function() {
@@ -139,6 +135,7 @@ server.prototype = {
     }, 10);
 
     // Check if we are alive
+    var self = this;
     setTimeout(function() {
       if (!self.ddbbready || !self.msgbrokerready)
         log.critical('30 seconds has passed and we are not ready, closing');
@@ -147,10 +144,11 @@ server.prototype = {
   },
 
   stop: function(callback) {
+    var self = this;
     this.server.close(function() {
       log.info('NS_AS::stop --> NS_AS closed correctly');
-      this.ddbbready = false;
-      this.msgbrokerready = false;
+      self.ddbbready = false;
+      self.msgbrokerready = false;
       callback(null);
     });
   },
