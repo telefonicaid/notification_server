@@ -30,10 +30,10 @@ datamanager.prototype = {
 
         if(this.nodesTable[p.token]) {
           log.debug("dataManager::registerNode --> Removing old node token " + p.token);
-          this.nodesTable[p.token] = null;
+          delete this.nodesTable[p.token];
           for (var i in this.nodesConnections) {
             if (this.nodesConnections[i] == p.token) {
-              this.nodesConnections[i] = null;
+              delete this.nodesConnections[i];
               break;
             }
           }
@@ -84,7 +84,7 @@ datamanager.prototype = {
     if(token) {
       log.debug("dataManager::unregisterNode --> Removing disconnected node token " + token);
       //Delete from memory
-      this.nodesTable[token] = null;
+      delete this.nodesTable[token];
       this.nodesConnections[helpers.getConnectionId(connection)] = null;
       //Delete from DDBB
       dataStore.unregisterNode(

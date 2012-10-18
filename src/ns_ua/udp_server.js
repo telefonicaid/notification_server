@@ -104,8 +104,9 @@ server.prototype = {
   init: function() {
     log.info("NS_UDP:init --> Starting UA-UDP server");
 
+    var self = this;
     msgBroker.on('brokerconnected', function() {
-      this.ready = true;
+      self.ready = true;
       var args = {
         durable: false,
         autoDelete: true,
@@ -116,7 +117,6 @@ server.prototype = {
       msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
     });
 
-    var self = this;
     msgBroker.on('brokerdisconnected', function() {
       self.ready = false;
       log.critical('ns_udp::init --> Broker DISCONNECTED!!');

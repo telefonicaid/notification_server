@@ -55,7 +55,6 @@ function server(ip, port) {
   this.ready = false;
   this.tokensGenerated = 0;
   this.wsConnections = 0;
-  self = this;
 }
 
 server.prototype = {
@@ -84,6 +83,7 @@ server.prototype = {
     this.wsServer.on('request', this.onWSRequest.bind(this));
 
     // Subscribe to my own Queue
+    var self = this;
     msgBroker.on('brokerconnected', function() {
       var args = {
         durable: false,
@@ -379,6 +379,7 @@ server.prototype = {
       }
     };
 
+    var self = this;
     this.onWSClose = function(reasonCode, description) {
       self.wsConnections--;
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected.');
