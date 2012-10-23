@@ -107,9 +107,9 @@
             <stringProp name="Argument.value">${__property(TEST_receiveNotification_duration)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_floodingNotifications_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_floodingNotifications_threads</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_threads)}</stringProp>
+          <elementProp name="TEST_floodingNotifications_connections" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_connections</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_connections)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_floodingNotifications_duration" elementType="Argument">
@@ -748,7 +748,7 @@
           <intProp name="port">22</intProp>
           <stringProp name="username">owd</stringProp>
           <stringProp name="password">owd</stringProp>
-          <stringProp name="command">nohup node performance/carlos/flood-push-server.js owd-push-qa-fe1 8080 ${TEST_floodingNotifications_connections} 1000 100 ${TEST_floodingNotifications_duration} &amp;&gt; performance/carlos/nohup2.out</stringProp>
+          <stringProp name="command">nohup node performance/carlos/flood-push-server.js owd-push-qa-fe1 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; performance/carlos/nohup2.out</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
