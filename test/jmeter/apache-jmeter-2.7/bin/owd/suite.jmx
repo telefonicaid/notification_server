@@ -107,6 +107,21 @@
             <stringProp name="Argument.value">${__property(TEST_receiveNotification_duration)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="TEST_floodingNotifications_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_threads</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_threads)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_floodingNotifications_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_duration</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_duration)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_floodingNotifications_monitor" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_monitor</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_monitor)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
             <stringProp name="Argument.value">${__property(ResultsPath)}</stringProp>
@@ -190,11 +205,23 @@
             <stringProp name="Argument.desc">Number of virtual users for the receiveNotification test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_receiveNotification_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_receiveNotification_duration</stringProp>
-            <stringProp name="Argument.value">300</stringProp>
-            <stringProp name="Argument.desc">Duration of the receiveNotification test</stringProp>
+          <elementProp name="TEST_floodingNotifications_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_duration</stringProp>
+            <stringProp name="Argument.value">3600000</stringProp>
+            <stringProp name="Argument.desc">Duration of the flood notifications test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_floodingNotifications_connections" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_connections</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.desc">Number of connections opened</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_floodingNotifications_monitor" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_monitor</stringProp>
+            <stringProp name="Argument.value">360</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+            <stringProp name="Argument.desc">Number of queries of connections opened during the test, as checks lasts 10 seconds, it should be correlated with test duration</stringProp>
           </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
@@ -210,7 +237,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
         <objProp>
           <name>saveConfig</name>
@@ -300,7 +327,7 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -397,7 +424,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontEndServer2}</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontendServer2_uaws}</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -490,7 +517,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontEndServer2}</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontendServer2_uaws}</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -699,6 +726,88 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Flood notifications" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1350647861000</longProp>
+        <longProp name="ThreadGroup.end_time">1350647861000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="Flooding notifications" enabled="true">
+          <stringProp name="TestPlan.comments">This ssh command executes a flooding script to verify how many simultaneous notifications can be handled by the whole system</stringProp>
+          <stringProp name="hostname">owd-push-qa-fe2</stringProp>
+          <intProp name="port">22</intProp>
+          <stringProp name="username">owd</stringProp>
+          <stringProp name="password">owd</stringProp>
+          <stringProp name="command">nohup node performance/carlos/flood-push-server.js owd-push-qa-fe1 8080 ${TEST_floodingNotifications_connections} 1000 100 ${TEST_floodingNotifications_duration} &amp;&gt; performance/carlos/nohup2.out</stringProp>
+        </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Connections Monitor" enabled="true">
+        <stringProp name="TestPlan.comments">Command to count the number of opened connections by flood notification</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${TEST_floodingNotifications_monitor}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1350886807000</longProp>
+        <longProp name="ThreadGroup.end_time">1350886807000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="netstat" enabled="true">
+          <stringProp name="TestPlan.comments">Command to monitor the number of opened connections to manage notifications</stringProp>
+          <stringProp name="hostname">owd-push-qa-fe1</stringProp>
+          <intProp name="port">22</intProp>
+          <stringProp name="username">owd</stringProp>
+          <stringProp name="password">owd</stringProp>
+          <stringProp name="command">performance/carlos/connections_and_date.sh</stringProp>
+        </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
+        <hashTree>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="RE: get number of opened connections" enabled="true">
+            <stringProp name="TestPlan.comments">We obtain the number of opened connections at any time in 8080 port between </stringProp>
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">connections</stringProp>
+            <stringProp name="RegexExtractor.regex">.*</stringProp>
+            <stringProp name="RegexExtractor.template">$0$</stringProp>
+            <stringProp name="RegexExtractor.default">failed</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write number of connections to disk" enabled="true">
+          <boolProp name="WAITING">false</boolProp>
+          <boolProp name="SUCCESFULL">true</boolProp>
+          <stringProp name="RESPONSE_CODE"></stringProp>
+          <stringProp name="RESPONSE_MESSAGE"></stringProp>
+          <stringProp name="REQUEST_DATA"></stringProp>
+          <stringProp name="RESPONSE_DATA">${connections}</stringProp>
+          <stringProp name="RESPONSE_TIME"></stringProp>
+          <stringProp name="LATENCY"></stringProp>
+        </kg.apc.jmeter.samplers.DummySampler>
+        <hashTree>
+          <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write number of connections to text file" enabled="true">
+            <stringProp name="filename">${ResultsPath}/connections.csv</stringProp>
+            <stringProp name="columns">responseData|\r\n</stringProp>
+            <boolProp name="overwrite">false</boolProp>
+            <stringProp name="header"></stringProp>
+            <stringProp name="footer"></stringProp>
+          </kg.apc.jmeter.reporters.FlexibleFileWriter>
+          <hashTree/>
+        </hashTree>
       </hashTree>
       <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.TransactionsPerSecondGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Transactions per Second" enabled="false">
         <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -979,25 +1088,25 @@
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="1222971341">
+            <collectionProp name="-1294242237">
               <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1077742980">
+            <collectionProp name="700010738">
               <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-965402964">
+            <collectionProp name="812350754">
               <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-418209689">
+            <collectionProp name="1359544029">
               <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
@@ -1103,25 +1212,25 @@
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="2067809611">
+            <collectionProp name="727298759">
               <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="73556636">
+            <collectionProp name="-1266954216">
               <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-2114817669">
+            <collectionProp name="839638775">
               <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1567624394">
+            <collectionProp name="1386832050">
               <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
@@ -1723,25 +1832,25 @@
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="-2009355628">
+            <collectionProp name="-1812285344">
               <stringProp name="410722883">${BackendServer2_nsmon}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="291358693">
+            <collectionProp name="488428977">
               <stringProp name="410722883">${BackendServer2_nsmon}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1897015612">
+            <collectionProp name="-1699945328">
               <stringProp name="410722883">${BackendServer2_nsmon}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1349822337">
+            <collectionProp name="-1152752053">
               <stringProp name="410722883">${BackendServer2_nsmon}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
