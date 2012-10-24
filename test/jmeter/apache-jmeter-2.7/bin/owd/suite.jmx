@@ -97,6 +97,11 @@
             <stringProp name="Argument.value">${__property(TEST_registerApp_threads)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="TEST_registerApp_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_registerApp_duration</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_registerApp_duration)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="TEST_receiveNotification_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_receiveNotification_threads</stringProp>
             <stringProp name="Argument.value">${__property(TEST_receiveNotification_threads)}</stringProp>
@@ -744,11 +749,11 @@
       <hashTree>
         <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="Flooding notifications" enabled="true">
           <stringProp name="TestPlan.comments">This ssh command executes a flooding script to verify how many simultaneous notifications can be handled by the whole system</stringProp>
-          <stringProp name="hostname">owd-push-qa-fe2</stringProp>
+          <stringProp name="hostname">${FrontendServer2_uaws}</stringProp>
           <intProp name="port">22</intProp>
           <stringProp name="username">owd</stringProp>
-          <stringProp name="password">owd</stringProp>
-          <stringProp name="command">nohup node other/flood-push-server.js owd-push-qa-fe1 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ${ResultsPath}/flood_notification.out</stringProp>
+          <stringProp name="password">owd1</stringProp>
+          <stringProp name="command">nohup node flood-push-server.js ${FrontendServer1_uaws} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; flood_notification.out</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
@@ -770,11 +775,11 @@
       <hashTree>
         <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="netstat" enabled="true">
           <stringProp name="TestPlan.comments">Command to monitor the number of opened connections to manage notifications</stringProp>
-          <stringProp name="hostname">owd-push-qa-fe1</stringProp>
+          <stringProp name="hostname">${FrontendServer2_uaws}</stringProp>
           <intProp name="port">22</intProp>
           <stringProp name="username">owd</stringProp>
-          <stringProp name="password">owd</stringProp>
-          <stringProp name="command">other/connections_and_date.sh</stringProp>
+          <stringProp name="password">owd1</stringProp>
+          <stringProp name="command">connections_and_date.sh</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree>
           <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="RE: get number of opened connections" enabled="true">
