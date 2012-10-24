@@ -748,7 +748,7 @@
           <intProp name="port">22</intProp>
           <stringProp name="username">owd</stringProp>
           <stringProp name="password">owd</stringProp>
-          <stringProp name="command">nohup node performance/carlos/flood-push-server.js owd-push-qa-fe1 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; performance/carlos/nohup2.out</stringProp>
+          <stringProp name="command">nohup node other/flood-push-server.js owd-push-qa-fe1 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ${ResultsPath}/flood_notification.out</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
@@ -774,7 +774,7 @@
           <intProp name="port">22</intProp>
           <stringProp name="username">owd</stringProp>
           <stringProp name="password">owd</stringProp>
-          <stringProp name="command">performance/carlos/connections_and_date.sh</stringProp>
+          <stringProp name="command">other/connections_and_date.sh</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree>
           <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="RE: get number of opened connections" enabled="true">
