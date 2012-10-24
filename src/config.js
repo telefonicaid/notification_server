@@ -52,8 +52,21 @@ exports.consts = {
 };
 
 /********************* Logger parameters ***********************************/
+var loglevel = require('./common/constants.js').loglevels;
 exports.logger = {
-  MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
+  /**
+   * Log levels:
+   *
+   * # NONE: Log disabled
+   * # DEBUG: Very detailed information about all the things the server is doing
+   * # INFO: General information about the things the server is doing
+   * # ERROR: Error detected, but the server can continue working
+   * # ALERT: Error detected but not directly on this process, so this is a
+   *          notification that should be investigated
+   * # NOTIFY: General notifications, ie. New connections
+   * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
+   */
+  LOGLEVEL: loglevel.NONE | loglevel.DEBUG | loglevel.INFO | loglevel.ERROR | loglevel.CRITICAL | loglevel.ALERT | loglevel.NOTIFY,
   CONSOLEOUTPUT: 1,
   BASE_PATH: "/var/log/push_server/"
 };
