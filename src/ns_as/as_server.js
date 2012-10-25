@@ -25,7 +25,7 @@ function onNewPushMessage(notification, apptoken, callback) {
   try {
     json = JSON.parse(notification);
   } catch (err) {
-    log.debug('NS_AS::onNewPushMessage --> Not valid JSON notification');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid JSON notification');
     return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
   }
 
@@ -46,26 +46,26 @@ function onNewPushMessage(notification, apptoken, callback) {
 
   //Only accept notification messages
   if (normalizedNotification.messageType != "notification") {
-    log.debug('NS_AS::onNewPushMessage --> Not valid messageType');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
     return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
   }
 
   //If not signed, reject
   if (!json.signature) {
-    log.debug('NS_AS::onNewPushMessage --> Not signed');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Not signed');
     return callback('{"status":"ERROR", "reason":"Not signed"}', 400);
   }
 
   //If not id, reject
   if (!normalizedNotification.id) {
-    log.debug('NS_AS::onNewPushMessage --> Not id');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Not id');
     return callback('{"status":"ERROR", "reason":"Not id"}', 400);
   }
 
   //Reject notifications with big attributes
   if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
       (normalizedNotification.id.length > consts.MAX_PAYLOAD_SIZE)) {
-    log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
   }
 
@@ -73,12 +73,13 @@ function onNewPushMessage(notification, apptoken, callback) {
   dataStore.getPbkApplication(apptoken, function(pbkbase64) {
     var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
     if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
-      log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
+      log.debug('NS_AS::onNewPushMessage --> Rejected. Bad signature, dropping notification');
       return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
     }
 
     var id = uuid.v1();
     log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(normalizedNotification) + "' for the '" + apptoken + "'' apptoken. Internal Id: " + id);
+    log.notify("Storing message for the '" + apptoken + "'' apptoken. Internal Id: " + id);
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
