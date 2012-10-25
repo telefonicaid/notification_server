@@ -38,6 +38,7 @@ function onNewMessage(message) {
     return log.error('WS::queue::onNewMessage --> Not enough data!');
   }
   log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
+  log.notify("Message with id " + json.messageId + " sent to " + json.uatoken);
   dataManager.getNode(json.uatoken, function(nodeConnector) {
     if(nodeConnector) {
       log.debug("WS::Queue::onNewMessage --> Sending messages: " + JSON.stringify(json.payload.payload));

@@ -42,7 +42,7 @@ server.prototype = {
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
     var msg = "";
-    log.debug('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
+    log.notify('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
     if(!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
@@ -76,6 +76,7 @@ server.prototype = {
       WakeUpHost.port, WakeUpHost.ip,
       function(err, bytes) {
         if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
+        else log.notify("WakeUp Datagram sent to " + WakeUpHost.ip + ":" + WakeUpHost.port);
         client.close();
       }
     );
