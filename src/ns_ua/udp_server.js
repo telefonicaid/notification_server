@@ -16,12 +16,12 @@ var log = require("../common/logger.js"),
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewMessage(message) {
-  log.notify("UDP::Queue::onNewMessage: " + message);
+  log.debug("UDP::Queue::onNewMessage: " + message);
   var messageData = {};
   try {
     messageData = JSON.parse(message);
   } catch(e) {
-    log.notify('UDP::Queue::onNewMessage --> Not a valid JSON');
+    log.debug('UDP::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
 
@@ -51,11 +51,11 @@ function onNewMessage(message) {
      !messageData.data.mobilenetwork ||
      !messageData.data.mobilenetwork.mcc ||
      !messageData.data.mobilenetwork.mnc) {
-    return log.notify('UDP::queue::onNewMessage --> Not enough data to find server');
+    return log.debug('UDP::queue::onNewMessage --> Not enough data to find server');
   }
 
   // Notify the hanset with the associated Data
-  log.notify("Notifying node: " + JSON.stringify(messageData.data.uatoken) +
+  log.notify("Notifying node: " + messageData.data.uatoken +
       " to " + messageData.data.interface.ip +
       ":" + messageData.data.interface.port +
       " on network " +

@@ -23,12 +23,12 @@ var log = require("../common/logger.js"),
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 function onNewMessage(message) {
-  log.notify('WS::Queue::onNewMessage --> New message received: ' + message);
+  log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
   var json = {};
   try {
     json = JSON.parse(message);
   } catch(e) {
-    log.notify('WS::Queue::onNewMessage --> Not a valid JSON');
+    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
   // If we don't have enough data, return
@@ -38,12 +38,13 @@ function onNewMessage(message) {
     return log.error('WS::queue::onNewMessage --> Not enough data!');
   }
   log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
+  log.notify("Message with id " + json.messageId + " sent to " + json.uatoken);
   dataManager.getNode(json.uatoken, function(nodeConnector) {
     if(nodeConnector) {
-      log.notify("WS::Queue::onNewMessage --> Sending messages: " + JSON.stringify(json.payload.payload));
+      log.debug("WS::Queue::onNewMessage --> Sending messages: " + JSON.stringify(json.payload.payload));
       nodeConnector.notify(new Array(json.payload.payload));
     } else {
-      log.notify("WS::Queue::onNewMessage --> No node found");
+      log.debug("WS::Queue::onNewMessage --> No node found");
     }
   });
 }

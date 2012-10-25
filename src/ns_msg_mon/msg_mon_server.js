@@ -103,7 +103,7 @@ function onNewMessage(msg) {
 
 function onApplicationData(appData, json) {
   if (!appData || !appData.node) {
-    log.notify("No node or application detected. Message removed ! - " + JSON.stringify(json));
+    log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
     dataStore.removeMessage(json._id);
     return log.debug("MSG_mon::onApplicationData --> No nodes, message removed and aborting");
   }

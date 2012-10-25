@@ -66,7 +66,8 @@ exports.logger = {
    * # NOTIFY: General notifications, ie. New connections
    * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
    */
-  LOGLEVEL: loglevel.DEBUG | loglevel.INFO | loglevel.ERROR | loglevel.CRITICAL | loglevel.ALERT | loglevel.NOTIFY,
+//  LOGLEVEL: loglevel.DEBUG | loglevel.INFO | loglevel.ERROR | loglevel.CRITICAL | loglevel.ALERT | loglevel.NOTIFY,
+  LOGLEVEL: loglevel.NOTIFY,
   CONSOLEOUTPUT: 1,
   BASE_PATH: "/var/log/push_server/"
 };
