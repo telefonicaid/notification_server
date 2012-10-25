@@ -81,16 +81,16 @@ server.prototype = {
     switch(protocol) {
       case this.PROTOCOL_TCPv4:
         // TCP Notification Message
-        var client = net.connect({ip: WakeUpHost.ip, port: WakeUpHost.port},
+        var tcp4Client = net.createConnection({host: WakeUpHost.ip, port: WakeUpHost.port},
             function() { //'connect' listener
           log.debug('TCP Client connected');
-          client.write(message);
-          client.end();
+          tcp4Client.write(message);
+          tcp4Client.end();
         });
-        client.on('data', function(data) {
+        tcp4Client.on('data', function(data) {
           log.debug('TCP Data received: ' + data.toString());
         });
-        client.on('error', function(e) {
+        tcp4Client.on('error', function(e) {
           log.debug('TCP Client error ' + JSON.stringify(e));
 
           response.statusCode = 404;
@@ -98,7 +98,7 @@ server.prototype = {
           response.write('{"status": "ERROR", "reason": "TCP Connection error"}');
           return response.end();
         });
-        client.on('end', function() {
+        tcp4Client.on('end', function() {
           log.debug('TCP Client disconected');
 
           response.statusCode = 200;
@@ -109,13 +109,13 @@ server.prototype = {
         break;
       case this.PROTOCOL_UDPv4:
         // UDP Notification Message
-        var client = dgram.createSocket("udp4");
-        client.send(
+        var udp4Client = dgram.createSocket("udp4");
+        udp4Client.send(
           message, 0, message.length,
           WakeUpHost.port, WakeUpHost.ip,
           function(err, bytes) {
             if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
-            client.close();
+            udp4Client.close();
           }
         );
 

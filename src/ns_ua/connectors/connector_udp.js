@@ -27,6 +27,13 @@ connector_udp.prototype = {
     return this.data.mobilenetwork;
   },
 
+  getProtocol: function() {
+    if(this.data.protocol)
+      return this.data.protocol;
+    else
+      return "udp";
+  },
+
   getConnection: function() {
     return this.connection;
   },

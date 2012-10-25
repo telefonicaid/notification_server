@@ -41,10 +41,9 @@ function onNewMessage(message) {
    *  "messageType": "registerUA"
    * }
    */
-
   // If message does not follow the above standard, return.
-  if(!messageData.data ||
-     !messageData.data.uatoken ||
+  if(!messageData.uatoken ||
+     !messageData.data ||
      !messageData.data.interface ||
      !messageData.data.interface.ip ||
      !messageData.data.interface.port ||
@@ -59,7 +58,8 @@ function onNewMessage(message) {
   log.debug("Notify to " +
       messageData.data.interface.ip + ":" + messageData.data.interface.port +
       " on network " +
-      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
+      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc +
+      " and using protocol: " + messageData.data.protocol
   );
 
   mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {
@@ -70,7 +70,7 @@ function onNewMessage(message) {
       var options = {
         host: op.wakeup.split(":")[0],
         port: op.wakeup.split(":")[1],
-        path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
+        path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port + '&proto=' + messageData.data.protocol,
         method: 'GET'
       };
 
