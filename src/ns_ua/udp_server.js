@@ -16,12 +16,12 @@ var log = require("../common/logger.js"),
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewMessage(message) {
-  log.debug("MB: " + message);
+  log.notify("UDP::Queue::onNewMessage: " + message);
   var messageData = {};
   try {
     messageData = JSON.parse(message);
   } catch(e) {
-    log.debug('UDP::Queue::onNewMessage --> Not a valid JSON');
+    log.notify('UDP::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
 
@@ -51,15 +51,16 @@ function onNewMessage(message) {
      !messageData.data.mobilenetwork ||
      !messageData.data.mobilenetwork.mcc ||
      !messageData.data.mobilenetwork.mnc) {
-    return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
+    return log.notify('UDP::queue::onNewMessage --> Not enough data to find server');
   }
 
   // Notify the hanset with the associated Data
-  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
-  log.debug("Notify to " +
-      messageData.data.interface.ip + ":" + messageData.data.interface.port +
+  log.notify("Notifying node: " + JSON.stringify(messageData.data.uatoken) +
+      " to " + messageData.data.interface.ip +
+      ":" + messageData.data.interface.port +
       " on network " +
-      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
+      messageData.data.mobilenetwork.mcc +
+      "-" + messageData.data.mobilenetwork.mnc
   );
 
   mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {

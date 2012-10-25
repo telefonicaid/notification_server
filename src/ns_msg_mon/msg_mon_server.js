@@ -67,7 +67,7 @@ function onNewMessage(msg) {
   try {
     json = JSON.parse(msg);
   } catch(e) {
-    return log.error('MSG_mon::onNewMessage --> newMessages queue recived a bad JSON. Check');
+    return log.error('MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check');
   }
 
   /**
@@ -103,7 +103,7 @@ function onNewMessage(msg) {
 
 function onApplicationData(appData, json) {
   if (!appData || !appData.node) {
-    log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
+    log.notify("No node or application detected. Message removed ! - " + JSON.stringify(json));
     dataStore.removeMessage(json._id);
     return log.debug("MSG_mon::onApplicationData --> No nodes, message removed and aborting");
   }
@@ -121,7 +121,7 @@ function onNodeData(nodeData, json) {
   }
 
   log.debug("MSG_mon::onNodeData --> Node data recovered: " + JSON.stringify(nodeData));
-  log.debug("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
+  log.notify("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
   var body = {
     "messageId": json._id,
     "uatoken": nodeData._id,

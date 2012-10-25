@@ -82,13 +82,13 @@ logger.prototype = {
 
   alert: function(message) {
     if (this.logLevel & loglevel.ALERT) {
-      this.log("ALERT", message, true);
+      this.log("ALERT", message, false);
     }
   },
 
   notify: function(message) {
     if (this.logLevel & loglevel.NOTIFY) {
-      this.log("NOTIFY", message, true);
+      this.log("NOTIFY", message, false);
     }
   }
 };
