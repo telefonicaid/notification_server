@@ -51,7 +51,7 @@ function onNewMessage(message) {
      !messageData.data.mobilenetwork ||
      !messageData.data.mobilenetwork.mcc ||
      !messageData.data.mobilenetwork.mnc) {
-    return log.debug('UDP::queue::onNewMessage --> Not enough data to find server');
+    return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
   }
 
   // Notify the hanset with the associated Data
