@@ -17,6 +17,10 @@ function server(ip, port) {
 }
 
 server.prototype = {
+  // Constants
+  PROTOCOL_UDPv4: 1,
+  PROTOCOL_TCPv4: 2,
+
   //////////////////////////////////////////////
   // Constructor
   //////////////////////////////////////////////
@@ -66,24 +70,68 @@ server.prototype = {
       return response.end();
     }
 
-    log.debug('NS_WakeUp::onHTTPMessage --> WakeUp IP = ' + WakeUpHost.ip + ':' + WakeUpHost.port);
+    // Check protocolo
+    var protocol = this.PROTOCOL_UDPv4;
+    if( WakeUpHost.proto && WakeUpHost.proto == "tcp") {
+      protocol = this.PROTOCOL_TCPv4;
+    }
 
-    // UDP Notification Message
+    log.debug('NS_WakeUp::onHTTPMessage --> WakeUp IP = ' + WakeUpHost.ip + ':' + WakeUpHost.port + ' (protocol=' + protocol + ')');
     var message = new Buffer("NOTIFY " + JSON.stringify(WakeUpHost));
-    var client = dgram.createSocket("udp4");
-    client.send(
-      message, 0, message.length,
-      WakeUpHost.port, WakeUpHost.ip,
-      function(err, bytes) {
-        if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
-        client.close();
-      }
-    );
+    switch(protocol) {
+      case this.PROTOCOL_TCPv4:
+        // TCP Notification Message
+        var client = net.connect({ip: WakeUpHost.ip, port: WakeUpHost.port},
+            function() { //'connect' listener
+          log.debug('TCP Client connected');
+          client.write(message);
+          client.end();
+        });
+        client.on('data', function(data) {
+          log.debug('TCP Data received: ' + data.toString());
+        });
+        client.on('error', function(e) {
+          log.debug('TCP Client error ' + JSON.stringify(e));
 
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "text/plain");
-    response.write('{"status": "OK"}');
-    return response.end();
+          response.statusCode = 404;
+          response.setHeader("Content-Type", "text/plain");
+          response.write('{"status": "ERROR", "reason": "TCP Connection error"}');
+          return response.end();
+        });
+        client.on('end', function() {
+          log.debug('TCP Client disconected');
+
+          response.statusCode = 200;
+          response.setHeader("Content-Type", "text/plain");
+          response.write('{"status": "OK"}');
+          return response.end();
+        });
+        break;
+      case this.PROTOCOL_UDPv4:
+        // UDP Notification Message
+        var client = dgram.createSocket("udp4");
+        client.send(
+          message, 0, message.length,
+          WakeUpHost.port, WakeUpHost.ip,
+          function(err, bytes) {
+            if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
+            client.close();
+          }
+        );
+
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "text/plain");
+        response.write('{"status": "OK"}');
+        return response.end();
+        break;
+
+      default:
+        log.error("Protocol not supported !");
+        response.statusCode = 404;
+        response.setHeader("Content-Type", "text/plain");
+        response.write('{"status": "ERROR", "reason": "Protocol not supported"}');
+        return response.end();
+    }
   },
 
   ///////////////////////
