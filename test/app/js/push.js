@@ -45,6 +45,7 @@ var Push = {
     this.port = document.getElementById('port');
     this.mcc = document.getElementById('mcc');
     this.mnc = document.getElementById('mnc');
+    this.proto = document.getElementById('proto');
     this.tokenPlace = document.getElementById('token');
 
     this.getTokenButton.addEventListener('click', this.getToken.bind(this));
@@ -200,7 +201,11 @@ var Push = {
     this.ws.ready = true;
     this.logMessage('[REG] Started registration to the notification server');
     if (this.checkbox.checked) {
-      this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" }, "mobilenetwork": { "mcc": "' + this.mcc.value + '", "mnc": "' + this.mnc.value + '" } }, "messageType":"registerUA"}');
+      if (this.proto.checked) {
+        this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" }, "mobilenetwork": { "mcc": "' + this.mcc.value + '", "mnc": "' + this.mnc.value + '" }, "protocol": "tcp" }, "messageType":"registerUA"}');
+      } else {
+        this.ws.connection.send('{"data": {"uatoken":"' + this.token + '", "interface": { "ip": "' + this.ip.value + '", "port": "' + this.port.value + '" }, "mobilenetwork": { "mcc": "' + this.mcc.value + '", "mnc": "' + this.mnc.value + '" } }, "messageType":"registerUA"}');
+      }
     } else {
       this.ws.connection.send('{"data": {"uatoken":"' + this.token + '"}, "messageType":"registerUA"}');
     }
