@@ -78,7 +78,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     }
 
     var id = uuid.v1();
-    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(normalizedNotification) + "' for the '" + apptoken + "'' apptoken. Internal Id: " + id);
+    log.debug("NS_AS::onNewPushMessage --> Storing message for the '" + apptoken + "' apptoken with internal Id = '" + id + "'. Message:", normalizedNotification);
     log.notify("Storing message for the '" + apptoken + "'' apptoken. Internal Id: " + id);
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
@@ -167,7 +167,7 @@ server.prototype = {
 
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
     var url = this.parseURL(request.url);
-    log.debug("NS_AS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
+    log.debug("NS_AS::onHTTPMessage --> Parsed URL:", url);
     switch (url.messageType) {
     case 'about':
       if(consts.PREPRODUCTION_MODE) {

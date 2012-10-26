@@ -175,7 +175,7 @@ datamanager.prototype = {
 // Callbacks functions
 ///////////////////////////////////////////
 function onMessage(message, message_info) {
-  log.debug("dataManager::onMessage --> Message payload: " + JSON.stringify(message[0].payload));
+  log.debug("dataManager::onMessage --> Message payload:", message[0].payload);
   message_info.callback({"messageId": message_info.id,
                          "payload": message[0].payload,
                          "data": message_info.callbackParam}
