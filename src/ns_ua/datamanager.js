@@ -48,7 +48,8 @@ datamanager.prototype = {
             p.token,                                      // UAToken
             "UDP",                                        // Queue name
             {"interface": p.connector.getInterface(),     // UDP Interface data
-             "mobilenetwork": p.connector.getMobileNetwork()},  // MCC, MNC
+             "mobilenetwork": p.connector.getMobileNetwork(), // MCC, MNC
+             "protocol": p.connector.getProtocol()},      // Protocol
             p.callback
           );
         } else {
