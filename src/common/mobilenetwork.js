@@ -36,14 +36,14 @@ MobileNetwork.prototype = {
     log.debug("[MobileNetwork] looking for MCC-MNC: " + index);
     // Check if the network is in the cache
     if(value = this.cache[index]) {
-      log.debug("[MobileNetwork] found on cache: " + JSON.stringify(value));
+      log.debug("[MobileNetwork] found on cache:", value);
       return callback(value);
     }
 
     // Check if the network if it's in the database and update cache
     datastore.getOperator(mcc,mnc,function(d) {
       if(d) {
-        log.debug("[MobileNetwork] found on database: " + JSON.stringify(d));
+        log.debug("[MobileNetwork] found on database:", d);
         this.cache[index] = d;
         return callback(d);
       }
