@@ -46,7 +46,7 @@ server.prototype = {
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
     var msg = "";
-    log.debug('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
+    log.notify('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
     if(!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
@@ -92,6 +92,7 @@ server.prototype = {
         });
         tcp4Client.on('error', function(e) {
           log.debug('TCP Client error ' + JSON.stringify(e));
+          log.notify("WakeUp TCP packet to " + WakeUpHost.ip + ":" + WakeUpHost.port + " - FAILED");
 
           response.statusCode = 404;
           response.setHeader("Content-Type", "text/plain");
@@ -100,6 +101,7 @@ server.prototype = {
         });
         tcp4Client.on('end', function() {
           log.debug('TCP Client disconected');
+          log.notify("WakeUp TCP packet succesfully sent to " + WakeUpHost.ip + ":" + WakeUpHost.port);
 
           response.statusCode = 200;
           response.setHeader("Content-Type", "text/plain");
@@ -115,6 +117,7 @@ server.prototype = {
           WakeUpHost.port, WakeUpHost.ip,
           function(err, bytes) {
             if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
+            else log.notify("WakeUp Datagram sent to " + WakeUpHost.ip + ":" + WakeUpHost.port);
             udp4Client.close();
           }
         );

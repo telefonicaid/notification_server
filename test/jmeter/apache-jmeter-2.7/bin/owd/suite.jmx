@@ -146,13 +146,13 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="FrontEndServer1" elementType="Argument">
             <stringProp name="Argument.name">FrontEndServer1</stringProp>
-            <stringProp name="Argument.value">owd-push-qa-fe1.hi.inet</stringProp>
+            <stringProp name="Argument.value">10.101.5.162</stringProp>
             <stringProp name="Argument.desc">This is the front end server under load</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontEndServer2" elementType="Argument">
             <stringProp name="Argument.name">FrontEndServer2</stringProp>
-            <stringProp name="Argument.value">owd-push-qa-fe2.hi.inet</stringProp>
+            <stringProp name="Argument.value">10.101.5.163</stringProp>
             <stringProp name="Argument.desc">This is the front end that runs the POST to websocket node</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -336,7 +336,7 @@
           <stringProp name="HTTPSampler.port">8080</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.protocol">HTTPS</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/token</stringProp>
           <stringProp name="HTTPSampler.method">GET</stringProp>

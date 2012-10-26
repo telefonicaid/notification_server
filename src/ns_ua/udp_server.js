@@ -16,7 +16,7 @@ var log = require("../common/logger.js"),
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewMessage(message) {
-  log.debug("MB: " + message);
+  log.debug("UDP::Queue::onNewMessage: " + message);
   var messageData = {};
   try {
     messageData = JSON.parse(message);
@@ -54,11 +54,11 @@ function onNewMessage(message) {
   }
 
   // Notify the hanset with the associated Data
-  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
-  log.debug("Notify to " +
-      messageData.data.interface.ip + ":" + messageData.data.interface.port +
-      " on network " +
-      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc +
+  log.notify("Notifying node: " + messageData.data.uatoken +
+      " to " + messageData.data.interface.ip +
+      ":" + messageData.data.interface.port +
+      " on network " + messageData.data.mobilenetwork.mcc +
+      "-" + messageData.data.mobilenetwork.mnc +
       " and using protocol: " + messageData.data.protocol
   );
 
