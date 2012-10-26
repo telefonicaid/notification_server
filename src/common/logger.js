@@ -38,8 +38,16 @@ logger.prototype = {
     this.debug("logger::init --> Logger initialized!");
   },
 
-  log: function(level, message, trace) {
+  log: function(level, message, trace, object) {
+    if(!this.logfile && !this.consoleOutput) {
+      return;                                    // Log disabled
+    }
+
     var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
+    if(object) {
+      logmsg += " " + JSON.stringify(object);
+    }
+
     if(this.logfile)
       this.logfile.write(logmsg + "\n");
     if(this.consoleOutput) {
@@ -53,42 +61,42 @@ logger.prototype = {
   /**
    * Commodity methods per log level
    */
-  critical: function(message) {
+  critical: function(message, object) {
     if (this.logLevel & loglevel.CRITICAL) {
-      this.log("CRITICAL", message, true);
+      this.log("CRITICAL", message, true, object);
     }
     this.log("CRITICAL", "WE HAVE A CRITICAL ERROR, WE ARE CLOSING!!!", false);
     // We cannot continue our process, kill it!
     process.exit(1);
   },
 
-  debug: function(message) {
+  debug: function(message, object) {
     if (this.logLevel & loglevel.DEBUG) {
-      this.log("DEBUG", message, false);
+      this.log("DEBUG", message, false, object);
     }
   },
 
-  info: function(message) {
+  info: function(message, object) {
     if (this.logLevel & loglevel.INFO) {
-      this.log("INFO", message, false);
+      this.log("INFO", message, false, object);
     }
   },
 
-  error: function(message) {
+  error: function(message, object) {
     if (this.logLevel & loglevel.ERROR) {
-      this.log("ERROR", message, true);
+      this.log("ERROR", message, true, object);
     }
   },
 
-  alert: function(message) {
+  alert: function(message, object) {
     if (this.logLevel & loglevel.ALERT) {
-      this.log("ALERT", message, false);
+      this.log("ALERT", message, false, object);
     }
   },
 
-  notify: function(message) {
+  notify: function(message, object) {
     if (this.logLevel & loglevel.NOTIFY) {
-      this.log("NOTIFY", message, false);
+      this.log("NOTIFY", message, false, object);
     }
   }
 };

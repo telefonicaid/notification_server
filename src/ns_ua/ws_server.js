@@ -37,11 +37,11 @@ function onNewMessage(message) {
       !json.payload.payload) {
     return log.error('WS::queue::onNewMessage --> Not enough data!');
   }
-  log.debug("WS::Queue::onNewMessage --> Notifying node: " + JSON.stringify(json.uatoken));
+  log.debug("WS::Queue::onNewMessage --> Notifying node:", json.uatoken);
   log.notify("Message with id " + json.messageId + " sent to " + json.uatoken);
   dataManager.getNode(json.uatoken, function(nodeConnector) {
     if(nodeConnector) {
-      log.debug("WS::Queue::onNewMessage --> Sending messages: " + JSON.stringify(json.payload.payload));
+      log.debug("WS::Queue::onNewMessage --> Sending messages:", json.payload.payload);
       nodeConnector.notify(new Array(json.payload.payload));
     } else {
       log.debug("WS::Queue::onNewMessage --> No node found");
@@ -127,7 +127,7 @@ server.prototype = {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
       var url = this.parseURL(request.url);
 
-      log.debug("WS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
+      log.debug("WS::onHTTPMessage --> Parsed URL:", url);
       switch (url.messageType) {
       case 'token':
         text = token.get();

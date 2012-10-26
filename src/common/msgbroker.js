@@ -98,7 +98,7 @@ var MsgBroker = function() {
    * Insert a new message into the queue
    */
   this.push = function(queueName, body) {
-    log.debug('msgbroker::push --> Sending ' + JSON.stringify(body) + ' to the queue ' + queueName);
+    log.debug('msgbroker::push --> Sending to the queue ' + queueName + ' the package:', body);
     //Send to one of the connections that is connected to a queue
     //TODO: send randomly , not to the first open connection (which is the easiest 'algorithm')
     var sent = false;
