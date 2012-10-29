@@ -15,6 +15,10 @@ function monitor() {
   this.ready = false;
 }
 
+var stats = {
+  blah: 0
+};
+
 monitor.prototype = {
   init: function() {
     var self = this;
@@ -59,6 +63,10 @@ monitor.prototype = {
     msgBroker.close();
     dataStore.close();
     callback(null);
+  },
+
+  getStats: function() {
+    return stats;
   }
 };
 

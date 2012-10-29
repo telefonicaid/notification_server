@@ -7,8 +7,19 @@ exports.serverData = {
   host: '127.0.0.1'
 };
 
+/**
+ * This is the signature for the "Hola" message and the PbK-public key in
+ * the test/scripts/ folder.
+ */
 var date = new Date().getTime();
-exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"' + date + '","priority":1}';
+exports.testNotificationText = '{"messageType":"notification",' +
+                                 '"id":1234,' +
+                                 '"message":"Hola",' +
+                                 '"signature":"691cb72015afdba8742349431500b497fe689523c7bd8b9ab9d905160efed20e8c70e7ba1aec112c494721f253b8874f90d611b8ebd78e5017aaf971f0f01503e2d3ba1949cd11c145f0537b7c80a7933368f405d12b723f8107c92af1e1d58a93c48a9af3f55ee519719b8ba1632e1fd12f9d3eb99846abb849793516bf1fa0",' +
+                                 '"ttl":0,' +
+                                 '"timestamp":"' + date + '",' +
+                                 '"priority":1' +
+                               '}';
 
 exports.getToken = function getToken(callback) {
   var https = require("https");
