@@ -97,20 +97,20 @@ function onNewMessage(msg) {
   if (!json.watoken) {
     return log.error('MSG_mon::onNewMessage --> newMessages has a message without WAtoken attribute');
   }
-  log.debug('MSG_mon::onNewMessage --> Mensaje desde la cola:' + JSON.stringify(json));
+  log.debug('MSG_mon::onNewMessage --> Mensaje desde la cola:', json);
   dataStore.getApplication(json.watoken.toString(), onApplicationData, json);
 }
 
 function onApplicationData(appData, json) {
   if (!appData || !appData.node) {
-    log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
+    log.debug("No node or application detected. Message removed ! -",json);
     dataStore.removeMessage(json._id);
     return log.debug("MSG_mon::onApplicationData --> No nodes, message removed and aborting");
   }
 
-  log.debug("MSG_mon::onApplicationData --> Application data recovered: " + JSON.stringify(appData));
+  log.debug("MSG_mon::onApplicationData --> Application data recovered:", appData);
   appData.node.forEach(function (nodeData, i) {
-    log.debug("MSG_mon::onApplicationData --> Notifying node: " + i + ": " + JSON.stringify(nodeData));
+    log.debug("MSG_mon::onApplicationData --> Notifying node: " + i + ":", nodeData);
     dataStore.getNode(nodeData, onNodeData, json);
   });
 }
@@ -120,7 +120,7 @@ function onNodeData(nodeData, json) {
     return log.debug("No node info found!");
   }
 
-  log.debug("MSG_mon::onNodeData --> Node data recovered: " + JSON.stringify(nodeData));
+  log.debug("MSG_mon::onNodeData --> Node data recovered:", nodeData);
   log.notify("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
   var body = {
     "messageId": json._id,
