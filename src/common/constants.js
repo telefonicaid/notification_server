@@ -29,6 +29,20 @@ exports.errorcodes = {
     BAD_MESSAGE_BAD_SIGNATURE: [408, "Bad signature, dropping notification"]
   },
   UAWS: {
-    BAD_MESSAGE_NOT_RECOGNIZED: [404, "messageType not recognized for this HTTP API"]
+    // HTTP
+    BAD_MESSAGE_NOT_RECOGNIZED: [404, "messageType not recognized for this HTTP API"],
+
+    // WebSocket
+    NOT_VALID_JSON_PACKAGE: [400, "Data received is not a valid JSON package"],
+    NOT_VALID_UATOKEN: [400, "UAtoken not valid for this server. Get a new one"],
+    NOT_VALID_WATOKEN: [400, "Not valid WAtoken sent"],
+    NOT_VALID_PBK: [400, "Not valid PbK sent"],
+    UATOKEN_NOT_FOUND: [400, "No UAtoken found for this connection!"],
+    FAILED_REGISTERUA: [400, "Failed registering UAtoken"],
+    ERROR_GETTING_CONNECTOR: [400, "Error getting connection object"],
+    COMMAND_NOT_ALLOWED: [400 , "Command not allowed in this connection"],
+    UATOKEN_NOT_SENT: [400, "No UAtoken sent"],
+    MESSAGETYPE_NOT_RECOGNIZED: [400, "messageType not recognized"],
+    BINARY_MSG_NOT_SUPPORTED: [400, "Binary messages not yet supported"]
   }
 }

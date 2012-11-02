@@ -194,6 +194,26 @@ server.prototype = {
     // WS Callbacks
     ///////////////////////
     this.onWSMessage = function(message) {
+      connection.res = function responseWS(payload) {
+        log.debug('WS::responseWS:', payload);
+        var res = {};
+        if(payload.extradata) {
+          res = payload.extradata;
+        }
+        res.statuscode = payload.errorcode[0];
+        if(payload.errorcode[0] > 299) {    // Out of the 2xx series
+          if(!res.status) {
+            res.status = "ERROR";
+          }
+          res.reason = payload.errorcode[1];
+        } else {
+          if(!res.status) {
+            res.status = "OK";
+          }
+        }
+        connection.sendUTF(JSON.stringify(res));
+      };
+
       if (message.type === 'utf8') {
         log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
         var query = null;
@@ -201,8 +221,9 @@ server.prototype = {
           query = JSON.parse(message.utf8Data);
         } catch(e) {
           log.debug("WS::onWSMessage --> Data received is not a valid JSON package");
-          connection.sendUTF('{ "status": "ERROR",' +
-                               '"reason": "Data received is not a valid JSON package"}');
+          connection.res({
+            errorcode: errorcodesWS.NOT_VALID_JSON_PACKAGE
+          });
           return connection.close();
         }
 
@@ -212,17 +233,19 @@ server.prototype = {
             // Token verification
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
-              connection.sendUTF('{ "status": "ERROR",' +
-                                   '"reason": "Token not valid for this server",' +
-                                   '"messageType": "registerUA" }');
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_UATOKEN,
+                extradata: { messageType: "registerUA" }
+              });
               return connection.close();
             }
             // New UA registration
             Connectors.getConnector(query.data, connection, function(err,c) {
               if(err) {
-                  connection.sendUTF('{"status":"ERROR",' +
-                                      '"reason": "Try again later",' +
-                                      '"messageType":"registerUA"}');
+                  connection.res({
+                    errorcode: errorcodesWS.ERROR_GETTING_CONNECTOR,
+                    extradata: { messageType: "registerUA" }
+                  });
                   return log.error("WS::onWSMessage --> Error getting connection object");
               }
 
@@ -231,12 +254,19 @@ server.prototype = {
                 c,
                 function(ok) {
                   if (ok) {
-                    connection.sendUTF('{"status":"REGISTERED", "messageType": "registerUA"}');
+                    connection.res({
+                      errorcode: errorcodes.NO_ERROR,
+                      extradata: {
+                        messageType: "registerUA",
+                        status: "REGISTERED"
+                      }
+                    });
                     log.debug("WS::onWSMessage --> OK register UA");
                   } else {
-                    connection.sendUTF('{"status":"ERROR",' +
-                                        '"reason": "Try again later",' +
-                                        '"messageType":"registerUA"}');
+                    connection.res({
+                      errorcode: errorcodesWS.FAILED_REGISTERUA,
+                      extradata: { messageType: "registerUA" }
+                    });
                     log.debug("WS::onWSMessage --> Failing registering UA");
                   }
                 }
@@ -250,9 +280,10 @@ server.prototype = {
             var watoken = query.data.watoken;
             if (!watoken) {
               log.debug("WS::onWSMessage::registerWA --> Null WAtoken");
-              connection.sendUTF('{"status": "ERROR",' +
-                                  '"reason": "Not valid WAtoken sent",' +
-                                  '"messageType" : "registerWA"}"');
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_WATOKEN,
+                extradata: { messageType: "registerWA" }
+              });
               //There must be a problem on the client, because WAtoken is the way to identify an app
               //Close in this case.
               connection.close();
@@ -264,30 +295,39 @@ server.prototype = {
               log.debug("WS::onWSMessage::registerWA --> Null pbk");
               //In this case, there is a problem, but there are no PbK. We just reject
               //the registration but we do not close the connection
-              return connection.sendUTF('{"status": "ERROR",' +
-                                         '"reason": "Not valid PbK sent",' +
-                                         '"watoken": "' + watoken + '",' +
-                                         '"messageType": "registerWA"}');
+              return connection.res({
+                errorcode: errorcodesWS.NOT_VALID_PBK,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: "registerWA"
+                }
+              });
             }
 
             // Check if we have a token (in the connection or in the message)
             var uatoken = dataManager.getUAToken(connection) || query.data.uatoken;
             if(!uatoken) {
               log.debug("No UAToken found for this connection");
-              connection.sendUTF('{ "status": "ERROR",' +
-                                   '"reason": "No UAToken found for this connection!",' +
-                                   '"watoken":"' + watoken + '",' +
-                                   '"messageType" : "registerWA"}');
+              connection.res({
+                errorcode: errorcodesWS.UATOKEN_NOT_FOUND,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: "registerWA"
+                }
+              });
               return connection.close();
             }
 
             // Check if the token is correct
             if(!token.verify(uatoken)) {
               log.debug("WS::onWSMessage --> Token not valid (Checksum failed)");
-              connection.sendUTF('{ "status": "ERROR",' +
-                                   '"reason": "UAtoken not valid for this server",' +
-                                   '"watoken":"' + watoken + '",' +
-                                   '"messageType" : "registerWA"}');
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_UATOKEN,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: "registerWA"
+                }
+              });
               return connection.close();
             }
 
@@ -296,16 +336,24 @@ server.prototype = {
             dataManager.registerApplication(appToken, uatoken, pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
-                connection.sendUTF('{ "status": "REGISTERED",' +
-                                     '"url": "' + notifyURL + '",' +
-                                     '"messageType": "registerWA",' +
-                                     '"watoken":"' + watoken + '"}');
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    'watoken': watoken,
+                    messageType: "registerWA",
+                    status: "REGISTERED",
+                    url: notifyURL
+                  }
+                });
                 log.debug("WS::onWSMessage::registerWA --> OK registering WA");
               } else {
-                connection.sendUTF('{"status": "ERROR"' +
-                                    '"reason": "Try again later",' +
-                                    '"watoken":"' + watoken + '",' +
-                                    '"messageType" : "registerWA"}"');
+                connection.res({
+                  errorcode: errorcodes.NOT_READY,
+                  extradata: {
+                    'watoken': watoken,
+                    messageType: "registerWA"
+                  }
+                });
                 log.debug("WS::onWSMessage::registerWA --> Failing registering WA");
               }
             });
@@ -315,9 +363,13 @@ server.prototype = {
             log.debug("WS::onWSMessage::unregisterWA --> Application un-registration message");
             if(!dataManager.getUAToken(connection)) {
               log.debug("No UAToken found for this connection !");
-              connection.sendUTF('{ "status": "ERROR",' +
-                                 '"reason": "No UAToken found for this connection!",' +
-                                 '"messageType":"unregisterWA" }');
+              connection.res({
+                errorcode: errorcodes.UATOKEN_NOTFOUND,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: "unregisterWA"
+                }
+              });
               connection.close();
               break;
             }
@@ -326,14 +378,20 @@ server.prototype = {
             dataManager.unregisterApplication(appToken, dataManager.getUAToken(connection), query.data.pbkbase64, function(ok) {
               if (ok) {
                 var notifyURL = helpers.getNotificationURL(appToken);
-                connection.sendUTF('{"status": "UNREGISTERED",' +
-                                    '"url": "' + notifyURL + '",' +
-                                    '"messageType": "unregisterWA"}');
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    url: notifyURL,
+                    messageType: "unregisterWA",
+                    status: "UNREGISTERED"
+                  }
+                });
                 log.debug("WS::onWSMessage::unregisterWA --> OK unregistering WA");
               } else {
-                connection.sendUTF('{"status": "ERROR",' +
-                                    '"reason": "Try again later",' +
-                                    '"messageType": "unregisterWA"}');
+                connection.res({
+                  errorcode: errorcodes.NOT_READY,
+                  extradata: { messageType: "unregisterWA" }
+                });
                 log.debug("WS::onWSMessage::unregisterWA --> Failing unregistering WA");
               }
             });
@@ -342,24 +400,27 @@ server.prototype = {
           case "getAllMessages":
             if(dataManager.getUAToken(connection)) {
               log.debug('WS::onWSMessage::getAllMessages --> Not allowed on WS connections');
-              connection.sendUTF('{"status": "ERROR",' +
-                                  '"reason": "Command not allowed in this connection",' +
-                                  '"messageType": "getAllMessages"}');
+                connection.res({
+                  errorcode: errorcodesWS.COMMAND_NOT_ALLOWED,
+                  extradata: { messageType: "getAllMessages" }
+                });
               return;
             }
             if(!query.data.uatoken) {
               log.debug("WS::onWSMessage::getAllMessages --> No UAtoken sent");
-              connection.sendUTF('{"status": "ERROR",' +
-                                  '"reason": "No UAtoken sent",' +
-                                  '"messageType": "getAllMessages"}');
+              connection.res({
+                errorcode: errorcodesWS.UATOKEN_NOT_SENT,
+                extradata: { messageType: "getAllMessages" }
+              });
               return connection.close();
             }
             log.debug("WS::onWSMessage::getAllMessages --> Recovering messages for " + query.data.uatoken);
             if(!token.verify(query.data.uatoken)) {
               log.debug("WS::onWSMessage::getAllMessages --> Token not valid (Checksum failed)");
-              connection.sendUTF('{"status": "ERROR",' +
-                                  '"reason": "Token not valid, get a new one",' +
-                                  '"messageType": "getAllMessages"}');
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_UATOKEN,
+                extradata: { messageType: "getAllMessages" }
+              });
               return connection.close();
             } else {
               dataManager.getAllMessages(query.data.uatoken, function(messages, close) {
@@ -378,13 +439,17 @@ server.prototype = {
 
           default:
             log.debug("WS::onWSMessage::default --> messageType not recognized");
-            connection.sendUTF('{"status": "ERROR", "reason": "messageType not recognized" }');
+            connection.res({
+              errorcode: errorcodesWS.MESSAGETYPE_NOT_RECOGNIZED
+            });
             return connection.close();
         }
       } else if (message.type === 'binary') {
         // No binary data supported yet
         log.debug('WS::onWSMessage --> Received Binary Message of ' + message.binaryData.length + ' bytes');
-        connection.sendUTF('{ "status": "ERROR", "reason": "Binary messages not yet supported" }');
+        connection.res({
+          errorcode: errorcodesWS.BINARY_MSG_NOT_SUPPORTED
+        });
         return connection.close();
       }
     };
