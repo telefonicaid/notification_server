@@ -35,6 +35,8 @@ logger.prototype = {
   color_RED: '\u001b[1;31m',
   color_green: '\u001b[0;32m',
   color_GREEN: '\u001b[1;32m',
+  color_yellow: '\u001b[0;33m',
+  color_YELLOW: '\u001b[1;33m',
   color_blue: '\u001b[0;34m',
   color_BLUE: '\u001b[1;34m',
   color_purple: '\u001b[0;35m',
@@ -109,7 +111,7 @@ logger.prototype = {
 
   notify: function(message, object) {
     if (this.logLevel & loglevel.NOTIFY) {
-      this.log("NOTIFY", message, false, this.color_GREEN, object);
+      this.log("NOTIFY", message, false, this.color_yellow, object);
     }
   }
 };
