@@ -17,7 +17,9 @@ var log = require("../common/logger.js"),
     helpers = require("../common/helpers.js"),
     msgBroker = require("../common/msgbroker.js"),
     config = require("../config.js").NS_UA_WS,
-    consts = require("../config.js").consts;
+    consts = require("../config.js").consts,
+    errorcodes = require("../common/constants").errorcodes.GENERAL,
+    errorcodesWS = require("../common/constants").errorcodes.UAWS;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -121,8 +123,7 @@ server.prototype = {
     var text = null;
     if (!this.ready) {
       log.info('WS:onHTTPMessage --> Request received but not ready yet');
-      text = '{"status": "ERROR", "reason": "Server not ready. Try again."}';
-      status = 404;
+      return this.responseHTTP(errorcodes.NOT_READY, response);
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
       var url = this.parseURL(request.url);
@@ -131,9 +132,8 @@ server.prototype = {
       switch (url.messageType) {
       case 'token':
         text = token.get();
-        response.setHeader("Content-Type", "text/plain");
-        status = 200;
         this.tokensGenerated++;
+        return this.responseHTTP(errorcodes.NO_ERROR, response);
         break;
 
       case 'about':
@@ -152,26 +152,17 @@ server.prototype = {
           } catch(e) {
             text = "No version.info file";
           }
-          status = 200;
+          return this.responseHTTP(errorcodes.NO_ERROR, response, text);
         } else {
-          status = 404;
-          text = '{"status": "ERROR", "reason": "Not allowed on production system"}';
+          return this.responseHTTP(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM, response);
         }
         break;
 
       default:
         log.debug("WS::onHTTPMessage --> messageType not recognized");
-        text = '{"status": "ERROR", "reason": "messageType not recognized for this HTTP API"}';
-        response.setHeader("Content-Type", "text/plain");
-        status = 404;
+        return this.responseHTTP(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED, response);
       }
     }
-
-    // Close connection
-    response.statusCode = status;
-    response.setHeader("access-control-allow-origin", "*");
-    response.write(text);
-    return response.end();
   },
 
   //////////////////////////////////////////////
@@ -440,6 +431,25 @@ server.prototype = {
       //Calling the callback
       callback(null);
     });
+  },
+
+  responseHTTP: function(errorCode, response, html) {
+    log.debug('NS_UA_WS::responseHTTP: ', errorCode);
+    response.statusCode = errorCode[0];
+    response.setHeader("access-control-allow-origin", "*");
+    if(html) {
+      response.setHeader("Content-Type", "text/html");
+      response.write(html);
+    }
+    if(consts.PREPRODUCTION_MODE) {
+      response.setHeader("Content-Type", "text/plain");
+      if(response.statusCode == 200) {
+        response.write('{"status":"ACCEPTED"}');
+      } else {
+        response.write('{"status":"ERROR", "'+errorCode[1]+'"}');
+      }
+    }
+    return response.end();
   }
 };
 

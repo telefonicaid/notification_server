@@ -26,5 +26,8 @@ exports.errorcodes = {
     BAD_MESSAGE_NOT_ID: [406, "Not id"],
     BAD_MESSAGE_NOT_SIGNED: [407, "Body too big"],
     BAD_MESSAGE_BAD_SIGNATURE: [408, "Bad signature, dropping notification"]
+  },
+  UAWS: {
+    BAD_MESSAGE_NOT_RECOGNIZED: [404, "messageType not recognized for this HTTP API"]
   }
 }

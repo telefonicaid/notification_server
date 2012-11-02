@@ -230,9 +230,9 @@ server.prototype = {
   responseError: function(errorCode, response) {
     log.debug('NS_AS::responseError: ', errorCode);
     response.statusCode = errorCode[0];
-    response.setHeader("Content-Type", "text/plain");
     response.setHeader("access-control-allow-origin", "*");
     if(consts.PREPRODUCTION_MODE) {
+      response.setHeader("Content-Type", "text/plain");
       if(response.statusCode == 200) {
         response.write('{"status":"ACCEPTED"}');
       } else {
