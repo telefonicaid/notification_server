@@ -121,22 +121,22 @@ server.prototype = {
   onHTTPMessage: function(request, response) {
     response.res = function responseHTTP(errorCode, html) {
       log.debug('NS_UA_WS::responseHTTP: ', errorCode);
-      response.statusCode = errorCode[0];
-      response.setHeader("access-control-allow-origin", "*");
+      this.statusCode = errorCode[0];
+      this.setHeader("access-control-allow-origin", "*");
       if(html) {
-        response.setHeader("Content-Type", "text/html");
-        response.write(html);
+        this.setHeader("Content-Type", "text/html");
+        this.write(html);
       } else {
         if(consts.PREPRODUCTION_MODE) {
-          response.setHeader("Content-Type", "text/plain");
-          if(response.statusCode == 200) {
-            response.write('{"status":"ACCEPTED"}');
+          this.setHeader("Content-Type", "text/plain");
+          if(this.statusCode == 200) {
+            this.write('{"status":"ACCEPTED"}');
           } else {
-            response.write('{"status":"ERROR", "'+errorCode[1]+'"}');
+            this.write('{"status":"ERROR", "'+errorCode[1]+'"}');
           }
         }
       }
-      return response.end();
+      return this.end();
     }
 
     var text = null;
