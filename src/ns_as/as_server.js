@@ -14,7 +14,8 @@ var log = require("../common/logger"),
     crypto = require("../common/cryptography"),
     msgBroker = require("../common/msgbroker"),
     dataStore = require("../common/datastore"),
-    errorcodes = require("../common/constants").errorcodes;
+    errorcodes = require("../common/constants").errorcodes.GENERAL,
+    errorcodesAS = require("../common/constants").errorcodes.AS;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -27,7 +28,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     json = JSON.parse(notification);
   } catch (err) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid JSON notification');
-    return callback(errorcodes.JSON_NOTVALID_ERROR);
+    return callback(errorcodesAS.JSON_NOTVALID_ERROR);
   }
 
   //Get all attributes and save it to a new normalized notification
@@ -48,26 +49,26 @@ function onNewPushMessage(notification, apptoken, callback) {
   //Only accept notification messages
   if (normalizedNotification.messageType != "notification") {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
-    return callback(errorcodes.BAD_MESSAGE_TYPE_NOT_NOTIFICATION);
+    return callback(errorcodesAS.BAD_MESSAGE_TYPE_NOT_NOTIFICATION);
   }
 
   //If not signed, reject
   if (!json.signature) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not signed');
-    return callback(errorcodes.NOT_SIGNED);
+    return callback(errorcodesAS.BAD_MESSAGE_NOT_SIGNED);
   }
 
   //If not id, reject
   if (!normalizedNotification.id) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not id');
-    return callback(errorcodes.BAD_MESSAGE_NOT_ID);
+    return callback(errorcodesAS.BAD_MESSAGE_NOT_ID);
   }
 
   //Reject notifications with big attributes
   if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
       (normalizedNotification.id.length > consts.MAX_PAYLOAD_SIZE)) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
-    return callback(errorcodes.BAD_MESSAGE_BODY_TOO_BIG);
+    return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
 
   //Get the PbK for the apptoken in the database
@@ -75,7 +76,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
     if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
       log.debug('NS_AS::onNewPushMessage --> Rejected. Bad signature, dropping notification');
-      return callback(errorcodes.BAD_MESSAGE_BAD_SIGNATURE);
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_SIGNATURE);
     }
 
     var id = uuid.v1();
@@ -191,7 +192,7 @@ server.prototype = {
     case 'notify':
       if (!url.token) {
         log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
-        return this.responseError(errorcodes.BAD_URL_NOT_VALID_APPTOKEN, response);
+        return this.responseError(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN, response);
       }
 
       log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
@@ -205,7 +206,7 @@ server.prototype = {
 
     default:
       log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
-      return this.responseError(errorcodes.BAD_URL, response)
+      return this.responseError(errorcodesAS.BAD_URL, response)
     }
   },
 
