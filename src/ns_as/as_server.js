@@ -232,10 +232,12 @@ server.prototype = {
     response.statusCode = errorCode[0];
     response.setHeader("Content-Type", "text/plain");
     response.setHeader("access-control-allow-origin", "*");
-    if(response.statusCode == 200) {
-      response.write('{"status":"ACCEPTED"}');
-    } else {
-      response.write('{"status":"ERROR", "'+errorCode[1]+'"}');
+    if(consts.PREPRODUCTION_MODE) {
+      if(response.statusCode == 200) {
+        response.write('{"status":"ACCEPTED"}');
+      } else {
+        response.write('{"status":"ERROR", "'+errorCode[1]+'"}');
+      }
     }
     return response.end();
   }
