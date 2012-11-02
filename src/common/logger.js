@@ -58,7 +58,7 @@ logger.prototype = {
 
     var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
     if(object) {
-      logmsg += " " + JSON.stringify(object);
+      logmsg += " " + this.color_PURPLE + JSON.stringify(object);
     }
 
     if(this.logfile)
