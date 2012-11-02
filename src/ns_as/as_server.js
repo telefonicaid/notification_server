@@ -160,9 +160,24 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    response.res = function responseHTTP(errorCode) {
+      log.debug('NS_AS::responseHTTP: ', errorCode);
+      this.statusCode = errorCode[0];
+      this.setHeader("access-control-allow-origin", "*");
+      if(consts.PREPRODUCTION_MODE) {
+        this.setHeader("Content-Type", "text/plain");
+        if(this.statusCode == 200) {
+          this.write('{"status":"ACCEPTED"}');
+        } else {
+          this.write('{"status":"ERROR", "'+errorCode[1]+'"}');
+        }
+      }
+      return this.end();
+    }
+
     if (!this.ddbbready || !this.msgbrokerready) {
       log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
-      return this.responseError(errorcodes.NOT_READY, response);
+      return response.res(errorcodes.NOT_READY);
     }
 
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
@@ -185,28 +200,31 @@ server.prototype = {
         response.write(text);
         return response.end();
       } else {
-        return this.responseError(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM, response);
+        return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
       }
       break;
 
     case 'notify':
       if (!url.token) {
         log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
-        return this.responseError(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN, response);
+        return response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
+      }
+      if(request.method != 'POST') {
+        log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for notifications)');
+        return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
       }
 
       log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
-      var self = this;
       request.on("data", function(notification) {
         onNewPushMessage(notification, url.token, function(err) {
-          self.responseError(err, response);
+          response.res(err);
         });
       });
       break;
 
     default:
       log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
-      return this.responseError(errorcodesAS.BAD_URL, response)
+      return response.res(errorcodesAS.BAD_URL)
     }
   },
 
@@ -225,21 +243,6 @@ server.prototype = {
       data.token = data.parsedURL.query.token;
     }
     return data;
-  },
-
-  responseError: function(errorCode, response) {
-    log.debug('NS_AS::responseError: ', errorCode);
-    response.statusCode = errorCode[0];
-    response.setHeader("access-control-allow-origin", "*");
-    if(consts.PREPRODUCTION_MODE) {
-      response.setHeader("Content-Type", "text/plain");
-      if(response.statusCode == 200) {
-        response.write('{"status":"ACCEPTED"}');
-      } else {
-        response.write('{"status":"ERROR", "'+errorCode[1]+'"}');
-      }
-    }
-    return response.end();
   }
 };
 

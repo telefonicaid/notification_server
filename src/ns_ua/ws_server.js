@@ -119,10 +119,30 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    response.res = function responseHTTP(errorCode, html) {
+      log.debug('NS_UA_WS::responseHTTP: ', errorCode);
+      response.statusCode = errorCode[0];
+      response.setHeader("access-control-allow-origin", "*");
+      if(html) {
+        response.setHeader("Content-Type", "text/html");
+        response.write(html);
+      } else {
+        if(consts.PREPRODUCTION_MODE) {
+          response.setHeader("Content-Type", "text/plain");
+          if(response.statusCode == 200) {
+            response.write('{"status":"ACCEPTED"}');
+          } else {
+            response.write('{"status":"ERROR", "'+errorCode[1]+'"}');
+          }
+        }
+      }
+      return response.end();
+    }
+
     var text = null;
     if (!this.ready) {
       log.info('WS:onHTTPMessage --> Request received but not ready yet');
-      return this.responseHTTP(errorcodes.NOT_READY, response);
+      return response.res(errorcodes.NOT_READY);
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
       var url = this.parseURL(request.url);
@@ -132,7 +152,7 @@ server.prototype = {
       case 'token':
         text = token.get();
         this.tokensGenerated++;
-        return this.responseHTTP(errorcodes.NO_ERROR, response, text);
+        return response.res(errorcodes.NO_ERROR, text);
         break;
 
       case 'about':
@@ -147,19 +167,18 @@ server.prototype = {
             text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
             text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
             text += "</ul>";
-            response.setHeader("Content-Type", "text/html");
           } catch(e) {
             text = "No version.info file";
           }
-          return this.responseHTTP(errorcodes.NO_ERROR, response, text);
+          return response.res(errorcodes.NO_ERROR, text);
         } else {
-          return this.responseHTTP(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM, response);
+          return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
         }
         break;
 
       default:
         log.debug("WS::onHTTPMessage --> messageType not recognized");
-        return this.responseHTTP(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED, response);
+        return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
       }
     }
   },
@@ -430,26 +449,6 @@ server.prototype = {
       //Calling the callback
       callback(null);
     });
-  },
-
-  responseHTTP: function(errorCode, response, html) {
-    log.debug('NS_UA_WS::responseHTTP: ', errorCode);
-    response.statusCode = errorCode[0];
-    response.setHeader("access-control-allow-origin", "*");
-    if(html) {
-      response.setHeader("Content-Type", "text/html");
-      response.write(html);
-    } else {
-      if(consts.PREPRODUCTION_MODE) {
-        response.setHeader("Content-Type", "text/plain");
-        if(response.statusCode == 200) {
-          response.write('{"status":"ACCEPTED"}');
-        } else {
-          response.write('{"status":"ERROR", "'+errorCode[1]+'"}');
-        }
-      }
-    }
-    return response.end();
   }
 };
 

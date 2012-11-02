@@ -21,6 +21,7 @@ exports.errorcodes = {
     JSON_NOTVALID_ERROR: [401, "JSON not valid error"],
     BAD_URL: [402, "Bad URL"],
     BAD_URL_NOT_VALID_APPTOKEN: [404, "No valid apptoken"],
+    BAD_URL_NOT_VALID_METHOD: [404, "No valid HTTP method"],
     BAD_MESSAGE_TYPE_NOT_NOTIFICATION: [403, "Not messageType=notification"],
     BAD_MESSAGE_NOT_SIGNED: [405, "Not signed"],
     BAD_MESSAGE_NOT_ID: [406, "Not id"],
