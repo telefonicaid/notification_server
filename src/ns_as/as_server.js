@@ -15,16 +15,37 @@ var log = require("../common/logger"),
     msgBroker = require("../common/msgbroker"),
     dataStore = require("../common/datastore");
 
+// Global stats object
+var stats = {
+  notifications: {
+    received: 0,
+    rejected: {
+      badJSON: 0, // Done
+      notSigned: 0,
+      tooBig: 0
+    },
+    accepted: 0
+  },
+  httpRequests: {
+    total: 0,
+    notify: 0,
+    about: 0,
+    other: 0
+  }
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 function onNewPushMessage(notification, apptoken, callback) {
+  stats.notifications.received++;
   var json = null;
 
   //Only accept valid JSON messages
   try {
     json = JSON.parse(notification);
   } catch (err) {
+    stats.notifications.rejected.badJSON++;
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid JSON notification');
     return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
   }
@@ -46,18 +67,21 @@ function onNewPushMessage(notification, apptoken, callback) {
 
   //Only accept notification messages
   if (normalizedNotification.messageType != "notification") {
+    stats.notifications.rejected.other++;
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
     return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
   }
 
   //If not signed, reject
   if (!json.signature) {
+    stats.notifications.rejected.notSigned++;
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not signed');
     return callback('{"status":"ERROR", "reason":"Not signed"}', 400);
   }
 
   //If not id, reject
   if (!normalizedNotification.id) {
+    stats.notifications.rejected.other++;
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not id');
     return callback('{"status":"ERROR", "reason":"Not id"}', 400);
   }
@@ -65,6 +89,7 @@ function onNewPushMessage(notification, apptoken, callback) {
   //Reject notifications with big attributes
   if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
       (normalizedNotification.id.length > consts.MAX_PAYLOAD_SIZE)) {
+    stats.notifications.rejected.tooBig++;
     log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
   }
@@ -81,6 +106,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     log.debug("NS_AS::onNewPushMessage --> Storing message for the '" + apptoken + "' apptoken with internal Id = '" + id + "'. Message:", normalizedNotification);
     log.notify("Storing message for the '" + apptoken + "'' apptoken. Internal Id: " + id);
     // Store on persistent database
+    stats.notifications.accepted++;
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
     msgBroker.push("newMessages", msg);
@@ -88,7 +114,6 @@ function onNewPushMessage(notification, apptoken, callback) {
   });
 }
 ////////////////////////////////////////////////////////////////////////////////
-
 
 function server(ip, port) {
   this.ip = ip;
@@ -154,10 +179,15 @@ server.prototype = {
     });
   },
 
+  getStats: function() {
+    return stats;
+  },
+
   //////////////////////////////////////////////
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    stats.httpRequests.total++;
     if (!this.ddbbready || !this.msgbrokerready) {
       log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
       response.statusCode = 404;
@@ -170,6 +200,7 @@ server.prototype = {
     log.debug("NS_AS::onHTTPMessage --> Parsed URL:", url);
     switch (url.messageType) {
     case 'about':
+      stats.httpRequests.about++;
       if(consts.PREPRODUCTION_MODE) {
         try {
           var fs = require("fs");
@@ -192,6 +223,7 @@ server.prototype = {
       break;
 
     case 'notify':
+      stats.httpRequests.notify++;
       if (!url.token) {
         log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
         response.statusCode = 404;
@@ -212,6 +244,7 @@ server.prototype = {
       break;
 
     default:
+      stats.httpRequests.other++;
       log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
       response.statusCode = 404;
       response.setHeader("Content-Type", "text/plain");

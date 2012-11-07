@@ -206,3 +206,13 @@ exports.NS_WakeUp = {
 exports.NS = {
   logfile: "NS.log"
 };
+
+/********************* General API ***********************************/
+
+
+exports.API = {
+  logfile: "API.log",
+  port: 12345,
+  user: null,
+  password: null
+};

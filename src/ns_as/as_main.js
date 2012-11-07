@@ -7,7 +7,8 @@
  */
 
 var config = require('../config.js').NS_AS,
-    log = require("../common/logger.js");
+    log = require("../common/logger.js"),
+    API = require('../common/API').API;
 
 function NS_AS_main() {
   this.servers = [];
@@ -22,6 +23,9 @@ NS_AS_main.prototype = {
       this.servers[a].init();
     }
     log.info("NS_AS::start --> server starting");
+
+    //Start the API
+    API.addServers('NS_AS', this.servers);
   },
 
   stop: function(callback) {
