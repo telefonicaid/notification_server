@@ -169,7 +169,7 @@ server.prototype = {
         if(this.statusCode == 200) {
           this.write('{"status":"ACCEPTED"}');
         } else {
-          this.write('{"status":"ERROR", "'+errorCode[1]+'"}');
+          this.write('{"status":"ERROR", "reason":"'+errorCode[1]+'"}');
         }
       }
       return this.end();

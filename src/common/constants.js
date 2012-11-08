@@ -25,7 +25,7 @@ exports.errorcodes = {
     BAD_MESSAGE_TYPE_NOT_NOTIFICATION: [452, "Not messageType=notification"],
     BAD_MESSAGE_NOT_SIGNED: [453, "Not signed"],
     BAD_MESSAGE_NOT_ID: [454, "Not id"],
-    BAD_MESSAGE_NOT_SIGNED: [413, "Body too big"],
+    BAD_MESSAGE_BODY_TOO_BIG: [413, "Body too big"],
     BAD_MESSAGE_BAD_SIGNATURE: [455, "Bad signature, dropping notification"]
   },
   UAWS: {
