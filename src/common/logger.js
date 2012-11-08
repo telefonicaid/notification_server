@@ -30,6 +30,21 @@ function logger() {
 }
 
 logger.prototype = {
+  // ANSI Colors (for the console output)
+  color_red: '\u001b[0;31m',
+  color_RED: '\u001b[1;31m',
+  color_green: '\u001b[0;32m',
+  color_GREEN: '\u001b[1;32m',
+  color_yellow: '\u001b[0;33m',
+  color_YELLOW: '\u001b[1;33m',
+  color_blue: '\u001b[0;34m',
+  color_BLUE: '\u001b[1;34m',
+  color_purple: '\u001b[0;35m',
+  color_PURPLE: '\u001b[1;35m',
+  color_cyan: '\u001b[0;36m',
+  color_CYAN: '\u001b[1;36m',
+  color_reset: '\u001b[0m',
+
   init: function(logfile, appname, consoleOutput) {
     this.logfile = fs.createWriteStream(logparams.BASE_PATH + logfile, { flags: 'a', encoding: null, mode: 0644 });
     this.appname = appname;
@@ -38,20 +53,20 @@ logger.prototype = {
     this.debug("logger::init --> Logger initialized!");
   },
 
-  log: function(level, message, trace, object) {
+  log: function(level, message, trace, color, object) {
     if(!this.logfile && !this.consoleOutput) {
       return;                                    // Log disabled
     }
 
     var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
     if(object) {
-      logmsg += " " + JSON.stringify(object);
+      logmsg += " " + this.color_PURPLE + JSON.stringify(object);
     }
 
     if(this.logfile)
       this.logfile.write(logmsg + "\n");
     if(this.consoleOutput) {
-      console.log(logmsg);
+      console.log(color + logmsg + this.color_reset);
       if(trace) {
         console.trace("logger::log --> Callstack:");
       }
@@ -63,40 +78,40 @@ logger.prototype = {
    */
   critical: function(message, object) {
     if (this.logLevel & loglevel.CRITICAL) {
-      this.log("CRITICAL", message, true, object);
+      this.log("CRITICAL", message, true, this.color_RED, object);
     }
-    this.log("CRITICAL", "WE HAVE A CRITICAL ERROR, WE ARE CLOSING!!!", false);
+    this.log("CRITICAL", "WE HAVE A CRITICAL ERROR, WE ARE CLOSING!!!", false, this.color_red);
     // We cannot continue our process, kill it!
     process.exit(1);
   },
 
   debug: function(message, object) {
     if (this.logLevel & loglevel.DEBUG) {
-      this.log("DEBUG", message, false, object);
+      this.log("DEBUG", message, false, this.color_cyan, object);
     }
   },
 
   info: function(message, object) {
     if (this.logLevel & loglevel.INFO) {
-      this.log("INFO", message, false, object);
+      this.log("INFO", message, false, this.color_green, object);
     }
   },
 
   error: function(message, object) {
     if (this.logLevel & loglevel.ERROR) {
-      this.log("ERROR", message, true, object);
+      this.log("ERROR", message, true, this.color_red, object);
     }
   },
 
   alert: function(message, object) {
     if (this.logLevel & loglevel.ALERT) {
-      this.log("ALERT", message, false, object);
+      this.log("ALERT", message, false, this.color_purple, object);
     }
   },
 
   notify: function(message, object) {
     if (this.logLevel & loglevel.NOTIFY) {
-      this.log("NOTIFY", message, false, object);
+      this.log("NOTIFY", message, false, this.color_yellow, object);
     }
   }
 };
