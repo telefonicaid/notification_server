@@ -13,7 +13,9 @@ var log = require("../common/logger"),
     uuid = require("node-uuid"),
     crypto = require("../common/cryptography"),
     msgBroker = require("../common/msgbroker"),
-    dataStore = require("../common/datastore");
+    dataStore = require("../common/datastore"),
+    errorcodes = require("../common/constants").errorcodes.GENERAL,
+    errorcodesAS = require("../common/constants").errorcodes.AS;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -26,7 +28,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     json = JSON.parse(notification);
   } catch (err) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid JSON notification');
-    return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
+    return callback(errorcodesAS.JSON_NOTVALID_ERROR);
   }
 
   //Get all attributes and save it to a new normalized notification
@@ -47,26 +49,26 @@ function onNewPushMessage(notification, apptoken, callback) {
   //Only accept notification messages
   if (normalizedNotification.messageType != "notification") {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
-    return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
+    return callback(errorcodesAS.BAD_MESSAGE_TYPE_NOT_NOTIFICATION);
   }
 
   //If not signed, reject
   if (!json.signature) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not signed');
-    return callback('{"status":"ERROR", "reason":"Not signed"}', 400);
+    return callback(errorcodesAS.BAD_MESSAGE_NOT_SIGNED);
   }
 
   //If not id, reject
   if (!normalizedNotification.id) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not id');
-    return callback('{"status":"ERROR", "reason":"Not id"}', 400);
+    return callback(errorcodesAS.BAD_MESSAGE_NOT_ID);
   }
 
   //Reject notifications with big attributes
   if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
       (normalizedNotification.id.length > consts.MAX_PAYLOAD_SIZE)) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
-    return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
+    return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
 
   //Get the PbK for the apptoken in the database
@@ -74,7 +76,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
     if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
       log.debug('NS_AS::onNewPushMessage --> Rejected. Bad signature, dropping notification');
-      return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_SIGNATURE);
     }
 
     var id = uuid.v1();
@@ -84,7 +86,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
     msgBroker.push("newMessages", msg);
-    return callback('{"status": "ACCEPTED"}', 200);
+    return callback(errorcodes.NO_ERROR);
   });
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,11 +160,24 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    response.res = function responseHTTP(errorCode) {
+      log.debug('NS_AS::responseHTTP: ', errorCode);
+      this.statusCode = errorCode[0];
+      this.setHeader("access-control-allow-origin", "*");
+      if(consts.PREPRODUCTION_MODE) {
+        this.setHeader("Content-Type", "text/plain");
+        if(this.statusCode == 200) {
+          this.write('{"status":"ACCEPTED"}');
+        } else {
+          this.write('{"status":"ERROR", "reason":"'+errorCode[1]+'"}');
+        }
+      }
+      return this.end();
+    }
+
     if (!this.ddbbready || !this.msgbrokerready) {
       log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
-      response.statusCode = 404;
-      response.write('{"status": "ERROR", "reason": "Try again later"}');
-      return response.end();
+      return response.res(errorcodes.NOT_READY);
     }
 
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
@@ -185,39 +200,31 @@ server.prototype = {
         response.write(text);
         return response.end();
       } else {
-        response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "Not allowed on production system"}');
-        return response.end();
+        return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
       }
       break;
 
     case 'notify':
       if (!url.token) {
         log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
-        response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "No valid apptoken"}');
-        return response.end();
+        return response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
+      }
+      if(request.method != 'POST') {
+        log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for notifications)');
+        return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
       }
 
       log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
       request.on("data", function(notification) {
-        onNewPushMessage(notification, url.token, function(body, code) {
-            response.statusCode = code;
-            response.setHeader("Content-Type", "text/plain");
-            response.setHeader("access-control-allow-origin", "*");
-            response.write(body);
-            return response.end();
+        onNewPushMessage(notification, url.token, function(err) {
+          response.res(err);
         });
       });
       break;
 
     default:
       log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
-      response.statusCode = 404;
-      response.setHeader("Content-Type", "text/plain");
-      response.setHeader("access-control-allow-origin", "*");
-      response.write('{"status": "ERROR", "reason": "Only notify by this interface"}');
-      return response.end();
+      return response.res(errorcodesAS.BAD_URL)
     }
   },
 
