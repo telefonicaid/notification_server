@@ -21,11 +21,11 @@ common.sendNotification(url, text, function(err, status, body, sentnotification)
     console.log('signature::onnotificationsent --> Test 1 - error: ' + err);
     correct = 0;
   }
-  if (status != 400) {
-    console.log('signature::onnotificationsent --> Test 1 - The status (should be 400) is ' + status);
+  if (status != 450) {
+    console.log('signature::onnotificationsent --> Test 1 - The status (should be 450) is ' + status);
     correct = 0;
   }
-  var expected = '{"status":"ERROR", "reason":"JSON not valid"}';
+  var expected = '{"status":"ERROR", "reason":"JSON not valid error"}';
   if (body != expected) {
     console.log('signature::onnotificationsent --> Test 1 - The body sent is not correct. Was ' + body + ', expected ' + expected);
     correct = 0;
@@ -46,8 +46,8 @@ common.sendNotification(url, text, function(err, status, body, sentnotification)
     console.log('signature::onnotificationsent --> Test 2 - error: ' + err);
     correct = 0;
   }
-  if (status != 400) {
-    console.log('signature::onnotificationsent --> Test 2 - The status (should be 400) is ' + status);
+  if (status != 452) {
+    console.log('signature::onnotificationsent --> Test 2 - The status (should be 452) is ' + status);
     correct = 0;
   }
   var expected = '{"status":"ERROR", "reason":"Not messageType=notification"}';
@@ -71,8 +71,8 @@ common.sendNotification(url, text, function(err, status, body, sentnotification)
     console.log('signature::onnotificationsent --> Test 3 - error: ' + err);
     correct = 0;
   }
-  if (status != 400) {
-    console.log('signature::onnotificationsent --> Test 3 - The status (should be 400) is ' + status);
+  if (status != 453) {
+    console.log('signature::onnotificationsent --> Test 3 - The status (should be 453) is ' + status);
     correct = 0;
   }
   var expected = '{"status":"ERROR", "reason":"Not signed"}';
