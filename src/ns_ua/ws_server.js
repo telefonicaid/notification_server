@@ -458,7 +458,6 @@ server.prototype = {
     this.onWSClose = function(reasonCode, description) {
       self.wsConnections--;
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected.');
-      return dataManager.unregisterNode(connection);
     };
 
     /**
