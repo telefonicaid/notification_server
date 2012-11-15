@@ -23,8 +23,7 @@ var MsgBroker = function() {
     self.queues = [];
     if (!Array.isArray(queuesConf)) queuesConf = [queuesConf];
     for (var i = queuesConf.length - 1; i >= 0; i--) {
-      var randomnumber = Math.floor(Math.random()*11);
-      setTimeout(self.createConnection, randomnumber, /*parameter*/ i);
+      setTimeout(self.createConnection, 5*i, /*parameter*/ i);
     }
   };
 
