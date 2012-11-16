@@ -1,5 +1,5 @@
-GIT ?= git
-NODE ?= node
+GIT = git
+NODE = node
 
 .PHONY = all
 
