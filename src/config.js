@@ -168,12 +168,14 @@ exports.NS_UA_WS = {
    * Be sure to know exactly what are you changing. Short keepaliveIntervals
    * on 3G networks causes a lot of signalling and also dropping too many connections
    * because timeouts on handset status change time.
+   * It's disabled because we do not want to track if we have an open connection
+   * with a client. It's the client who needs to keep track of it (with a PING message)
    */
   websocket_params: {
-    keepalive: true,
-    keepaliveInterval: 40000,
+    keepalive: false
+    /*keepaliveInterval: 40000,
     dropConnectionOnKeepaliveTimeout: true,
-    keepaliveGracePeriod: 30000
+    keepaliveGracePeriod: 30000*/
   }
 };
 
