@@ -216,6 +216,9 @@ server.prototype = {
 
       if (message.type === 'utf8') {
         log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
+        if (message.utf8Data == 'PING') {
+          return connection.sendUTF('PONG');
+        }
         var query = null;
         try {
           query = JSON.parse(message.utf8Data);
