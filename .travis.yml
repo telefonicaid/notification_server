@@ -19,15 +19,8 @@ before_install:
 script:
   - cd src
   - sudo nohup node start.js > /dev/null & # Start the server
-  - cd ..
-  - sleep 5 # Wait for everything to settle down
-  - npm test # Unit tests
-  - cd test
-  - cd functions
-  - node getToken.js # Get tokens test (via HTTP)
-  # Add more tests in between
-  - node notification.js # Test error codes and bodies while sending notifications
-  - node E2E.js # E2E test
+  - cd .. && sleep 5 # Wait for everything to start correctly
+  - make tests
 
 notifications:
    email:
