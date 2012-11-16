@@ -139,6 +139,15 @@ datamanager.prototype = {
   },
 
   /**
+   * Recover a list of WA associated to a UA
+   */
+  getApplicationsOnUA: function (uaToken, callback) {
+    // Recover from the persistent storage
+    var callbackParam = false;
+    dataStore.getApplicationsOnUA(uaToken, callback, callbackParam);
+  },
+
+  /**
    * Recover a message data and associated UAs
    */
   getMessage: function (id, callback, callbackParam) {

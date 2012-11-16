@@ -39,6 +39,7 @@ var Push = {
     this.registerAppButton2 = document.getElementById('buttonRegisterApp2');
     this.pullMessagesButton = document.getElementById('buttonPullMessages');
     this.unregisterAppButton1 = document.getElementById('buttonUnregisterApp1');
+    this.getRegisteredWAButton = document.getElementById('buttonGetRegisteredWA');
     this.logArea = document.getElementById('logarea');
     this.checkbox = document.getElementById('checkBox');
     this.ip = document.getElementById('ip');
@@ -56,6 +57,7 @@ var Push = {
     this.pullMessagesButton.addEventListener('click', this.pullMessages.bind(this));
     this.unregisterAppButton1.addEventListener('click', this.unregisterApp1.bind(this));
     this.clearButton.addEventListener('click', this.onclear.bind(this));
+    this.getRegisteredWAButton.addEventListener('click', this.onGetRegisteredWA.bind(this));
 
     this.logMessage('[INIT] Notification server: ' + this.ad);
   },
@@ -175,6 +177,12 @@ var Push = {
     }
   },
 
+  onGetRegisteredWA: function() {
+    var msg = '{"messageType":"getRegisteredWA"}';
+    this.logMessage('Preparing to send: ' + msg);
+    this.ws.connection.send(msg);
+  },
+
   onReceivedToken: function() {
     if (this.token === null) {
       return;
@@ -232,24 +240,24 @@ var Push = {
   onCloseWebsocket: function(e) {
     this.logMessage('[WS] Closed connection to ' + this.ad + ' with code ' + e.code + ' and reason ' + e.reason);
     this.ws.ready = false;
-        //HACK to reconnect
-        if (this.MAX_RETRIES > ++this.actualRetries) {
-          this.onReceivedToken();
-        } else {
-          this.logMessage('[WS] MAX_RETRIES reached. Stopping');
-        }
-      },
-
-    /**
-     * Logs every message from the websocket
-     */
-     logMessage: function(message) {
-      var msg = message + '</br>';
-      this.logArea.innerHTML += msg;
+    //HACK to reconnect
+    if (this.MAX_RETRIES > ++this.actualRetries) {
+      this.onReceivedToken();
+    } else {
+      this.logMessage('[WS] MAX_RETRIES reached. Stopping');
     }
-  };
+  },
 
-  window.addEventListener('load', function pushOnLoad(evt) {
-    window.removeEventListener('load', pushOnLoad);
-    Push.init();
-  });
+  /**
+   * Logs every message from the websocket
+   */
+  logMessage: function(message) {
+    var msg = message + '</br>';
+    this.logArea.innerHTML += msg;
+  }
+};
+
+window.addEventListener('load', function pushOnLoad(evt) {
+  window.removeEventListener('load', pushOnLoad);
+  Push.init();
+});
