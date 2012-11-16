@@ -1,3 +1,10 @@
+/**
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
+ * License: GNU Affero V3 (see LICENSE file)
+ * Fernando Rodríguez Sela <frsela@tid.es>
+ * Guillermo Lopez Leal <gll@tid.es>
+ */
 
 exports.loglevels = {
   // Log levels bitwise
@@ -7,8 +14,9 @@ exports.loglevels = {
   INFO: 4,
   ERROR: 8,
   NOTIFY: 16,
-  ALERT: 32
-}
+  ALERT: 32,
+  ALARM: 64
+};
 
 exports.errorcodes = {
   GENERAL: {
@@ -45,4 +53,4 @@ exports.errorcodes = {
     MESSAGETYPE_NOT_RECOGNIZED: [405, "messageType not recognized"],
     BINARY_MSG_NOT_SUPPORTED: [463, "Binary messages not yet supported"]
   }
-}
+};
