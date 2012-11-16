@@ -76,7 +76,7 @@ datamanager.prototype = {
   /**
    * Unregisters a Node from the DDBB and memory
    */
-  unregisterNode: function(connection) {
+  unregisterNode: function(connection, callback) {
     log.debug('dataManager::unregisterNode --> Going to unregister a node');
     var token = this.nodesConnections[helpers.getConnectionId(connection)];
     if (!token) {
@@ -96,6 +96,7 @@ datamanager.prototype = {
           } else {
             log.debug('dataManager::unregisterNode --> There was a problem deleting the token from the DDBB');
           }
+          return callback();
         }
       );
     }

@@ -277,6 +277,14 @@ server.prototype = {
             }.bind(this));
             break;
 
+          case "unregisterUA":
+            log.debug("WS::onWSMessage::unregisterUA -> UA unregistration message");
+            dataManager.unregisterNode(connection, function() {
+              log.debug("WS::onWSMessage::unregisterUA -> Closing connection");
+              connection.close();
+            });
+            break;
+
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
             // Close the connection if the
