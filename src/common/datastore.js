@@ -196,6 +196,29 @@ var DataStore = function() {
   },
 
   /**
+   * Recover a list of WA associated to a UA
+   */
+  this.getApplicationsForUA = function (uaToken, callbackFunc, callbackParam) {
+    // Get from MongoDB
+    log.debug("datastore::getApplicationsOnUA --> Going to find applications in UA: " + uaToken);
+    this.db.collection("apps", function(err, collection) {
+      if (!err) {
+        collection.find( { node: uaToken }, { _id: true } ).toArray(function(err,d) {
+          if(!err && callbackFunc && d) {
+            callbackFunc(d, callbackParam);
+          } else {
+            log.debug("datastore::getApplicationsOnUA --> Error finding applications from MongoDB: " + err);
+            callbackFunc(null, callbackParam);
+          }
+        });
+      } else {
+        log.error("datastore::getApplicationsOnUA --> there was a problem opening the apps collection");
+        callbackFunc(null, callbackParam);
+      }
+    });
+  },
+
+  /**
    * Gets an application node list
    */
   this.getApplication = function (token, callbackFunc, callbackParam) {
