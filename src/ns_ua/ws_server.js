@@ -433,6 +433,39 @@ server.prototype = {
             }
             break;
 
+          case "getRegisteredWA":
+            log.debug("WS::onWSMessage::getRegisteredWA --> Recovering list of registered WA");
+
+            if(!dataManager.getUAToken(connection)) {
+              log.debug("No UAToken found for this connection !");
+              connection.res({
+                errorcode: errorcodes.UATOKEN_NOTFOUND,
+                extradata: {
+                  'WATokens': [],
+                  messageType: "getRegisteredWA"
+                }
+              });
+              break;
+            }
+            dataManager.getApplicationsForUA(dataManager.getUAToken(connection),
+              function (d) {
+                log.debug("",d);
+                var URLs = [];
+                if(d) {
+                  d.forEach(function(appToken) {
+                    URLs.push(helpers.getNotificationURL(appToken._id));
+                  });
+                }
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    'WATokens': URLs,
+                    messageType: "getRegisteredWA"
+                  }
+                });
+              });
+            break;
+
           case "ack":
             if(query.messageId) {
               dataManager.removeMessage(query.messageId);
