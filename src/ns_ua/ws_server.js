@@ -451,23 +451,19 @@ server.prototype = {
             dataManager.getApplicationsForUA(dataManager.getUAToken(connection),
               function (d) {
                 log.debug("",d);
-                if(!d) {
-                  connection.res({
-                    errorcode: errorcodes.NO_ERROR,
-                    extradata: {
-                      'WATokens': [],
-                      messageType: "getRegisteredWA"
-                    }
-                  });
-                } else {
-                  connection.res({
-                    errorcode: errorcodes.NO_ERROR,
-                    extradata: {
-                      'WATokens': d,
-                      messageType: "getRegisteredWA"
-                    }
+                var URLs = [];
+                if(d) {
+                  d.forEach(function(appToken) {
+                    URLs.push(helpers.getNotificationURL(appToken._id));
                   });
                 }
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    'WATokens': URLs,
+                    messageType: "getRegisteredWA"
+                  }
+                });
               });
             break;
 
