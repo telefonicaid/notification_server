@@ -442,7 +442,7 @@ server.prototype = {
               connection.res({
                 errorcode: errorcodes.UATOKEN_NOTFOUND,
                 extradata: {
-                  'WATokens': {},
+                  'WATokens': [],
                   messageType: "getRegisteredWA"
                 }
               });
@@ -455,7 +455,7 @@ server.prototype = {
                   connection.res({
                     errorcode: errorcodes.NO_ERROR,
                     extradata: {
-                      'WATokens': {},
+                      'WATokens': [],
                       messageType: "getRegisteredWA"
                     }
                   });
