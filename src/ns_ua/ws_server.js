@@ -293,7 +293,6 @@ server.prototype = {
             }
 
             var pbkbase64 = query.data.pbkbase64;
-            //TODO: check if the pbk sent is valid. Issue 81
             if (!pbkbase64) {
               log.debug("WS::onWSMessage::registerWA --> Null pbk");
               //In this case, there is a problem, but there are no PbK. We just reject
