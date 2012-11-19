@@ -80,6 +80,7 @@ var DataStore = function() {
 
   /**
    * Unregister a node
+   * TODO: Unregister linked apps
    */
    this.unregisterNode = function(token, callback) {
     this.db.collection("nodes", function(err, collection) {

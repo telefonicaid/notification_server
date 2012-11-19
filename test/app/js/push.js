@@ -87,7 +87,9 @@ var Push = {
   },
 
   unregisterDevice: function() {
-    this.onDeleteToken();
+    var msg = '{"messageType":"unregisterUA" }';
+    this.logMessage('Preparing to send: ' + msg);
+    this.ws.connection.send(msg);
   },
 
   registerApp: function(uatoken, watoken, pbkbase64) {
