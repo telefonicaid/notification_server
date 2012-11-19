@@ -203,7 +203,7 @@ var DataStore = function() {
     log.debug("datastore::getApplicationsOnUA --> Going to find applications in UA: " + uaToken);
     this.db.collection("apps", function(err, collection) {
       if (!err) {
-        collection.find( { node: uaToken }, { _id:"" } ).toArray(function(err,d) {
+        collection.find( { node: uaToken }, { _id: true } ).toArray(function(err,d) {
           if(!err && callbackFunc && d) {
             callbackFunc(d, callbackParam);
           } else {
