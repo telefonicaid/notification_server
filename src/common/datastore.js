@@ -198,7 +198,7 @@ var DataStore = function() {
   /**
    * Recover a list of WA associated to a UA
    */
-  this.getApplicationsOnUA = function (uaToken, callbackFunc, callbackParam) {
+  this.getApplicationsForUA = function (uaToken, callbackFunc, callbackParam) {
     // Get from MongoDB
     log.debug("datastore::getApplicationsOnUA --> Going to find applications in UA: " + uaToken);
     this.db.collection("apps", function(err, collection) {

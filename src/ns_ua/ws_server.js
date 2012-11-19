@@ -448,7 +448,7 @@ server.prototype = {
               });
               break;
             }
-            dataManager.getApplicationsOnUA(dataManager.getUAToken(connection),
+            dataManager.getApplicationsForUA(dataManager.getUAToken(connection),
               function (d) {
                 log.debug("",d);
                 if(!d) {
