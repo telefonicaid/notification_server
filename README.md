@@ -39,9 +39,9 @@ The server could be allocated inside the MNO private network with two network in
 It's on [a wiki page](https://github.com/telefonicaid/notification_server/wiki/_pages), but that doesn't mean that it's updated. We are working on a document.
 
 ## Requirements / Dependencies
-* Node.JS (>= 0.8.x)
-* MongoDB (>= 2.2.x)
-* RabbitMQ (>= 2.8.x) (with AMQP protocol active)
+* [Node.JS (>= 0.8.x)](http://nodejs.org/)
+* [MongoDB (>= 2.2.x)](http://www.mongodb.org/)
+* [RabbitMQ (>= 2.8.x)](http://www.rabbitmq.com/) (with AMQP protocol active)
 
 ### Node.JS Modules (```npm install <module>```)
 * [node-uuid (1.3.x)](https://github.com/broofa/node-uuid)
