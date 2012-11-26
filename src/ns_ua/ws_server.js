@@ -10,6 +10,8 @@ var log = require("../common/logger.js"),
     WebSocketServer = require('websocket').server,
     https = require('https'),
     fs = require('fs'),
+    numCPUs = require('os').cpus().length,
+    cluster = require('cluster'),
     crypto = require("../common/cryptography.js"),
     dataManager = require("./datamanager.js"),
     Connectors = require("./connectors/connector_base.js").getConnectorFactory(),
@@ -50,6 +52,30 @@ function onNewMessage(message) {
     }
   });
 }
+
+function onNodeRegistered(ok) {
+  if (ok) {
+    //this is connection
+    this.res({
+      errorcode: errorcodes.NO_ERROR,
+      extradata: {
+        messageType: "registerUA",
+        status: "REGISTERED",
+        WATokens: {
+
+        }
+      }
+    });
+    log.debug("WS::onWSMessage --> OK register UA");
+  } else {
+    this.res({
+      errorcode: errorcodesWS.FAILED_REGISTERUA,
+      extradata: { messageType: "registerUA" }
+    });
+    log.debug("WS::onWSMessage --> Failing registering UA");
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 function server(ip, port) {
@@ -65,54 +91,65 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
-    // Create a new HTTP Server
-    var options = {
-      key: fs.readFileSync(consts.key),
-      cert: fs.readFileSync(consts.cert)
-    };
-    this.server = https.createServer(options, this.onHTTPMessage.bind(this));
-    this.server.listen(this.port, this.ip);
-    log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ":" + this.port);
 
-    // Websocket init
-    this.wsServer = new WebSocketServer({
-      httpServer: this.server,
-      keepalive: config.websocket_params.keepalive,
-      keepaliveInterval: config.websocket_params.keepaliveInterval,
-      dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
-      keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
-      autoAcceptConnections: false    // false => Use verify originIsAllowed method
-    });
-    this.wsServer.on('request', this.onWSRequest.bind(this));
+    if (cluster.isMaster) {
+      // Fork workers.
+      for (var i = 0; i < numCPUs; i++) {
+        cluster.fork();
+      }
 
-    // Subscribe to my own Queue
-    var self = this;
-    msgBroker.on('brokerconnected', function() {
-      var args = {
-        durable: false,
-        autoDelete: true,
-        arguments: {
-          'x-ha-policy': 'all'
-        }
+      cluster.on('exit', function(worker, code, signal) {
+        console.log('worker ' + worker.process.pid + ' died');
+      });
+    } else {
+      // Create a new HTTP Server
+      var options = {
+        key: fs.readFileSync(consts.key),
+        cert: fs.readFileSync(consts.cert)
       };
-      msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
-      self.ready = true;
-    });
-    msgBroker.on('brokerdisconnected', function() {
-      log.critical('ns_ws::init --> Broker DISCONNECTED!!');
-    });
+      this.server = https.createServer(options, this.onHTTPMessage.bind(this));
+      this.server.listen(this.port, this.ip);
+      log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ":" + this.port);
 
-    //Connect to msgBroker
-    setTimeout(function() {
-      msgBroker.init();
-    }, 10);
+      // Websocket init
+      this.wsServer = new WebSocketServer({
+        httpServer: this.server,
+        keepalive: config.websocket_params.keepalive,
+        keepaliveInterval: config.websocket_params.keepaliveInterval,
+        dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
+        keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
+        autoAcceptConnections: false    // false => Use verify originIsAllowed method
+      });
+      this.wsServer.on('request', this.onWSRequest.bind(this));
 
-    //Check if we are alive
-    setTimeout(function() {
-      if (!self.ready)
-        log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30*1000); //Wait 30 seconds
+      // Subscribe to my own Queue
+      var self = this;
+      msgBroker.on('brokerconnected', function() {
+        var args = {
+          durable: false,
+          autoDelete: true,
+          arguments: {
+            'x-ha-policy': 'all'
+          }
+        };
+        msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
+        self.ready = true;
+      });
+      msgBroker.on('brokerdisconnected', function() {
+        log.critical('ns_ws::init --> Broker DISCONNECTED!!');
+      });
 
+      //Connect to msgBroker
+      process.nextTick(function() {
+        msgBroker.init();
+      });
+
+      //Check if we are alive
+      setTimeout(function() {
+        if (!self.ready)
+          log.critical('30 seconds has passed and we are not ready, closing');
+      }, 30*1000); //Wait 30 seconds
+    }
   },
 
   //////////////////////////////////////////////
@@ -137,7 +174,7 @@ server.prototype = {
         }
       }
       return this.end();
-    }
+    };
 
     var text = null;
     if (!this.ready) {
@@ -149,36 +186,36 @@ server.prototype = {
 
       log.debug("WS::onHTTPMessage --> Parsed URL:", url);
       switch (url.messageType) {
-      case 'token':
-        text = token.get();
-        this.tokensGenerated++;
-        return response.res(errorcodes.NO_ERROR, text);
-        break;
-
-      case 'about':
-        if(consts.PREPRODUCTION_MODE) {
-          try {
-            var fs = require("fs");
-            text = "Push Notification Server (User Agent Frontend)<br />";
-            text += "&copy; Telef&oacute;nica Digital, 2012<br />";
-            text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
-            text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
-            text += "<ul>";
-            text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
-            text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
-            text += "</ul>";
-          } catch(e) {
-            text = "No version.info file";
-          }
+        case 'token':
+          text = token.get();
+          this.tokensGenerated++;
           return response.res(errorcodes.NO_ERROR, text);
-        } else {
-          return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
-        }
-        break;
+          break;
 
-      default:
-        log.debug("WS::onHTTPMessage --> messageType not recognized");
-        return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
+        case 'about':
+          if(consts.PREPRODUCTION_MODE) {
+            try {
+              var fs = require("fs");
+              text = "Push Notification Server (User Agent Frontend)<br />";
+              text += "&copy; Telef&oacute;nica Digital, 2012<br />";
+              text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
+              text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
+              text += "<ul>";
+              text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
+              text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
+              text += "</ul>";
+            } catch(e) {
+              text = "No version.info file";
+            }
+            return response.res(errorcodes.NO_ERROR, text);
+          } else {
+            return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+          }
+          break;
+
+        default:
+          log.debug("WS::onHTTPMessage --> messageType not recognized");
+          return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
       }
     }
   },
@@ -243,7 +280,7 @@ server.prototype = {
               return connection.close();
             }
             // New UA registration
-            Connectors.getConnector(query.data, connection, function(err,c) {
+            Connectors.getConnector(query.data, connection, function(err, connector) {
               if(err) {
                   connection.res({
                     errorcode: errorcodesWS.ERROR_GETTING_CONNECTOR,
@@ -251,29 +288,7 @@ server.prototype = {
                   });
                   return log.error("WS::onWSMessage --> Error getting connection object");
               }
-
-              dataManager.registerNode(
-                query.data.uatoken,
-                c,
-                function(ok) {
-                  if (ok) {
-                    connection.res({
-                      errorcode: errorcodes.NO_ERROR,
-                      extradata: {
-                        messageType: "registerUA",
-                        status: "REGISTERED"
-                      }
-                    });
-                    log.debug("WS::onWSMessage --> OK register UA");
-                  } else {
-                    connection.res({
-                      errorcode: errorcodesWS.FAILED_REGISTERUA,
-                      extradata: { messageType: "registerUA" }
-                    });
-                    log.debug("WS::onWSMessage --> Failing registering UA");
-                  }
-                }
-              );
+              return dataManager.registerNode(query.data.uatoken, connector, onNodeRegistered.bind(connection));
             }.bind(this));
             break;
 
