@@ -23,36 +23,7 @@ var MsgBroker = function() {
     self.queues = [];
     if (!Array.isArray(queuesConf)) queuesConf = [queuesConf];
     for (var i = queuesConf.length - 1; i >= 0; i--) {
-      var conn = amqp.createConnection({
-        port: queuesConf[i].port,
-        host: queuesConf[i].host,
-        login: queuesConf[i].login,
-        password: queuesConf[i].password
-      });
-
-      // Events for this queue
-      conn.on('ready', (function() {
-        log.info("msgbroker::queue.ready --> Connected to one Message Broker");
-        self.queues.push(conn);
-        self.emit('queueconnected');
-      }));
-
-      conn.on('close', (function() {
-        log.error('msgbroker::queue --> one message broker disconnected!!!');
-        self.emit('queuedisconnected');
-        var index = self.queues.indexOf(conn);
-        if (index >= 0) {
-          self.queues.splice(index, 1);
-        }
-      }));
-
-      conn.on('error', (function(error) {
-        log.error('msgbroker::queue.onerror --> There was an error in one of the connections: ' + error);
-        var index = self.queues.indexOf(conn);
-        if (index >= 0) {
-          self.queues.splice(index, 1);
-        }
-      }));
+      setTimeout(self.createConnection, 5*i, /*parameter*/ i);
     }
   };
 
@@ -108,6 +79,39 @@ var MsgBroker = function() {
         sent = true;
       }
     });
+  };
+
+  this.createConnection = function(i) {
+    var conn = amqp.createConnection({
+      port: queuesConf[i].port,
+      host: queuesConf[i].host,
+      login: queuesConf[i].login,
+      password: queuesConf[i].password
+    });
+
+    // Events for this queue
+    conn.on('ready', (function() {
+      log.info("msgbroker::queue.ready --> Connected to one Message Broker");
+      self.queues.push(conn);
+      self.emit('queueconnected');
+    }));
+
+    conn.on('close', (function() {
+      log.error('msgbroker::queue --> one message broker disconnected!!!');
+      self.emit('queuedisconnected');
+      var index = self.queues.indexOf(conn);
+      if (index >= 0) {
+        self.queues.splice(index, 1);
+      }
+    }));
+
+    conn.on('error', (function(error) {
+      log.error('msgbroker::queue.onerror --> There was an error in one of the connections: ' + error);
+      var index = self.queues.indexOf(conn);
+      if (index >= 0) {
+        self.queues.splice(index, 1);
+      }
+    }));
   };
 };
 

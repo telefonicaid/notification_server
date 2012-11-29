@@ -216,6 +216,9 @@ server.prototype = {
 
       if (message.type === 'utf8') {
         log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
+        if (message.utf8Data == 'PING') {
+          return connection.sendUTF('PONG');
+        }
         var query = null;
         try {
           query = JSON.parse(message.utf8Data);
@@ -274,6 +277,14 @@ server.prototype = {
             }.bind(this));
             break;
 
+          case "unregisterUA":
+            log.debug("WS::onWSMessage::unregisterUA -> UA unregistration message");
+            dataManager.unregisterNode(connection, function() {
+              log.debug("WS::onWSMessage::unregisterUA -> Closing connection");
+              connection.close();
+            });
+            break;
+
           case "registerWA":
             log.debug("WS::onWSMessage::registerWA --> Application registration message");
             // Close the connection if the
@@ -290,7 +301,6 @@ server.prototype = {
             }
 
             var pbkbase64 = query.data.pbkbase64;
-            //TODO: check if the pbk sent is valid. Issue 81
             if (!pbkbase64) {
               log.debug("WS::onWSMessage::registerWA --> Null pbk");
               //In this case, there is a problem, but there are no PbK. We just reject
@@ -429,6 +439,39 @@ server.prototype = {
                 return;
               });
             }
+            break;
+
+          case "getRegisteredWA":
+            log.debug("WS::onWSMessage::getRegisteredWA --> Recovering list of registered WA");
+
+            if(!dataManager.getUAToken(connection)) {
+              log.debug("No UAToken found for this connection !");
+              connection.res({
+                errorcode: errorcodes.UATOKEN_NOTFOUND,
+                extradata: {
+                  'WATokens': [],
+                  messageType: "getRegisteredWA"
+                }
+              });
+              break;
+            }
+            dataManager.getApplicationsForUA(dataManager.getUAToken(connection),
+              function (d) {
+                log.debug("",d);
+                var URLs = [];
+                if(d) {
+                  d.forEach(function(appToken) {
+                    URLs.push(helpers.getNotificationURL(appToken._id));
+                  });
+                }
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    'WATokens': URLs,
+                    messageType: "getRegisteredWA"
+                  }
+                });
+              });
             break;
 
           case "ack":

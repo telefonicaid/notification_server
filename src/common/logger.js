@@ -21,6 +21,7 @@ var fs = require('fs'),
  *          notification that should be investigated
  * # NOTIFY: General notifications, ie. New connections
  * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
+ * # ALARM: When we need to raise a problem. Will be written in a separate file
  */
 
 function logger() {
@@ -47,6 +48,7 @@ logger.prototype = {
 
   init: function(logfile, appname, consoleOutput) {
     this.logfile = fs.createWriteStream(logparams.BASE_PATH + logfile, { flags: 'a', encoding: null, mode: 0644 });
+    this.logfilealarm = fs.createWriteStream(logparams.ALARM, { flags: 'a', encoding: null, mode: 0644 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
     this.log("START", "---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------", false);
@@ -54,8 +56,9 @@ logger.prototype = {
   },
 
   log: function(level, message, trace, color, object) {
+     // Log disabled
     if(!this.logfile && !this.consoleOutput) {
-      return;                                    // Log disabled
+      return;
     }
 
     var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
@@ -63,8 +66,12 @@ logger.prototype = {
       logmsg += " " + this.color_PURPLE + JSON.stringify(object);
     }
 
-    if(this.logfile)
+    if(this.logfilealarm && level === 'ALARM') {
+      this.logfilealarm.write(logmsg + "\n");
+    } else if(this.logfile) {
       this.logfile.write(logmsg + "\n");
+    }
+
     if(this.consoleOutput) {
       console.log(color + logmsg + this.color_reset);
       if(trace) {
@@ -112,6 +119,12 @@ logger.prototype = {
   notify: function(message, object) {
     if (this.logLevel & loglevel.NOTIFY) {
       this.log("NOTIFY", message, false, this.color_yellow, object);
+    }
+  },
+
+  alarm: function(message, object) {
+    if (this.logLevel & loglevel.ALARM) {
+      this.log("ALARM", message, true, this.color_RED, object);
     }
   }
 };
