@@ -75,7 +75,7 @@ exports.allDifferents = function allDifferents(l) {
   return true;
 };
 
-var DEBUG = false;
+var DEBUG = true;
 debug = function(text) {
   if (DEBUG) {
     console.log(text);

@@ -123,9 +123,9 @@ server.prototype = {
     });
 
     // Subscribe to the UDP common Queue
-    setTimeout(function() {
+    process.nextTick(function() {
       msgBroker.init();
-    }, 10);
+    });
 
     //Check if we are alive
     setTimeout(function() {
@@ -135,15 +135,12 @@ server.prototype = {
 
   },
 
-  stop: function(callback) {
+  stop: function() {
     this.ready = false;
     log.info("NS_UDP:stop --> Closing UDP server");
 
     //Closing connection with msgBroker
     msgBroker.close();
-
-    //Calling the callback (no error)
-    callback(null);
   }
 };
 
