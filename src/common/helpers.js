@@ -6,9 +6,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var publicBaseURL = require('../config.js').consts.publicBaseURL;
-var uuid = require("node-uuid");
-var crypto = require("../common/cryptography.js");
+var publicBaseURL = require('../config.js').consts.publicBaseURL,
+    uuid = require("node-uuid"),
+    crypto = require("../common/cryptography.js"),
+    exec = require('child_process').exec;
 
 /**
  * Gets the public notification URL for the given apptoken
@@ -36,10 +37,17 @@ function getAppToken(watoken, pbkbase64) {
 exports.getAppToken = getAppToken;
 
 function padNumber(number,len) {
-    var str = '' + number;
-    while (str.length < len) {
-        str = '0' + str;
-    }
-    return str;
+  var str = '' + number;
+  while (str.length < len) {
+      str = '0' + str;
+  }
+  return str;
 }
 exports.padNumber = padNumber;
+
+function getMaxFileDescriptors(cb) {
+  exec("ulimit -n", function(error,stdout,stderr) {
+    cb(error,stdout);
+  });
+}
+exports.getMaxFileDescriptors = getMaxFileDescriptors;
