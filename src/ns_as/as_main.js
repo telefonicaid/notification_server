@@ -24,10 +24,10 @@ NS_AS_main.prototype = {
     log.info("NS_AS::start --> server starting");
   },
 
-  stop: function(callback) {
+  stop: function() {
     log.info("NS_AS::stop --> server stopping");
     (this.servers).forEach(function(server) {
-      server.stop(callback);
+      server.stop();
     });
   }
 };

@@ -18,18 +18,6 @@ function getNotificationURL(apptoken) {
 }
 exports.getNotificationURL = getNotificationURL;
 
-/**
- * Gets a unique connection ID from a connection object
- */
-function getConnectionId(connection) {
-  if( typeof connection.__uniqueid == "undefined" ) {
-    connection.__uniqueid = uuid.v1();
-  }
-
-  return connection.__uniqueid;
-}
-exports.getConnectionId = getConnectionId;
-
 function getAppToken(watoken, pbkbase64) {
   return crypto.hashSHA256(watoken + pbkbase64);
 }

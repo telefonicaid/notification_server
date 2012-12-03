@@ -26,10 +26,10 @@ NS_WakeUp_main.prototype = {
     log.info("NS_WakeUp server starting");
   },
 
-  stop: function(callback) {
+  stop: function() {
     log.info("NS_WakeUp server stopping");
     (this.servers).forEach(function(server) {
-      server.stop(callback);
+      server.stop();
     });
   }
 };

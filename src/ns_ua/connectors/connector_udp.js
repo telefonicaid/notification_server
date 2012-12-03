@@ -8,9 +8,9 @@
 
 var dgram = require('dgram');
 
-function connector_udp(data,conn) {
+function connector_udp(data, connection) {
   this.data = data;
-  this.connection = conn;
+  this.connection = connection;
   this.connection.close();
 }
 

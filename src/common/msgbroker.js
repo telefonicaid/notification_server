@@ -12,42 +12,45 @@ var amqp = require('amqp'),
     events = require("events"),
     util = require("util");
 
+var gControlledClose = false;
+
 var MsgBroker = function() {
   events.EventEmitter.call(this);
-  var self = this;
+  this.queues = [];
 
   this.init = function() {
     log.info('msgBroker::queue.init --> Connecting to the queue servers');
 
     //Create connection to the broker
-    self.queues = [];
     if (!Array.isArray(queuesConf)) queuesConf = [queuesConf];
     for (var i = queuesConf.length - 1; i >= 0; i--) {
-      setTimeout(self.createConnection, 5*i, /*parameter*/ i);
+      process.nextTick(this.createConnection.bind(this, i));
     }
   };
 
   // Get some events love
-  this.on('queueconnected', function() {
-    log.debug('msgBroker::queueconnected --> New queue connected, we have ' + self.queues.length + ' connections opened');
-    if (self.queues.length === 1) {
-      self.emit('brokerconnected');
+  this.on('queueconnected', (function() {
+    log.debug('msgBroker::queueconnected --> New queue connected, we have ' + this.queues.length + ' connections opened');
+    if (this.queues.length === 1) {
+      this.emit('brokerconnected');
     }
-  });
+  }).bind(this));
 
-  this.on('queuedisconnected', function() {
-    log.debug('msgBroker::queuedisconnected --> Queue disconnected, we have  ' + self.queues.length + ' connections opened');
-    if (!self.queues.length) {
-      self.emit('brokerdisconnected');
-      self.close();
+  this.on('queuedisconnected', (function() {
+    log.debug('msgBroker::queuedisconnected --> Queue disconnected, we have  ' + this.queues.length + ' connections opened');
+    if (!this.queues.length) {
+      if (!gControlledClose) this.emit('brokerdisconnected');
+      this.close();
     }
-  });
+  }).bind(this));
 
-  this.close = function() {
-    for (var i = self.queues.length - 1; i >= 0; i--) {
-      if (self.queues[i].queue) self.queues[i].end();
-      delete self.queues[i];
-    }
+  this.close = function(controlled) {
+    gControlledClose = true;
+    this.queues.forEach(function(element) {
+      if (element.queue) {
+        element.end();
+      }
+    });
     log.info('msgbroker::close --> Closing connection to msgBroker');
   };
 
@@ -92,26 +95,28 @@ var MsgBroker = function() {
     // Events for this queue
     conn.on('ready', (function() {
       log.info("msgbroker::queue.ready --> Connected to one Message Broker");
-      self.queues.push(conn);
-      self.emit('queueconnected');
-    }));
+      this.queues.push(conn);
+      this.emit('queueconnected');
+    }).bind(this));
 
     conn.on('close', (function() {
-      log.error('msgbroker::queue --> one message broker disconnected!!!');
-      self.emit('queuedisconnected');
-      var index = self.queues.indexOf(conn);
-      if (index >= 0) {
-        self.queues.splice(index, 1);
+      if (!gControlledClose) {
+        this.emit('queuedisconnected');
+        log.error('msgbroker::queue --> one message broker disconnected!!!');
       }
-    }));
+      var index = this.queues.indexOf(conn);
+      if (index >= 0) {
+        this.queues.splice(index, 1);
+      }
+    }).bind(this));
 
     conn.on('error', (function(error) {
       log.error('msgbroker::queue.onerror --> There was an error in one of the connections: ' + error);
-      var index = self.queues.indexOf(conn);
+      var index = this.queues.indexOf(conn);
       if (index >= 0) {
-        self.queues.splice(index, 1);
+        this.queues.splice(index, 1);
       }
-    }));
+    }).bind(this));
   };
 };
 

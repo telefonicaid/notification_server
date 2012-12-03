@@ -44,9 +44,9 @@ monitor.prototype = {
     });
 
     // Connect to the message broker
-    setTimeout(function() {
+    process.nextTick(function() {
       msgBroker.init();
-    }, 10);
+    });
 
     // Check if we are alive
     setTimeout(function() {
@@ -55,10 +55,9 @@ monitor.prototype = {
     }, 30*1000); //Wait 30 seconds
   },
 
-  stop: function(callback) {
+  stop: function() {
     msgBroker.close();
     dataStore.close();
-    callback(null);
   }
 };
 
@@ -101,7 +100,10 @@ function onNewMessage(msg) {
   dataStore.getApplication(json.watoken.toString(), onApplicationData, json);
 }
 
-function onApplicationData(appData, json) {
+function onApplicationData(error, appData, json) {
+  if (error) {
+    return log.error("MSG_mon::onApplicationData --> There was an error");
+  }
   if (!appData || !appData.node) {
     log.debug("No node or application detected. Message removed ! -",json);
     dataStore.removeMessage(json._id);
@@ -115,24 +117,27 @@ function onApplicationData(appData, json) {
   });
 }
 
-function onNodeData(nodeData, json) {
+function onNodeData(error, nodeData, json) {
+  if (error) {
+    return log.error("MSG_mon::onNodeData --> Unexpected error: " + err);
+  }
   if (!nodeData) {
-    return log.debug("No node info found!");
+    return log.debug("MSG_mon::onNodeData --> No node info found!");
   }
 
-  log.debug("MSG_mon::onNodeData --> Node data recovered:", nodeData);
-  log.notify("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
-  var body = {
-    "messageId": json._id,
-    "uatoken": nodeData._id,
-    "data": nodeData.data,
-    "payload": json
-  };
-  msgBroker.push(
-    nodeData.serverId,
-    body
-  );
+  if (nodeData.connected !== 0) {
+    log.debug("MSG_mon::onNodeData --> Node connected:", nodeData);
+    log.notify("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
+    var body = {
+      "messageId": json._id,
+      "uatoken": nodeData._id,
+      "data": nodeData.data,
+      "payload": json
+    };
+    msgBroker.push(nodeData.serverId, body);
+  } else {
+    log.debug("MSG_mon::onNodeData --> Node recovered but not connected, just delaying");
+  }
 }
 
-// Exports
 exports.monitor = monitor;

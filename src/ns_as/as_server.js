@@ -72,7 +72,10 @@ function onNewPushMessage(notification, apptoken, callback) {
   }
 
   //Get the PbK for the apptoken in the database
-  dataStore.getPbkApplication(apptoken, function(pbkbase64) {
+  dataStore.getPbkApplication(apptoken, function(error, pbkbase64) {
+    if (error) {
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_SIGNATURE);
+    }
     var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
     if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
       log.debug('NS_AS::onNewPushMessage --> Rejected. Bad signature, dropping notification');
@@ -111,34 +114,34 @@ server.prototype = {
     this.server.listen(this.port, this.ip);
     log.info('NS_AS::init --> HTTP push AS server starting on ' + this.ip + ":" + this.port);
 
+    var self = this;
     // Events from msgBroker
     msgBroker.on('brokerconnected', function() {
       log.info("NS_AS::init --> MsgBroker ready and connected");
-      this.msgbrokerready = true;
-    }.bind(this));
+      self.msgbrokerready = true;
+    });
     msgBroker.on('brokerdisconnected', function() {
       log.critical("NS_AS::init --> MsgBroker DISCONNECTED!!");
-      this.msgbrokerready = false;
-    }.bind(this));
+      self.msgbrokerready = false;
+    });
 
     //Events from dataStore
     dataStore.on('ddbbconnected', function() {
       log.info("NS_AS::init --> DataStore ready and connected");
-      this.ddbbready = true;
-    }.bind(this));
+      self.ddbbready = true;
+    });
     dataStore.on('ddbbdisconnected', function() {
       log.critical("NS_AS::init --> DataStore DISCONNECTED!!");
-      this.ddbbready = false;
-    }.bind(this));
+      self.ddbbready = false;
+    });
 
     //Wait until we have setup our events listeners
-    setTimeout(function() {
+    process.nextTick(function() {
       msgBroker.init();
       dataStore.init();
-    }, 10);
+    });
 
     // Check if we are alive
-    var self = this;
     setTimeout(function() {
       if (!self.ddbbready || !self.msgbrokerready)
         log.critical('30 seconds has passed and we are not ready, closing');
@@ -146,13 +149,12 @@ server.prototype = {
 
   },
 
-  stop: function(callback) {
+  stop: function() {
     var self = this;
     this.server.close(function() {
       log.info('NS_AS::stop --> NS_AS closed correctly');
       self.ddbbready = false;
       self.msgbrokerready = false;
-      callback(null);
     });
   },
 
@@ -173,7 +175,7 @@ server.prototype = {
         }
       }
       return this.end();
-    }
+    };
 
     if (!this.ddbbready || !this.msgbrokerready) {
       log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');

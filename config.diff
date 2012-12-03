@@ -1,0 +1,51 @@
+diff --git a/src/config.js b/src/config.js
+index 67c893d..70257d7 100644
+--- a/src/config.js
++++ b/src/config.js
+@@ -78,19 +78,19 @@ exports.logger = {
+  * Choose your host, port and other self-explanatory options
+  */
+ exports.queue = [{
+-    host: '127.0.0.1',
++    host: 'owd-push-qa-be1.hi.inet',
+     port: 5672, //AMQP default port
+     login: 'guest',
+     password: 'guest'
+   },
+   {
+-    host: '127.0.0.1',
++    host: 'owd-push-qa-be1.hi.inet',
+     port: 5672, //AMQP default port
+     login: 'guest',
+     password: 'guest'
+   },
+   {
+-    host: '127.0.0.1',
++    host: 'owd-push-qa-be1.hi.inet',
+     port: 5672, //AMQP default port
+     login: 'guest',
+     password: 'guest'
+@@ -104,22 +104,13 @@ exports.queue = [{
+  */
+ 
+ //DDBB defaults to using MongoDB in a replicaset
+-/*exports.ddbbsettings = {
++exports.ddbbsettings = {
+   machines: [
+     ["owd-push-qa-be1", 27017],
+     ["owd-push-qa-be2", 27017]
+   ],
+   ddbbname: "push_notification_server",
+   replicasetName: "Server_Push"
+-};*/
+-
+-//DDBB defaults to use a single MongoDB instance
+-exports.ddbbsettings = {
+-  machines: [
+-    ["127.0.0.1", 27017]
+-  ],
+-  ddbbname: "push_notification_server",
+-  replicasetName: null
+ };
+ 
+ ////////////////////////////////////////////////////////////////////////
