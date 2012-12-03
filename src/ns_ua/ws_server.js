@@ -7,6 +7,7 @@
  */
 
 var log = require("../common/logger.js"),
+    urlparser = require('url'),
     WebSocketServer = require('websocket').server,
     https = require('https'),
     fs = require('fs'),
@@ -145,10 +146,7 @@ server.prototype = {
       return response.res(errorcodes.NOT_READY);
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
-      var url = this.parseURL(request.url);
-
-      log.debug("WS::onHTTPMessage --> Parsed URL:", url);
-      switch (url.messageType) {
+      switch (urlparser.parse(request.url,true).pathname.split("/")[1]) {
       case 'token':
         text = token.get();
         this.tokensGenerated++;
@@ -530,21 +528,6 @@ server.prototype = {
   ///////////////////////
   // Auxiliar methods
   ///////////////////////
-  parseURL: function(url) {
-    // TODO: Review logic of this method. Issue #65
-    var urlparser = require('url');
-    var data = {};
-    data.parsedURL = urlparser.parse(url,true);
-    var path = data.parsedURL.pathname.split("/");
-    data.messageType = path[1];
-    if(path.length > 2) {
-      data.token = path[2];
-    } else {
-      data.token = data.parsedURL.query.token;
-    }
-    return data;
-  },
-
   stop: function(callback) {
     log.info("WS::stop --> Closing WS server");
     //Server not ready
