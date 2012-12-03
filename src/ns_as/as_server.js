@@ -7,6 +7,7 @@
  */
 
 var log = require("../common/logger"),
+    urlparser = require('url'),
     consts = require("../config.js").consts,
     https = require('https'),
     fs = require('fs'),
@@ -181,9 +182,10 @@ server.prototype = {
     }
 
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
-    var url = this.parseURL(request.url);
-    log.debug("NS_AS::onHTTPMessage --> Parsed URL:", url);
-    switch (url.messageType) {
+    var url = urlparser.parse(request.url,true);
+    var path = url.pathname.split("/");
+    log.debug("NS_AS::onHTTPMessage --> Splitted URL path: ", path);
+    switch (path[1]) {
     case 'about':
       if(consts.PREPRODUCTION_MODE) {
         try {
@@ -205,7 +207,8 @@ server.prototype = {
       break;
 
     case 'notify':
-      if (!url.token) {
+      var token = path[2];
+      if (!token) {
         log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
         return response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
       }
@@ -214,35 +217,18 @@ server.prototype = {
         return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
       }
 
-      log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
+      log.debug("NS_AS::onHTTPMessage --> Notification for " + token);
       request.on("data", function(notification) {
-        onNewPushMessage(notification, url.token, function(err) {
+        onNewPushMessage(notification, token, function(err) {
           response.res(err);
         });
       });
       break;
 
     default:
-      log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
+      log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
       return response.res(errorcodesAS.BAD_URL)
     }
-  },
-
-  ///////////////////////
-  // Auxiliar methods
-  ///////////////////////
-  parseURL: function(url) {
-    var urlparser = require('url'),
-        data = {};
-    data.parsedURL = urlparser.parse(url,true);
-    var path = data.parsedURL.pathname.split("/");
-    data.messageType = path[1];
-    if(path.length > 2) {
-      data.token = path[2];
-    } else {
-      data.token = data.parsedURL.query.token;
-    }
-    return data;
   }
 };
 
