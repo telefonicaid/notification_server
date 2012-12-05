@@ -1,0 +1,36 @@
+Application Server
+------------------
+This server application emulates a third party server of a gaia's web application
+that sends push notifications to the app running on a Firefox OS device.
+
+This application is composed by one servlet and one web page.
+
+One servlet, called Register, is mapped to /ApplicationServer/register path and
+is responsible to listen for the requests of the mobile clients to perform two
+operations:
+
+1) Request the public key of the server.
+
+2) Provide the url to which the application server has to use to send the
+   notifications (notification server).
+
+If the client sends an URL parameter called 'push_url', then it will save the url to
+send push notifications. Else, it will return the public key.
+
+On the other hand, the Monitor.html web can be used to see which clients are registered
+and it allows to send push notification messages to the registered clients.
+
+So, the urls to access to the server are the following:
+
+- Retrieve the public key:     http://host:port/ApplicationServer/register
+- Register a notification URL: http://host:port/ApplicationServer/register?push_url=<URL>  
+- Access to monitor:           http://host:port/ApplicationServer/Monitor.html
+
+
+Configuration
+-------------
+- Place private and public keys in WEB-INF folder. Keys can be generated using the
+  key-generator.sh script.
+  
+- Configure the address of the machine where this server is running. It is configured
+  in WEB-INF/Monitor.js (var host = <host:port>).
