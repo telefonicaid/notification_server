@@ -15,21 +15,14 @@ var Push = {
 
   init: function() {
 
-navigator.mozPush.requestURL("sds","dssd");
-
     this.clearButton = document.getElementById('buttonClear');
     this.clearButton.addEventListener('click', function(){
-      debug("HOLALALALAAL");
       navigator.mozPush.getCurrentURL();
     });
 
-
- navigator.mozApps.getSelf().onsuccess = function getSelfCB(evt) {
-
+    navigator.mozApps.getSelf().onsuccess = function getSelfCB(evt) {
       var app = evt.target.result;
-
       app.launch('settings');
-
     };
 
     debug("Init");
@@ -44,10 +37,6 @@ navigator.mozPush.requestURL("sds","dssd");
     this.getURLButton = document.getElementById('buttonGetURL');
     this.clearButton = document.getElementById('buttonClear');
     this.logArea = document.getElementById('logarea');
-
-/*    this.registerAppButton.addEventListener('click', this.registerApp.bind(this));
-    this.getURLButton.addEventListener('click', this.getURL.bind(this));
-    this.clearButton.addEventListener('click', this.onclear.bind(this));*/
 
     try {
       // Register for messaging
@@ -80,7 +69,7 @@ navigator.mozPush.requestURL("sds","dssd");
       debug("watoken: " + this.watoken);
       debug("pbk: " + this.pbk);
 
-      if (this.watoken == null || this.pbk == null) {
+      if (!this.watoken || !this.pbk) {
         // Request watoken & public key to application server
         debug("Request watoken and public key to app server");
         var url = this.waurl + '/ApplicationServer/register';
@@ -237,6 +226,5 @@ window.addEventListener('load', function pushOnLoad(evt) {
 
 window.addEventListener('unload', function pushOnUnLoad(evt) {
   window.removeEventListener('unload', pushOnUnLoad);
-debug("bye byebyebeybeyebey");
   navigator.mozSetMessageHandler("push-notification", null);
 });
