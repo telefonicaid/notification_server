@@ -1,0 +1,38 @@
+{
+  "name": "Push",
+  "description": "Push Notifications",
+  "type": "certified",
+  "launch_path": "/index.html",
+  "developer": {
+    "name": "Fernando Rodriguez Sela, Guillermo López Leal, Alberto Crespell Perez",
+    "url": "https://pdihub.hi.inet/frsela/notification-server/"
+  },
+  "locales": {
+    "en-US": {
+      "name": "Push notifications",
+      "description": "Test app for push notifications"
+    },
+    "es": {
+      "name": "Notificaciones push",
+      "description": "Aplicación de pruebas para notificaciones push"
+    }
+  },
+  "default_locale": "en-US",
+  "icons": {
+    "120": "/style/icons/PushIcon.png"
+  },
+  "messages": ["push-notification"],
+  "activities": {
+    "notify": {
+      "filters": {
+        "type": "webpush/push"
+      },
+      "disposition": "window"
+    }
+  },
+  "permissions": {
+    "settings":{},
+    "systemXHR": {},
+    "mobileconnection":{}
+  }
+}
