@@ -25,6 +25,7 @@ import sun.misc.BASE64Encoder;
  * Servlet implementation class Monitor
  */
 @WebServlet(name = "Register",
+            loadOnStartup=2,
             urlPatterns = {"/register"},
             initParams={ @WebInitParam(name="public_key", value="/WEB-INF/public.pem"),
                          @WebInitParam(name="watoken", value="push_app"),
@@ -102,13 +103,7 @@ public class Register extends HttpServlet {
         }
 
         clients.add(value);
-        if(clientListener != null)
-          clientListener.onNewClientRegistered(value);
-        else{
-          clientListener = (RegistrationListener)getServletContext().getAttribute("clientListener");
-          if(clientListener != null)
-            clientListener.onNewClientRegistered(value);
-        }
+        clientListener.onNewClientRegistered(value);
       } catch (MalformedURLException e) {
         response.sendError(400, "Push_url malformed");
       }

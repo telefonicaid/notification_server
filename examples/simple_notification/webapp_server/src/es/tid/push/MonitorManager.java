@@ -41,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 @WebServlet(name = "Monitor",
+        loadOnStartup=1,
 	urlPatterns = {"/monitor"},
 	initParams={
 		@WebInitParam(name="private_key", value="/WEB-INF/private.pk8")})
@@ -68,10 +69,13 @@ public class MonitorManager extends WebSocketServlet{
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
 			e.printStackTrace();
 		}
+
+
+                clients = new ArrayList<String>();
+                getServletContext().setAttribute("registrations", clients);             
+               
+                connections = new HashMap<String, MessageManager>();
 		
-		clients = (ArrayList<String>)getServletContext().getAttribute("registrations");
-		connections = new HashMap<String, MessageManager>();
-		clientListener = (RegistrationListener)getServletContext().getAttribute("clientListener");
 		clientListener = new RegistrationListener() {
 			@Override
 			public void onNewClientRegistered(String url) {
