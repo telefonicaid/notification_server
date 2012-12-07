@@ -1,0 +1,10 @@
+#logArea {
+  border: blue 1px solid;
+  max-width: 50%;
+  float: right;
+}
+
+#notificationArea {
+  border: red 1px solid;
+  float: left;
+}
