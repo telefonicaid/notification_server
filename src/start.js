@@ -32,7 +32,7 @@ console.log(
  \n\
     You should have received a copy of the GNU Affero General Public License \n\
     along with this program.  If not, see <http://www.gnu.org/licenses/>. \n\
-\n\n\n\n");
+\n");
 
 // Show version
 try {
@@ -61,29 +61,29 @@ starts.forEach(function(child) {
   });
   started[child].start();
   started[child].on('exit', function() {
-    log.debug((child + ' has closed!'));
+    log.info((child + ' has closed!'));
   });
 });
 
 var closing = false;
 function closeChilds() {
+  closing = true;
   if (closing) {
     log.debug('NS::closeChilds --> We were closing, abort this signal');
     return;
   }
-  closing = true;
   log.debug('NS::closeChilds --> Kill signal on start.js, killing childs');
   started.forEach(function(child) {
     //Send the exit signal to childs (SIGINT)
     child.exit();
   });
+  log.info('NS::closeChilds --> Monitor has sent kill signals to every child, let\'s wait 10 seconds to say we are closed');
 
   //Wait for a safe time to close this parent.
   //This should be enough to every child to close correctly
   setInterval(function() {
-    log.info('NS::closeChilds --> Exiting monitor. Thanks for playing');
     process.exit();
-  }, 2000);
+  }, 10000);
 }
 
 process.on('SIGTERM', closeChilds);
