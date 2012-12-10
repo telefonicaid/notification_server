@@ -272,7 +272,29 @@ var DataStore = function() {
   },
 
   this.removeApplicationIfEmpty = function (appToken) {
-
+    this.db.collection('apps', function(err, collection) {
+      if (err) {
+        log.error("datastore::removeApplicationIfEmpty --> there was a problem opening the apps collection: " + err);
+        return;
+      }
+      collection.findAndModify(
+        {
+          _id: appToken,
+          no: { $size: 0 }
+        },
+        [], //Sort
+        {}, //Replacement
+        {
+          safe: false,
+          remove: true //Remove document
+        },
+        function(err, data) {
+          if (err) {
+            log.debug("datastore::removeApplicationIfEmpty --> Error removing application from apps: " + err);
+          }
+        }
+      );
+    });
   },
 
   /**
