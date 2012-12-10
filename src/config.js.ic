@@ -34,8 +34,8 @@ exports.consts = {
    * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
    */
 
-  key: '../test/scripts/server-key.pem',
-  cert: '../test/scripts/server-cert.pem',
+  key: '../examples/ssl_cert/server-key.pem',
+  cert: '../examples/ssl_cert/server-cert.pem',
 
   /**
    * Public base URL to receive notifications. This will be the base to
