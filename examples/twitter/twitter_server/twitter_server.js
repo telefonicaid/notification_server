@@ -29,7 +29,7 @@ twitter_server.prototype = {
   // Twitter client
   ///////////////////////////////////////////////////////////////////////////////
   init: function init() {
-    console.log("Connection with Twitter");
+    console.log("Connecting with Twitter");
     this.T = new t({
       consumer_key: config.twitter.consumer_key,
       consumer_secret: config.twitter.consumer_secret,
@@ -65,8 +65,7 @@ twitter_server.prototype = {
       path: config.pushserver.path,
       method: 'POST',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Content-Length': notif.length
+        'Content-Type': 'application/json; charset=utf-8'
       }
     };
 
