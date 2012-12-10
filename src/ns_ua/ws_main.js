@@ -11,6 +11,7 @@ var config = require('../config.js').NS_UA_WS,
 
 function NS_UA_WS_main() {
   this.servers = [];
+  this.controlledClose = false;
 }
 
 NS_UA_WS_main.prototype = {
@@ -29,11 +30,19 @@ NS_UA_WS_main.prototype = {
     log.info("NS_UA_WS server starting");
   },
 
-  stop: function(callback) {
-    log.info("NS_UA_WS server stopping");
-    for (var i = this.servers.length - 1; i >= 0; i--) {
-      this.servers[i].stop(callback);
+  stop: function() {
+    if (this.controlledClose) {
+      return;
     }
+    this.controlledClose = true;
+    log.info("NS_UA_WS server stopping");
+    this.servers.forEach(function(elem) {
+      elem.stop();
+    });
+
+    setTimeout(function() {
+      process.exit(0);
+    }, 10000);
   }
 };
 
