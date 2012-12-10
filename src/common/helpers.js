@@ -15,21 +15,9 @@ var publicBaseURL = require('../config.js').consts.publicBaseURL,
  * Gets the public notification URL for the given apptoken
  */
 function getNotificationURL(apptoken) {
-	return publicBaseURL + "/notify/" + apptoken;
+  return publicBaseURL + "/notify/" + apptoken;
 }
 exports.getNotificationURL = getNotificationURL;
-
-/**
- * Gets a unique connection ID from a connection object
- */
-function getConnectionId(connection) {
-  if( typeof connection.__uniqueid == "undefined" ) {
-    connection.__uniqueid = uuid.v1();
-  }
-
-  return connection.__uniqueid;
-}
-exports.getConnectionId = getConnectionId;
 
 function getAppToken(watoken, pbkbase64) {
   return crypto.hashSHA256(watoken + pbkbase64);
@@ -44,6 +32,14 @@ function padNumber(number,len) {
   return str;
 }
 exports.padNumber = padNumber;
+
+function checkCallback(callback) {
+  if (typeof callback !== 'function') {
+    callback = function() {};
+  }
+  return callback;
+}
+exports.checkCallback = checkCallback;
 
 function getMaxFileDescriptors(cb) {
   exec("ulimit -n", function(error,stdout,stderr) {

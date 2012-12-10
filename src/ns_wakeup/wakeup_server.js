@@ -34,10 +34,9 @@ server.prototype = {
     log.info('NS_WakeUp::init --> HTTP push WakeUp server starting on ' + this.ip + ":" + this.port);
   },
 
-  stop: function(callback) {
+  stop: function() {
     this.server.close(function() {
       log.info('NS_WakeUp::stop --> NS_WakeUp closed correctly');
-      callback(null);
     });
   },
 

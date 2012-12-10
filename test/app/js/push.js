@@ -37,7 +37,6 @@ var Push = {
     this.clearButton = document.getElementById('buttonClear');
     this.registerAppButton1 = document.getElementById('buttonRegisterApp1');
     this.registerAppButton2 = document.getElementById('buttonRegisterApp2');
-    this.pullMessagesButton = document.getElementById('buttonPullMessages');
     this.unregisterAppButton1 = document.getElementById('buttonUnregisterApp1');
     this.getRegisteredWAButton = document.getElementById('buttonGetRegisteredWA');
     this.logArea = document.getElementById('logarea');
@@ -54,7 +53,6 @@ var Push = {
     this.unregisterDeviceButton.addEventListener('click', this.unregisterDevice.bind(this));
     this.registerAppButton1.addEventListener('click', this.registerApp1.bind(this));
     this.registerAppButton2.addEventListener('click', this.registerApp2.bind(this));
-    this.pullMessagesButton.addEventListener('click', this.pullMessages.bind(this));
     this.unregisterAppButton1.addEventListener('click', this.unregisterApp1.bind(this));
     this.clearButton.addEventListener('click', this.onclear.bind(this));
     this.getRegisteredWAButton.addEventListener('click', this.onGetRegisteredWA.bind(this));
@@ -96,7 +94,7 @@ var Push = {
     var msg = '{"data": {"uatoken": "' + uatoken + '", "watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"registerWA" }';
     this.logMessage('Preparing to send: ' + msg);
 
-    if (this.checkbox.checked) {
+    if (this.ws.connection.readyState !== 1) {
       this.logMessage("[DEBUG] WS close ... I'll open it ...");
       this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
       this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
@@ -105,18 +103,17 @@ var Push = {
         this.logMessage('[REG] Application 1 registered');
         this.ws.connection.close();
       }).bind(this);
-    } else {
-      this.logMessage('[DEBUG] WS open');
-      this.ws.connection.send(msg);
-      this.logMessage('[REG] Application 1 registered');
+      return;
     }
+    this.ws.connection.send(msg);
+    this.logMessage('[REG] Application 1 registered');
   },
 
   unregisterApp: function(uatoken, watoken, pbkbase64) {
     var msg = '{"data": {"watoken": "' + watoken + '", "pbkbase64": "' + pbkbase64 + '"}, "messageType":"unregisterWA" }';
     this.logMessage('Preparing to send: ' + msg);
 
-    if (this.checkbox.checked) {
+    if (this.ws.connection.readyState !== 1) {
       this.logMessage("[DEBUG] WS close ... I'll open it ...");
       this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
       this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
@@ -125,11 +122,10 @@ var Push = {
         this.logMessage('[REG] Application 1 unregistered');
         this.ws.connection.close();
       }).bind(this);
-    } else {
-      this.logMessage('[DEBUG] WS open');
-      this.ws.connection.send(msg);
-      this.logMessage('[REG] Application 1 unregistered');
+      return;
     }
+    this.ws.connection.send(msg);
+    this.logMessage('[REG] Application 1 unregistered');
   },
 
   registerApp1: function() {
@@ -154,29 +150,6 @@ var Push = {
 
   registerApp2: function() {
     this.registerApp(this.token, 'app2', '');
-  },
-
-  pullMessages: function() {
-    var msg = '{"data": {"uatoken":"' + this.token + '" }, "messageType":"getAllMessages"}';
-
-    if (this.checkbox.checked) {
-      this.logMessage('[PULL] Starting to get all pending messages');
-      this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
-
-      this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
-      this.ws.connection.onclose = this.onCloseWebsocket.bind(this);
-      this.ws.connection.onerror = this.onCloseWebsocket.bind(this);
-
-      this.ws.connection.onopen = (function() {
-        this.ws.connection.onmessage = (function(e) {
-          this.logMessage('[MSG] message received --- ' + e.data);
-        }).bind(this);
-        this.ws.connection.send(msg);
-        this.logMessage('[PULL] Query sent');
-      }).bind(this);
-    } else {
-      this.logMessage('[PULL] Error, only for UDP clients');
-    }
   },
 
   onGetRegisteredWA: function() {
@@ -228,11 +201,6 @@ var Push = {
         this.ws.connection.send(ack);
       }
     }).bind(this);
-    setTimeout(function() {
-      var getAllMessages = '{"messageType": "getAllMessages", "data": {"uatoken":"' + Push.token +'" }}';
-      Push.logMessage('Going to getAllMessages');
-      Push.ws.connection.send(getAllMessages);
-    }, 1000);
   },
 
   onErrorWebsocket: function(e) {

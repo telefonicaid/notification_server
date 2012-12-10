@@ -26,9 +26,7 @@ MobileNetwork.prototype = {
   },
 
   getNetwork: function(mcc, mnc, callback) {
-    if(!callback) {
-      return log.debug("[MobileNetwork]: No callback method provided !");
-    }
+    callback = helpers.checkCallback(callback);
 
     var index = helpers.padNumber(mcc,3) + "-" + helpers.padNumber(mnc,2);
     var value = {};
@@ -37,21 +35,27 @@ MobileNetwork.prototype = {
     // Check if the network is in the cache
     if(value = this.cache[index]) {
       log.debug("[MobileNetwork] found on cache:", value);
-      return callback(value);
+      return callback(null, value);
     }
 
     // Check if the network if it's in the database and update cache
-    datastore.getOperator(mcc,mnc,function(d) {
-      if(d) {
-        log.debug("[MobileNetwork] found on database:", d);
-        this.cache[index] = d;
-        return callback(d);
+    datastore.getOperator(mcc, mnc, function(error, d) {
+      if (error) {
+        log.error('[MobileNetwork] --> error!! ' + error);
+        callback(error);
+        return;
       }
-      log.debug("[MobileNetwork] Not found on database");
-      return callback(null);
+      if (!d) {
+        log.debug("[MobileNetwork] Not found on database");
+        callback(null, null);
+        return;
+      }
+      log.debug("[MobileNetwork] found on database:", d);
+      this.cache[index] = d;
+      return callback(null, d);
     }.bind(this));
   }
-}
+};
 
 
 ///////////////////////////////////////////
