@@ -7,13 +7,13 @@
  */
 
 var log = require("../common/logger.js"),
-    urlparser = require('url'),
     WebSocketServer = require('websocket').server,
     https = require('https'),
     fs = require('fs'),
+    numCPUs = require('os').cpus().length,
+    cluster = require('cluster'),
     crypto = require("../common/cryptography.js"),
     dataManager = require("./datamanager.js"),
-    Connectors = require("./connectors/connector_base.js").getConnectorFactory(),
     token = require("../common/token.js"),
     helpers = require("../common/helpers.js"),
     msgBroker = require("../common/msgbroker.js"),
@@ -99,7 +99,6 @@ function server(ip, port) {
   this.ready = false;
   this.tokensGenerated = 0;
   this.wsConnections = 0;
-  this.wsMaxConnections = 1000;
 }
 
 server.prototype = {
@@ -107,62 +106,65 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
-    // Create a new HTTP Server
-    var options = {
-      key: fs.readFileSync(consts.key),
-      cert: fs.readFileSync(consts.cert)
-    };
-    this.server = https.createServer(options, this.onHTTPMessage.bind(this));
-    this.server.listen(this.port, this.ip);
-    log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ":" + this.port);
 
-    // Websocket init
-    this.wsServer = new WebSocketServer({
-      httpServer: this.server,
-      keepalive: config.websocket_params.keepalive,
-      keepaliveInterval: config.websocket_params.keepaliveInterval,
-      dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
-      keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
-      autoAcceptConnections: false    // false => Use verify originIsAllowed method
-    });
-    this.wsServer.on('request', this.onWSRequest.bind(this));
-
-    // Subscribe to my own Queue
-    var self = this;
-    msgBroker.on('brokerconnected', function() {
-      var args = {
-        durable: false,
-        autoDelete: true,
-        arguments: {
-          'x-ha-policy': 'all'
-        }
-      };
-      msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
-      self.ready = true;
-    });
-    msgBroker.on('brokerdisconnected', function() {
-      log.critical('ns_ws::init --> Broker DISCONNECTED!!');
-    });
-
-    //Connect to msgBroker
-    setTimeout(function() {
-      msgBroker.init();
-    }, 10);
-
-    //Check if we are alive
-    setTimeout(function() {
-      if (!self.ready)
-        log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30*1000); //Wait 30 seconds
-
-    // Check ulimit
-    helpers.getMaxFileDescriptors(function(error,ulimit) {
-      if(error) {
-        return log.error('ulimit error: ' + error);
+    if (cluster.isMaster) {
+      // Fork workers.
+      for (var i = 0; i < numCPUs; i++) {
+        cluster.fork();
       }
-      log.debug('ulimit = ' + ulimit);
-      this.wsMaxConnections = ulimit - 200;
-    }.bind(this));
+
+      cluster.on('exit', function(worker, code, signal) {
+        log.info('worker ' + worker.process.pid + ' died');
+      });
+    } else {
+      // Create a new HTTP Server
+      var options = {
+        key: fs.readFileSync(consts.key),
+        cert: fs.readFileSync(consts.cert)
+      };
+      this.server = https.createServer(options, this.onHTTPMessage.bind(this));
+      this.server.listen(this.port, this.ip);
+      log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ":" + this.port);
+
+      // Websocket init
+      this.wsServer = new WebSocketServer({
+        httpServer: this.server,
+        keepalive: config.websocket_params.keepalive,
+        keepaliveInterval: config.websocket_params.keepaliveInterval,
+        dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
+        keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
+        autoAcceptConnections: false    // false => Use verify originIsAllowed method
+      });
+      this.wsServer.on('request', this.onWSRequest.bind(this));
+
+      // Subscribe to my own Queue
+      var self = this;
+      msgBroker.on('brokerconnected', function() {
+        var args = {
+          durable: false,
+          autoDelete: true,
+          arguments: {
+            'x-ha-policy': 'all'
+          }
+        };
+        msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
+        self.ready = true;
+      });
+      msgBroker.on('brokerdisconnected', function() {
+        log.critical('ns_ws::init --> Broker DISCONNECTED!!');
+      });
+
+      //Connect to msgBroker
+      process.nextTick(function() {
+        msgBroker.init();
+      });
+
+      //Check if we are alive
+      setTimeout(function() {
+        if (!self.ready)
+          log.critical('30 seconds has passed and we are not ready, closing');
+      }, 30*1000); //Wait 30 seconds
+    }
   },
 
   //////////////////////////////////////////////
@@ -195,38 +197,40 @@ server.prototype = {
       return response.res(errorcodes.NOT_READY);
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
-      switch (urlparser.parse(request.url,true).pathname.split("/")[1]) {
-      case 'token':
-        text = token.get();
-        this.tokensGenerated++;
-        return response.res(errorcodes.NO_ERROR, text);
-        break;
+      var url = this.parseURL(request.url);
 
-      case 'about':
-        if(consts.PREPRODUCTION_MODE) {
-          try {
-            var fs = require("fs");
-            text = "Push Notification Server (User Agent Frontend)<br />";
-            text += "&copy; Telef&oacute;nica Digital, 2012<br />";
-            text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
-            text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
-            text += "<ul>";
-            text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
-            text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
-            text += "<li>Maximum Number of open connections to WS: " + this.wsMaxConnections + "</li>";
-            text += "</ul>";
-          } catch(e) {
-            text = "No version.info file";
-          }
+      log.debug("WS::onHTTPMessage --> Parsed URL:", url);
+      switch (url.messageType) {
+        case 'token':
+          text = token.get();
+          this.tokensGenerated++;
           return response.res(errorcodes.NO_ERROR, text);
-        } else {
-          return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
-        }
-        break;
+          break;
 
-      default:
-        log.debug("WS::onHTTPMessage --> messageType not recognized");
-        return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
+        case 'about':
+          if(consts.PREPRODUCTION_MODE) {
+            try {
+              var fs = require("fs");
+              text = "Push Notification Server (User Agent Frontend)<br />";
+              text += "&copy; Telef&oacute;nica Digital, 2012<br />";
+              text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
+              text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
+              text += "<ul>";
+              text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
+              text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
+              text += "</ul>";
+            } catch(e) {
+              text = "No version.info file";
+            }
+            return response.res(errorcodes.NO_ERROR, text);
+          } else {
+            return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+          }
+          break;
+
+        default:
+          log.debug("WS::onHTTPMessage --> messageType not recognized");
+          return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
       }
     }
   },
@@ -468,21 +472,12 @@ server.prototype = {
     ///////////////////////
     // Websocket creation
     ///////////////////////
-
-    // Check limits
-    if(this.wsConnections >= this.wsMaxConnections) {
-      log.debug('WS::onWSRequest --> Connection unaccepted. To many open connections');
-      return request.reject();
-    }
-
-    // Abuse controls
     if (!this.originIsAllowed(request.origin)) {
       // Make sure we only accept requests from an allowed origin
       log.debug('WS:: --> Connection from origin ' + request.origin + ' rejected.');
       return request.reject();
     }
 
-    // Connection accepted
     var connection = request.accept('push-notification', request.origin);
     this.wsConnections++;
     log.debug('WS::onWSRequest --> Connection accepted.');
@@ -493,17 +488,35 @@ server.prototype = {
   ///////////////////////
   // Auxiliar methods
   ///////////////////////
-  stop: function(callback) {
+  parseURL: function(url) {
+    // TODO: Review logic of this method. Issue #65
+    var urlparser = require('url');
+    var data = {};
+    data.parsedURL = urlparser.parse(url,true);
+    var path = data.parsedURL.pathname.split("/");
+    data.messageType = path[1];
+    if(path.length > 2) {
+      data.token = path[2];
+    } else {
+      data.token = data.parsedURL.query.token;
+    }
+    return data;
+  },
+
+  stop: function() {
+    if (cluster.isMaster) {
+      setTimeout(function() {
+        process.exit(0);
+      }, 10000);
+      return;
+    }
     log.info("WS::stop --> Closing WS server");
     //Server not ready
     this.ready = false;
     //Closing connection with msgBroker
     msgBroker.close();
     //Closing connections from the server
-    this.server.close(function() {
-      //Calling the callback
-      callback(null);
-    });
+    this.server.close();
   }
 };
 
