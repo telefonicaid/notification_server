@@ -8,7 +8,6 @@
 
 var log = require("../common/logger.js"),
     WebSocketServer = require('websocket').server,
-    https = require('https'),
     fs = require('fs'),
     numCPUs = require('os').cpus().length,
     cluster = require('cluster'),
@@ -93,9 +92,10 @@ function onNodeRegistered(error, data, uatoken) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function server(ip, port) {
+function server(ip, port, ssl) {
   this.ip = ip;
   this.port = port;
+  this.ssl = ssl;
   this.ready = false;
   this.tokensGenerated = 0;
   this.wsConnections = 0;
@@ -117,14 +117,19 @@ server.prototype = {
         log.info('worker ' + worker.process.pid + ' died');
       });
     } else {
-      // Create a new HTTP Server
-      var options = {
-        key: fs.readFileSync(consts.key),
-        cert: fs.readFileSync(consts.cert)
-      };
-      this.server = https.createServer(options, this.onHTTPMessage.bind(this));
+      // Create a new HTTP(S) Server
+      if(this.ssl) {
+        var options = {
+          key: fs.readFileSync(consts.key),
+          cert: fs.readFileSync(consts.cert)
+        };
+        this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
+      } else {
+        this.server = require('http').createServer(this.onHTTPMessage.bind(this));
+      }
       this.server.listen(this.port, this.ip);
-      log.info('WS::server::init --> HTTP push UA_WS server running on ' + this.ip + ":" + this.port);
+      log.info('WS::server::init --> HTTP' + (this.ssl ? 'S' : '') +
+        ' push UA_WS server running on ' + this.ip + ":" + this.port);
 
       // Websocket init
       this.wsServer = new WebSocketServer({

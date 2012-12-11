@@ -136,7 +136,8 @@ exports.NS_AS = {
   interfaces: [
     {
       ip: "0.0.0.0",
-      port: 8081
+      port: 8081,
+      ssl: true
     }
   ]
 };
@@ -160,7 +161,8 @@ exports.NS_UA_WS = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 8080
+      port: 8080,
+      ssl: false
     }
   ],
 
@@ -200,7 +202,8 @@ exports.NS_WakeUp = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 8090
+      port: 8090,
+      ssl: false
     }
   ]
 };
