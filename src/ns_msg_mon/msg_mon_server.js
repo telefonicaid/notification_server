@@ -71,33 +71,31 @@ function onNewMessage(msg) {
 
   /**
    * Messages are formed like this:
-   * { "messageId": "UUID",
-   *   "uatoken": "UATOKEN",
-   *   "data": {
-   *     "fillmein"
-   *   },
-   *   "payload": {
-   *      "_id": "internalMongoDBidentifier",
-   *      "watoken": "WATOKEN",
-   *      "payload": {
-   *        //Standard notification
-   *        "id",
-   *        "message": "original Payload",
-   *        "ttl",
-   *        "timestamp",
-   *        "priority",
-   *        "messageId": "equals the first messageId",
-   *        "url": URL_TO_PUSH
+   *      {
+   *        messageId,
+   *        uatoken,
+   *        dt: {
+   *          interface,
+   *          mobilenetwork,
+   *          protocol
+   *        }
+   *        payload: {
+   *          messageType: 'notification',
+   *          id,
+   *          message,
+   *          ttl,
+   *          timestamp,
+   *          priority,
+   *          messageId,
+   *          appToken
    *     }
-   *   }
-   * }
    */
 
-  if (!json.watoken) {
-    return log.error('MSG_mon::onNewMessage --> newMessages has a message without WAtoken attribute');
+  if (!json.appToken) {
+    return log.error('MSG_mon::onNewMessage --> newMessages has a message without appToken attribute');
   }
   log.debug('MSG_mon::onNewMessage --> Mensaje desde la cola:', json);
-  dataStore.getApplication(json.watoken.toString(), onApplicationData, json);
+  dataStore.getApplication(json.appToken, onApplicationData, json);
 }
 
 function onApplicationData(error, appData, json) {
@@ -125,9 +123,9 @@ function onNodeData(nodeData, json) {
   }
 
   log.debug("MSG_mon::onNodeData --> Node connected:", nodeData);
-  log.notify("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.si + " # " + json._id);
+  log.notify("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.si + " # " + json.messageId);
   var body = {
-    messageId: json._id,
+    messageId: json.messageId,
     uatoken: nodeData._id,
     dt: nodeData.dt,
     payload: json

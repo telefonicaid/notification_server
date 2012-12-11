@@ -35,16 +35,21 @@ function onNewMessage(message) {
   }
   // If we don't have enough data, return
   if (!json.uatoken ||
-      !json.payload ||
-      !json.payload.payload) {
+      !json.messageId ||
+      !json.payload) {
     return log.error('WS::queue::onNewMessage --> Not enough data!');
   }
   log.debug("WS::Queue::onNewMessage --> Notifying node:", json.uatoken);
   log.notify("Message with id " + json.messageId + " sent to " + json.uatoken);
   dataManager.getNode(json.uatoken, function(nodeConnector) {
     if(nodeConnector) {
-      log.debug("WS::Queue::onNewMessage --> Sending messages:", json.payload.payload);
-      nodeConnector.notify(new Array(json.payload.payload));
+      var notification = json.payload;
+
+      //Send the URL not the appToken
+      notification.url = helpers.getNotificationURL(notification.appToken);
+      delete notification.appToken;
+      log.debug("WS::Queue::onNewMessage --> Sending messages:", notification);
+      nodeConnector.notify(new Array(notification));
     } else {
       log.debug("WS::Queue::onNewMessage --> No node found");
     }
