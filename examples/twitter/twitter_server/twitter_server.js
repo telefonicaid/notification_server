@@ -37,12 +37,22 @@ twitter_server.prototype = {
       access_token_secret: config.twitter.access_token_secret
     });
 
-    console.log("Registering to stream " + config.twitter.streamToFollow);    
-    this.stream = this.T.stream('statuses/filter', {
-      track: config.twitter.streamToFollow
-    });
-
-    this.stream.on('tweet', this.reSendTweet.bind(this));
+    var stream = null;
+    for(var i in config.twitter.streamsToFollow) {
+      console.log("Registering to stream " + config.twitter.streamsToFollow[i]);
+      stream = this.T.stream('statuses/filter', {
+        track: config.twitter.streamsToFollow[i]
+      });
+      stream.on('tweet', this.reSendTweet.bind(this));
+    }
+    for(var i in config.twitter.localizedStreams) {
+      console.log("Registering to localized stream " +
+        config.twitter.localizedStreams[i][1]);
+      stream = this.T.stream('statuses/filter', {
+        locations: config.twitter.localizedStreams[i][0]
+      });
+      stream.on('tweet', this.reSendTweet.bind(this));
+    }
   },
 
   reSendTweet: function(tweet) {
