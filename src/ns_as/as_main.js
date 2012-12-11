@@ -19,7 +19,10 @@ NS_AS_main.prototype = {
     var server = require('./as_server.js').server;
     // Start servers
     for(var a in config.interfaces) {
-      this.servers[a] = new server(config.interfaces[a].ip, config.interfaces[a].port);
+      this.servers[a] = new server(
+        config.interfaces[a].ip,
+        config.interfaces[a].port,
+        config.interfaces[a].ssl);
       this.servers[a].init();
     }
     log.info("NS_AS::start --> server starting");
