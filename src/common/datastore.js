@@ -407,10 +407,10 @@ var DataStore = function() {
    * Save a new message
    * @return New message as stored on DB
    */
-  this.newMessage = function (id, apptoken, message) {
-    message.messageId = id;
-    message.url = helpers.getNotificationURL(apptoken);
-    var msg = { _id: id, watoken: apptoken, payload: message };
+  this.newMessage = function (id, apptoken, msg) {
+    //Modify the original msg, adding messageId (a unique uuid_v1) and the url notified (probably unique)
+    msg.messageId = id;
+    msg.appToken = apptoken;
 
     this.db.collection("nodes", function(err, collection) {
       if(err) {
@@ -486,7 +486,7 @@ var DataStore = function() {
         },
         { $pull:
           {
-            'ms._id': messageId
+            'ms.messageId': messageId
           }
         },
         { safe: true },
