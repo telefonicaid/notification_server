@@ -162,7 +162,7 @@ exports.NS_UA_WS = {
     {
       ip: "0.0.0.0",
       port: 8080,
-      ssl: false
+      ssl: true
     }
   ],
 
