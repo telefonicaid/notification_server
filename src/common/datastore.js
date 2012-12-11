@@ -486,7 +486,10 @@ var DataStore = function() {
         },
         { $pull:
           {
-            'ms.messageId': messageId
+            ms:
+              {
+                'messageId': messageId
+              }
           }
         },
         { safe: true },
