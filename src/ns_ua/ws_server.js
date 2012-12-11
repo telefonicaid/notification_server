@@ -267,9 +267,6 @@ server.prototype = {
 
       if (message.type === 'utf8') {
         log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
-        if (message.utf8Data == 'PING') {
-          return connection.sendUTF('PONG');
-        }
         var query = null;
         try {
           query = JSON.parse(message.utf8Data);
@@ -305,6 +302,29 @@ server.prototype = {
         }
 
         switch(query.messageType) {
+          case "PING":
+            log.debug("WS::onWSMessage --> UA PING message");
+            dataManager.getNodeData(connection.uatoken, function(error, data) {
+              if(error) {
+                log.debug("WS::onWSMessage --> Failing recovering UA");
+                connection.res({
+                  errorcode: errorcodesWS.UATOKEN_NOT_FOUND,
+                  extradata: { messageType: "PONG" }
+                });
+                return;
+              }
+              connection.res({
+                errorcode: errorcodes.NO_ERROR,
+                extradata: {
+                  messageType: "PONG",
+                  status: "REGISTERED",
+                  pushMode: data.dt.protocol,
+                  messages: data.ms || []
+                }
+              });
+            });
+            break;
+
           case "registerUA":
             log.debug("WS::onWSMessage --> UA registration message");
             // New UA registration
