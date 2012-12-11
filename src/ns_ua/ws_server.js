@@ -311,7 +311,7 @@ server.prototype = {
                   errorcode: errorcodesWS.UATOKEN_NOT_FOUND,
                   extradata: { messageType: "PONG" }
                 });
-                return;
+                return connection.close();
               }
               connection.res({
                 errorcode: errorcodes.NO_ERROR,
