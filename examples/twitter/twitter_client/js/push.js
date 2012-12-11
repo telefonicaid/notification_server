@@ -18,6 +18,7 @@ var Push = {
        '-----END PUBLIC KEY-----',
 
   ad: 'localhost:8080',
+  ssl: false,
   ad_ws: null,
   ad_http: null,
 
@@ -30,8 +31,8 @@ var Push = {
   publicURL: null,
 
   init: function() {
-    this.ad_ws = 'wss://' + this.ad;
-    this.ad_http = 'https://' + this.ad;
+    this.ad_ws = 'ws'+(this.ssl ? 's' : '')+'://' + this.ad;
+    this.ad_http = 'http'+(this.ssl ? 's' : '')+'://' + this.ad;
     this.pushURL = document.getElementById('pushURL');
     this.logArea = document.getElementById('logArea');
     this.notificationArea = document.getElementById('notificationArea');
