@@ -17,7 +17,7 @@ var Push = {
        'lx8GvbnYJHO/50QGkQIDAQAB\n' +
        '-----END PUBLIC KEY-----',
 
-  ad: 'localhost:8080',
+  ad: '10.0.0.105:8080',
   ssl: false,
   ad_ws: null,
   ad_http: null,
