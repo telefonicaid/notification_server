@@ -39,6 +39,9 @@ var Push = {
     this.startButton = document.getElementById('buttonStart');
     this.startButton.addEventListener('click', this.buttonStart.bind(this));
 
+    this.reconnectButton = document.getElementById('buttonReconnect');
+    this.reconnectButton.addEventListener('click', this.buttonReconnect.bind(this));
+
     this.clearButton = document.getElementById('buttonClear');
     this.clearButton.addEventListener('click', this.onclear.bind(this));
 
@@ -83,7 +86,7 @@ var Push = {
     this.getToken(function openWebSocket(uatoken) {
       this.uatoken = uatoken;
 
-      this.logMessage('[TOK] Token from the notification server' + this.uatoken);
+      this.logMessage('[TOK] Token from the notification server: ' + this.uatoken);
       this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
       this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
 
@@ -92,6 +95,18 @@ var Push = {
       this.ws.connection.onerror = this.onErrorWebsocket.bind(this);
       this.ws.connection.onmessage = this.onMessageWebsocket.bind(this);
     }.bind(this));
+  },
+
+  buttonReconnect: function() {
+    // We reuse a previous UAToken: Register UA
+    this.logMessage('[TOK] Token from the notification server: ' + this.uatoken);
+    this.ws.connection = new WebSocket(this.ad_ws, 'push-notification');
+    this.logMessage('[WS] Opening websocket to ' + this.ad_ws);
+
+    this.ws.connection.onopen = this.onOpenWebsocket.bind(this);
+    this.ws.connection.onclose = this.onCloseWebsocket.bind(this);
+    this.ws.connection.onerror = this.onErrorWebsocket.bind(this);
+    this.ws.connection.onmessage = this.onMessageWebsocket.bind(this);
   },
 
   getToken: function(cb) {
@@ -159,21 +174,40 @@ var Push = {
   },
 
   manageResponse: function(msg) {
+    var reRegister = false;
     switch(msg.messageType) {
       case 'registerUA':
-        this.logMessage('[MSG registerUA] Going to register WA');
-        this.sendWS({
-          data: {
-            watoken: "publicTwitterStream",
-            pbkbase64: utf8_to_b64(this.pbk)
-          },
-          messageType: "registerWA"
-        });
+        for(var i in msg.WATokens) {
+          if(msg.WATokens[i] == this.publicUrl) {
+            this.logMessage('[MSG registerUA] WA registered before');
+            reRegister = true;
+          }
+        }
+        if(!reRegister) {
+          this.logMessage('[MSG registerUA] Going to register WA');
+          this.sendWS({
+            data: {
+              watoken: "publicTwitterStream",
+              pbkbase64: utf8_to_b64(this.pbk)
+            },
+            messageType: "registerWA"
+          });
+        } else {
+          this.logMessage('[MSG registerUA] Recovering pending messages');
+          for(var i in msg.messages) {
+            this.notificationMessage(msg.messages[i].payload.message);
+            this.sendWS({
+              messageType: "ack",
+              messageId: msg.messages[i].payload.messageId
+            });
+          }
+        }
         break;
 
       case 'registerWA':
         this.logMessage('[MSG registerWA] Registered WA');
-        this.showURL(msg.url);
+        this.publicUrl = msg.url;
+        this.showURL(this.publicUrl);
         break;
 
       case 'notification':

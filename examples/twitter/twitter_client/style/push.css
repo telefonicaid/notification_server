@@ -1,7 +1,9 @@
 #logArea {
+  margin-top: 10px;
   border: blue 1px solid;
-  max-width: 50%;
+  max-width: 100%;
   float: right;
+  overflow: auto;
 }
 
 #notificationArea {
