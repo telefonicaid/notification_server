@@ -99,6 +99,7 @@ function server(ip, port, ssl) {
   this.ready = false;
   this.tokensGenerated = 0;
   this.wsConnections = 0;
+  this.wsMaxConnections = 1000;
 }
 
 server.prototype = {
@@ -170,6 +171,16 @@ server.prototype = {
           log.critical('30 seconds has passed and we are not ready, closing');
       }, 30*1000); //Wait 30 seconds
     }
+
+    // Check ulimit
+    helpers.getMaxFileDescriptors(function(error,ulimit) {
+      if(error) {
+        return log.error('ulimit error: ' + error);
+      }
+      log.debug('ulimit = ' + ulimit);
+      this.wsMaxConnections = ulimit - 200;
+    }.bind(this));
+
   },
 
   //////////////////////////////////////////////
@@ -223,6 +234,7 @@ server.prototype = {
               text += "<ul>";
               text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
               text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
+              text += "<li>Maximum Number of open connections to WS: " + this.wsMaxConnections + "</li>";
               text += "</ul>";
             } catch(e) {
               text = "No version.info file";
@@ -477,12 +489,21 @@ server.prototype = {
     ///////////////////////
     // Websocket creation
     ///////////////////////
+
+    // Check limits
+    if(this.wsConnections >= this.wsMaxConnections) {
+      log.debug('WS::onWSRequest --> Connection unaccepted. To many open connections');
+      return request.reject();
+    }
+
+    // Abuse controls
     if (!this.originIsAllowed(request.origin)) {
       // Make sure we only accept requests from an allowed origin
       log.debug('WS:: --> Connection from origin ' + request.origin + ' rejected.');
       return request.reject();
     }
 
+    // Connection accepted
     var connection = request.accept('push-notification', request.origin);
     this.wsConnections++;
     log.debug('WS::onWSRequest --> Connection accepted.');
