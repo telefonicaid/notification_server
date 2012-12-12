@@ -18,7 +18,7 @@ var Push = {
        '-----END PUBLIC KEY-----',
 
   ad: 'localhost:8080',
-  ssl: false,
+  ssl: true,
   ad_ws: null,
   ad_http: null,
 
@@ -196,10 +196,10 @@ var Push = {
         } else {
           this.logMessage('[MSG registerUA] Recovering pending messages');
           for(var i in msg.messages) {
-            this.notificationMessage(msg.messages[i].payload.message);
+            this.notificationMessage(msg.messages[i].message);
             this.sendWS({
               messageType: "ack",
-              messageId: msg.messages[i].payload.messageId
+              messageId: msg.messages[i].messageId
             });
           }
         }
