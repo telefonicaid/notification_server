@@ -120,7 +120,11 @@ server.prototype = {
       }
 
       cluster.on('exit', function(worker, code, signal) {
-        log.info('worker ' + worker.process.pid + ' died');
+        if (code !== 0) {
+          log.error('worker ' + worker.process.pid + ' closed unexpectedly with code ' + code);
+        } else {
+          log.info('worker ' + worker.process.pid + ' exit');
+        }
       });
     } else {
       // Create a new HTTP(S) Server
