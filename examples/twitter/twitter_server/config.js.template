@@ -28,7 +28,11 @@ exports.twitter = {
   consumer_secret: 'Set your consumer secret @see - https://dev.twitter.com/apps',
   access_token: 'Set your access token @see - https://dev.twitter.com/apps',
   access_token_secret: 'Set your access token secret @see - https://dev.twitter.com/apps',
-  streamToFollow: 'firefox'
+  streamsToFollow: ['firefox','madrid'],
+  localizedStreams: [   // latitude/longitude bounded box
+    [ [ '-122.75', '36.8', '-121.75', '37.8' ], 'San Francisco' ],
+    [ ['-3.933', '40.32960075', '-3.51313739', '40.583'], 'Madrid' ]
+  ]
 };
 
 exports.pushserver = {
