@@ -32,6 +32,9 @@ Connector.prototype = {
         if (!op || !op.wakeup) {
           log.debug("UDP::queue::onNewMessage --> No WakeUp server found for MCC=" +
               data.mobilenetwork.mcc + " and MNC=" + data.mobilenetwork.mnc);
+          var connector = new connector_ws(data, connection);
+          this.nodesConnectors[data.uatoken] = connector;
+          callback(null, connector);
           return;
         }
         var connector = null;
