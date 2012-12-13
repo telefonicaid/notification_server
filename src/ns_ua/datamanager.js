@@ -53,41 +53,37 @@ datamanager.prototype = {
       //Might be a connection closed that has no uatoken associated (e.g. registerWA without registerUA before)
       log.debug("dataManager::unregisterNode --> This connection does not have a uatoken");
       return;
-    }
-    log.debug("dataManager::unregisterNode --> Removing disconnected node uatoken " + uatoken);
-    //Delete from DDBB
-    var connector = Connectors.getConnectorForUAtoken(uatoken);
-    var fullyDisconnected = 0;
-    if (!connector) {
-      log.debug("dataManager::unregisterNode --> No connector found for uatoken=" + uatoken);
     } else {
-      fullyDisconnected = (connector.getProtocol() !== "WS") ? 2 : 0;
-    }
-    dataStore.unregisterNode(
-      uatoken,
-      fullyDisconnected,
-      function(error) {
-        if (!error) {
-          log.debug('dataManager::unregisterNode --> Unregistered');
-        } else {
-          log.error('dataManager::unregisterNode --> There was a problem unregistering the uatoken ' + uatoken);
+      log.debug("dataManager::unregisterNode --> Removing disconnected node uatoken " + uatoken);
+      //Delete from DDBB
+      var fullyDisconnected = (Connectors.getConnectorForUAtoken(uatoken).getProtocol() !== "WS") ? 2 : 0;
+      dataStore.unregisterNode(
+        uatoken,
+        fullyDisconnected,
+        function(error) {
+          if (!error) {
+            log.debug('dataManager::unregisterNode --> Unregistered');
+          } else {
+            log.error('dataManager::unregisterNode --> There was a problem unregistering the uatoken ' + uatoken);
+          }
         }
-      }
-    );
+      );
+    }
     Connectors.unregisterUAToken(uatoken);
+    log.debug("dataManager::unregisterNode --> Finished");
   },
 
   /**
    * Gets a node connector (from memory)
    */
-  getNodeConnector: function (uatoken) {
-    log.debug("dataManager::getNodeConnector --> getting node from memory: " + uatoken);
+  getNode: function (uatoken, callback) {
+    log.debug("dataManager::getNode --> getting node from memory: " + uatoken);
     var connector = Connectors.getConnectorForUAtoken(uatoken);
     if (connector) {
-      log.debug('dataManager::getNodeConnector --> Connector found for uatoken=' + uatoken);
-      return connector;
+      log.debug('dataManager::getNode --> Connector found: ' + uatoken);
+      return callback(connector);
     }
-    return null;
+    return callback(null);
   },
 
   /**

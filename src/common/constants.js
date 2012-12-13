@@ -48,7 +48,6 @@ exports.errorcodes = {
     UATOKEN_NOT_FOUND: [459, "No UAtoken found for this connection!"],
     FAILED_REGISTERUA: [460, "Failed registering UAtoken"],
     ERROR_GETTING_CONNECTOR: [461, "Error getting connection object"],
-    DUPLICATE_UATOKEN: [465, "Duplicate uatoken, closing this connection"],
     COMMAND_NOT_ALLOWED: [405 , "Command not allowed in this connection"],
     UATOKEN_NOT_SENT: [462, "No UAtoken sent"],
     MESSAGETYPE_NOT_RECOGNIZED: [405, "messageType not recognized"],

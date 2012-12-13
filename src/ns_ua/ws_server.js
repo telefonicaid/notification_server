@@ -41,18 +41,19 @@ function onNewMessage(message) {
   }
   log.debug("WS::Queue::onNewMessage --> Notifying node:", json.uatoken);
   log.notify("Message with id " + json.messageId + " sent to " + json.uatoken);
-  var nodeConnector = dataManager.getNodeConnector(json.uatoken);
-  if(nodeConnector) {
-    var notification = json.payload;
+  dataManager.getNode(json.uatoken, function(nodeConnector) {
+    if(nodeConnector) {
+      var notification = json.payload;
 
-    //Send the URL not the appToken
-    notification.url = helpers.getNotificationURL(notification.appToken);
-    delete notification.appToken;
-    log.debug("WS::Queue::onNewMessage --> Sending messages:", notification);
-    nodeConnector.notify(new Array(notification));
-  } else {
-    log.debug("WS::Queue::onNewMessage --> No node found");
-  }
+      //Send the URL not the appToken
+      notification.url = helpers.getNotificationURL(notification.appToken);
+      delete notification.appToken;
+      log.debug("WS::Queue::onNewMessage --> Sending messages:", notification);
+      nodeConnector.notify(new Array(notification));
+    } else {
+      log.debug("WS::Queue::onNewMessage --> No node found");
+    }
+  });
 }
 
 function onNodeRegistered(error, data, uatoken) {
@@ -317,14 +318,6 @@ server.prototype = {
             });
             return connection.close();
           }
-          //Check if we have an old connector, if so, close this connection, leave the older
-          var connector = dataManager.getNodeConnector(query.data.uatoken);
-          if (connector) {
-            log.debug("WS::onWSMessage --> Second WS opened for uatoken=" +  query.data.uatoken + ". Bad idea, closing");
-            //Close new
-            connection.close();
-            return;
-          }
           log.debug("WS:onWSMessage --> Accepted uatoken=" + query.data.uatoken);
           connection.uatoken = query.data.uatoken;
         } else if (!connection.uatoken) {
@@ -346,7 +339,7 @@ server.prototype = {
 
           case "unregisterUA":
             log.debug("WS::onWSMessage::unregisterUA -> UA unregistration message");
-            connection.close();
+            dataManager.unregisterNode(connection.uatoken);
             break;
 
           case "registerWA":
