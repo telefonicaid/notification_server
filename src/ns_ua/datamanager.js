@@ -49,6 +49,7 @@ datamanager.prototype = {
    */
   unregisterNode: function(uatoken) {
     log.debug('dataManager::unregisterNode --> Going to unregister a node');
+    var connector = null;
     if (!uatoken) {
       //Might be a connection closed that has no uatoken associated (e.g. registerWA without registerUA before)
       log.debug("dataManager::unregisterNode --> This connection does not have a uatoken");
@@ -56,7 +57,13 @@ datamanager.prototype = {
     } else {
       log.debug("dataManager::unregisterNode --> Removing disconnected node uatoken " + uatoken);
       //Delete from DDBB
-      var fullyDisconnected = (Connectors.getConnectorForUAtoken(uatoken).getProtocol() !== "WS") ? 2 : 0;
+      connector = Connectors.getConnectorForUAtoken(uatoken);
+      var fullyDisconnected = 0;
+      if (!connector) {
+        log.debug("dataManager::unregisterNode --> No connector found for uatoken=" + uatoken);
+      } else {
+        fullyDisconnected = (connector.getProtocol() !== "WS") ? 2 : 0;
+      }
       dataStore.unregisterNode(
         uatoken,
         fullyDisconnected,
@@ -69,8 +76,9 @@ datamanager.prototype = {
         }
       );
     }
-    Connectors.unregisterUAToken(uatoken);
-    log.debug("dataManager::unregisterNode --> Finished");
+    if (connector) {
+      Connectors.unregisterUAToken(uatoken);
+    }
   },
 
   /**
