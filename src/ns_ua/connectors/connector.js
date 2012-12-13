@@ -61,9 +61,11 @@ Connector.prototype = {
 
   unregisterUAToken: function(uatoken) {
     if(this.nodesConnectors[uatoken]) {
-      this.nodesConnectors[uatoken].getConnection().close();
+      log.debug("Connectors::unregisterUAToken --> Found on connectors, deleted");
       delete this.nodesConnectors[uatoken];
+      return;
     }
+    log.error("Connectors::unregisterUAToken --> Connector not found!!");
   }
 };
 
