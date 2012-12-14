@@ -7,7 +7,6 @@
 
 var config = require('./config.js'),
     crypto = require('crypto'),
-    http = require('https'),
     t = require('twit');
 
 function twitter_server() {
@@ -78,6 +77,13 @@ twitter_server.prototype = {
         'Content-Type': 'application/json; charset=utf-8'
       }
     };
+
+    var http = null;
+    if(config.pushserver.ssl) {
+      http = require('https');
+    } else {
+      http = require('http');
+    }
 
     var req = http.request(options, function(res) {
       console.log('Message status: ' + res.statusCode);

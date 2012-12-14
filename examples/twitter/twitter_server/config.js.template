@@ -38,5 +38,6 @@ exports.twitter = {
 exports.pushserver = {
   host: "localhost",
   port: 8081,
-  path: '/notify/7320a5882485a51f3380f9ffab30f14b27749569cdfccaab90416b1ca7e9e020'
+  path: '/notify/7320a5882485a51f3380f9ffab30f14b27749569cdfccaab90416b1ca7e9e020',
+  ssl: true
 }
