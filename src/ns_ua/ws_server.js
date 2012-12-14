@@ -440,11 +440,12 @@ server.prototype = {
                   });
                   return;
                 }
-                log.debug("WS::onWSMessage::getRegisteredWA --> ", d);
+                var was = d[0].wa || [];
+                log.debug("WS::onWSMessage::getRegisteredWA --> " + was);
                 var URLs = [];
-                if(Array.isArray(d)) {
-                  d.forEach(function(appToken) {
-                    URLs.push(helpers.getNotificationURL(appToken._id));
+                if(Array.isArray(was)) {
+                  was.forEach(function(appToken) {
+                    URLs.push(helpers.getNotificationURL(appToken));
                   });
                   connection.res({
                     errorcode: errorcodes.NO_ERROR,
