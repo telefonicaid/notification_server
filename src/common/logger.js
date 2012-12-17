@@ -7,7 +7,7 @@
  */
 
 var fs = require('fs'),
-    logparams = require("../config.js").logger,
+    logparams = require('../config.js').logger,
     loglevel = require('./constants.js').loglevels;
 
 /**
@@ -27,7 +27,7 @@ var fs = require('fs'),
 function logger() {
   this.consoleOutput = logparams.CONSOLEOUTPUT;
   this.logLevel = logparams.LOGLEVEL;
-  this.debug("logger::logger --> Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !");
+  this.debug('logger::logger --> Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !');
 }
 
 logger.prototype = {
@@ -51,31 +51,36 @@ logger.prototype = {
     this.logfilealarm = fs.createWriteStream(logparams.ALARM, { flags: 'a', encoding: null, mode: 0644 });
     this.appname = appname;
     this.consoleOutput = consoleOutput;
-    this.log("START", "---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------", false);
-    this.debug("logger::init --> Logger initialized!");
+    this.log('START', '---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------', false);
+    this.debug('logger::init --> Logger initialized!');
   },
 
   log: function(level, message, trace, color, object) {
      // Log disabled
-    if(!this.logfile && !this.consoleOutput) {
+    if (!this.logfile && !this.consoleOutput) {
       return;
     }
 
-    var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
-    if(object) {
-      logmsg += " " + this.color_PURPLE + JSON.stringify(object);
+    //Disable logging if we have not initialized yet. Useful for tests
+    if (!this.appname) {
+      return;
     }
 
-    if(this.logfilealarm && level === 'ALARM') {
-      this.logfilealarm.write(logmsg + "\n");
-    } else if(this.logfile) {
-      this.logfile.write(logmsg + "\n");
+    var logmsg = '[' + this.appname + ' # ' + level + '] - {' + (new Date()) + ' (' + Date.now() + ')} - ' + message;
+    if (object) {
+      logmsg += ' ' + this.color_PURPLE + JSON.stringify(object);
     }
 
-    if(this.consoleOutput) {
+    if (this.logfilealarm && level === 'ALARM') {
+      this.logfilealarm.write(logmsg + '\n');
+    } else if (this.logfile) {
+      this.logfile.write(logmsg + '\n');
+    }
+
+    if (this.consoleOutput) {
       console.log(color + logmsg + this.color_reset);
-      if(trace) {
-        console.trace("logger::log --> Callstack:");
+      if (trace) {
+        console.trace('logger::log --> Callstack:');
       }
     }
   },
@@ -85,46 +90,46 @@ logger.prototype = {
    */
   critical: function(message, object) {
     if (this.logLevel & loglevel.CRITICAL) {
-      this.log("CRITICAL", message, true, this.color_RED, object);
+      this.log('CRITICAL', message, true, this.color_RED, object);
     }
-    this.log("CRITICAL", "WE HAVE A CRITICAL ERROR, WE ARE CLOSING!!!", false, this.color_red);
+    this.log('CRITICAL', 'WE HAVE A CRITICAL ERROR, WE ARE CLOSING!!!', false, this.color_red);
     // We cannot continue our process, kill it!
     process.exit(1);
   },
 
   debug: function(message, object) {
     if (this.logLevel & loglevel.DEBUG) {
-      this.log("DEBUG", message, false, this.color_cyan, object);
+      this.log('DEBUG', message, false, this.color_cyan, object);
     }
   },
 
   info: function(message, object) {
     if (this.logLevel & loglevel.INFO) {
-      this.log("INFO", message, false, this.color_green, object);
+      this.log('INFO', message, false, this.color_green, object);
     }
   },
 
   error: function(message, object) {
     if (this.logLevel & loglevel.ERROR) {
-      this.log("ERROR", message, true, this.color_red, object);
+      this.log('ERROR', message, true, this.color_red, object);
     }
   },
 
   alert: function(message, object) {
     if (this.logLevel & loglevel.ALERT) {
-      this.log("ALERT", message, false, this.color_purple, object);
+      this.log('ALERT', message, false, this.color_purple, object);
     }
   },
 
   notify: function(message, object) {
     if (this.logLevel & loglevel.NOTIFY) {
-      this.log("NOTIFY", message, false, this.color_yellow, object);
+      this.log('NOTIFY', message, false, this.color_yellow, object);
     }
   },
 
   alarm: function(message, object) {
     if (this.logLevel & loglevel.ALARM) {
-      this.log("ALARM", message, true, this.color_RED, object);
+      this.log('ALARM', message, true, this.color_RED, object);
     }
   }
 };

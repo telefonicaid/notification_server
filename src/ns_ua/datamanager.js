@@ -6,30 +6,30 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var dataStore = require("../common/datastore"),
-    log = require("../common/logger.js"),
-    helpers = require("../common/helpers.js"),
-    Connectors = require("./connectors/connector.js").getConnector(),
-    ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
+var dataStore = require('../common/datastore'),
+    log = require('../common/logger.js'),
+    helpers = require('../common/helpers.js'),
+    Connectors = require('./connectors/connector.js').getConnector(),
+    ddbbsettings = require('../config.js').NS_AS.ddbbsettings;
 
 function datamanager() {
-  log.info("dataManager --> In-Memory data manager loaded.");
+  log.info('dataManager --> In-Memory data manager loaded.');
 }
 
 datamanager.prototype = {
   /**
    * Register a new node. As a parameter, we receive the connector object
    */
-  registerNode: function (data, connection, callback) {
+  registerNode: function(data, connection, callback) {
     Connectors.getConnector(data, connection, function(err, connector) {
-      if(err) {
+      if (err) {
         connection.res({
           errorcode: errorcodesWS.ERROR_GETTING_CONNECTOR,
-          extradata: { messageType: "registerUA" }
+          extradata: { messageType: 'registerUA' }
         });
-        return log.error("WS::onWSMessage --> Error getting connection object");
+        return log.error('WS::onWSMessage --> Error getting connection object');
       } else {
-        log.debug("dataManager::registerNode --> Registraton of the node into datastore " + data.uatoken);
+        log.debug('dataManager::registerNode --> Registraton of the node into datastore ' + data.uatoken);
         dataStore.registerNode(
           data.uatoken,
           connector.getServer(),
@@ -52,17 +52,17 @@ datamanager.prototype = {
     var connector = null;
     if (!uatoken) {
       //Might be a connection closed that has no uatoken associated (e.g. registerWA without registerUA before)
-      log.debug("dataManager::unregisterNode --> This connection does not have a uatoken");
+      log.debug('dataManager::unregisterNode --> This connection does not have a uatoken');
       return;
     } else {
-      log.debug("dataManager::unregisterNode --> Removing disconnected node uatoken " + uatoken);
+      log.debug('dataManager::unregisterNode --> Removing disconnected node uatoken ' + uatoken);
       //Delete from DDBB
       connector = Connectors.getConnectorForUAtoken(uatoken);
       var fullyDisconnected = 0;
       if (!connector) {
-        log.debug("dataManager::unregisterNode --> No connector found for uatoken=" + uatoken);
+        log.debug('dataManager::unregisterNode --> No connector found for uatoken=' + uatoken);
       } else {
-        fullyDisconnected = (connector.getProtocol() !== "WS") ? 2 : 0;
+        fullyDisconnected = (connector.getProtocol() !== 'WS') ? 2 : 0;
       }
       dataStore.unregisterNode(
         uatoken,

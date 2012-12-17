@@ -6,10 +6,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js"),
-    crypto = require("../common/cryptography.js"),
-    msgBroker = require("../common/msgbroker.js"),
-    dataStore = require("../common/datastore.js");
+var log = require('../common/logger.js'),
+    crypto = require('../common/cryptography.js'),
+    msgBroker = require('../common/msgbroker.js'),
+    dataStore = require('../common/datastore.js');
 
 function monitor() {
   this.ready = false;
@@ -30,7 +30,7 @@ monitor.prototype = {
           'x-ha-policy': 'all'
         }
       };
-      msgBroker.subscribe("newMessages",
+      msgBroker.subscribe('newMessages',
                           args,
                           function(msg) {
                             onNewMessage(msg);
@@ -52,7 +52,7 @@ monitor.prototype = {
     setTimeout(function() {
       if (!self.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30*1000); //Wait 30 seconds
+    }, 30 * 1000); //Wait 30 seconds
   },
 
   stop: function() {
@@ -65,7 +65,7 @@ function onNewMessage(msg) {
   var json = {};
   try {
     json = JSON.parse(msg);
-  } catch(e) {
+  } catch (e) {
     return log.error('MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check');
   }
 
@@ -100,30 +100,30 @@ function onNewMessage(msg) {
 
 function onApplicationData(error, appData, json) {
   if (error) {
-    return log.error("MSG_mon::onApplicationData --> There was an error");
+    return log.error('MSG_mon::onApplicationData --> There was an error');
   }
 
-  log.debug("MSG_mon::onApplicationData --> Application data recovered:", appData);
-  appData.forEach(function (nodeData, i) {
-    log.debug("MSG_mon::onApplicationData --> Notifying node: " + i + ":", nodeData);
+  log.debug('MSG_mon::onApplicationData --> Application data recovered:', appData);
+  appData.forEach(function(nodeData, i) {
+    log.debug('MSG_mon::onApplicationData --> Notifying node: ' + i + ':', nodeData);
     onNodeData(nodeData, json);
   });
 }
 
 function onNodeData(nodeData, json) {
   if (!nodeData) {
-    log.error("MSG_mon::onNodeData --> No node info, FIX YOUR BACKEND!");
+    log.error('MSG_mon::onNodeData --> No node info, FIX YOUR BACKEND!');
     return;
   }
 
   // Is the node connected? AKA: is websocket?
   if (!nodeData.co) {
-    log.debug("MSG_mon::onNodeData --> Node recovered but not connected, just delaying");
+    log.debug('MSG_mon::onNodeData --> Node recovered but not connected, just delaying');
     return;
   }
 
-  log.debug("MSG_mon::onNodeData --> Node connected:", nodeData);
-  log.notify("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.si + " # " + json.messageId);
+  log.debug('MSG_mon::onNodeData --> Node connected:', nodeData);
+  log.notify('MSG_mon::onNodeData --> Notify into the messages queue of node ' + nodeData.si + ' # ' + json.messageId);
   var body = {
     messageId: json.messageId,
     uatoken: nodeData._id,
