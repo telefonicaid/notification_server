@@ -44,6 +44,6 @@
         "url": "http://www.gnu.org/licenses/agpl-3.0.html"
     },
     "scripts": {
-        "test": "./node_modules/.bin/vows test/*.js --spec"
+        "test": "./node_modules/.bin/vows test/functional/*-test.js --spec ; ./node_modules/.bin/vows test/unit/*-test.js --spec"
     }
 }

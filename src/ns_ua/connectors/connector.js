@@ -6,10 +6,10 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var mn = require("../../common/mobilenetwork.js"),
-    log = require("../../common/logger.js"),
-    connector_ws = require("./connector_ws.js"),
-    connector_udp = require("./connector_udp.js");
+var mn = require('../../common/mobilenetwork.js'),
+    log = require('../../common/logger.js'),
+    connector_ws = require('./connector_ws.js'),
+    connector_udp = require('./connector_udp.js');
 
 function Connector() {
   this.nodesConnectors = {};
@@ -30,15 +30,15 @@ Connector.prototype = {
           return;
         }
         if (!op || !op.wakeup) {
-          log.debug("UDP::queue::onNewMessage --> No WakeUp server found for MCC=" +
-              data.mobilenetwork.mcc + " and MNC=" + data.mobilenetwork.mnc);
+          log.debug('UDP::queue::onNewMessage --> No WakeUp server found for MCC=' +
+              data.mobilenetwork.mcc + ' and MNC=' + data.mobilenetwork.mnc);
           var connector = new connector_ws(data, connection);
           this.nodesConnectors[data.uatoken] = connector;
           callback(null, connector);
           return;
         }
         var connector = null;
-        log.debug("getConnector: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
+        log.debug('getConnector: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
         connector = new connector_udp(data, connection);
         this.nodesConnectors[data.uatoken] = connector;
         callback(null, connector);
@@ -57,13 +57,13 @@ Connector.prototype = {
 
   getUAtokenForConnection: function(connection) {
     Object.keys(this.nodesConnectors).forEach(function(elem) {
-      if(this.nodesConnectors[elem] === connection);
+      if (this.nodesConnectors[elem] === connection);
       return this.nodesConnectors[elem];
     });
   },
 
   unregisterUAToken: function(uatoken) {
-    if(this.nodesConnectors[uatoken]) {
+    if (this.nodesConnectors[uatoken]) {
       this.nodesConnectors[uatoken].getConnection().close();
       delete this.nodesConnectors[uatoken];
     }
