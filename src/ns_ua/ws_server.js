@@ -101,7 +101,8 @@ function server(ip, port, ssl) {
   this.ip = ip;
   this.port = port;
   this.ssl = ssl;
-  this.ready = false;
+  this.msgBrokerReady = false;
+  this.dataManagerReady = false;
   this.tokensGenerated = 0;
   this.wsConnections = 0;
   this.wsMaxConnections = 1000;
@@ -163,10 +164,21 @@ server.prototype = {
           }
         };
         msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
-        self.ready = true;
+        self.msgBrokerReady = true;
+        if (self.dataManagerReady) {
+          self.ready = true;
+        }
       });
+
       msgBroker.on('brokerdisconnected', function() {
         log.critical('ns_ws::init --> Broker DISCONNECTED!!');
+      });
+
+      dataManager.on("ready", function() {
+        log.info("WS_server --> dataManager ready");
+        if (self.msgBrokerReady) {
+          self.ready = true;
+        }
       });
 
       //Connect to msgBroker
@@ -176,8 +188,11 @@ server.prototype = {
 
       //Check if we are alive
       setTimeout(function() {
-        if (!self.ready)
-          log.critical('30 seconds has passed and we are not ready, closing');
+        if (!self.ready) {
+          log.critical('30 seconds has passed and we are not ready.' +
+            ' msgBrokerReady=' + self.msgBrokerReady +
+            ' dataManagerReady=' + self.dataManagerReady + '. CLOSING!!!');
+        }
       }, 30*1000); //Wait 30 seconds
     }
 
@@ -484,7 +499,7 @@ server.prototype = {
     var self = this;
     this.onWSClose = function(reasonCode, description) {
       self.wsConnections--;
-      dataManager.unregisterNode(connection.uatoken);
+      dataManager.disconnectNode(connection.uatoken);
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uatoken ' + connection.uatoken);
     };
 
