@@ -7,21 +7,40 @@
  */
 
 var datastore = require("./datastore.js"),
-    log = require("../common/logger.js")
+    log = require("../common/logger.js"),
     helpers = require("./helpers.js");
 
 function MobileNetwork() {
   this.cache = {};
+  this.ready = false;
+  this.callbacks = [];
 }
 
 MobileNetwork.prototype = {
-  init: function() {
-    this.resetCache();
-    log.debug("[MobileNetwork] library loaded");
+  callbackReady: function(callback) {
+    if (this.ready) {
+      callback(true);
+      return;
+    }
+    this.callbacks.push(helpers.checkCallback(callback));
   },
 
-  resetCache: function() {
+  init: function() {
+    this.resetCache();
+    datastore.on('ddbbconnected', (function() {
+      log.debug("[MobileNetwork] library loaded");
+      this.ready = true;
+      var callbacks = this.callbacks || [];
+      callbacks.forEach(function(elem) {
+        elem(true);
+      });
+    }).bind(this));
+  },
+
+  resetCache: function(callback) {
     this.cache = {};
+    callback = helpers.checkCallback(callback);
+    callback();
     log.debug("[MobileNetwork] cache cleaned");
   },
 
@@ -35,7 +54,7 @@ MobileNetwork.prototype = {
     // Check if the network is in the cache
     if(value = this.cache[index]) {
       log.debug("[MobileNetwork] found on cache:", value);
-      return callback(null, value);
+      return callback(null, value, "cache");
     }
 
     // Check if the network if it's in the database and update cache
@@ -47,12 +66,12 @@ MobileNetwork.prototype = {
       }
       if (!d) {
         log.debug("[MobileNetwork] Not found on database");
-        callback(null, null);
+        callback(null, null, "ddbb");
         return;
       }
       log.debug("[MobileNetwork] found on database:", d);
       this.cache[index] = d;
-      return callback(null, d);
+      return callback(null, d, "ddbb");
     }.bind(this));
   }
 };
