@@ -67,6 +67,9 @@ exports.sendNotification = function sendNotification(url, text, callback) {
 };
 
 exports.allDifferents = function allDifferents(l) {
+  if (!Array.isArray(l)) {
+    l = [l] || [];
+  }
   var obj = {};
   for (var i = 0, item; item = l[i]; i++) {
     if (obj[item]) return false;

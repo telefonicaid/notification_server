@@ -14,6 +14,17 @@ var mongodb = require("mongodb"),
     helpers = require("../common/helpers.js");
 
 var DataStore = function() {
+  this.callbackReady = function(callback) {
+    if (this.ready) {
+      callback(true);
+      return;
+    }
+    if (!this.callbacks) {
+      this.callbacks = [];
+    }
+    this.callbacks.push(helpers.checkCallback(callback));
+  },
+
   this.init = function() {
     log.info("datastore::starting --> MongoDB data store loading.");
     events.EventEmitter.call(this);
@@ -57,12 +68,19 @@ var DataStore = function() {
       }
       log.info("datastore::starting --> Connected to MongoDB on " + ddbbsettings.machines + ". Database Name: " + ddbbsettings.ddbbname);
       this.emit('ddbbconnected');
+      this.ready = true;
+      var callbacks = this.callbacks || [];
+      callbacks.forEach(function(elem) {
+        elem(true);
+      });
     }.bind(this));
   },
 
   this.close = function() {
     log.info('datastore::close --> Closing connection to DB');
     this.db.close();
+    this.emit('ddbbdisconnected');
+    this.ready = false;
   },
 
   this.registerNode = function (uatoken, serverId, data, callback) {
@@ -514,7 +532,7 @@ var DataStore = function() {
     this.db.collection("operators", function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error("datastore::getOperator --> There was a problem opening the messages collection");
+        log.error("datastore::getOperator --> There was a problem opening the operators collection");
         callback(err);
         return;
       }
@@ -527,6 +545,33 @@ var DataStore = function() {
         var msg = data ? "The operator has been recovered. " : "No operator found. ";
         log.debug("datastore::getOperator --> " + msg + " Calling callback");
         return callback(null, data);
+      });
+    });
+  },
+
+  this.flushDb = function() {
+    this.db.collection("apps", function(err, collection) {
+      if (err) {
+        log.error("datastore::flushDb --> There was a problem opening the apps collection");
+        return;
+      }
+      collection.remove({}, function(err, removed) {
+        if (err) {
+          log.error("datastore::flushDb --> There was a problem removing the apps collection");
+          return;
+        }
+      });
+    });
+    this.db.collection("nodes", function(err, collection) {
+      if (err) {
+        log.error("datastore::flushDb --> There was a problem opening the nodes collection");
+        return;
+      }
+      collection.remove({}, function(err, removed) {
+        if (err) {
+          log.error("datastore::flushDb --> There was a problem removing the nodes collection");
+          return;
+        }
       });
     });
   };

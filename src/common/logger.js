@@ -61,6 +61,11 @@ logger.prototype = {
       return;
     }
 
+    //Disable logging if we have not initialized yet. Useful for tests
+    if (!this.appname) {
+      return;
+    }
+
     var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
     if(object) {
       logmsg += " " + this.color_PURPLE + JSON.stringify(object);
