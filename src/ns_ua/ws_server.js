@@ -19,7 +19,8 @@ var log = require("../common/logger.js"),
     config = require("../config.js").NS_UA_WS,
     consts = require("../config.js").consts,
     errorcodes = require("../common/constants").errorcodes.GENERAL,
-    errorcodesWS = require("../common/constants").errorcodes.UAWS;
+    errorcodesWS = require("../common/constants").errorcodes.UAWS,
+    pages = require("../common/pages.js");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -235,16 +236,24 @@ server.prototype = {
         case 'about':
           if(consts.PREPRODUCTION_MODE) {
             try {
-              var fs = require("fs");
-              text = "Push Notification Server (User Agent Frontend)<br />";
-              text += "&copy; Telef&oacute;nica Digital, 2012<br />";
-              text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
-              text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
-              text += "<ul>";
-              text += "<li>Number of tokens generated: " + this.tokensGenerated + "</li>";
-              text += "<li>Number of opened connections to WS: " + this.wsConnections + "</li>";
-              text += "<li>Maximum Number of open connections to WS: " + this.wsMaxConnections + "</li>";
-              text += "</ul>";
+              var p = new pages();
+              p.setTemplate('views/aboutWS.tmpl');
+              text = p.render(function(t) {
+                switch (t) {
+                  case '{{GIT_VERSION}}':
+                    return require('fs').readFileSync('version.info');
+                  case '{{MODULE_NAME}}':
+                    return 'User Agent Frontend';
+                  case '{{PARAM_TOKENSGENERATED}}':
+                    return this.tokensGenerated;
+                  case '{{PARAM_CONNECTIONS}}':
+                    return this.wsConnections;
+                  case '{{PARAM_MAXCONNECTIONS}}':
+                    return this.wsMaxConnections;
+                  default:
+                    return "";
+                }
+              }.bind(this));
             } catch(e) {
               text = "No version.info file";
             }
