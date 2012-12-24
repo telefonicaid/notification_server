@@ -253,7 +253,7 @@ server.prototype = {
                   default:
                     return "";
                 }
-              });
+              }.bind(this));
             } catch(e) {
               text = "No version.info file";
             }
