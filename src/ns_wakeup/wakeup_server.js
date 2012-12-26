@@ -10,7 +10,8 @@ var log = require("../common/logger.js"),
     net = require('net'),
     fs = require('fs'),
     consts = require("../config.js").consts,
-    dgram = require('dgram');
+    dgram = require('dgram'),
+    pages = require("../common/pages.js");
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -57,6 +58,33 @@ server.prototype = {
   onHTTPMessage: function(request, response) {
     var msg = "";
     log.notify('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
+    if(request.url === "/about") {
+      if(consts.PREPRODUCTION_MODE) {
+        try {
+          var p = new pages();
+          p.setTemplate('views/about.tmpl');
+          text = p.render(function(t) {
+            switch (t) {
+              case '{{GIT_VERSION}}':
+                return require('fs').readFileSync('version.info');
+              case '{{MODULE_NAME}}':
+                return 'WakeUp UDP/TCP Server';
+              default:
+                return "";
+            }
+          });
+        } catch(e) {
+          text = "No version.info file";
+        }
+        response.setHeader("Content-Type", "text/html");
+        response.statusCode = 200;
+        response.write(text);
+        return response.end();
+      } else {
+        return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+      }
+    }
+
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
     if(!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');

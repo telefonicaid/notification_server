@@ -15,7 +15,8 @@ var log = require("../common/logger"),
     msgBroker = require("../common/msgbroker"),
     dataStore = require("../common/datastore"),
     errorcodes = require("../common/constants").errorcodes.GENERAL,
-    errorcodesAS = require("../common/constants").errorcodes.AS;
+    errorcodesAS = require("../common/constants").errorcodes.AS,
+    pages = require("../common/pages.js");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -196,11 +197,18 @@ server.prototype = {
     case 'about':
       if(consts.PREPRODUCTION_MODE) {
         try {
-          var fs = require("fs");
-          text = "Push Notification Server (Application Server Frontend)<br />";
-          text += "&copy; Telef&oacute;nica Digital, 2012<br />";
-          text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
-          text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
+          var p = new pages();
+          p.setTemplate('views/about.tmpl');
+          text = p.render(function(t) {
+            switch (t) {
+              case '{{GIT_VERSION}}':
+                return require('fs').readFileSync('version.info');
+              case '{{MODULE_NAME}}':
+                return 'Application Server Frontend';
+              default:
+                return '';
+            }
+          });
         } catch(e) {
           text = "No version.info file";
         }
