@@ -62,7 +62,7 @@ Connector.prototype = {
     });
   },
 
-  unregisterUAToken: function(uatoken) {
+  disconnectNode: function(uatoken) {
     if(this.nodesConnectors[uatoken]) {
       this.nodesConnectors[uatoken].getConnection().close();
       delete this.nodesConnectors[uatoken];

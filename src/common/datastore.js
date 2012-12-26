@@ -56,7 +56,9 @@ var DataStore = function() {
         return;
       }
       log.info("datastore::starting --> Connected to MongoDB on " + ddbbsettings.machines + ". Database Name: " + ddbbsettings.ddbbname);
-      this.emit('ddbbconnected');
+      process.nextTick(function() {
+        this.emit('ddbbconnected');
+      }.bind(this));
     }.bind(this));
   },
 
@@ -95,16 +97,16 @@ var DataStore = function() {
           return;
       });
     });
-  };
+  },
 
   /**
-   * Unregister a node
+   * Node disconnected
    */
-   this.unregisterNode = function(uatoken, fullyDisconnected, callback) {
+  this.disconnectNode = function(uatoken, fullyDisconnected, callback) {
     this.db.collection("nodes", function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error("datastore::unregisterNode --> There was a problem opening the nodes collection: " + err);
+        log.error("datastore::disconnectNode --> There was a problem opening the nodes collection: " + err);
         callback(err);
         return;
       }
@@ -119,14 +121,63 @@ var DataStore = function() {
         { safe: true },
         function(err, data) {
           if (err) {
-            log.error("dataStore::unregisterNode --> There was a problem removing the node: " +  err);
+            log.error("dataStore::disconnectNode --> There was a problem removing the node: " +  err);
             return callback(err);
           }
-          log.debug("datastore::unregisterNode --> Node removed from MongoDB");
+          log.debug("datastore::disconnectNode --> Node removed from MongoDB");
           return callback(null, data);
       });
     });
-   };
+  },
+
+  /*
+   * Removes a node from the "nodes" collection, and any node from the "no" attribute
+   * on "apps".
+   */
+  this.unregisterNode = function(uatoken) {
+    log.info("dataStore::unregisterNode --> Going to unregister the node " + uatoken);
+    //Remove from the "nodes" collection
+    this.db.collection("nodes", function(error, collection) {
+      if (error) {
+        log.error("datastore::unregisterNode --> There was a problem opening the nodes collection: " + error);
+        return;
+      }
+      collection.remove(
+        { _id: uatoken },
+        {},
+        function(err, d) {
+          if (err) {
+            log.error("datastore::unregisterNode --> There was a problem removing the node: " + error);
+            return;
+          }
+          log.info("dataStore::unregisterNode --> Node " + uatoken + " unregistered");
+        }
+      );
+    });
+
+    //Remove from the "apps" where it's stored
+    this.db.collection("apps", function(error, collection) {
+      if (error) {
+        log.error("datastore::unregisterNode --> There was a problem opening the apps collection: " + error);
+        return;
+      }
+      collection.update(
+        { no: uatoken },
+        { $pull:
+          {
+            no: uatoken
+          }
+        },
+        {},
+        function(error, data) {
+          if(error) {
+            log.error("datastore::unregisterNode --> There was a problem removing nodes from apps collection: " + error);
+            return;
+          }
+        }
+      );
+    });
+  },
 
   /**
    * Gets a node - server relationship
@@ -529,14 +580,15 @@ var DataStore = function() {
         return callback(null, data);
       });
     });
-  };
+  }
 };
 
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
 util.inherits(DataStore, events.EventEmitter);
-var _ds = new DataStore(); _ds.init();
+var _ds = new DataStore();
+_ds.init();
 function getDataStore() {
   return _ds;
 }
