@@ -83,7 +83,7 @@ function closeChilds() {
   //This should be enough to every child to close correctly
   setInterval(function() {
     process.exit();
-  }, 10000);
+  }, 5000);
 }
 
 process.on('SIGTERM', closeChilds);

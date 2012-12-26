@@ -104,6 +104,7 @@ function server(ip, port, ssl) {
   this.ssl = ssl;
   this.msgBrokerReady = false;
   this.dataManagerReady = false;
+  this.ready = false;
   this.tokensGenerated = 0;
   this.wsConnections = 0;
   this.wsMaxConnections = 1000;
@@ -168,6 +169,7 @@ server.prototype = {
         self.msgBrokerReady = true;
         if (self.dataManagerReady) {
           self.ready = true;
+          log.info('ns_ws::init --> 1 We are ready to receive requests: ' + self.ready);
         }
       });
 
@@ -177,8 +179,10 @@ server.prototype = {
 
       dataManager.on("ready", function() {
         log.info("WS_server --> dataManager ready");
+        self.dataManagerReady = true;
         if (self.msgBrokerReady) {
           self.ready = true;
+          log.info('ns_ws::init --> 2 We are ready to receive requests: ' + self.ready);
         }
       });
 

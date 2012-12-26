@@ -18,9 +18,17 @@ before_install:
 
 script:
   - cd src
-  - sudo nohup node start.js > /dev/null & # Start the server
+  - sudo nohup node start.js & # Start the server
+  - PID=$! # Save the PID
   - cd .. && sleep 5 # Wait for everything to start correctly
   - make tests
+
+#after_script:
+  #- sleep 30
+  #- kill $PID
+  #- sleep 15
+  #- cd src
+  #- sudo cat nohup.out
 
 notifications:
    email:
