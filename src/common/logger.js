@@ -53,6 +53,7 @@ logger.prototype = {
     this.consoleOutput = consoleOutput;
     this.log("START", "---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------8<---------", false);
     this.debug("logger::init --> Logger initialized!");
+    this.pid = process.pid;
   },
 
   log: function(level, message, trace, color, object) {
@@ -61,7 +62,7 @@ logger.prototype = {
       return;
     }
 
-    var logmsg = "[" + this.appname + " # " + level + "] - {" + (new Date()) + " (" + Date.now() + ")} - " + message;
+    var logmsg = "[" + this.appname + " # " + level + "] - " + this.pid + " - {" + Date.now() + "} - " + message;
     if(object) {
       logmsg += " " + this.color_PURPLE + JSON.stringify(object);
     }
