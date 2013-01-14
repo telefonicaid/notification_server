@@ -7,39 +7,36 @@
  */
 
 var forever = require('forever-monitor'),
-    fs = require("fs"),
-    starts = require("./config.js").servers,
+    fs = require('fs'),
+    starts = require('./config.js').servers,
     config = require('./config.js'),
-    log = require("./common/logger.js");
+    log = require('./common/logger.js');
 
 
-log.init(config.NS.logfile, "NS", 1);
+log.init(config.NS.logfile, 'NS', 1);
 
 // Show license
 console.log(
-"    PUSH Notification Server \n\
-    Copyright (C) 2012  Telefonica PDI \n\
- \n\
-    This program is free software: you can redistribute it and/or modify \n\
-    it under the terms of the GNU Affero General Public License as published by \n\
-    the Free Software Foundation, either version 3 of the License, or \n\
-    (at your option) any later version. \n\
- \n\
-    This program is distributed in the hope that it will be useful, \n\
-    but WITHOUT ANY WARRANTY; without even the implied warranty of \n\
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \n\
-    GNU Affero General Public License for more details. \n\
- \n\
-    You should have received a copy of the GNU Affero General Public License \n\
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. \n\
-\n");
+'    PUSH Notification Server \n' +
+'    Copyright (C) 2012  Telefonica PDI \n\n' +
+'   This program is free software: you can redistribute it and/or modify \n' +
+'    it under the terms of the GNU Affero General Public License as published by \n' +
+'    the Free Software Foundation, either version 3 of the License, or \n' +
+'    (at your option) any later version. \n\n' +
+'   This program is distributed in the hope that it will be useful, \n' +
+'    but WITHOUT ANY WARRANTY; without even the implied warranty of \n' +
+'    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the \n' +
+'    GNU Affero General Public License for more details. \n\n' +
+'    You should have received a copy of the GNU Affero General Public License \n' +
+'    along with this program.  If not, see <http://www.gnu.org/licenses/>. \n\n'
+);
 
 // Show version
 try {
-  var version = fs.readFileSync("version.info");
-  console.log("PUSH Notification Server Version: " + version);
-} catch(e) {
-  console.error("No version.info file, please run make");
+  var version = fs.readFileSync('version.info');
+  console.log('PUSH Notification Server Version: ' + version);
+} catch (e) {
+  console.error('No version.info file, please run make');
 }
 
 //Fill what server should be started
@@ -83,7 +80,7 @@ function closeChilds() {
   //This should be enough to every child to close correctly
   setInterval(function() {
     process.exit();
-  }, 5000);
+  }, 10000);
 }
 
 process.on('SIGTERM', closeChilds);

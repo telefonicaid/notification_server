@@ -6,9 +6,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js"),
-    msgBroker = require("../common/msgbroker.js"),
-    mn = require("../common/mobilenetwork.js"),
+var log = require('../common/logger.js'),
+    msgBroker = require('../common/msgbroker.js'),
+    mn = require('../common/mobilenetwork.js'),
     http = require('http');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,11 +16,11 @@ var log = require("../common/logger.js"),
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewMessage(message) {
-  log.debug("UDP::Queue::onNewMessage: " + message);
+  log.debug('UDP::Queue::onNewMessage: ' + message);
   var messageData = {};
   try {
     messageData = JSON.parse(message);
-  } catch(e) {
+  } catch (e) {
     log.debug('UDP::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
@@ -43,7 +43,7 @@ function onNewMessage(message) {
    */
   // If message does not follow the above standard, return.
   log.debug('UDP::queue::onNewMessage --> messageData =', messageData);
-  if(!messageData.uatoken ||
+  if (!messageData.uatoken ||
      !messageData.dt ||
      !messageData.dt.interface ||
      !messageData.dt.interface.ip ||
@@ -55,12 +55,12 @@ function onNewMessage(message) {
   }
 
   // Notify the hanset with the associated Data
-  log.notify("Notifying node: " + messageData.uatoken +
-      " to " + messageData.dt.interface.ip +
-      ":" + messageData.dt.interface.port +
-      " on network " + messageData.dt.mobilenetwork.mcc +
-      "-" + messageData.dt.mobilenetwork.mnc +
-      " and using protocol: " + messageData.dt.protocol
+  log.notify('Notifying node: ' + messageData.uatoken +
+      ' to ' + messageData.dt.interface.ip +
+      ':' + messageData.dt.interface.port +
+      ' on network ' + messageData.dt.mobilenetwork.mcc +
+      '-' + messageData.dt.mobilenetwork.mnc +
+      ' and using protocol: ' + messageData.dt.protocol
   );
 
   mn.getNetwork(messageData.dt.mobilenetwork.mcc, messageData.dt.mobilenetwork.mnc, function(error, op) {
@@ -69,15 +69,15 @@ function onNewMessage(message) {
       return;
     }
     if (!op || !op.wakeup) {
-      log.debug("UDP::queue::onNewMessage --> No WakeUp server found");
+      log.debug('UDP::queue::onNewMessage --> No WakeUp server found');
       return;
     }
-    log.debug("onNewMessage: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
+    log.debug('onNewMessage: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
 
     // Send HTTP Notification Message
-    var address = {}
-    address.host = op.wakeup.split(":")[0] || null;
-    address.port = op.wakeup.split(":")[1] || null;
+    var address = {};
+    address.host = op.wakeup.split(':')[0] || null;
+    address.port = op.wakeup.split(':')[1] || null;
 
     if (!address.host || !address.port) {
       log.error('UDP:queue:onNewMessage --> Bad address to notify', address);
@@ -115,7 +115,7 @@ server.prototype = {
   //////////////////////////////////////////////
 
   init: function() {
-    log.info("NS_UDP:init --> Starting UA-UDP server");
+    log.info('NS_UDP:init --> Starting UA-UDP server');
 
     var self = this;
     msgBroker.on('brokerconnected', function() {
@@ -127,7 +127,7 @@ server.prototype = {
           'x-ha-policy': 'all'
         }
       };
-      msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
+      msgBroker.subscribe('UDP', args, function(msg) { onNewMessage(msg); });
     });
 
     msgBroker.on('brokerdisconnected', function() {
@@ -144,13 +144,13 @@ server.prototype = {
     setTimeout(function() {
       if (!self.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30*1000); //Wait 30 seconds
+    }, 30 * 1000); //Wait 30 seconds
 
   },
 
   stop: function() {
     this.ready = false;
-    log.info("NS_UDP:stop --> Closing UDP server");
+    log.info('NS_UDP:stop --> Closing UDP server');
 
     //Closing connection with msgBroker
     msgBroker.close();

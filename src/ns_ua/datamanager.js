@@ -6,35 +6,30 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var dataStore = require("../common/datastore"),
-    log = require("../common/logger.js"),
-    helpers = require("../common/helpers.js"),
-    events = require("events"),
-    util = require("util"),
-    Connectors = require("./connectors/connector.js").getConnector(),
-    ddbbsettings = require("../config.js").NS_AS.ddbbsettings;
+var dataStore = require('../common/datastore'),
+    log = require('../common/logger.js'),
+    helpers = require('../common/helpers.js'),
+    Connectors = require('./connectors/connector.js').getConnector(),
+    ddbbsettings = require('../config.js').NS_AS.ddbbsettings;
 
-var datamanager = function() {
-  this.init = function() {
-    events.EventEmitter.call(this);
-    log.info("dataManager --> In-Memory data manager loaded.");
-    dataStore.on("ddbbconnected", (function() {
-      process.nextTick(function() {
-        this.emit("ready");
-      }.bind(this));
-    }).bind(this));
-  };
+function datamanager() {
+  log.info('dataManager --> In-Memory data manager loaded.');
+}
 
-  this.registerNode = function (data, connection, callback) {
+datamanager.prototype = {
+  /**
+   * Register a new node. As a parameter, we receive the connector object
+   */
+  registerNode: function(data, connection, callback) {
     Connectors.getConnector(data, connection, function(err, connector) {
-      if(err) {
+      if (err) {
         connection.res({
           errorcode: errorcodesWS.ERROR_GETTING_CONNECTOR,
-          extradata: { messageType: "registerUA" }
+	  extradata: { messageType: 'registerUA' }
         });
-        return log.error("WS::onWSMessage --> Error getting connection object");
+	return log.error('WS::onWSMessage --> Error getting connection object');
       } else {
-        log.debug("dataManager::registerNode --> Registraton of the node into datastore " + data.uatoken);
+	log.debug('dataManager::registerNode --> Registraton of the node into datastore ' + data.uatoken);
         dataStore.registerNode(
           data.uatoken,
           connector.getServer(),
@@ -47,64 +42,49 @@ var datamanager = function() {
         );
       }
     });
-  };
+  },
 
   /**
-   * Disconnects a Node from the DDBB and memory
+   * Unregisters a Node from the DDBB and memory
    */
-  this.disconnectNode = function(uatoken) {
-    log.debug('dataManager::disconnectNode --> Going to unregister a node');
+  unregisterNode: function(uatoken) {
+    log.debug('dataManager::unregisterNode --> Going to unregister a node');
     var connector = null;
     if (!uatoken) {
       //Might be a connection closed that has no uatoken associated (e.g. registerWA without registerUA before)
-      log.debug("dataManager::disconnectNode --> This connection does not have a uatoken");
+      log.debug('dataManager::unregisterNode --> This connection does not have a uatoken');
       return;
     } else {
-      log.debug("dataManager::disconnectNode --> Removing disconnected node uatoken " + uatoken);
+      log.debug('dataManager::unregisterNode --> Removing disconnected node uatoken ' + uatoken);
       //Delete from DDBB
       connector = Connectors.getConnectorForUAtoken(uatoken);
       var fullyDisconnected = 0;
       if (!connector) {
-        log.debug("dataManager::disconnectNode --> No connector found for uatoken=" + uatoken);
+	log.debug('dataManager::unregisterNode --> No connector found for uatoken=' + uatoken);
       } else {
-        fullyDisconnected = (connector.getProtocol() !== "WS") ? 2 : 0;
+	fullyDisconnected = (connector.getProtocol() !== 'WS') ? 2 : 0;
       }
-      dataStore.disconnectNode(
+      dataStore.unregisterNode(
         uatoken,
         fullyDisconnected,
         function(error) {
           if (!error) {
-            log.debug('dataManager::disconnectNode --> Unregistered');
+	    log.debug('dataManager::unregisterNode --> Unregistered');
           } else {
-            log.error('dataManager::disconnectNode --> There was a problem unregistering the uatoken ' + uatoken);
+	    log.error('dataManager::unregisterNode --> There was a problem unregistering the uatoken ' + uatoken);
           }
         }
       );
     }
     if (connector) {
-      Connectors.disconnectNode(uatoken);
+      Connectors.unregisterUAToken(uatoken);
     }
-  };
-
-  /**
-   * Unregisters a Node completely from the DB. This remove entry from "nodes" as well
-   * as entries on "apps" collection.
-   * Removes its connector from memory and disconnect the node.
-   */
-  this.unregisterNode = function(uatoken) {
-    log.debug("dataManager::unregisterNode --> going to remove the node " + uatoken);
-    var connector = Connectors.getConnectorForUAtoken(uatoken);
-    if (connector) {
-      log.debug('dataManager::getNode --> Connector found: ' + uatoken);
-      connector.getConnection().close();
-    }
-    dataStore.unregisterNode(uatoken);
-  };
+  },
 
   /**
    * Gets a node connector (from memory)
    */
-  this.getNode = function (uatoken, callback) {
+  getNode: function (uatoken, callback) {
     log.debug("dataManager::getNode --> getting node from memory: " + uatoken);
     var connector = Connectors.getConnectorForUAtoken(uatoken);
     if (connector) {
@@ -112,65 +92,65 @@ var datamanager = function() {
       return callback(connector);
     }
     return callback(null);
-  };
+  },
 
   /**
    * Gets a node info from DB
    */
-  this.getNodeData = function(uatoken, callback) {
+  getNodeData: function(uatoken, callback) {
     dataStore.getNodeData(uatoken, callback);
-  };
+  },
 
   /**
    * Gets a UAToken from a given connection object
    */
-  this.getUAToken = function (connection) {
+  getUAToken: function (connection) {
     return connection.uatoken || null;
-  };
+  },
 
   // TODO: Verify that the node exists before add the application issue #59
   /**
    * Register a new application
    */
-  this.registerApplication = function (appToken, waToken, uatoken, pbkbase64, callback) {
+  registerApplication: function (appToken, waToken, uatoken, pbkbase64, callback) {
     // Store in persistent storage
     dataStore.registerApplication(appToken, waToken, uatoken, pbkbase64, callback);
-  };
+  },
 
  /**
    * Unregister an old application
    */
-  this.unregisterApplication = function (appToken, uatoken, pbkbase64, callback) {
+  unregisterApplication: function (appToken, uatoken, pbkbase64, callback) {
     // Remove from persistent storage
     dataStore.unregisterApplication(appToken, uatoken, pbkbase64, callback);
-  };
+  },
 
   /**
    * Recover a list of WA associated to a UA
    */
-  this.getApplicationsForUA = function (uaToken, callback) {
+  getApplicationsForUA: function (uaToken, callback) {
     // Recover from the persistent storage
     var callbackParam = false;
     dataStore.getApplicationsForUA(uaToken, callback, callbackParam);
-  };
+  },
 
   /**
    * Get all messages for a UA
    */
-  this.getAllMessagesForUA = function(uatoken, callback) {
+  getAllMessagesForUA: function(uatoken, callback) {
     dataStore.getAllMessagesForUA(uatoken, callback);
-  };
+  },
 
   /**
    * Delete an ACK'ed message
    */
-  this.removeMessage = function(messageId, uatoken) {
+  removeMessage: function(messageId, uatoken) {
     if(!messageId || !uatoken) {
       log.error('dataStore::removeMessage --> FIX YOUR BACKEND');
       return;
     }
     dataStore.removeMessage(messageId, uatoken);
-  };
+  }
 };
 
 ///////////////////////////////////////////
@@ -190,9 +170,7 @@ function onMessage(message, message_info) {
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
-util.inherits(datamanager, events.EventEmitter);
 var dm = new datamanager();
-dm.init();
 function getDataManager() {
   return dm;
 }
