@@ -6,9 +6,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var uuid = require("node-uuid"),
-    crypto = require("./cryptography.js"),
-    cryptokey = require("../config.js").consts.cryptokey;
+var uuid = require('node-uuid'),
+    crypto = require('./cryptography.js'),
+    cryptokey = require('../config.js').consts.cryptokey;
 
 function token() {}
 
@@ -18,10 +18,10 @@ token.prototype = {
   // The TOKEN shall be unique
   get: function() {
     // SerialNumber + TimeStamp + NotificationServer_Id + CRC -> RAWToken
-    var rawToken = this.serialNumber++ + "#" + Date.now() + "#" + process.serverId + "_" + uuid.v1();
+    var rawToken = this.serialNumber++ + '#' + Date.now() + '#' + process.serverId + '_' + uuid.v1();
 
     // CRC
-    rawToken += "@" + crypto.hashMD5(rawToken);
+    rawToken += '@' + crypto.hashMD5(rawToken);
 
     // Encrypt token with AES
     return crypto.encryptAES(rawToken, cryptokey);
@@ -29,7 +29,7 @@ token.prototype = {
 
   // Verify the given TOKEN
   verify: function(token) {
-    if(!token)
+    if (!token)
       return false;
 
     // Decrypt token
