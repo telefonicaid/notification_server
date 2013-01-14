@@ -25,7 +25,7 @@ cryptography.prototype = {
     var cipherEncoding = 'hex';            // hex, base64
 
     var cipher = crypto.createCipher(algorithm, key);
-    var ciphertext = "";
+    var ciphertext = '';
     ciphertext = cipher.update(data, clearEncoding, cipherEncoding);
     ciphertext += cipher.final(cipherEncoding);
 
@@ -40,7 +40,7 @@ cryptography.prototype = {
     var cipherEncoding = 'hex';            // hex, base64
 
     var decipher = crypto.createDecipher(algorithm, key);
-    var data = "";
+    var data = '';
     try {
       data = decipher.update(ciphertext, cipherEncoding, clearEncoding);
       data += decipher.final(cipherEncoding);
@@ -53,7 +53,7 @@ cryptography.prototype = {
    */
   encryptAES: function(data, key) {
     var algorithm = 'aes-128-cbc';
-    return this._encrypt(data,key,algorithm);
+    return this._encrypt(data, key, algorithm);
   },
 
   /**
