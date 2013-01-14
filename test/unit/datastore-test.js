@@ -114,7 +114,6 @@ vows.describe('DataStore tests').addBatch({
       dataStore.getNodeData(1, this.callback);
     },
     'TODO': function(error, data) {
-      console.log(data);
       assert.equal(error, null);
       assert.equal(data, data);
     }
