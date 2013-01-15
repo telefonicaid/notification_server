@@ -7,15 +7,15 @@
  */
 
 var publicBaseURL = require('../config.js').consts.publicBaseURL,
-    uuid = require('node-uuid'),
-    crypto = require('../common/cryptography.js'),
+    uuid = require("node-uuid"),
+    crypto = require("../common/cryptography.js"),
     exec = require('child_process').exec;
 
 /**
  * Gets the public notification URL for the given apptoken
  */
 function getNotificationURL(apptoken) {
-  return publicBaseURL + '/notify/' + apptoken;
+  return publicBaseURL + "/notify/" + apptoken;
 }
 exports.getNotificationURL = getNotificationURL;
 
@@ -42,8 +42,8 @@ function checkCallback(callback) {
 exports.checkCallback = checkCallback;
 
 function getMaxFileDescriptors(cb) {
-  exec('ulimit -n', function(error,stdout,stderr) {
-    cb(error, stdout);
+  exec("ulimit -n", function(error,stdout,stderr) {
+    cb(error,stdout);
   });
 }
 exports.getMaxFileDescriptors = getMaxFileDescriptors;

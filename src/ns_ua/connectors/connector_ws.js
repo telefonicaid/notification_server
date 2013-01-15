@@ -13,7 +13,7 @@ function connector_websocket(data, connection) {
 
 connector_websocket.prototype = {
   getType: function() {
-    return 'WS';
+    return "WS";
   },
 
   getServer: function() {
