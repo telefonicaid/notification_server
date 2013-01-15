@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require('../common/logger.js');
+var log = require("../common/logger.js");
 
 function NS_UA_UDP_main() {
   this.server = null;
@@ -21,7 +21,7 @@ NS_UA_UDP_main.prototype = {
     this.server = new server();
     this.server.init();
 
-    log.info('NS_UA_UDP server starting');
+    log.info("NS_UA_UDP server starting");
   },
 
   stop: function() {
@@ -29,7 +29,7 @@ NS_UA_UDP_main.prototype = {
       return;
     }
     this.controlledClose = true;
-    log.info('NS_UA_UDP server stopping');
+    log.info("NS_UA_UDP server stopping");
     this.server.stop();
 
     setTimeout(function() {

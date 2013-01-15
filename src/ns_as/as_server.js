@@ -6,16 +6,17 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require('../common/logger'),
+var log = require("../common/logger"),
     urlparser = require('url'),
-    consts = require('../config.js').consts,
+    consts = require("../config.js").consts,
     fs = require('fs'),
-    uuid = require('node-uuid'),
-    crypto = require('../common/cryptography'),
-    msgBroker = require('../common/msgbroker'),
-    dataStore = require('../common/datastore'),
-    errorcodes = require('../common/constants').errorcodes.GENERAL,
-    errorcodesAS = require('../common/constants').errorcodes.AS;
+    uuid = require("node-uuid"),
+    crypto = require("../common/cryptography"),
+    msgBroker = require("../common/msgbroker"),
+    dataStore = require("../common/datastore"),
+    errorcodes = require("../common/constants").errorcodes.GENERAL,
+    errorcodesAS = require("../common/constants").errorcodes.AS,
+    pages = require("../common/pages.js");
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -44,10 +45,10 @@ function onNewPushMessage(notification, apptoken, callback) {
   normalizedNotification.message = json.message || '';
   normalizedNotification.ttl = json.ttl || consts.MAX_TTL;
   normalizedNotification.timestamp = json.timestamp || (new Date()).getTime();
-  normalizedNotification.priority = json.priority ||  '4';
+  normalizedNotification.priority = json.priority || '4';
 
   //Only accept notification messages
-  if (normalizedNotification.messageType != 'notification') {
+  if (normalizedNotification.messageType != "notification") {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
     return callback(errorcodesAS.BAD_MESSAGE_TYPE_NOT_NOTIFICATION);
   }
@@ -88,7 +89,7 @@ function onNewPushMessage(notification, apptoken, callback) {
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
-    msgBroker.push('newMessages', msg);
+    msgBroker.push("newMessages", msg);
     return callback(errorcodes.NO_ERROR);
   });
 }
@@ -107,7 +108,7 @@ server.prototype = {
   //////////////////////////////////////////////
   init: function() {
     // Create a new HTTP(S) Server
-    if (this.ssl) {
+    if(this.ssl) {
       var options = {
         key: fs.readFileSync(consts.key),
         cert: fs.readFileSync(consts.cert)
@@ -118,26 +119,26 @@ server.prototype = {
     }
     this.server.listen(this.port, this.ip);
     log.info('NS_AS::init --> HTTP' + (this.ssl ? 'S' : '') +
-      ' push AS server starting on ' + this.ip + ':' + this.port);
+      ' push AS server starting on ' + this.ip + ":" + this.port);
 
     var self = this;
     // Events from msgBroker
     msgBroker.on('brokerconnected', function() {
-      log.info('NS_AS::init --> MsgBroker ready and connected');
+      log.info("NS_AS::init --> MsgBroker ready and connected");
       self.msgbrokerready = true;
     });
     msgBroker.on('brokerdisconnected', function() {
-      log.critical('NS_AS::init --> MsgBroker DISCONNECTED!!');
+      log.critical("NS_AS::init --> MsgBroker DISCONNECTED!!");
       self.msgbrokerready = false;
     });
 
     //Events from dataStore
     dataStore.on('ddbbconnected', function() {
-      log.info('NS_AS::init --> DataStore ready and connected');
+      log.info("NS_AS::init --> DataStore ready and connected");
       self.ddbbready = true;
     });
     dataStore.on('ddbbdisconnected', function() {
-      log.critical('NS_AS::init --> DataStore DISCONNECTED!!');
+      log.critical("NS_AS::init --> DataStore DISCONNECTED!!");
       self.ddbbready = false;
     });
 
@@ -151,7 +152,7 @@ server.prototype = {
     setTimeout(function() {
       if (!self.ddbbready || !self.msgbrokerready)
         log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30 * 1000); //Wait 30 seconds
+    }, 30*1000); //Wait 30 seconds
 
   },
 
@@ -171,13 +172,13 @@ server.prototype = {
     response.res = function responseHTTP(errorCode) {
       log.debug('NS_AS::responseHTTP: ', errorCode);
       this.statusCode = errorCode[0];
-      this.setHeader('access-control-allow-origin', '*');
-      if (consts.PREPRODUCTION_MODE) {
-	this.setHeader('Content-Type', 'text/plain');
-	if (this.statusCode == 200) {
+      this.setHeader("access-control-allow-origin", "*");
+      if(consts.PREPRODUCTION_MODE) {
+        this.setHeader("Content-Type", "text/plain");
+        if(this.statusCode == 200) {
           this.write('{"status":"ACCEPTED"}');
         } else {
-	  this.write('{"status":"ERROR", "reason":"' + errorCode[1] + '"}');
+          this.write('{"status":"ERROR", "reason":"'+errorCode[1]+'"}');
         }
       }
       return this.end();
@@ -189,22 +190,29 @@ server.prototype = {
     }
 
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
-    var url = urlparser.parse(request.url, true);
-    var path = url.pathname.split('/');
-    log.debug('NS_AS::onHTTPMessage --> Splitted URL path: ', path);
+    var url = urlparser.parse(request.url,true);
+    var path = url.pathname.split("/");
+    log.debug("NS_AS::onHTTPMessage --> Splitted URL path: ", path);
     switch (path[1]) {
     case 'about':
-      if (consts.PREPRODUCTION_MODE) {
+      if(consts.PREPRODUCTION_MODE) {
         try {
-	  var fs = require('fs');
-	  text = 'Push Notification Server (Application Server Frontend)<br />';
-	  text += '&copy; Telef&oacute;nica Digital, 2012<br />';
-	  text += 'Version: ' + fs.readFileSync('version.info') + '<br /><br />';
-	  text += '<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />';
-	} catch (e) {
-	  text = 'No version.info file';
+          var p = new pages();
+          p.setTemplate('views/about.tmpl');
+          text = p.render(function(t) {
+            switch (t) {
+              case '{{GIT_VERSION}}':
+                return require('fs').readFileSync('version.info');
+              case '{{MODULE_NAME}}':
+                return 'Application Server Frontend';
+              default:
+                return '';
+            }
+          });
+        } catch(e) {
+          text = "No version.info file";
         }
-	response.setHeader('Content-Type', 'text/html');
+        response.setHeader("Content-Type", "text/html");
         response.statusCode = 200;
         response.write(text);
         return response.end();
@@ -219,13 +227,13 @@ server.prototype = {
         log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
         return response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
       }
-      if (request.method != 'POST') {
+      if(request.method != 'POST') {
         log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for notifications)');
         return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
       }
 
-      log.debug('NS_AS::onHTTPMessage --> Notification for ' + token);
-      request.on('data', function(notification) {
+      log.debug("NS_AS::onHTTPMessage --> Notification for " + token);
+      request.on("data", function(notification) {
         onNewPushMessage(notification, token, function(err) {
           response.res(err);
         });
@@ -234,7 +242,7 @@ server.prototype = {
 
     default:
       log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
-      return response.res(errorcodesAS.BAD_URL);
+      return response.res(errorcodesAS.BAD_URL)
     }
   }
 };
