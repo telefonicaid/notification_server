@@ -56,8 +56,8 @@ stop()
 }
 
 restart () {
-	stop
-	start
+    stop
+    start
 }
 
 

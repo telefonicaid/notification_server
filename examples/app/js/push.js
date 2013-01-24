@@ -222,7 +222,7 @@ var Push = {
    * Logs every message from the websocket
    */
   logMessage: function(message) {
-    var msg = message + '</br>';
+    var msg = (new Date()).getTime() + " -- " + message + '</br>';
     this.logArea.innerHTML += msg;
   }
 };

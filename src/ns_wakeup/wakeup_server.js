@@ -6,12 +6,12 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js"),
+var log = require('../common/logger.js'),
     net = require('net'),
     fs = require('fs'),
-    consts = require("../config.js").consts,
+    consts = require('../config.js').consts,
     dgram = require('dgram'),
-    pages = require("../common/pages.js");
+    pages = require('../common/pages.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -29,10 +29,10 @@ server.prototype = {
   //////////////////////////////////////////////
 
   init: function() {
-    log.info("Starting WakeUp server");
+    log.info('Starting WakeUp server');
 
     // Create a new HTTP(S) Server
-    if(this.ssl) {
+    if (this.ssl) {
       var options = {
         key: fs.readFileSync(consts.key),
         cert: fs.readFileSync(consts.cert)
@@ -43,7 +43,7 @@ server.prototype = {
     }
     this.server.listen(this.port, this.ip);
     log.info('NS_WakeUp::init --> HTTP' + (this.ssl ? 'S' : '') +
-      ' push WakeUp server starting on ' + this.ip + ":" + this.port);
+             ' push WakeUp server starting on ' + this.ip + ':' + this.port);
   },
 
   stop: function() {
@@ -56,7 +56,7 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    var msg = "";
+    var msg = '';
     log.notify('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
     if(request.url === "/about") {
       if(consts.PREPRODUCTION_MODE) {
@@ -84,25 +84,24 @@ server.prototype = {
         return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
       }
     }
-
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
-    if(!WakeUpHost.ip || !WakeUpHost.port) {
+    if (!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
       msg = '{"status": "ERROR", "reason": "URL Format Error"}';
-      response.setHeader("Content-Type", "text/plain");
+      response.setHeader('Content-Type', 'text/plain');
       response.statusCode = 404;
       response.write(msg);
       return response.end();
     }
 
     // Check parameters
-    if( !net.isIP(WakeUpHost.ip) ||     // Is a valid IP address
+    if (!net.isIP(WakeUpHost.ip) ||     // Is a valid IP address
         isNaN(WakeUpHost.port) ||       // The port is a Number
         WakeUpHost.port < 0 || WakeUpHost.port > 65535  // The port has a valid value
     ) {
       log.debug('NS_WakeUp::onHTTPMessage --> Bad IP/Port');
       msg = '{"status": "ERROR", "reason": "Bad parameters. Bad IP/Port"}';
-      response.setHeader("Content-Type", "text/plain");
+      response.setHeader('Content-Type', 'text/plain');
       response.statusCode = 404;
       response.write(msg);
       return response.end();
@@ -110,13 +109,13 @@ server.prototype = {
 
     // Check protocolo
     var protocol = this.PROTOCOL_UDPv4;
-    if( WakeUpHost.proto && WakeUpHost.proto == "tcp") {
+    if (WakeUpHost.proto && WakeUpHost.proto == 'tcp') {
       protocol = this.PROTOCOL_TCPv4;
     }
 
     log.debug('NS_WakeUp::onHTTPMessage --> WakeUp IP = ' + WakeUpHost.ip + ':' + WakeUpHost.port + ' (protocol=' + protocol + ')');
-    var message = new Buffer("NOTIFY " + JSON.stringify(WakeUpHost));
-    switch(protocol) {
+    var message = new Buffer('NOTIFY ' + JSON.stringify(WakeUpHost));
+    switch (protocol) {
       case this.PROTOCOL_TCPv4:
         // TCP Notification Message
         var tcp4Client = net.createConnection({host: WakeUpHost.ip, port: WakeUpHost.port},
@@ -130,46 +129,49 @@ server.prototype = {
         });
         tcp4Client.on('error', function(e) {
           log.debug('TCP Client error ' + JSON.stringify(e));
-          log.notify("WakeUp TCP packet to " + WakeUpHost.ip + ":" + WakeUpHost.port + " - FAILED");
+          log.notify('WakeUp TCP packet to ' + WakeUpHost.ip + ':' + WakeUpHost.port + ' - FAILED');
 
           response.statusCode = 404;
-          response.setHeader("Content-Type", "text/plain");
+          response.setHeader('Content-Type', 'text/plain');
           response.write('{"status": "ERROR", "reason": "TCP Connection error"}');
           return response.end();
         });
         tcp4Client.on('end', function() {
           log.debug('TCP Client disconected');
-          log.notify("WakeUp TCP packet succesfully sent to " + WakeUpHost.ip + ":" + WakeUpHost.port);
+          log.notify('WakeUp TCP packet succesfully sent to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
 
           response.statusCode = 200;
-          response.setHeader("Content-Type", "text/plain");
+          response.setHeader('Content-Type', 'text/plain');
           response.write('{"status": "OK"}');
           return response.end();
         });
         break;
       case this.PROTOCOL_UDPv4:
         // UDP Notification Message
-        var udp4Client = dgram.createSocket("udp4");
+        var udp4Client = dgram.createSocket('udp4');
         udp4Client.send(
           message, 0, message.length,
           WakeUpHost.port, WakeUpHost.ip,
           function(err, bytes) {
-            if(err) log.info("Error sending UDP Datagram to " + WakeUpHost.ip + ":" + WakeUpHost.port);
-            else log.notify("WakeUp Datagram sent to " + WakeUpHost.ip + ":" + WakeUpHost.port);
-            udp4Client.close();
-          }
-        );
+            if (err) {
+              log.info('Error sending UDP Datagram to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
+            }
+            else {
+              log.notify('WakeUp Datagram sent to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
+              udp4Client.close();
+            }
+          });
 
         response.statusCode = 200;
-        response.setHeader("Content-Type", "text/plain");
+        response.setHeader('Content-Type', 'text/plain');
         response.write('{"status": "OK"}');
         return response.end();
         break;
 
       default:
-        log.error("Protocol not supported !");
+        log.error('Protocol not supported !');
         response.statusCode = 404;
-        response.setHeader("Content-Type", "text/plain");
+        response.setHeader('Content-Type', 'text/plain');
         response.write('{"status": "ERROR", "reason": "Protocol not supported"}');
         return response.end();
     }
@@ -181,7 +183,7 @@ server.prototype = {
   parseURL: function(url) {
     var urlparser = require('url'),
         data = {};
-    data.parsedURL = urlparser.parse(url,true);
+    data.parsedURL = urlparser.parse(url, true);
     return data;
   }
 };
