@@ -15,7 +15,7 @@ function connector_udp(data, connection) {
 
 connector_udp.prototype = {
   getType: function() {
-    return "UDP";
+    return 'UDP';
   },
 
   getServer: function() {
@@ -31,7 +31,7 @@ connector_udp.prototype = {
   },
 
   getProtocol: function() {
-    return "udp";
+    return 'udp';
   },
 
   getConnection: function() {
@@ -40,7 +40,7 @@ connector_udp.prototype = {
 
   notify: function(msgList) {
     // Notify the handset with the associated Data
-    log.error("Connector UDP: Notify to " + this.data.interface.ip + " not valid with this connector");
+    log.error('Connector UDP: Notify to ' + this.data.interface.ip + ' not valid with this connector');
   }
 };
 

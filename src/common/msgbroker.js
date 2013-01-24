@@ -7,10 +7,10 @@
  */
 
 var amqp = require('amqp'),
-    log = require("./logger.js"),
-    queuesConf = require("../config.js").queue,
-    events = require("events"),
-    util = require("util");
+    log = require('./logger.js'),
+    queuesConf = require('../config.js').queue,
+    events = require('events'),
+    util = require('util');
 
 var gControlledClose = false;
 
@@ -59,9 +59,9 @@ var MsgBroker = function() {
       if (!connection) return;
       var conn = connection;
       conn.queue(queueName, args, function(q) {
-        log.info("msgbroker::subscribe --> Subscribed to queue: " + queueName);
+        log.info('msgbroker::subscribe --> Subscribed to queue: ' + queueName);
         q.bind('#');
-        q.subscribe(function (message) {
+        q.subscribe(function(message) {
           return callback(message.data);
         });
       });

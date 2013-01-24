@@ -8,7 +8,7 @@ exports.parse = function(url, options) {
   var connection_part = '';
   var auth_part = '';
   var query_string_part = '';
-  var dbName = 'default';
+  var dbName = 'admin';
 
   // Must start with mongodb
   if(url.indexOf("mongodb://") != 0)
@@ -93,7 +93,7 @@ exports.parse = function(url, options) {
   }
 
   // Get the db name
-  object.dbName = dbName || 'default';
+  object.dbName = dbName || 'admin';
   // Split up all the options
   urlOptions = (query_string_part || '').split(/[&;]/);    
   // Ugh, we have to figure out which options go to which constructor manually.
