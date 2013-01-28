@@ -59,15 +59,15 @@ function onNewPushMessage(notification, apptoken, callback) {
     return callback(errorcodesAS.BAD_MESSAGE_NOT_SIGNED);
   }
 
-  //If not id, reject
-  if (!normalizedNotification.id) {
-    log.debug('NS_AS::onNewPushMessage --> Rejected. Not id');
-    return callback(errorcodesAS.BAD_MESSAGE_NOT_ID);
+  //If bad id (null or undefined), reject
+  if ((normalizedNotification.id === null) || (normalizedNotification.id === undefined)) {
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Bad id');
+    return callback(errorcodesAS.BAD_MESSAGE_BAD_ID);
   }
 
   //Reject notifications with big attributes
   if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
-      (normalizedNotification.id.length > consts.MAX_PAYLOAD_SIZE)) {
+      (normalizedNotification.id.length > consts.MAX_ID_SIZE)) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
