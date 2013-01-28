@@ -25,6 +25,7 @@ exports.servers = {
 /********************* Constants********************************************/
 exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
+  MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
   MAX_TTL: 2592000, // 30 days, in seconds (60*60*24*30)
 
