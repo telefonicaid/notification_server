@@ -6,9 +6,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js"),
-    msgBroker = require("../common/msgbroker.js"),
-    mn = require("../common/mobilenetwork.js"),
+var log = require('../common/logger.js'),
+    msgBroker = require('../common/msgbroker.js'),
+    mn = require('../common/mobilenetwork.js'),
     http = require('http');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,11 +16,11 @@ var log = require("../common/logger.js"),
 ////////////////////////////////////////////////////////////////////////////////
 
 function onNewMessage(message) {
-  log.debug("MB: " + message);
+  log.debug('UDP::Queue::onNewMessage: ' + message);
   var messageData = {};
   try {
     messageData = JSON.parse(message);
-  } catch(e) {
+  } catch (e) {
     log.debug('UDP::Queue::onNewMessage --> Not a valid JSON');
     return;
   }
@@ -41,52 +41,65 @@ function onNewMessage(message) {
    *  "messageType": "registerUA"
    * }
    */
-
   // If message does not follow the above standard, return.
-  if(!messageData.data ||
-     !messageData.data.uatoken ||
-     !messageData.data.interface ||
-     !messageData.data.interface.ip ||
-     !messageData.data.interface.port ||
-     !messageData.data.mobilenetwork ||
-     !messageData.data.mobilenetwork.mcc ||
-     !messageData.data.mobilenetwork.mnc) {
+  log.debug('UDP::queue::onNewMessage --> messageData =', messageData);
+  if (!messageData.uatoken ||
+     !messageData.dt ||
+     !messageData.dt.interface ||
+     !messageData.dt.interface.ip ||
+     !messageData.dt.interface.port ||
+     !messageData.dt.mobilenetwork ||
+     !messageData.dt.mobilenetwork.mcc ||
+     !messageData.dt.mobilenetwork.mnc) {
     return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
   }
 
   // Notify the hanset with the associated Data
-  log.debug("Notifying node: " + JSON.stringify(messageData.data.uatoken));
-  log.debug("Notify to " +
-      messageData.data.interface.ip + ":" + messageData.data.interface.port +
-      " on network " +
-      messageData.data.mobilenetwork.mcc + "-" + messageData.data.mobilenetwork.mnc
+  log.notify('Notifying node: ' + messageData.uatoken +
+      ' to ' + messageData.dt.interface.ip +
+      ':' + messageData.dt.interface.port +
+      ' on network ' + messageData.dt.mobilenetwork.mcc +
+      '-' + messageData.dt.mobilenetwork.mnc +
+      ' and using protocol: ' + messageData.dt.protocol
   );
 
-  mn.getNetwork(messageData.data.mobilenetwork.mcc, messageData.data.mobilenetwork.mnc, function(op) {
-    if(op && op.wakeup) {
-      log.debug("onNewMessage: UDP WakeUp server for " + op.operator + ": " + op.wakeup);
-
-      // Send HTTP Notification Message
-      var options = {
-        host: op.wakeup.split(":")[0],
-        port: op.wakeup.split(":")[1],
-        path: '/?ip=' + messageData.data.interface.ip + '&port=' + messageData.data.interface.port,
-        method: 'GET'
-      };
-
-      var req = http.request(options, function(res) {
-        log.debug('Message status: ' + res.statusCode);
-      });
-
-      req.on('error', function(e) {
-        log.debug('problem with request: ' + e.message);
-      });
-
-      req.end();
-    } else {
-      log.error("onNewMessage: No WakeUp server found");
-      // TODO: Remove Node from Mongo issue #63
+  mn.getNetwork(messageData.dt.mobilenetwork.mcc, messageData.dt.mobilenetwork.mnc, function(error, op) {
+    if (error) {
+      log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
+      return;
     }
+    if (!op || !op.wakeup) {
+      log.debug('UDP::queue::onNewMessage --> No WakeUp server found');
+      return;
+    }
+    log.debug('onNewMessage: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
+
+    // Send HTTP Notification Message
+    var address = {};
+    address.host = op.wakeup.split(':')[0] || null;
+    address.port = op.wakeup.split(':')[1] || null;
+
+    if (!address.host || !address.port) {
+      log.error('UDP:queue:onNewMessage --> Bad address to notify', address);
+      return;
+    }
+
+    var options = {
+      host: address.host,
+      port: address.port,
+      path: '/?ip=' + messageData.dt.interface.ip + '&port=' + messageData.dt.interface.port + '&proto=' + messageData.dt.protocol,
+      method: 'GET'
+    };
+
+    var req = http.request(options, function(res) {
+      log.debug('Message status: ' + res.statusCode);
+    });
+
+    req.on('error', function(e) {
+      log.debug('problem with request: ' + e.message);
+    });
+
+    req.end();
   }.bind(this));
 }
 
@@ -102,10 +115,11 @@ server.prototype = {
   //////////////////////////////////////////////
 
   init: function() {
-    log.info("NS_UDP:init --> Starting UA-UDP server");
+    log.info('NS_UDP:init --> Starting UA-UDP server');
 
+    var self = this;
     msgBroker.on('brokerconnected', function() {
-      this.ready = true;
+      self.ready = true;
       var args = {
         durable: false,
         autoDelete: true,
@@ -113,37 +127,33 @@ server.prototype = {
           'x-ha-policy': 'all'
         }
       };
-      msgBroker.subscribe("UDP", args, function(msg) { onNewMessage(msg); });
+      msgBroker.subscribe('UDP', args, function(msg) { onNewMessage(msg); });
     });
 
-    var self = this;
     msgBroker.on('brokerdisconnected', function() {
-      this.ready = false;
+      self.ready = false;
       log.critical('ns_udp::init --> Broker DISCONNECTED!!');
     });
 
     // Subscribe to the UDP common Queue
-    setTimeout(function() {
+    process.nextTick(function() {
       msgBroker.init();
-    }, 10);
+    });
 
     //Check if we are alive
     setTimeout(function() {
-      if (!this.ready)
+      if (!self.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30*1000); //Wait 30 seconds
+    }, 30 * 1000); //Wait 30 seconds
 
   },
 
-  stop: function(callback) {
+  stop: function() {
     this.ready = false;
-    log.info("NS_UDP:stop --> Closing UDP server");
+    log.info('NS_UDP:stop --> Closing UDP server');
 
     //Closing connection with msgBroker
     msgBroker.close();
-
-    //Calling the callback (no error)
-    callback(null);
   }
 };
 

@@ -1,6 +1,7 @@
 /**
- * PUSH Notification server V 0.2
+ * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
+ * License: GNU Affero V3 (see LICENSE file)
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
@@ -15,24 +16,32 @@ exports.servers = {
   NS_UA_WS: true,
   NS_UA_UDP: true,
   NS_WakeUp: true
-}
+};
 
 ////////////////////////////////////////////////////////////////////////
 // Common configuration parameters
 ////////////////////////////////////////////////////////////////////////
 
 /********************* Constants********************************************/
-
 exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
   PREPRODUCTION_MODE: true,
+  MAX_TTL: 2592000, // 30 days, in seconds (60*60*24*30)
+
+  /**
+   * This is the Key and the Certificate of the server. Should be shared
+   * between all frontends that receive connections (NS_AS, NS_UA_WS).
+   * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
+   */
+
+  key: '../examples/ssl_cert/server-key.pem',
+  cert: '../examples/ssl_cert/server-cert.pem',
 
   /**
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: "http://localhost:8081",
-
+  publicBaseURL: "https://localhost:8081",
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
@@ -43,8 +52,21 @@ exports.consts = {
 };
 
 /********************* Logger parameters ***********************************/
+var loglevel = require('./common/constants.js').loglevels;
 exports.logger = {
-  MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
+  /**
+   * Log levels:
+   *
+   * # NONE: Log disabled
+   * # DEBUG: Very detailed information about all the things the server is doing
+   * # INFO: General information about the things the server is doing
+   * # ERROR: Error detected, but the server can continue working
+   * # ALERT: Error detected but not directly on this process, so this is a
+   *          notification that should be investigated
+   * # NOTIFY: General notifications, ie. New connections
+   * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
+   */
+  LOGLEVEL: loglevel.CRITICAL | loglevel.NOTIFY,
   CONSOLEOUTPUT: 1,
   BASE_PATH: "/var/log/push_server/"
 };
@@ -53,13 +75,25 @@ exports.logger = {
 /**
  * Choose your host, port and other self-explanatory options
  */
-exports.queue = {
-  host: '127.0.0.1',
-  port: 5672, //AMQP default port
-  debug: false,
-  login: 'guest',
-  password: 'guest'
-};
+exports.queue = [{
+    host: '127.0.0.1',
+    port: 5672, //AMQP default port
+    login: 'guest',
+    password: 'guest'
+  },
+  {
+    host: '127.0.0.1',
+    port: 5672, //AMQP default port
+    login: 'guest',
+    password: 'guest'
+  },
+  {
+    host: '127.0.0.1',
+    port: 5672, //AMQP default port
+    login: 'guest',
+    password: 'guest'
+  }
+];
 
 /********************* Database configuration *************************/
 /**
@@ -70,7 +104,8 @@ exports.queue = {
 //DDBB defaults to using MongoDB in a replicaset
 /*exports.ddbbsettings = {
   machines: [
-    ["localhost", 27017]
+    ["owd-push-qa-be1", 27017],
+    ["owd-push-qa-be2", 27017]
   ],
   ddbbname: "push_notification_server",
   replicasetName: "Server_Push"
@@ -79,7 +114,7 @@ exports.queue = {
 //DDBB defaults to use a single MongoDB instance
 exports.ddbbsettings = {
   machines: [
-    ["localhost", 27017]
+    ["127.0.0.1", 27017]
   ],
   ddbbname: "push_notification_server",
   replicasetName: null
@@ -99,7 +134,8 @@ exports.NS_AS = {
   interfaces: [
     {
       ip: "0.0.0.0",
-      port: 8081
+      port: 8081,
+      ssl: true
     }
   ]
 };
@@ -114,6 +150,7 @@ exports.NS_Monitor = {
 
 exports.NS_UA_WS = {
   logfile: "NS_UA_WS.log",
+
   /**
    * Binding interfaces and ports
    * [ iface, port ]
@@ -122,7 +159,8 @@ exports.NS_UA_WS = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 8080
+      port: 8080,
+      ssl: true
     }
   ],
 
@@ -160,7 +198,14 @@ exports.NS_WakeUp = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 8090
+      port: 8090,
+      ssl: false
     }
   ]
+};
+
+/********************* NS start.js ***********************************/
+
+exports.NS = {
+  logfile: "NS.log"
 };

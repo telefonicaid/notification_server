@@ -8,15 +8,18 @@
 
 var dgram = require('dgram');
 
-function connector_udp(data,conn) {
+function connector_udp(data, connection) {
   this.data = data;
-  this.connection = conn;
-  this.connection.close();
+  this.connection = connection;
 }
 
 connector_udp.prototype = {
   getType: function() {
-    return "UDP";
+    return 'UDP';
+  },
+
+  getServer: function() {
+    return 'UDP';
   },
 
   getInterface: function() {
@@ -27,13 +30,17 @@ connector_udp.prototype = {
     return this.data.mobilenetwork;
   },
 
+  getProtocol: function() {
+    return 'udp';
+  },
+
   getConnection: function() {
     return this.connection;
   },
 
   notify: function(msgList) {
     // Notify the handset with the associated Data
-    log.error("Connector UDP: Notify to " + this.data.interface.ip + " not valid on this server");
+    log.error('Connector UDP: Notify to ' + this.data.interface.ip + ' not valid with this connector');
   }
 };
 

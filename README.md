@@ -1,76 +1,51 @@
 Mozilla PUSH Notification server [![Build Status](https://secure.travis-ci.org/telefonicaid/notification_server.png)](http://travis-ci.org/telefonicaid/notification_server/)
 ===
 
-### Authors:
+## Authors:
 
 - Andreas Gal (gal @ mozilla . com)
 - Fernando Rodríguez Sela (frsela @ tid . es)
 - Thinker Li (tlee @ mozilla . com)
 - Guillermo Lopez Leal (gll @ tid . es)
 
-### Introduction
+## Introduction
 
-The main objective is to reduce the battery comsuption & network traffic avoiding keep-alive messages.
-So the server shall be allocated inside the MNO private network with two network interfaces:
+The objective of this Push server is to reduce the battery comsuption & network traffic avoiding keep-alive messages.
+The server could be allocated inside the MNO private network with two network interfaces:
 
 * To connect with user handset
 * To connect from Internet
 
-Diagram:
+## API for third party developers
 
-    Handset       NotificationServer      WebSite
-    -------       ------------------      -------
-    |                    |                    |
-    | register(token,ip) |                    |
-    |------------------->|                    |
-    | Ok (publicURL)     |                    |
-    |<-------------------|                    |
-    |                    |                    |
-    | GET: JS API        |                    |
-    |---------------------------------------->|
-    |  200 OK            |                    |
-    |<----------------------------------------|
-    |                    |                    |
-    | AJAX: register(publicURL, publicKey)    |
-    |---------------------------------------->|
-    |                    |                    |
-    |                    | notif(origin, data)|
-    |                    |<-------------------|
-    | notfy(origin, data)|                    |
-    |<-------------------|                    |
-    |                    |                    |
-    | ACK (OPTIONAL)     |                    |
-    |---------------------------------------->|
-    |                    |                    |
-    |                    |                    |
-    |                    |                    |
-
-
-
-## Notification server API
-
- PRIVATE INTERFACE
-
-    -> GET https://privateURL/register?token=uuid[&ip=address]
-    <- 200 OK "REGISTERED&publicURL=https://publicURL/notify/token"
-    <- 200 OK "NOTIFY ORIGIN DATA"
-
- PUBLIC INTERFACE
-
-    -> POST https://publicURL/notify/token?data=xxxx
+#### Register device
+    -> GET https://NSurl/token
+    -> Open WebSocket to the same origin as above
+    -> Send registerUA message through that WS
     <- 200 OK
-    <- verifyOrigin: GET https://websiteOriginURL
-    (validate certificate)
+    -> RegisterWA
+    <- 200 OK || 4xx ERROR, reason
+
+#### Send notification
+
+    -> POST https://publicURL/notify/APPtoken
+        with a JSON
+    <- 200 OK || 4xx ERROR, reason
+
+#### Receive notification:
+    <- (Through the WS): A JSON.
+
+## Documentation
+It's on [a wiki page](https://github.com/telefonicaid/notification_server/wiki/_pages), but that doesn't mean that it's updated. We are working on a document.
 
 ## Requirements / Dependencies
-* Node.JS (>= 0.8.x)
-* MongoDB (>= 2.0.x)
-* RabbitMQ (>= 2.8.x) (shall support AMQP protocol)
+* [Node.JS (>= 0.8.x)](http://nodejs.org/)
+* [MongoDB (>= 2.2.x)](http://www.mongodb.org/)
+* [RabbitMQ (>= 2.8.x)](http://www.rabbitmq.com/) (with AMQP protocol active)
 
 ### Node.JS Modules (```npm install <module>```)
-* node-uuid (1.3.x) - https://github.com/broofa/node-uuid
-* websocket (1.0.x) - https://github.com/Worlize/WebSocket-Node
-* mongodb --mongodb:native (1.0.x) - https://github.com/mongodb/node-mongodb-native
-* node-amqp (0.1.x) - https://github.com/postwait/node-amqp
-* forever-monitor (1.0.x) - https://github.com/nodejitsu/forever-monitor
-
+* [node-uuid (1.3.x)](https://github.com/broofa/node-uuid)
+* [websocket (1.0.x)](https://github.com/Worlize/WebSocket-Node)
+* [mongodb (1.2.x)](https://github.com/mongodb/node-mongodb-native)
+* [node-amqp (0.1.x)](https://github.com/postwait/node-amqp)
+* [forever-monitor (1.0.x)](https://github.com/nodejitsu/forever-monitor)

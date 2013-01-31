@@ -1,6 +1,6 @@
 {
     "name": "push-notification-server",
-    "version": "0.5.0",
+    "version": "0.5.1",
     "author": "Telefónica I+D. 2012",
     "description": "a push notification server for desktop and mobile",
     "contributors": [
@@ -17,6 +17,9 @@
         "type": "git",
         "url": "https://github.com/telefonicaid/notification_server"
     },
+    "bugs": {
+        "url": "http://github.com/telefonicaid/notification_server/issues"
+    },
     "keywords": [
         "push",
         "notification",
@@ -27,16 +30,21 @@
         "websocket": "1.0.x",
         "mongodb": "1.x.x",
         "amqp": "0.1.x",
-        "forever-monitor": "1.1.x"
+        "forever-monitor": "1.1.x",
+        "string" : "*"
     },
     "devDependencies": {
-        "vows": "0.6.x"
+        "vows": "0.6.x",
+        "nodetime": "*"
     },
     "engines": {
         "node": ">=0.8.x"
     },
-    "license": "GNU AFFERO GENERAL PUBLIC LICENSE v3",
+    "license": {
+        "type": "GNU Affero General Public License",
+        "url": "http://www.gnu.org/licenses/agpl-3.0.html"
+    },
     "scripts": {
-        "test": "./node_modules/.bin/vows test/*.js --spec"
+       "test": "./node_modules/.bin/vows test/functional/*-test.js --spec ; ./node_modules/.bin/vows test/unit/*-test.js --spec"
     }
 }

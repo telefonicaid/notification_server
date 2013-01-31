@@ -1,0 +1,78 @@
+/**
+ * PUSH Notification server
+ * (c) Telefonica Digital, 2012 - All rights reserved
+ * License: GNU Affero V3 (see LICENSE file)
+ * Fernando Rodríguez Sela <frsela@tid.es>
+ * Guillermo Lopez Leal <gll@tid.es>
+ */
+
+var mn = require('../../common/mobilenetwork.js'),
+    log = require('../../common/logger.js'),
+    connector_ws = require('./connector_ws.js'),
+    connector_udp = require('./connector_udp.js');
+
+function Connector() {
+  this.nodesConnectors = {};
+}
+
+Connector.prototype = {
+  /**
+   * Create and return a connector object based on the data received
+   */
+  getConnector: function(data, connection, callback) {
+    if (this.nodesConnectors[data.uatoken]) {
+      return callback(null, this.nodesConnectors[data.uatoken]);
+    } else if (data.interface && data.interface.ip && data.interface.port &&
+       data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc) {
+      mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
+        if (error) {
+          log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
+          return;
+        }
+        if (!op || !op.wakeup) {
+          log.debug('UDP::queue::onNewMessage --> No WakeUp server found for MCC=' +
+                     data.mobilenetwork.mcc + ' and MNC=' + data.mobilenetwork.mnc);
+          var connector = new connector_ws(data, connection);
+          this.nodesConnectors[data.uatoken] = connector;
+          callback(null, connector);
+          return;
+        }
+        var connector = null;
+        log.debug('getConnector: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
+        connector = new connector_udp(data, connection);
+        this.nodesConnectors[data.uatoken] = connector;
+        callback(null, connector);
+      }.bind(this));
+    } else {
+      //Fallback
+      var connector = new connector_ws(data, connection);
+      this.nodesConnectors[data.uatoken] = connector;
+      callback(null, connector);
+    }
+  },
+
+  getConnectorForUAtoken: function(uatoken) {
+    return this.nodesConnectors[uatoken];
+  },
+
+  getUAtokenForConnection: function(connection) {
+    Object.keys(this.nodesConnectors).forEach(function(elem) {
+      if (this.nodesConnectors[elem] === connection);
+      return this.nodesConnectors[elem];
+    });
+  },
+
+  unregisterUAToken: function(uatoken) {
+    if (this.nodesConnectors[uatoken]) {
+      this.nodesConnectors[uatoken].getConnection().close();
+      delete this.nodesConnectors[uatoken];
+    }
+  }
+};
+
+var connector = new Connector();
+function getConnector() {
+  return connector;
+}
+
+exports.getConnector = getConnector;
