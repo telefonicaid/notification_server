@@ -27,6 +27,10 @@ exports.consts = {
   MAX_PAYLOAD_SIZE: 1024,
   MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
+  /**
+   * Default Maximum Time To Live
+   * If no provided by AS this TTL will be assigned to the message
+   */
   MAX_TTL: 2592000, // 30 days, in seconds (60*60*24*30)
 
   /**
@@ -138,7 +142,7 @@ exports.NS_AS = {
     {
       ip: '0.0.0.0',
       port: 8081,
-      ssl: true
+      ssl: true        // Enable SSL
     }
   ]
 };
@@ -156,14 +160,14 @@ exports.NS_UA_WS = {
 
   /**
    * Binding interfaces and ports
-   * [ iface, port ]
+   * [ iface, port, ssl ]
    */
   interfaces: [
     // Internal network
     {
       ip: '0.0.0.0',
       port: 8080,
-      ssl: true
+      ssl: true        // Enable SSL
     }
   ],
 
@@ -177,7 +181,7 @@ exports.NS_UA_WS = {
    * with a client. It's the client who needs to keep track of it (with a PING message)
    */
   websocket_params: {
-    keepalive: false
+    keepalive: false    // By default, currently the KA messages will be managed by the client side
     /*keepaliveInterval: 40000,
     dropConnectionOnKeepaliveTimeout: true,
     keepaliveGracePeriod: 30000*/
@@ -197,14 +201,14 @@ exports.NS_WakeUp = {
 
   /**
    * Binding interfaces and ports
-   * [ iface, port ]
+   * [ iface, port, ssl ]
    */
   interfaces: [
     // Internal network
     {
       ip: '0.0.0.0',
       port: 8090,
-      ssl: false
+      ssl: false        // Disable SSL
     }
   ]
 };
