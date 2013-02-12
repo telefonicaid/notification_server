@@ -80,7 +80,7 @@ logger.prototype = {
     if (this.consoleOutput) {
       console.log(color + logmsg + this.color_reset);
       if (trace) {
-    console.trace('logger::log --> Callstack:');
+	console.trace('logger::log --> Callstack:');
       }
     }
   },

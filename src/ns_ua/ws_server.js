@@ -22,6 +22,9 @@ var log = require('../common/logger.js'),
     errorcodesWS = require('../common/constants').errorcodes.UAWS,
     pages = require('../common/pages.js');
 
+
+//var MozillaUAv1 = require('./mozilla/MozillaUAv1');
+
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -234,34 +237,40 @@ server.prototype = {
           break;
 
         case 'about':
-      if (consts.PREPRODUCTION_MODE) {
-        try {
-          var p = new pages();
-              p.setTemplate('views/aboutWS.tmpl');
-              text = p.render(function(t) {
-                switch (t) {
-                  case '{{GIT_VERSION}}':
-                    return require('fs').readFileSync('version.info');
-                  case '{{MODULE_NAME}}':
-                    return 'User Agent Frontend';
-                  case '{{PARAM_TOKENSGENERATED}}':
-                    return this.tokensGenerated;
-                  case '{{PARAM_CONNECTIONS}}':
-                    return this.wsConnections;
-                  case '{{PARAM_MAXCONNECTIONS}}':
-                    return this.wsMaxConnections;
-                  default:
-                    return "";
-                }
-              }.bind(this));
-        } catch (e) {
-          text = 'No version.info file';
+          if (consts.PREPRODUCTION_MODE) {
+            try {
+              var p = new pages();
+                  p.setTemplate('views/aboutWS.tmpl');
+                  text = p.render(function(t) {
+                    switch (t) {
+                      case '{{GIT_VERSION}}':
+                        return require('fs').readFileSync('version.info');
+                      case '{{MODULE_NAME}}':
+                        return 'User Agent Frontend';
+                      case '{{PARAM_TOKENSGENERATED}}':
+                        return this.tokensGenerated;
+                      case '{{PARAM_CONNECTIONS}}':
+                        return this.wsConnections;
+                      case '{{PARAM_MAXCONNECTIONS}}':
+                        return this.wsMaxConnections;
+                      default:
+                        return "";
+                    }
+                  }.bind(this));
+            } catch (e) {
+              text = 'No version.info file';
             }
             return response.res(errorcodes.NO_ERROR, text);
           } else {
             return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
           }
           break;
+
+        //Case for Mozilla Frontend: https://wiki.mozilla.org/WebAPI/SimplePush/ServerAPI
+        case 'v1':
+          var moz = new MozillaUAv1();
+          moz.processMozRequest(request, response);
+          return;
 
         default:
           log.debug('WS::onHTTPMessage --> messageType not recognized');

@@ -433,7 +433,7 @@ var DataStore = function() {
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::newMessage --> There was a problem opening the messages collection: ' + err);
+	log.error('datastore::newMessage --> There was a problem opening the nodes collection: ' + err);
         return;
       }
       collection.findAndModify(
@@ -446,9 +446,42 @@ var DataStore = function() {
         },
         function(err, data) {
           if (err) {
-            log.error('dataStore::registerApplication --> Error inserting message to node: ' + err);
+	    log.error('dataStore::newMessage --> Error inserting message to node: ' + err);
+	  } else {
+	    log.debug('dataStore::newMessage --> Message inserted');
+	  }
+	}
+      );
+    });
+    return msg;
+  },
+
+  /**
+   * Save a new message
+   * @return New message as stored on DB.
+   */
+  this.newVersion = function(id, channelID, version) {
+    var msg = {};
+    msg.messageId = id;
+    msg.channelID = channelID;
+    msg.version = version;
+
+    this.db.collection('nodes', function(err, collection) {
+      if (err) {
+	log.error('datastore::newVersion --> There was a problem opening the nodes collection: ' + err);
+	return;
+      }
+      collection.findAndModify(
+	{ ch: channelID },
+	[],
+	{
+	  vs: version
+	},
+	function(err, data) {
+	  if (err) {
+	    log.error('dataStore::newVersion --> Error updating version for node: ' + err);
           } else {
-            log.debug('dataStore::registerApplication --> Message inserted');
+	    log.debug('dataStore::newVersion --> Version updated');
           }
         }
       );
