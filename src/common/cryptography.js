@@ -96,8 +96,9 @@ cryptography.prototype = {
   parseClientCertificate: function(cert, cb) {
     var baseCmd = 'openssl x509 -noout';
     var certificate = {
-      c: cert
+      c: cert.toString('utf8').trim()
     };
+    var self = this;
     var cmdSubject = exec(baseCmd+' -subject', function(err,stdout,stderr) {
       if (err) {
         cb('[parseClientCertificate] Error, invalid certificate: ' + stderr,
@@ -106,20 +107,14 @@ cryptography.prototype = {
       }
       certificate.s = stdout.substring(stdout.search('=')+1,stdout.length-1);
 
-      // Modulus
-      var cmdModulus = exec(baseCmd+' -modulus', function(err,stdout,stderr) {
-        certificate.m = stdout.substring(stdout.search('=')+1,stdout.length-1);
-
-        // Fingerprint
-        var cmdFP = exec(baseCmd+' -fingerprint', function(err,stdout,stderr) {
-          certificate.f = stdout.substring(stdout.search('=')+1,stdout.length-1);
-          cb(null, certificate);
-        });
-        cmdFP.stdin.write(cert);
-        cmdFP.stdin.end();
-      });
-      cmdModulus.stdin.write(cert);
-      cmdModulus.stdin.end();
+      // Fingerprint
+      var cmdFP = exec(baseCmd+' -fingerprint', function(err,stdout,stderr) {
+        certificate.f = stdout.substring(stdout.search('=')+1,stdout.length-1);
+        certificate.fs = this.hashSHA256(certificate.f);
+        cb(null, certificate);
+      }.bind(self));
+      cmdFP.stdin.write(cert);
+      cmdFP.stdin.end();
     });
     cmdSubject.stdin.write(cert);
     cmdSubject.stdin.end();

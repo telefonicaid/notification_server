@@ -419,12 +419,11 @@ server.prototype = {
                       });
                     }
                     log.debug('[VALID CERTIFICATE] ' + cert.c);
-                    log.debug('[VALID CERTIFICATE MODULUS] ' + cert.m);
                     log.debug('[VALID CERTIFICATE FINGERPRINT] ' + cert.f);
 
                     // Valid certificate, register and store in database
                     log.debug('WS::onWSMessage::registerWA UAToken: ' + connection.uatoken);
-                      appToken = helpers.getAppToken(watoken, cert.m+cert.f);
+                      appToken = helpers.getAppToken(watoken, cert.f);
                       dataManager.registerApplication(appToken, watoken, connection.uatoken, cert, function(error) {
                         if (!error) {
                           var notifyURL = helpers.getNotificationURL(appToken);
