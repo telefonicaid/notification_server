@@ -177,7 +177,7 @@ var DataStore = function() {
   /**
    * Register a new application
    */
-  this.registerApplication = function(appToken, waToken, uatoken, pbkbase64, callback) {
+  this.registerApplication = function(appToken, waToken, uatoken, cert, callback) {
     // Store in MongoDB
     this.db.collection('apps', function(err, collection) {
       if (!err) {
@@ -185,7 +185,7 @@ var DataStore = function() {
           { _id: appToken },
           { $set:
             {
-              pb: pbkbase64,
+              ce: cert,
               wa: waToken
             },
             $addToSet:

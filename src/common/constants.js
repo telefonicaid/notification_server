@@ -44,7 +44,7 @@ exports.errorcodes = {
     NOT_VALID_JSON_PACKAGE: [450, 'Data received is not a valid JSON package'],
     NOT_VALID_UATOKEN: [456, 'UAtoken not valid for this server. Get a new one'],
     NOT_VALID_WATOKEN: [457, 'Not valid WAtoken sent'],
-    NOT_VALID_PBK: [458, 'Not valid PbK sent'],
+    NOT_VALID_CERTIFICATE_URL: [458, 'Not valid Certificate URL sent'],
     UATOKEN_NOT_FOUND: [459, 'No UAtoken found for this connection!'],
     FAILED_REGISTERUA: [460, 'Failed registering UAtoken'],
     ERROR_GETTING_CONNECTOR: [461, 'Error getting connection object'],

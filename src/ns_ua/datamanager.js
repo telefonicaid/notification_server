@@ -112,9 +112,9 @@ datamanager.prototype = {
   /**
    * Register a new application
    */
-  registerApplication: function (appToken, waToken, uatoken, pbkbase64, callback) {
+  registerApplication: function (appToken, waToken, uatoken, cert, callback) {
     // Store in persistent storage
-    dataStore.registerApplication(appToken, waToken, uatoken, pbkbase64, callback);
+    dataStore.registerApplication(appToken, waToken, uatoken, cert, callback);
   },
 
  /**
