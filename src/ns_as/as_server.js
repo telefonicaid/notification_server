@@ -70,6 +70,9 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
     if (error) {
       return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
     }
+    if (!certificate.fingerprint) {
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
+    }
 
     if (crypto.hashSHA256(certificate.fingerprint) != cert.fs) {
       log.debug('NS_AS::onNewPushMessage --> Rejected. Bad certificate, dropping notification');
