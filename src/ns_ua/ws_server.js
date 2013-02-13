@@ -402,8 +402,9 @@ server.prototype = {
               });
             }
             // HTTP or HTTPS ?
-            eval(certUrl.protocol.substring(0,certUrl.protocol.length-1)).get(certUrl.href, function(res) {
+            var req = eval(certUrl.protocol.substring(0,certUrl.protocol.length-1)).get(certUrl.href, function(res) {
                 res.on('data', function(d) {
+                  req.abort();
                   log.debug('Certificate received');
                   crypto.parseClientCertificate(d,function(err,cert) {
                     log.debug('Certificate processed');
