@@ -385,22 +385,22 @@ var DataStore = function() {
   },
 
   /**
-   * Get the Pbk of the WA.
-   * @ return the pbk.
+   * Get the Certificate of the WA.
+   * @ return the public certificate.
    */
-  this.getPbkApplication = function(appToken, callback) {
+  this.getCertificateApplication = function(appToken, callback) {
     var appToken = appToken.toString();
-    log.debug('datastore::getPbkApplication --> Going to find the pbk for the appToken ' + appToken);
+    log.debug('datastore::getCertificateApplication --> Going to find the certificate for the appToken ' + appToken);
     this.db.collection('apps', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getPbkApplication --> there was a problem opening the apps collection: ' + err);
+        log.error('datastore::getCertificateApplication --> there was a problem opening the apps collection: ' + err);
         callback(err);
         return;
       }
       collection.findOne({ _id: appToken }, function(err, data) {
         if (err) {
-          log.error('datastore::getPbkApplication --> There was a problem finding the PbK - ' + err);
+          log.error('datastore::getCertificateApplication --> There was a problem finding the certificate - ' + err);
           callback(err);
           return;
         }
@@ -409,14 +409,13 @@ var DataStore = function() {
           callback(null, null);
           return;
         }
-        if (data.pb) {
-          var pb = data.pb.toString('base64');
-          log.debug("datastore::getPbkApplication --> Found the pbk (base64) '" + pb + "' for the appToken '" + appToken);
-          //WARN: This returns the base64 as saved on the DDBB!!
-          callback(null, pb);
+        if (data.ce) {
+          var ce = data.ce;
+          log.debug("datastore::getCertificateApplication --> Found the certificate '" + ce.s + "' for the appToken '" + appToken);
+          callback(null, ce);
         } else {
-          log.debug('datastore::getPbkApplication --> There are no pbk for the appToken ' + appToken);
-          callback('No PbK for the appToken=' + appToken);
+          log.debug('datastore::getCertificateApplication --> There are no certificate for the appToken ' + appToken);
+          callback('No certificate for the appToken=' + appToken);
         }
       });
     });

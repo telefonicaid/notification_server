@@ -21,7 +21,7 @@ var log = require('../common/logger'),
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-function onNewPushMessage(notification, apptoken, callback) {
+function onNewPushMessage(notification, certificate, apptoken, callback) {
   var json = null;
 
   //Only accept valid JSON messages
@@ -38,7 +38,6 @@ function onNewPushMessage(notification, apptoken, callback) {
 
   //These are mandatory
   normalizedNotification.messageType = json.messageType;
-  //normalizedNotification.sig = json.signature;
   normalizedNotification.id = json.id;
 
   //This are optional, but we set to default parameters
@@ -51,12 +50,6 @@ function onNewPushMessage(notification, apptoken, callback) {
   if (normalizedNotification.messageType != 'notification') {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
     return callback(errorcodesAS.BAD_MESSAGE_TYPE_NOT_NOTIFICATION);
-  }
-
-  //If not signed, reject
-  if (!json.signature) {
-    log.debug('NS_AS::onNewPushMessage --> Rejected. Not signed');
-    return callback(errorcodesAS.BAD_MESSAGE_NOT_SIGNED);
   }
 
   //If bad id (null or undefined), reject
@@ -72,15 +65,15 @@ function onNewPushMessage(notification, apptoken, callback) {
     return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
 
-  //Get the PbK for the apptoken in the database
-  dataStore.getPbkApplication(apptoken, function(error, pbkbase64) {
+  //Get the Certificate for the apptoken in the database
+  dataStore.getCertificateApplication(apptoken, function(error, cert) {
     if (error) {
-      return callback(errorcodesAS.BAD_MESSAGE_BAD_SIGNATURE);
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
     }
-    var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
-    if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
-      log.debug('NS_AS::onNewPushMessage --> Rejected. Bad signature, dropping notification');
-      return callback(errorcodesAS.BAD_MESSAGE_BAD_SIGNATURE);
+
+    if (crypto.hashSHA256(certificate.modulus+certificate.fingerprint) != crypto.hashSHA256(cert.m+cert.f)) {
+      log.debug('NS_AS::onNewPushMessage --> Rejected. Bad certificate, dropping notification');
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
     }
 
     var id = uuid.v1();
@@ -111,7 +104,9 @@ server.prototype = {
     if (this.ssl) {
       var options = {
         key: fs.readFileSync(consts.key),
-        cert: fs.readFileSync(consts.cert)
+        cert: fs.readFileSync(consts.cert),
+        requestCert: true,
+        rejectUnauthorized: false
       };
       this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
     } else {
@@ -169,6 +164,10 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    log.debug('[onHTTPMessage auth]', request.connection.authorizationError);
+    log.debug('[onHTTPMessage received certificate]',
+      request.connection.getPeerCertificate());
+
     response.res = function responseHTTP(errorCode) {
       log.debug('NS_AS::responseHTTP: ', errorCode);
       this.statusCode = errorCode[0];
@@ -234,7 +233,7 @@ server.prototype = {
 
       log.debug('NS_AS::onHTTPMessage --> Notification for ' + token);
       request.on('data', function(notification) {
-        onNewPushMessage(notification, token, function(err) {
+        onNewPushMessage(notification, request.connection.getPeerCertificate(), token, function(err) {
           response.res(err);
         });
       });

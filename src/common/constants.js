@@ -31,10 +31,9 @@ exports.errorcodes = {
     BAD_URL_NOT_VALID_APPTOKEN: [451, 'No valid apptoken'],
     BAD_URL_NOT_VALID_METHOD: [405, 'No valid HTTP method'],
     BAD_MESSAGE_TYPE_NOT_NOTIFICATION: [452, 'Not messageType=notification'],
-    BAD_MESSAGE_NOT_SIGNED: [453, 'Not signed'],
     BAD_MESSAGE_BAD_ID: [454, 'Bad id'],
     BAD_MESSAGE_BODY_TOO_BIG: [413, 'Body too big'],
-    BAD_MESSAGE_BAD_SIGNATURE: [455, 'Bad signature, dropping notification']
+    BAD_MESSAGE_BAD_CERTIFICATE: [455, 'Bad certificate, dropping notification']
   },
   UAWS: {
     // HTTP
