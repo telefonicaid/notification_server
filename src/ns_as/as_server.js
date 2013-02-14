@@ -251,34 +251,35 @@ server.prototype = {
       request.on('data', function(data) {
         try {
           var json = JSON.parse(data);
-          if (!json.wakeup ||
-              !json.wakeup.interface ||
-              !json.wakeup.interface.ip ||
-              !json.wakeup.interface.port ||
-              !json.wakeup.mobilenetwork ||
-              !json.wakeup.mobilenetwork.mcc ||
-              !json.wakeup.mobilenetwork.mnc
-             ) {
-            return response.res(errorcodesAS.JSON_NOTVALID_ERROR);
-          }
-
-          msgBroker.push('UDP', {
-            "uatoken": "TODO:_CERT_SUBJECT",
-            "dt": {
-              "interface": {
-                "ip": json.wakeup.interface.ip,
-                "port": json.wakeup.interface.port
-              },
-              "mobilenetwork": {
-                "mcc": json.wakeup.mobilenetwork.mcc,
-                "mnc": json.wakeup.mobilenetwork.mnc
-              }
-            },
-            "messageType": "wakeUP_TrustedServer"
-          });
         } catch (s) {
           return response.res(errorcodesAS.JSON_NOTVALID_ERROR);
         }
+
+        if (!json.wakeup ||
+            !json.wakeup.interface ||
+            !json.wakeup.interface.ip ||
+            !json.wakeup.interface.port ||
+            !json.wakeup.mobilenetwork ||
+            !json.wakeup.mobilenetwork.mcc ||
+            !json.wakeup.mobilenetwork.mnc
+           ) {
+          return response.res(errorcodesAS.JSON_NOTVALID_ERROR);
+        }
+
+        msgBroker.push('UDP', {
+          "uatoken": "TODO:_CERT_SUBJECT",
+          "dt": {
+            "interface": {
+              "ip": json.wakeup.interface.ip,
+              "port": json.wakeup.interface.port
+            },
+            "mobilenetwork": {
+              "mcc": json.wakeup.mobilenetwork.mcc,
+              "mnc": json.wakeup.mobilenetwork.mnc
+            }
+          },
+          "messageType": "wakeUP_TrustedServer"
+        });
       });
       response.res(errorcodes.NO_ERROR);
       break;
