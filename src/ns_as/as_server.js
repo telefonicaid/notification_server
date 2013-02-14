@@ -240,6 +240,49 @@ server.prototype = {
       });
       break;
 
+    case 'wakeup':
+      // TODO: Check if trusted server
+      if (request.method != 'POST') {
+        log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for wakeup)');
+        return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
+      }
+
+      log.debug('NS_AS::onHTTPMessage --> Wakeup . . .');
+      request.on('data', function(data) {
+        try {
+          var json = JSON.parse(data);
+          if (!json.wakeup ||
+              !json.wakeup.interface ||
+              !json.wakeup.interface.ip ||
+              !json.wakeup.interface.port ||
+              !json.wakeup.mobilenetwork ||
+              !json.wakeup.mobilenetwork.mcc ||
+              !json.wakeup.mobilenetwork.mnc
+             ) {
+            return response.res(errorcodesAS.JSON_NOTVALID_ERROR);
+          }
+
+          msgBroker.push('UDP', {
+            "uatoken": "TODO:_CERT_SUBJECT",
+            "dt": {
+              "interface": {
+                "ip": json.wakeup.interface.ip,
+                "port": json.wakeup.interface.port
+              },
+              "mobilenetwork": {
+                "mcc": json.wakeup.mobilenetwork.mcc,
+                "mnc": json.wakeup.mobilenetwork.mnc
+              }
+            },
+            "messageType": "wakeUP_TrustedServer"
+          });
+        } catch (s) {
+          return response.res(errorcodesAS.JSON_NOTVALID_ERROR);
+        }
+      });
+      response.res(errorcodes.NO_ERROR);
+      break;
+
     default:
       log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
       return response.res(errorcodesAS.BAD_URL);
