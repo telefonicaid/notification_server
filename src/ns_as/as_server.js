@@ -52,8 +52,8 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
     return callback(errorcodesAS.BAD_MESSAGE_TYPE_NOT_NOTIFICATION);
   }
 
-  //If bad id (null or undefined), reject
-  if ((normalizedNotification.id === null) || (normalizedNotification.id === undefined)) {
+  //If bad id (null, undefided or empty), reject
+  if ((normalizedNotification.id === null) || (normalizedNotification.id === undefined) || (normalizedNotification.id === '')) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Bad id');
     return callback(errorcodesAS.BAD_MESSAGE_BAD_ID);
   }
