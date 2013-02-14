@@ -39,12 +39,12 @@ var tokensModified = [];
   var tokenito = '';
   var length = 0;
   var tokenitoAfter = '';
-  for (var i = 1000; i > 0; i--) {
+  for (var i = tokenito.length; i > 0; i--) {
     tokenito = token.get();
     length = tokenito.length-1;
     tokenitoAfter = tokenito;
     tokenitoAfter = setCharAt(tokenito,
-                              tokenito.length-1,
+                              tokenito.length-i,
                               String.fromCharCode(tokenito.charCodeAt(length-1) +
                                                   Math.floor(Math.random()*11)));
     tokensModified.push(tokenitoAfter);
