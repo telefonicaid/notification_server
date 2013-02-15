@@ -389,7 +389,7 @@ server.prototype = {
 
             // Recover certificate
             var certUrl = url.parse(certUrl);
-            if (!certUrl.href || !certUrl.protocol || (certUrl.protocol !== 'http:' && certUrl.protocol !== 'https:') ) {
+            if (!certUrl.href || !certUrl.protocol ) {
               log.debug('WS::onWSMessage::registerWA --> Non valid URL');
               //In this case, there is a problem, but there are no certificate.
               //We just reject the registration but we do not close the connection
@@ -401,8 +401,29 @@ server.prototype = {
                 }
               });
             }
-            // HTTP or HTTPS ?
-            var req = eval(certUrl.protocol.substring(0,certUrl.protocol.length-1)).get(certUrl.href, function(res) {
+            // Protocol to use: HTTP or HTTPS ?
+            var protocolHandler = null;
+            switch (certUrl.protocol) {
+            case 'http:':
+              protocolHandler = http;
+              break;
+            case 'https:':
+              protocolHandler = https;
+              break;
+            default:
+              protocolHandler = null;
+            }
+            if (!protocolHandler) {
+              log.debug('WS::onWSMessage::registerWA --> Non valid URL (invalid protocol)');
+              return connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: 'registerWA'
+                }
+              });
+            }
+            var req = protocolHandler.get(certUrl.href, function(res) {
                 res.on('data', function(d) {
                   req.abort();
                   log.debug('Certificate received');
