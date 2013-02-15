@@ -46,6 +46,11 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
   normalizedNotification.timestamp = json.timestamp || (new Date()).getTime();
   normalizedNotification.priority = json.priority ||  '4';
 
+  //Reject if no valid certificate is received
+  if (!certificate.fingerprint) {
+    return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
+  }
+
   //Only accept notification messages
   if (normalizedNotification.messageType != 'notification') {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
@@ -53,7 +58,7 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
   }
 
   //If bad id (null, undefided or empty), reject
-  if ((normalizedNotification.id === null) || (normalizedNotification.id === undefined) || (normalizedNotification.id === '')) {
+  if ((normalizedNotification.id == null) || (normalizedNotification.id == '')) {
     log.debug('NS_AS::onNewPushMessage --> Rejected. Bad id');
     return callback(errorcodesAS.BAD_MESSAGE_BAD_ID);
   }
