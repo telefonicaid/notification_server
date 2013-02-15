@@ -406,7 +406,7 @@ var DataStore = function() {
         }
         if (!data) {
           log.debug('There are no appToken=' + appToken + ' in the DDBB');
-          callback('There are no appToken=' + appToken + ' in the DDBB', null);
+          callback(null, null);
           return;
         }
         if (data.ce) {
