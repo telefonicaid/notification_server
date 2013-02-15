@@ -98,10 +98,9 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-function server(ip, port, ssl) {
+function server(ip, port) {
   this.ip = ip;
   this.port = port;
-  this.ssl = ssl;
 }
 
 server.prototype = {
@@ -109,21 +108,17 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
-    // Create a new HTTP(S) Server
-    if (this.ssl) {
-      var options = {
-        key: fs.readFileSync(consts.key),
-        cert: fs.readFileSync(consts.cert),
-        requestCert: true,
-        rejectUnauthorized: false
-      };
-      this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
-    } else {
-      this.server = require('http').createServer(this.onHTTPMessage.bind(this));
-    }
+    // Create a new HTTPS Server
+    var options = {
+      key: fs.readFileSync(consts.key),
+      cert: fs.readFileSync(consts.cert),
+      requestCert: true,
+      rejectUnauthorized: false
+    };
+    this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('NS_AS::init --> HTTP' + (this.ssl ? 'S' : '') +
-      ' push AS server starting on ' + this.ip + ':' + this.port);
+    log.info('NS_AS::init --> HTTPS push AS server starting on ' +
+      this.ip + ':' + this.port);
 
     var self = this;
     // Events from msgBroker
