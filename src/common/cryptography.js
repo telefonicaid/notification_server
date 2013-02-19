@@ -40,7 +40,7 @@ cryptography.prototype = {
   },
 
   ////////////////////////////////////////////
-  // HASH functons
+  // HASH functions
   ////////////////////////////////////////////
   hashMD5: function(data) {
     return crypto.createHash('md5').update(data).digest('hex');
