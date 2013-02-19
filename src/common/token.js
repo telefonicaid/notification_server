@@ -17,7 +17,7 @@ token.prototype = {
   // The TOKEN shall be unique
   get: function() {
     // Just get a raw uuid as raw token and let's hope unique means unique 
-    var rawToken = uuid.v1();
+    var rawToken = uuid.v4();
     
     var token = rawToken + "@" + crypto.generateHMAC(rawToken, cryptokey);
         
