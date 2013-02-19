@@ -13,18 +13,15 @@ var uuid = require('node-uuid'),
 function token() {}
 
 token.prototype = {
-  serialNumber: 1,
 
   // The TOKEN shall be unique
   get: function() {
-    // SerialNumber + TimeStamp + NotificationServer_Id + CRC -> RAWToken
-    var rawToken = this.serialNumber++ + '#' + Date.now() + '#' + process.serverId + '_' + uuid.v1();
-
-    // CRC
-    rawToken += '@' + crypto.hashMD5(rawToken);
-
-    // Encrypt token with AES
-    return crypto.encryptAES(rawToken, cryptokey);
+    // Just get a raw uuid as raw token and let's hope unique means unique 
+    var rawToken = uuid.v1();
+    
+    var token = rawToken + "@" + crypto.generateHMAC(rawToken, cryptokey);
+        
+    return token;
   },
 
   // Verify the given TOKEN
@@ -32,11 +29,11 @@ token.prototype = {
     if (!token)
       return false;
 
-    // Decrypt token
-    var rawToken = crypto.decryptAES(token, cryptokey).split('@');
+    // Split token and HMAC
+    var tokenAndHMAC = token.split('@');
 
-    // CRC Verification
-    return (rawToken[1] == crypto.hashMD5(rawToken[0]));
+    //  Verification
+    return (tokenAndHMAC[1] == crypto.generateHMAC(tokenAndHMAC[0], cryptokey));
   }
 };
 

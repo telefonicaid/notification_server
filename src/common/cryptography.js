@@ -12,57 +12,6 @@ var crypto = require('crypto');
 function cryptography() {}
 
 cryptography.prototype = {
-  ////////////////////////////////////////////
-  // Simmetric encryption
-  ////////////////////////////////////////////
-
-  /**
-   * Simmetric Encrypt
-   */
-  _encrypt: function(data, key, algorithm)
-  {
-    var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex';            // hex, base64
-
-    var cipher = crypto.createCipher(algorithm, key);
-    var ciphertext = '';
-    ciphertext = cipher.update(data, clearEncoding, cipherEncoding);
-    ciphertext += cipher.final(cipherEncoding);
-
-    return (ciphertext);
-  },
-
-  /**
-   * Simmetric Decrypt
-   */
-  _decrypt: function(ciphertext, key, algorithm) {
-    var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex';            // hex, base64
-
-    var decipher = crypto.createDecipher(algorithm, key);
-    var data = '';
-    try {
-      data = decipher.update(ciphertext, cipherEncoding, clearEncoding);
-      data += decipher.final(cipherEncoding);
-    } catch (err) {}
-    return data;
-  },
-
-  /**
-   * AES Encrypt
-   */
-  encryptAES: function(data, key) {
-    var algorithm = 'aes-128-cbc';
-    return this._encrypt(data, key, algorithm);
-  },
-
-  /**
-   * AES Decrypt
-   */
-  decryptAES: function(data, key) {
-    var algorithm = 'aes-128-cbc';
-    return this._decrypt(data, key, algorithm);
-  },
 
   ////////////////////////////////////////////
   // Signature validations
@@ -91,7 +40,7 @@ cryptography.prototype = {
   },
 
   ////////////////////////////////////////////
-  // HASH funcitons
+  // HASH functons
   ////////////////////////////////////////////
   hashMD5: function(data) {
     return crypto.createHash('md5').update(data).digest('hex');
@@ -103,7 +52,13 @@ cryptography.prototype = {
 
   hashSHA512: function(data) {
     return crypto.createHash('sha512').update(data).digest('hex');
+  },
+
+  // Lets go with SHA-1 for now, can change it later on
+  generateHMAC: function(data,key) {
+     return crypto.createHmac('sha1', key).update(data).digest('hex');
   }
+
 };
 
 ///////////////////////////////////////////
