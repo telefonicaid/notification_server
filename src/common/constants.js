@@ -31,10 +31,9 @@ exports.errorcodes = {
     BAD_URL_NOT_VALID_APPTOKEN: [451, 'No valid apptoken'],
     BAD_URL_NOT_VALID_METHOD: [405, 'No valid HTTP method'],
     BAD_MESSAGE_TYPE_NOT_NOTIFICATION: [452, 'Not messageType=notification'],
-    BAD_MESSAGE_NOT_SIGNED: [453, 'Not signed'],
     BAD_MESSAGE_BAD_ID: [454, 'Bad id'],
     BAD_MESSAGE_BODY_TOO_BIG: [413, 'Body too big'],
-    BAD_MESSAGE_BAD_SIGNATURE: [455, 'Bad signature, dropping notification']
+    BAD_MESSAGE_BAD_CERTIFICATE: [455, 'Bad certificate, dropping notification']
   },
   UAWS: {
     // HTTP
@@ -44,7 +43,7 @@ exports.errorcodes = {
     NOT_VALID_JSON_PACKAGE: [450, 'Data received is not a valid JSON package'],
     NOT_VALID_UATOKEN: [456, 'UAtoken not valid for this server. Get a new one'],
     NOT_VALID_WATOKEN: [457, 'Not valid WAtoken sent'],
-    NOT_VALID_PBK: [458, 'Not valid PbK sent'],
+    NOT_VALID_CERTIFICATE_URL: [458, 'Not valid Certificate URL sent'],
     UATOKEN_NOT_FOUND: [459, 'No UAtoken found for this connection!'],
     FAILED_REGISTERUA: [460, 'Failed registering UAtoken'],
     ERROR_GETTING_CONNECTOR: [461, 'Error getting connection object'],
