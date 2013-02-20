@@ -26,81 +26,6 @@ var log = require('../common/logger.js'),
     http = require('http'),
     https = require('https');
 
-////////////////////////////////////////////////////////////////////////////////
-// Callback functions
-////////////////////////////////////////////////////////////////////////////////
-function onNewMessage(message) {
-  log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
-  var json = {};
-  try {
-    json = JSON.parse(message);
-  } catch (e) {
-    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
-    return;
-  }
-  // If we don't have enough data, return
-  if (!json.uaid ||
-      !json.messageId ||
-      !json.payload) {
-    return log.error('WS::queue::onNewMessage --> Not enough data!');
-  }
-  log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
-  log.notify('Message with id ' + json.messageId + ' sent to ' + json.uaid);
-  dataManager.getNode(json.uaid, function(nodeConnector) {
-    if (nodeConnector) {
-      var notification = json.payload;
-
-      //Send the URL not the appToken
-      notification.url = helpers.getNotificationURL(notification.appToken);
-      delete notification.appToken;
-      log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
-      nodeConnector.notify(new Array(notification));
-    } else {
-      log.debug('WS::Queue::onNewMessage --> No node found');
-    }
-  });
-}
-
-function onNodeRegistered(error, data, uaid) {
-  var connection = this;
-  if (error) {
-    connection.res({
-      errorcode: errorcodesWS.FAILED_REGISTERUA,
-      extradata: { messageType: 'hello' }
-    });
-    log.debug('WS::onWSMessage --> Failing registering UA');
-    return;
-  }
-  dataManager.getNodeData(uaid, function(error, data) {
-    if (error) {
-      log.debug('WS::onWSMessage --> Failing registering UA');
-      connection.res({
-        errorcode: errorcodesWS.FAILED_REGISTERUA,
-        extradata: { messageType: 'hello' }
-      });
-      return;
-    }
-    var WAtokensUrl = [];
-    if (data.wa) {
-      WAtokensUrl = (data.wa).map(function(watoken) {
-        return helpers.getNotificationURL(watoken);
-      });
-    }
-    connection.res({
-      errorcode: errorcodes.NO_ERROR,
-      extradata: {
-        messageType: 'hello',
-        uaid: uaid,
-        status: statuscodes.REGISTERED,
-        channelIDs: WAtokensUrl
-      }
-    });
-    log.debug('WS::onWSMessage --> OK register UA');
-  });
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 function server(ip, port, ssl) {
   this.ip = ip;
   this.port = port;
@@ -166,7 +91,37 @@ server.prototype = {
             'x-ha-policy': 'all'
           }
         };
-        msgBroker.subscribe(process.serverId, args, function(msg) {onNewMessage(msg);});
+        msgBroker.subscribe(process.serverId, args, function onNewMessage(message) {
+          log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
+          var json = {};
+          try {
+            json = JSON.parse(message);
+          } catch (e) {
+            log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
+            return;
+          }
+          // If we don't have enough data, return
+          if (!json.uaid ||
+              !json.messageId ||
+              !json.payload) {
+            return log.error('WS::queue::onNewMessage --> Not enough data!');
+          }
+          log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
+          log.notify('Message with id ' + json.messageId + ' sent to ' + json.uaid);
+          dataManager.getNode(json.uaid, function(nodeConnector) {
+            if (nodeConnector) {
+              var notification = json.payload;
+
+              //Send the URL not the appToken
+              notification.url = helpers.getNotificationURL(notification.appToken);
+              delete notification.appToken;
+              log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
+              nodeConnector.notify(new Array(notification));
+            } else {
+              log.debug('WS::Queue::onNewMessage --> No node found');
+            }
+          });
+        });
         self.ready = true;
       });
       msgBroker.on('brokerdisconnected', function() {
@@ -359,7 +314,44 @@ server.prototype = {
 
             // New UA registration
             log.debug('WS::onWSMessage --> HELLO - UA registration message');
-            dataManager.registerNode(query.data, connection, onNodeRegistered.bind(connection));
+            dataManager.registerNode(query.data, connection, function onNodeRegistered(error, data, uaid) {
+              if (error) {
+                connection.res({
+                  errorcode: errorcodesWS.FAILED_REGISTERUA,
+                  extradata: { messageType: 'hello' }
+                });
+                log.debug('WS::onWSMessage --> Failing registering UA');
+                return;
+              }
+              dataManager.getNodeData(uaid, function(error, data) {
+                if (error) {
+                  log.debug('WS::onWSMessage --> Failing registering UA');
+                  connection.res({
+                    errorcode: errorcodesWS.FAILED_REGISTERUA,
+                    extradata: { messageType: 'hello' }
+                  });
+                  return;
+                }
+                var WAtokensUrl = [];
+                if (data.wa) {
+                  WAtokensUrl = (data.wa).map(function(watoken) {
+                    return helpers.getNotificationURL(watoken);
+                  });
+                }
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    messageType: 'hello',
+                    uaid: uaid,
+                    status: statuscodes.REGISTERED,
+                    channelIDs: WAtokensUrl
+                  }
+                });
+                log.debug('WS::onWSMessage --> OK register UA');
+              });
+            });
+
+            //onNodeRegistered.bind(connection));
             break;
 
           case 'register':
@@ -438,13 +430,11 @@ server.prototype = {
           case 'ack':
             if (query.messageId) {
               dataManager.removeMessage(query.messageId, connection.uaid);
-              }
+            }
             break;
 
-
-
           /////////////////////////////////
-          // Extended API
+          // TODO: Extended API
           /////////////////////////////////
 
           case 'registerExtended':
