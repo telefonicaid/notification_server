@@ -78,7 +78,7 @@ datamanager.prototype = {
       );
     }
     if (connector) {
-      Connectors.unregisteruaid(uaid);
+      Connectors.unregisterUAID(uaid);
     }
   },
 
