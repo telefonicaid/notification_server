@@ -37,7 +37,11 @@ connector_websocket.prototype = {
   },
 
   getProtocol: function() {
-    return 'WS';
+    return 'ws';
+  },
+
+  canBeWakeup: function() {
+    return false;
   },
 
   notify: function(msgList) {

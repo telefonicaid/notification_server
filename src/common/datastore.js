@@ -11,7 +11,8 @@ var mongodb = require('mongodb'),
     events = require('events'),
     util = require('util'),
     ddbbsettings = require('../config.js').ddbbsettings,
-    helpers = require('../common/helpers.js');
+    helpers = require('../common/helpers.js'),
+    connectionstate = require('../common/constants.js').connectionstate;
 
 var DataStore = function() {
   this.callbackReady = function(callback) {
@@ -83,7 +84,7 @@ var DataStore = function() {
     this.ready = false;
   },
 
-  this.registerNode = function(uatoken, serverId, data, callback) {
+  this.registerNode = function(uaid, serverId, data, callback) {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
@@ -92,12 +93,12 @@ var DataStore = function() {
         return;
       }
       collection.update(
-        { _id: uatoken },
+        { _id: uaid },
         {
           $set: {
             si: serverId,
             dt: data,
-            co: 1, // 0: disconnected, 1: WS, 2: UDP, don't know
+            co: connectionstate.CONNECTED,
             lt: parseInt(new Date().getTime() / 1000 , 10) // save as seconds
           }
         },
@@ -108,8 +109,8 @@ var DataStore = function() {
             callback(err);
             return;
           }
-          log.debug('dataStore::registerNode --> Node inserted/updated ', uatoken);
-          callback(null, data, uatoken);
+          log.debug('dataStore::registerNode --> Node inserted/updated ', uaid);
+          callback(null, data, uaid);
           return;
         }
       );

@@ -20,6 +20,7 @@ var log = require('../common/logger.js'),
     consts = require('../config.js').consts,
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesWS = require('../common/constants').errorcodes.UAWS,
+    statuscodes = require('../common/constants').statuscodes,
     pages = require('../common/pages.js'),
     url = require('url'),
     http = require('http'),
@@ -38,14 +39,14 @@ function onNewMessage(message) {
     return;
   }
   // If we don't have enough data, return
-  if (!json.uatoken ||
+  if (!json.uaid ||
       !json.messageId ||
       !json.payload) {
     return log.error('WS::queue::onNewMessage --> Not enough data!');
   }
-  log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uatoken);
-  log.notify('Message with id ' + json.messageId + ' sent to ' + json.uatoken);
-  dataManager.getNode(json.uatoken, function(nodeConnector) {
+  log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
+  log.notify('Message with id ' + json.messageId + ' sent to ' + json.uaid);
+  dataManager.getNode(json.uaid, function(nodeConnector) {
     if (nodeConnector) {
       var notification = json.payload;
 
@@ -60,22 +61,22 @@ function onNewMessage(message) {
   });
 }
 
-function onNodeRegistered(error, data, uatoken) {
+function onNodeRegistered(error, data, uaid) {
   var connection = this;
   if (error) {
     connection.res({
       errorcode: errorcodesWS.FAILED_REGISTERUA,
-      extradata: { messageType: 'registerUA' }
+      extradata: { messageType: 'hello' }
     });
     log.debug('WS::onWSMessage --> Failing registering UA');
     return;
   }
-  dataManager.getNodeData(uatoken, function(error, data) {
+  dataManager.getNodeData(uaid, function(error, data) {
     if (error) {
       log.debug('WS::onWSMessage --> Failing registering UA');
       connection.res({
         errorcode: errorcodesWS.FAILED_REGISTERUA,
-        extradata: { messageType: 'registerUA' }
+        extradata: { messageType: 'hello' }
       });
       return;
     }
@@ -88,11 +89,10 @@ function onNodeRegistered(error, data, uatoken) {
     connection.res({
       errorcode: errorcodes.NO_ERROR,
       extradata: {
-        messageType: 'registerUA',
-        status: 'REGISTERED',
-        pushMode: data.dt.protocol,
-        WATokens: WAtokensUrl,
-        messages: data.ms || []
+        messageType: 'hello',
+        uaid: uaid,
+        status: statuscodes.REGISTERED,
+        channelIDs: WAtokensUrl
       }
     });
     log.debug('WS::onWSMessage --> OK register UA');
@@ -230,35 +230,29 @@ server.prototype = {
 
       log.debug('WS::onHTTPMessage --> Parsed URL:', url);
       switch (url.messageType) {
-        case 'token':
-          text = token.get();
-          this.tokensGenerated++;
-          return response.res(errorcodes.NO_ERROR, text);
-          break;
-
         case 'about':
-      if (consts.PREPRODUCTION_MODE) {
-        try {
-          var p = new pages();
-              p.setTemplate('views/aboutWS.tmpl');
-              text = p.render(function(t) {
-                switch (t) {
-                  case '{{GIT_VERSION}}':
-                    return require('fs').readFileSync('version.info');
-                  case '{{MODULE_NAME}}':
-                    return 'User Agent Frontend';
-                  case '{{PARAM_TOKENSGENERATED}}':
-                    return this.tokensGenerated;
-                  case '{{PARAM_CONNECTIONS}}':
-                    return this.wsConnections;
-                  case '{{PARAM_MAXCONNECTIONS}}':
-                    return this.wsMaxConnections;
-                  default:
-                    return "";
-                }
-              }.bind(this));
-        } catch (e) {
-          text = 'No version.info file';
+          if (consts.PREPRODUCTION_MODE) {
+            try {
+              var p = new pages();
+                  p.setTemplate('views/aboutWS.tmpl');
+                  text = p.render(function(t) {
+                    switch (t) {
+                      case '{{GIT_VERSION}}':
+                        return require('fs').readFileSync('version.info');
+                      case '{{MODULE_NAME}}':
+                        return 'User Agent Frontend';
+                      case '{{PARAM_TOKENSGENERATED}}':
+                        return this.tokensGenerated;
+                      case '{{PARAM_CONNECTIONS}}':
+                        return this.wsConnections;
+                      case '{{PARAM_MAXCONNECTIONS}}':
+                        return this.wsMaxConnections;
+                      default:
+                        return "";
+                    }
+                  }.bind(this));
+            } catch (e) {
+              text = 'No version.info file';
             }
             return response.res(errorcodes.NO_ERROR, text);
           } else {
@@ -319,23 +313,11 @@ server.prototype = {
           return connection.close();
         }
 
-        //Check for uatoken in the connection
-        if (!connection.uatoken && query.messageType === 'registerUA') {
-          log.debug('WS:onWSMessage --> Theorical first connection for uatoken=' + query.data.uatoken);
-          if (!token.verify(query.data.uatoken)) {
-            log.debug('WS::onWSMessage --> Token not valid (Checksum failed)');
-            connection.res({
-              errorcode: errorcodesWS.NOT_VALID_UATOKEN,
-              extradata: { messageType: 'registerUA' }
-            });
-            return connection.close();
-          }
-          log.debug('WS:onWSMessage --> Accepted uatoken=' + query.data.uatoken);
-          connection.uatoken = query.data.uatoken;
-        } else if (!connection.uatoken) {
-          log.debug('WS:onWSMessage --> No UAToken for this connection');
+        //Check for uaid in the connection
+        if (!connection.uaid && query.messageType !== 'hello') {
+          log.debug('WS:onWSMessage --> No uaid for this connection');
           connection.res({
-            errorcode: errorcodesWS.UATOKEN_NOT_FOUND,
+            errorcode: errorcodesWS.UAID_NOT_FOUND,
             extradata: { messageType: query.messageType }
           });
           connection.close();
@@ -343,27 +325,53 @@ server.prototype = {
         }
 
         switch (query.messageType) {
-          case 'registerUA':
-            log.debug('WS::onWSMessage --> UA registration message');
+          /*
+            {
+              messageType: "hello",
+              data: {
+                uaid: "<a valid UAID>",
+                interface: {
+                  ip: "<current device IP address>",
+                  port: "<TCP or UDP port in which the device is waiting for wake up notifications>"
+                  },
+                mobilenetwork: {
+                  mcc: "<Mobile Country Code>",
+                  mnc: "<Mobile Network Code>"
+                }
+              }
+            }
+           */
+          case 'hello':
+            if (!query.uaid) {
+              query.data.uaid = token.get();
+              this.tokensGenerated++;
+            } else if (!token.verify(query.data.uaid)) {
+              log.debug('WS::onWSMessage --> Token not valid (Checksum failed)');
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_UAID,
+                extradata: { messageType: 'hello' }
+              });
+              return connection.close();
+            }
+            log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.data.uaid);
+            log.debug('WS:onWSMessage --> Accepted uaid=' + query.data.uaid);
+            connection.uaid = query.data.uaid;
+
             // New UA registration
+            log.debug('WS::onWSMessage --> HELLO - UA registration message');
             dataManager.registerNode(query.data, connection, onNodeRegistered.bind(connection));
             break;
 
-          case 'unregisterUA':
-            log.debug('WS::onWSMessage::unregisterUA -> UA unregistration message');
-            dataManager.unregisterNode(connection.uatoken);
-            break;
-
-          case 'registerWA':
-            log.debug('WS::onWSMessage::registerWA --> Application registration message');
+          case 'register':
+            log.debug('WS::onWSMessage::register --> Application registration message');
 
             // Close the connection if the watoken is null
             var watoken = query.data.watoken;
             if (!watoken) {
-              log.debug('WS::onWSMessage::registerWA --> Null WAtoken');
+              log.debug('WS::onWSMessage::register --> Null WAtoken');
               connection.res({
                 errorcode: errorcodesWS.NOT_VALID_WATOKEN,
-                extradata: { messageType: 'registerWA' }
+                extradata: { messageType: 'register' }
               });
               //There must be a problem on the client, because WAtoken is the way to identify an app
               //Close in this case.
@@ -443,9 +451,9 @@ server.prototype = {
                     log.debug('[VALID CERTIFICATE FINGERPRINT] ' + cert.f);
 
                     // Valid certificate, register and store in database
-                    log.debug('WS::onWSMessage::registerWA UAToken: ' + connection.uatoken);
+                    log.debug('WS::onWSMessage::registerWA uaid: ' + connection.uaid);
                       appToken = helpers.getAppToken(watoken, cert.f);
-                      dataManager.registerApplication(appToken, watoken, connection.uatoken, cert, function(error) {
+                      dataManager.registerApplication(appToken, watoken, connection.uaid, cert, function(error) {
                         if (!error) {
                           var notifyURL = helpers.getNotificationURL(appToken);
                           connection.res({
@@ -483,68 +491,170 @@ server.prototype = {
             });
             break;
 
-          case 'unregisterWA':
-            log.debug('WS::onWSMessage::unregisterWA --> Application un-registration message');
+          case 'unregister':
+            log.debug('WS::onWSMessage::unregister --> Application un-registration message');
             appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
-            dataManager.unregisterApplication(appToken, connection.uatoken, query.data.pbkbase64, function(error) {
+            dataManager.unregisterApplication(appToken, connection.uaid, query.data.pbkbase64, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.res({
                   errorcode: errorcodes.NO_ERROR,
                   extradata: {
                     url: notifyURL,
-                    messageType: 'unregisterWA',
+                    messageType: 'unregister',
                     status: 'UNREGISTERED'
                   }
                 });
-                log.debug('WS::onWSMessage::unregisterWA --> OK unregistering WA');
+                log.debug('WS::onWSMessage::unregister --> OK unregistering WA');
               } else {
                 connection.res({
                   errorcode: errorcodes.NOT_READY,
-                  extradata: { messageType: 'unregisterWA' }
+                  extradata: { messageType: 'unregister' }
                 });
-                log.debug('WS::onWSMessage::unregisterWA --> Failing unregistering WA');
+                log.debug('WS::onWSMessage::unregister --> Failing unregistering WA');
               }
             });
             break;
 
-          case 'getRegisteredWA':
-            log.debug('WS::onWSMessage::getRegisteredWA --> Recovering list of registered WA');
-            dataManager.getApplicationsForUA(connection.uatoken,
-              function(err, d) {
-                if (err) {
-                  log.error('WS::onWSMessage::getRegisteredWA --> Internal error: ' + err);
-                  connection.res({
-                    errorcode: errorcodes.UATOKEN_NOTFOUND,
-                    extradata: {
-                      'WATokens': [],
-                      messageType: 'getRegisteredWA'
-                    }
-                  });
-                  return;
-                }
-                var was = d[0].wa || [];
-                log.debug('WS::onWSMessage::getRegisteredWA --> ' + was);
-                var URLs = [];
-                if (Array.isArray(was)) {
-                  was.forEach(function(appToken) {
-                    URLs.push(helpers.getNotificationURL(appToken));
-                  });
-                  connection.res({
-                    errorcode: errorcodes.NO_ERROR,
-                    extradata: {
-                      'WATokens': URLs,
-                      messageType: 'getRegisteredWA'
-                    }
-                  });
-                }
-              });
-            break;
-
           case 'ack':
             if (query.messageId) {
-              dataManager.removeMessage(query.messageId, connection.uatoken);
+              dataManager.removeMessage(query.messageId, connection.uaid);
               }
+            break;
+
+
+
+          /////////////////////////////////
+          // Extended API
+          /////////////////////////////////
+
+          case 'registerExtended':
+            log.debug('WS::onWSMessage::register --> Extended Application registration message');
+
+            // Close the connection if the watoken is null
+            var watoken = query.data.watoken;
+            if (!watoken) {
+              log.debug('WS::onWSMessage::register --> Null WAtoken');
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_WATOKEN,
+                extradata: { messageType: 'register' }
+              });
+              //There must be a problem on the client, because WAtoken is the way to identify an app
+              //Close in this case.
+              connection.close();
+            }
+
+            var certUrl = query.data.certUrl;
+            if(!certUrl && query.data.pbkbase64) {
+              certUrl = query.data.pbkbase64;
+            }
+            if (!certUrl) {
+              log.debug('WS::onWSMessage::registerWA --> Null certificate URL');
+              //In this case, there is a problem, but there are no certificate.
+              //We just reject the registration but we do not close the connection
+              return connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: 'registerWA'
+                }
+              });
+            }
+
+            // Recover certificate
+            var certUrl = url.parse(certUrl);
+            if (!certUrl.href || !certUrl.protocol ) {
+              log.debug('WS::onWSMessage::registerWA --> Non valid URL');
+              //In this case, there is a problem, but there are no certificate.
+              //We just reject the registration but we do not close the connection
+              return connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: 'registerWA'
+                }
+              });
+            }
+            // Protocol to use: HTTP or HTTPS ?
+            var protocolHandler = null;
+            switch (certUrl.protocol) {
+            case 'http:':
+              protocolHandler = http;
+              break;
+            case 'https:':
+              protocolHandler = https;
+              break;
+            default:
+              protocolHandler = null;
+            }
+            if (!protocolHandler) {
+              log.debug('WS::onWSMessage::registerWA --> Non valid URL (invalid protocol)');
+              return connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: 'registerWA'
+                }
+              });
+            }
+            var req = protocolHandler.get(certUrl.href, function(res) {
+                res.on('data', function(d) {
+                  req.abort();
+                  log.debug('Certificate received');
+                  crypto.parseClientCertificate(d,function(err,cert) {
+                    log.debug('Certificate processed');
+                    if(err) {
+                      log.debug('[ERROR] ' + err);
+                      return connection.res({
+                        errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
+                        extradata: {
+                          'watoken': watoken,
+                          messageType: 'registerWA'
+                        }
+                      });
+                    }
+                    log.debug('[VALID CERTIFICATE] ' + cert.c);
+                    log.debug('[VALID CERTIFICATE FINGERPRINT] ' + cert.f);
+
+                    // Valid certificate, register and store in database
+                    log.debug('WS::onWSMessage::registerWA uaid: ' + connection.uaid);
+                      appToken = helpers.getAppToken(watoken, cert.f);
+                      dataManager.registerApplication(appToken, watoken, connection.uaid, cert, function(error) {
+                        if (!error) {
+                          var notifyURL = helpers.getNotificationURL(appToken);
+                          connection.res({
+                            errorcode: errorcodes.NO_ERROR,
+                            extradata: {
+                              'watoken': watoken,
+                              messageType: 'registerWA',
+                              status: 'REGISTERED',
+                              url: notifyURL
+                            }
+                          });
+                          log.debug('WS::onWSMessage::registerWA --> OK registering WA');
+                        } else {
+                          connection.res({
+                            errorcode: errorcodes.NOT_READY,
+                            extradata: {
+                              'watoken': watoken,
+                              messageType: 'registerWA'
+                            }
+                          });
+                          log.debug('WS::onWSMessage::registerWA --> Failing registering WA');
+                        }
+                      });
+                  });
+                });
+            }).on('error', function(e) {
+              log.debug('Error downloading client certificate ', e);
+              return connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
+                extradata: {
+                  'watoken': watoken,
+                  messageType: 'registerWA'
+                }
+              });
+            });
             break;
 
           default:
@@ -567,8 +677,8 @@ server.prototype = {
     var self = this;
     this.onWSClose = function(reasonCode, description) {
       self.wsConnections--;
-      dataManager.unregisterNode(connection.uatoken);
-      log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uatoken ' + connection.uatoken);
+      dataManager.unregisterNode(connection.uaid);
+      log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uaid ' + connection.uaid);
     };
 
     /**
