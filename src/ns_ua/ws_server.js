@@ -412,25 +412,25 @@ server.prototype = {
 
           case 'unregister':
             log.debug('WS::onWSMessage::unregister --> Application un-registration message');
-            appToken = helpers.getAppToken(query.data.watoken, query.data.pbkbase64);
-            dataManager.unregisterApplication(appToken, connection.uaid, query.data.pbkbase64, function(error) {
+            appToken = helpers.getAppToken(query.data.channelID, connection.uaid);
+            dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.res({
                   errorcode: errorcodes.NO_ERROR,
                   extradata: {
-                    url: notifyURL,
+                    channelID: query.data.channelID,
                     messageType: 'unregister',
-                    status: 'UNREGISTERED'
+                    status: statuscodes.UNREGISTERED
                   }
                 });
-                log.debug('WS::onWSMessage::unregister --> OK unregistering WA');
+                log.debug('WS::onWSMessage::unregister --> OK unregistering channelID');
               } else {
                 connection.res({
                   errorcode: errorcodes.NOT_READY,
                   extradata: { messageType: 'unregister' }
                 });
-                log.debug('WS::onWSMessage::unregister --> Failing unregistering WA');
+                log.debug('WS::onWSMessage::unregister --> Failing unregistering channelID');
               }
             });
             break;
