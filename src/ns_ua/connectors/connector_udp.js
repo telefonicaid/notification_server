@@ -34,6 +34,10 @@ connector_udp.prototype = {
     return 'udp';
   },
 
+  canBeWakeup: function() {
+    return true;
+  },
+
   getConnection: function() {
     return this.connection;
   },
