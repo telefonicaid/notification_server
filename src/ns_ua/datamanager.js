@@ -113,9 +113,9 @@ datamanager.prototype = {
   /**
    * Register a new application
    */
-  registerApplication: function (appToken, waToken, uaid, cert, callback) {
+  registerApplication: function (appToken, channelID, uaid, cert, callback) {
     // Store in persistent storage
-    dataStore.registerApplication(appToken, waToken, uaid, cert, callback);
+    dataStore.registerApplication(appToken, channelID, uaid, cert, callback);
   },
 
  /**
