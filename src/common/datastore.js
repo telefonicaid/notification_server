@@ -237,7 +237,7 @@ var DataStore = function() {
   /**
    * Unregister an old application
    */
-  this.unregisterApplication = function(appToken, uaid, pbkbase64, callback) {
+  this.unregisterApplication = function(appToken, uaid, callback) {
     // Remove from MongoDB
     this.db.collection('apps', function(err, collection) {
       if (err) {
@@ -273,7 +273,7 @@ var DataStore = function() {
         { _id: uaid },
         { $pull:
           {
-            wa: appToken
+            ch: appToken
           }
         },
         { safe: true },

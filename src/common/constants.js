@@ -61,5 +61,6 @@ exports.connectionstate = {
 };
 
 exports.statuscodes = {
-  REGISTERED: 200
+  REGISTERED: 200,
+  UNREGISTERED: 201
 }

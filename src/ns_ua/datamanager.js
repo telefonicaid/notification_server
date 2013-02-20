@@ -46,7 +46,7 @@ datamanager.prototype = {
   },
 
   /**
-   * DEPRECATED: Unregisters a Node from the DDBB and memory
+   * Unregisters (or inform about disconnection) a Node from the DDBB and memory
    */
   unregisterNode: function(uaid) {
     log.debug('dataManager::unregisterNode --> Going to unregister a node');
@@ -121,9 +121,9 @@ datamanager.prototype = {
  /**
    * Unregister an old application
    */
-  unregisterApplication: function (appToken, uaid, pbkbase64, callback) {
+  unregisterApplication: function (appToken, uaid, callback) {
     // Remove from persistent storage
-    dataStore.unregisterApplication(appToken, uaid, pbkbase64, callback);
+    dataStore.unregisterApplication(appToken, uaid, callback);
   },
 
   /**
