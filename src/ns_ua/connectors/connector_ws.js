@@ -25,7 +25,7 @@ connector_websocket.prototype = {
   },
 
   getUAtoken: function() {
-    return this.data.uatoken;
+    return this.data.uaid;
   },
 
   getInterface: function() {
@@ -37,7 +37,11 @@ connector_websocket.prototype = {
   },
 
   getProtocol: function() {
-    return 'WS';
+    return 'ws';
+  },
+
+  canBeWakeup: function() {
+    return false;
   },
 
   notify: function(msgList) {

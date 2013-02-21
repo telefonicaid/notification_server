@@ -32,7 +32,7 @@ function sendNotification() {
     });
 
     // write data to request body
-    req.write('{"messageType":"notification","id":1234,"message":"Hola","signature":"","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}');
+    req.write('{"messageType":"notification","id":1234,"message":"Hola","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}');
     req.end();
 }
 

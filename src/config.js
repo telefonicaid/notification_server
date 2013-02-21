@@ -6,6 +6,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+var numCPUs = require('os').cpus().length;
+
 /******************* Servers to run on this machine ********************/
 /**
  * Put to true what you want to run
@@ -141,8 +143,7 @@ exports.NS_AS = {
   interfaces: [
     {
       ip: '0.0.0.0',
-      port: 8081,
-      ssl: true        // Enable SSL
+      port: 8081
     }
   ]
 };
@@ -157,6 +158,11 @@ exports.NS_Monitor = {
 
 exports.NS_UA_WS = {
   logfile: 'NS_UA_WS.log',
+
+  /**
+   * Number of processes which shall run in parallel
+   */
+  numProcesses: numCPUs,
 
   /**
    * Binding interfaces and ports

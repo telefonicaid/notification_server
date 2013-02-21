@@ -20,8 +20,8 @@ Connector.prototype = {
    * Create and return a connector object based on the data received
    */
   getConnector: function(data, connection, callback) {
-    if (this.nodesConnectors[data.uatoken]) {
-      return callback(null, this.nodesConnectors[data.uatoken]);
+    if (this.nodesConnectors[data.uaid]) {
+      return callback(null, this.nodesConnectors[data.uaid]);
     } else if (data.interface && data.interface.ip && data.interface.port &&
        data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc) {
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
@@ -33,26 +33,26 @@ Connector.prototype = {
           log.debug('UDP::queue::onNewMessage --> No WakeUp server found for MCC=' +
                      data.mobilenetwork.mcc + ' and MNC=' + data.mobilenetwork.mnc);
           var connector = new connector_ws(data, connection);
-          this.nodesConnectors[data.uatoken] = connector;
+          this.nodesConnectors[data.uaid] = connector;
           callback(null, connector);
           return;
         }
         var connector = null;
         log.debug('getConnector: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
         connector = new connector_udp(data, connection);
-        this.nodesConnectors[data.uatoken] = connector;
+        this.nodesConnectors[data.uaid] = connector;
         callback(null, connector);
       }.bind(this));
     } else {
       //Fallback
       var connector = new connector_ws(data, connection);
-      this.nodesConnectors[data.uatoken] = connector;
+      this.nodesConnectors[data.uaid] = connector;
       callback(null, connector);
     }
   },
 
-  getConnectorForUAtoken: function(uatoken) {
-    return this.nodesConnectors[uatoken];
+  getConnectorForUAID: function(uaid) {
+    return this.nodesConnectors[uaid];
   },
 
   getUAtokenForConnection: function(connection) {
@@ -62,10 +62,10 @@ Connector.prototype = {
     });
   },
 
-  unregisterUAToken: function(uatoken) {
-    if (this.nodesConnectors[uatoken]) {
-      this.nodesConnectors[uatoken].getConnection().close();
-      delete this.nodesConnectors[uatoken];
+  unregisterUAID: function(uaid) {
+    if (this.nodesConnectors[uaid]) {
+      this.nodesConnectors[uaid].getConnection().close();
+      delete this.nodesConnectors[uaid];
     }
   }
 };

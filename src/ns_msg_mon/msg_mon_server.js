@@ -68,34 +68,50 @@ function onNewMessage(msg) {
   } catch (e) {
     return log.error('MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check');
   }
-
-  /**
-   * Messages are formed like this:
-   *      {
-   *        messageId,
-   *        uatoken,
-   *        dt: {
-   *          interface,
-   *          mobilenetwork,
-   *          protocol
-   *        }
-   *        payload: {
-   *          messageType: 'notification',
-   *          id,
-   *          message,
-   *          ttl,
-   *          timestamp,
-   *          priority,
-   *          messageId,
-   *          appToken
-   *     }
-   */
-
-  if (!json.appToken) {
-    return log.error('MSG_mon::onNewMessage --> newMessages has a message without appToken attribute');
-  }
   log.debug('MSG_mon::onNewMessage --> Mensaje desde la cola:', json);
+
+  //MsgType is either 0, 1, or 2.
+  // 0 is "old" full notifications, with body, to be used by apps directly
+  // 1 is Thialfy notifications, just have app and vs attributes
+  // 2 is Desktop notifications, have a id (to be acked), a version and a body
+  var msgType = -1;
+  if (json.appToken) {
+    msgType = 0;
+  } else if (json.app && json.vs) {
+    msgType = 1;
+  } else if (json.body) {
+    msgType = 2;
+  }
+
+  console.log("MSGType is= " + msgType);
+
+  switch (msgType) {
+    case 0:
+      handleOldNotification(json);
+      break;
+    case 1:
+      handleThialfiNotification(json);
+      break;
+    case 2:
+      handleDesktopNotification(json);
+      break;
+    default:
+      log.error('MSG_mon::onNewMessage --> Bad msgType: ', json);
+      return;
+  }
+}
+
+function handleOldNotification(json) {
   dataStore.getApplication(json.appToken, onApplicationData, json);
+}
+
+function handleThialfiNotification(json) {
+  //TODO
+}
+
+function handleDesktopNotification(json) {
+  //TODO
+  console.log('I\'m handling a Desktop notification');
 }
 
 function onApplicationData(error, appData, json) {

@@ -39,8 +39,8 @@ var MozASFrontendv1 = function() {
       return;
     }
 
-    var channelID = URI[3];
-    if (!channelID) {
+    var appToken = URI[3];
+    if (!appToken) {
       response.statusCode = 404;
       response.end('{ reason: "Not enough path data"}');
       log.debug('NS_UA_Moz_v1::processMozRequest --> Not enough path');
@@ -64,13 +64,14 @@ var MozASFrontendv1 = function() {
     }
 
     //Now, we are safe to start using the path and data
-    var id = uuid.v4();
-    log.notify('id=' + id + " -- channelID=" + channelID + " -- version=" + versions[1]);
-    var msg = dataStore.newVersion(id, channelID, versions[1]);
-    msgBroker.push('newMessages', msg);
-    response.statusCode = 200;
-    response.end('{}');
-    return;
+    log.notify('appToken=' + appToken + ' -- version=' + versions[1]);
+    dataStore.getChannelIDForAppToken(appToken, function(error, channelID) {
+      var msg = dataStore.newVersion(appToken, channelID, versions[1]);
+      msgBroker.push('newMessages', msg);
+      response.statusCode = 200;
+      response.end('{}');
+      return;
+    });
   };
 };
 
