@@ -103,9 +103,9 @@ datamanager.prototype = {
   },
 
   /**
-   * Gets a uaid from a given connection object
+   * Gets a UAID from a given connection object
    */
-  getuaid: function (connection) {
+  getUAID: function (connection) {
     return connection.uaid || null;
   },
 

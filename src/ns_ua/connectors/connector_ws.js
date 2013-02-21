@@ -25,7 +25,7 @@ connector_websocket.prototype = {
   },
 
   getUAtoken: function() {
-    return this.data.uatoken;
+    return this.data.uaid;
   },
 
   getInterface: function() {
