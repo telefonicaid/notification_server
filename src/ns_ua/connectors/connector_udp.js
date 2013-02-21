@@ -38,6 +38,14 @@ connector_udp.prototype = {
     return true;
   },
 
+  resetAutoclose: function() {
+    if (this.autocloseTimeout)
+      clearTimeout(this.autocloseTimeout);
+    this.autocloseTimeout = setTimeout(function() {
+      this.close();
+    }.bind(this.connection), 10000);
+  },
+
   getConnection: function() {
     return this.connection;
   },

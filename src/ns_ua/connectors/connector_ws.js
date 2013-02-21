@@ -44,6 +44,10 @@ connector_websocket.prototype = {
     return false;
   },
 
+  resetAutoclose: function() {
+    return; // nothing to do on this connector
+  },
+
   notify: function(msgList) {
     this.connection.sendUTF(JSON.stringify(msgList));
   }
