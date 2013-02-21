@@ -41,7 +41,6 @@ exports.errorcodes = {
 
     // WebSocket
     NOT_VALID_JSON_PACKAGE: [450, 'Data received is not a valid JSON package'],
-    NOT_VALID_UAID: [456, 'UAID not valid for this server. Get a new one'],
     NOT_VALID_CHANNELID: [457, 'Not valid channelID sent'],
     NOT_VALID_CERTIFICATE_URL: [458, 'Not valid Certificate URL sent'],
     UAID_NOT_FOUND: [459, 'No UAID found for this connection!'],
