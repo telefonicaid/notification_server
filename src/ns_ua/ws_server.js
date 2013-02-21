@@ -9,7 +9,6 @@
 var log = require('../common/logger.js'),
     WebSocketServer = require('websocket').server,
     fs = require('fs'),
-    numCPUs = require('os').cpus().length,
     cluster = require('cluster'),
     crypto = require('../common/cryptography.js'),
     dataManager = require('./datamanager.js'),
@@ -44,7 +43,7 @@ server.prototype = {
 
     if (cluster.isMaster) {
       // Fork workers.
-      for (var i = 0; i < numCPUs; i++) {
+      for (var i = 0; i < config.numProcesses; i++) {
         cluster.fork();
       }
 

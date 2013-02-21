@@ -152,6 +152,11 @@ exports.NS_UA_WS = {
   logfile: "NS_UA_WS.log",
 
   /**
+   * Number of processes which shall run in parallel
+   */
+  numProcesses: numCPUs,
+
+  /**
    * Binding interfaces and ports
    * [ iface, port ]
    */
