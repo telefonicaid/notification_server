@@ -112,11 +112,21 @@ server.prototype = {
             if (nodeConnector) {
               var notification = json.payload;
 
-              //Send the URL not the appToken
-              notification.url = helpers.getNotificationURL(notification.appToken);
+              // Not send the appToken
+              //TODO: Not insert the appToken into the MQ
               delete notification.appToken;
               log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
-              nodeConnector.notify(new Array(notification));
+              if (notification.body) {
+                nodeConnector.notify({
+                  messageType: "desktopNotification",
+                  notifications: new Array(notification)
+                });
+              } else {
+                nodeConnector.notify({
+                  messageType: "notification",
+                  notifications: new Array(notification)
+                });
+              }
             } else {
               log.debug('WS::Queue::onNewMessage --> No node found');
             }
