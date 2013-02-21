@@ -293,38 +293,29 @@ server.prototype = {
           /*
             {
               messageType: "hello",
-              data: {
-                uaid: "<a valid UAID>",
-                interface: {
-                  ip: "<current device IP address>",
-                  port: "<TCP or UDP port in which the device is waiting for wake up notifications>"
-                  },
-                mobilenetwork: {
-                  mcc: "<Mobile Country Code>",
-                  mnc: "<Mobile Network Code>"
-                }
+              uaid: "<a valid UAID>",
+              interface: {
+                ip: "<current device IP address>",
+                port: "<TCP or UDP port in which the device is waiting for wake up notifications>"
+                },
+              mobilenetwork: {
+                mcc: "<Mobile Country Code>",
+                mnc: "<Mobile Network Code>"
               }
             }
            */
           case 'hello':
-            if (!query.uaid) {
-              query.data.uaid = token.get();
+            if (!query.uaid || !token.verify(query.uaid)) {
+              query.uaid = token.get();
               this.tokensGenerated++;
-            } else if (!token.verify(query.data.uaid)) {
-              log.debug('WS::onWSMessage --> Token not valid (Checksum failed)');
-              connection.res({
-                errorcode: errorcodesWS.NOT_VALID_UAID,
-                extradata: { messageType: 'hello' }
-              });
-              return connection.close();
             }
-            log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.data.uaid);
-            log.debug('WS:onWSMessage --> Accepted uaid=' + query.data.uaid);
-            connection.uaid = query.data.uaid;
+            log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.uaid);
+            log.debug('WS:onWSMessage --> Accepted uaid=' + query.uaid);
+            connection.uaid = query.uaid;
 
             // New UA registration
             log.debug('WS::onWSMessage --> HELLO - UA registration message');
-            dataManager.registerNode(query.data, connection, function onNodeRegistered(error, data, uaid) {
+            dataManager.registerNode(query, connection, function onNodeRegistered(error, data, uaid) {
               if (error) {
                 connection.res({
                   errorcode: errorcodesWS.FAILED_REGISTERUA,
@@ -368,7 +359,7 @@ server.prototype = {
             log.debug('WS::onWSMessage::register --> Application registration message');
 
             // Close the connection if the channelID is null
-            var channelID = query.data.channelID;
+            var channelID = query.channelID;
             if (!channelID) {
               log.debug('WS::onWSMessage::register --> Null channelID');
               connection.res({
@@ -414,14 +405,14 @@ server.prototype = {
 
           case 'unregister':
             log.debug('WS::onWSMessage::unregister --> Application un-registration message');
-            appToken = helpers.getAppToken(query.data.channelID, connection.uaid);
+            appToken = helpers.getAppToken(query.channelID, connection.uaid);
             dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
                 connection.res({
                   errorcode: errorcodes.NO_ERROR,
                   extradata: {
-                    channelID: query.data.channelID,
+                    channelID: query.channelID,
                     messageType: 'unregister',
                     status: statuscodes.UNREGISTERED
                   }
@@ -451,7 +442,7 @@ server.prototype = {
             log.debug('WS::onWSMessage::register --> Extended Application registration message');
 
             // Close the connection if the watoken is null
-            var watoken = query.data.watoken;
+            var watoken = query.watoken;
             if (!watoken) {
               log.debug('WS::onWSMessage::register --> Null WAtoken');
               connection.res({
@@ -463,9 +454,9 @@ server.prototype = {
               connection.close();
             }
 
-            var certUrl = query.data.certUrl;
-            if(!certUrl && query.data.pbkbase64) {
-              certUrl = query.data.pbkbase64;
+            var certUrl = query.certUrl;
+            if(!certUrl && query.pbkbase64) {
+              certUrl = query.pbkbase64;
             }
             if (!certUrl) {
               log.debug('WS::onWSMessage::registerWA --> Null certificate URL');
