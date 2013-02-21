@@ -37,7 +37,8 @@ datamanager.prototype = {
           {
             interface: connector.getInterface(),
             mobilenetwork: connector.getMobileNetwork(),
-            protocol: connector.getProtocol()
+            protocol: connector.getProtocol(),
+            canBeWakeup: connector.canBeWakeup()
           },
           callback
         );
