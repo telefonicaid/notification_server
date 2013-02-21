@@ -344,7 +344,7 @@ server.prototype = {
                   extradata: {
                     messageType: 'hello',
                     uaid: uaid,
-                    status: statuscodes.REGISTERED,
+                    status: (data.dt.canBeWakeup ? statuscodes.UDPREGISTERED : statuscodes.REGISTERED),
                     channelIDs: WAtokensUrl
                   }
                 });
@@ -432,6 +432,12 @@ server.prototype = {
             if (query.messageId) {
               dataManager.removeMessage(query.messageId, connection.uaid);
             }
+            dataManager.getNode(connection.uaid, function(nodeConnector) {
+              // If we're in a wakeupped protocol we close the connection just now
+              if (nodeConnector && nodeConnector.canBeWakeup()) {
+                connection.close();
+              }
+            });
             break;
 
           /////////////////////////////////
