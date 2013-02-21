@@ -60,6 +60,7 @@ exports.connectionstate = {
 };
 
 exports.statuscodes = {
+  OK: 200,
   REGISTERED: 200,
   UDPREGISTERED: 201,
   UNREGISTERED: 202
