@@ -211,6 +211,8 @@ server.prototype = {
                         return this.wsConnections;
                       case '{{PARAM_MAXCONNECTIONS}}':
                         return this.wsMaxConnections;
+                      case '{{PARAM_NUMPROCESSES}}':
+                        return config.numProcesses;
                       default:
                         return "";
                     }
