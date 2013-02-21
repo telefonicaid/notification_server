@@ -119,12 +119,12 @@ server.prototype = {
               if (notification.body) {
                 nodeConnector.notify({
                   messageType: "desktopNotification",
-                  notifications: new Array(notification)
+                  updates: new Array(notification)
                 });
               } else {
                 nodeConnector.notify({
                   messageType: "notification",
-                  notifications: new Array(notification)
+                  updates: new Array(notification)
                 });
               }
             } else {
