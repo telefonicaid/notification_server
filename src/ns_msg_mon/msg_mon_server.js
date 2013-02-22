@@ -106,7 +106,7 @@ function handleOldNotification(json) {
 }
 
 function handleThialfiNotification(json) {
-  //TODO
+  dataStore.getApplication(json.app, onApplicationData, json);
 }
 
 function handleDesktopNotification(json) {
@@ -142,7 +142,7 @@ function onNodeData(nodeData, json) {
   log.notify('MSG_mon::onNodeData --> Notify into the messages queue of node ' + nodeData.si + ' # ' + json.messageId);
   var body = {
     messageId: json.messageId,
-    uatoken: nodeData._id,
+    uaid: nodeData._id,
     dt: nodeData.dt,
     payload: json
   };

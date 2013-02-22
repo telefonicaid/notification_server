@@ -258,8 +258,8 @@ server.prototype = {
         return;
 
       default:
-  log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
-  return response.res(errorcodesAS.BAD_URL);
+        log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
+        return response.res(errorcodesAS.BAD_URL);
     }
   }
 };

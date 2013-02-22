@@ -66,6 +66,7 @@ Connector.prototype = {
     if (this.nodesConnectors[uaid]) {
       this.nodesConnectors[uaid].getConnection().close();
       delete this.nodesConnectors[uaid];
+//      this.nodesConnectors = null;
     }
   }
 };

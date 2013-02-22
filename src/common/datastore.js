@@ -354,9 +354,9 @@ var DataStore = function() {
   /**
    * Gets an application node list
    */
-  this.getApplication = function(channelID, callback, json) {
+  this.getApplication = function(appToken, callback, json) {
     // Get from MongoDB
-    log.debug('datastore::getApplication --> Going to find application with channelID: ' + channelID);
+    log.debug('datastore::getApplication --> Going to find application with appToken: ' + appToken);
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
@@ -366,7 +366,7 @@ var DataStore = function() {
       }
       collection.find(
         {
-          ch: channelID
+          "ch.app": appToken
         },
         {
           _id: true,

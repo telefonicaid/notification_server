@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var numCPUs = require('os').cpus().length;
+var numCPUs = 1;//require('os').cpus().length;
 
 /******************* Servers to run on this machine ********************/
 /**
@@ -48,7 +48,7 @@ exports.consts = {
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: 'https://localhost:8081',
+  publicBaseURL: 'https://localhost:8081/v1',
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
