@@ -101,7 +101,6 @@ server.prototype = {
           }
           // If we don't have enough data, return
           if (!json.uaid ||
-              !json.messageId ||
               !json.payload) {
             return log.error('WS::queue::onNewMessage --> Not enough data!');
           }
@@ -125,6 +124,7 @@ server.prototype = {
                 }
               */
               delete notification.appToken;
+              delete notification.app;
               log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
               if (notification.body) {
                 nodeConnector.notify({

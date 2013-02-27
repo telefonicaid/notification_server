@@ -18,6 +18,8 @@ var log = require('../common/logger'),
     errorcodesAS = require('../common/constants').errorcodes.AS,
     pages = require('../common/pages.js');
 
+var MozillaASv1 = require('./mozilla/MozillaASv1');
+
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
@@ -196,56 +198,68 @@ server.prototype = {
     var url = urlparser.parse(request.url, true);
     var path = url.pathname.split('/');
     log.debug('NS_AS::onHTTPMessage --> Splitted URL path: ', path);
-    switch (path[1]) {
-    case 'about':
-      if (consts.PREPRODUCTION_MODE) {
-        try {
-          var p = new pages();
-          p.setTemplate('views/about.tmpl');
-          text = p.render(function(t) {
-            switch (t) {
-              case '{{GIT_VERSION}}':
-                return require('fs').readFileSync('version.info');
-              case '{{MODULE_NAME}}':
-                return 'Application Server Frontend';
-              default:
-                return '';
-            }
-          });
-        } catch(e) {
-          text = "No version.info file";
-        }
-        response.setHeader('Content-Type', 'text/html');
-        response.statusCode = 200;
-        response.write(text);
-        return response.end();
-      } else {
-        return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
-      }
-      break;
 
-    case 'notify':
-      var token = path[2];
-      if (!token) {
-        log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
-        return response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
-      }
-      if (request.method != 'POST') {
-        log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for notifications)');
-        return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
-      }
-
-      log.debug('NS_AS::onHTTPMessage --> Notification for ' + token);
-      request.on('data', function(notification) {
-        onNewPushMessage(notification, request.connection.getPeerCertificate(), token, function(err) {
-          response.res(err);
-        });
+    // Frontend for the Mozilla SimplePush API
+    if (request.method === 'PUT') {
+      log.debug('NS_AS::onHTTPMessage --> Received a PUT');
+      var moz = new MozillaASv1();
+      request.on('data', function(body) {
+        moz.processRequest(request, body, response);
       });
-      break;
+      return;
+    }
 
-    default:
-      log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
-      return response.res(errorcodesAS.BAD_URL);
+    switch (path[1]) {
+      case 'about':
+        if (consts.PREPRODUCTION_MODE) {
+          try {
+            var p = new pages();
+            p.setTemplate('views/about.tmpl');
+            text = p.render(function(t) {
+              switch (t) {
+                case '{{GIT_VERSION}}':
+                  return require('fs').readFileSync('version.info');
+                case '{{MODULE_NAME}}':
+                  return 'Application Server Frontend';
+                default:
+                  return '';
+              }
+            });
+          } catch(e) {
+            text = "No version.info file";
+          }
+          response.setHeader('Content-Type', 'text/html');
+          response.statusCode = 200;
+          response.write(text);
+          return response.end();
+        } else {
+          return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+        }
+        break;
+
+      case 'notify':
+        var token = path[2];
+        if (!token) {
+          log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
+          return response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
+        }
+        if (request.method != 'POST') {
+          log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for notifications)');
+          return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
+        }
+
+        log.debug('NS_AS::onHTTPMessage --> Notification for ' + token);
+        request.on('data', function(notification) {
+          onNewPushMessage(notification, request.connection.getPeerCertificate(), token, function(err) {
+            response.res(err);
+          });
+        });
+        break;
+        return;
+
+      default:
+        log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
+        return response.res(errorcodesAS.BAD_URL);
     }
   }
 };

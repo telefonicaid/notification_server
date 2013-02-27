@@ -217,7 +217,10 @@ var DataStore = function() {
         { _id: uaid },
         {
           $addToSet: {
-            ch: appToken
+            ch: {
+              ch: channelID,
+              app: appToken
+            }
           }
         },
         { safe: true, upsert: true },
@@ -273,7 +276,7 @@ var DataStore = function() {
         { _id: uaid },
         { $pull:
           {
-            ch: appToken
+            "ch.ch": appToken
           }
         },
         { safe: true },
@@ -351,9 +354,9 @@ var DataStore = function() {
   /**
    * Gets an application node list
    */
-  this.getApplication = function(channelID, callback, json) {
+  this.getApplication = function(appToken, callback, json) {
     // Get from MongoDB
-    log.debug('datastore::getApplication --> Going to find application with channelID: ' + channelID);
+    log.debug('datastore::getApplication --> Going to find application with appToken: ' + appToken);
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
@@ -363,7 +366,7 @@ var DataStore = function() {
       }
       collection.find(
         {
-          ch: channelID
+          "ch.app": appToken
         },
         {
           _id: true,
@@ -422,6 +425,32 @@ var DataStore = function() {
     });
   },
 
+  this.getChannelIDForAppToken = function(apptoken, callback) {
+    var apptoken = apptoken.toString();
+    log.debug('datastore::getChannelIDForAppToken --> Going to find the certificate for the appToken ' + apptoken);
+    this.db.collection('apps', function(err, collection) {
+      callback = helpers.checkCallback(callback);
+      if (err) {
+        log.error('datastore::getChannelIDForAppToken --> there was a problem opening the apps collection: ' + err);
+        callback(err);
+        return;
+      }
+      collection.findOne({ _id: apptoken }, function(err, data) {
+        if (err) {
+          log.error('datastore::getChannelIDForAppToken --> There was a problem finding the certificate - ' + err);
+          callback(err);
+          return;
+        }
+        if (!data) {
+          log.debug('There are no appToken=' + apptoken + ' in the DDBB');
+          callback(null, null);
+          return;
+        }
+        callback(null, data.ch);
+      });
+    });
+  },
+
   /**
    * Save a new message
    * @return New message as stored on DB.
@@ -433,7 +462,7 @@ var DataStore = function() {
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::newMessage --> There was a problem opening the messages collection: ' + err);
+        log.error('datastore::newMessage --> There was a problem opening the nodes collection: ' + err);
         return;
       }
       collection.findAndModify(
@@ -446,9 +475,45 @@ var DataStore = function() {
         },
         function(err, data) {
           if (err) {
-            log.error('dataStore::registerApplication --> Error inserting message to node: ' + err);
+            log.error('dataStore::newMessage --> Error inserting message to node: ' + err);
           } else {
-            log.debug('dataStore::registerApplication --> Message inserted');
+            log.debug('dataStore::newMessage --> Message inserted');
+          }
+        }
+      );
+    });
+    return msg;
+  },
+
+  /**
+   * Save a new message
+   * @return New message as stored on DB.
+   */
+  this.newVersion = function(appToken, channelID, version) {
+    var msg = {};
+    msg.app = appToken;
+    msg.ch = channelID;
+    msg.vs = version;
+
+    this.db.collection('nodes', function(err, collection) {
+      if (err) {
+        log.error('datastore::newVersion --> There was a problem opening the nodes collection: ' + err);
+        return;
+      }
+      collection.findAndModify(
+        //Find any sub-object on chs array that ch contains channelID
+        { "ch.ch": channelID },
+        [],
+        { $push:
+          {
+            ch: msg
+          }
+        },
+        function(err, data) {
+          if (err) {
+            log.error('dataStore::newVersion --> Error updating version for node: ' + err);
+          } else {
+            log.debug('dataStore::newVersion --> Version updated');
           }
         }
       );
