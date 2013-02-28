@@ -8,7 +8,8 @@ exports.serverData = {
 };
 
 var date = new Date().getTime();
-exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","ttl":0,"timestamp":"' + date + '","priority":1}';
+//exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","ttl":0,"timestamp":"' + date + '","priority":1}';
+exports.testNotificationText = 'version=1';
 
 exports.getToken = function getToken(callback) {
   var https = require("https");
