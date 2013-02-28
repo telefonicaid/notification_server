@@ -250,6 +250,7 @@ server.prototype = {
   onWSRequest: function(request) {
     // Common variables
     var appToken = null;
+    var self = this;
 
     ///////////////////////
     // WS Callbacks
@@ -325,7 +326,7 @@ server.prototype = {
           case 'hello':
             if (!query.uaid || !token.verify(query.uaid)) {
               query.uaid = token.get();
-              this.tokensGenerated++;
+              self.tokensGenerated++;
             }
             log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.uaid);
             log.debug('WS:onWSMessage --> Accepted uaid=' + query.uaid);
