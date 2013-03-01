@@ -125,6 +125,14 @@ server.prototype = {
               */
               delete notification.appToken;
               delete notification.app;
+              if (notification.ch) {
+                notification.channelID = notification.ch;
+                delete notification.ch;
+              }
+              if (notification.vs) {
+                notification.version = notification.vs;
+                delete notification.vs;
+              }
               log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
               if (notification.body) {
                 nodeConnector.notify({
