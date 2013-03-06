@@ -42,21 +42,10 @@ function onHTTPMessage(req, res) {
 
 var connectionTable = {};
 var connectionsText = {};
+var connectionCB = {};
 
 function websocket(idTest, text, callback) {
   if (!connectionsText[idTest]) connectionsText[idTest] = '';
-  var messageType = '';
-  try {
-    messageType = JSON.parse(text).messageType;
-  } catch(e) {
-    console.log('no se puede parsear respuesta de websocket');
-  }
-  if (messageType == 'getAllMessages') {
-    console.log('Getting getAllMessages for the connection of the ua ' + idTest);
-    var ret = connectionsText[idTest];
-    connectionsText[idTest] = '';
-    return callback(ret);
-  }
   console.log('Buscando conexión para idTest=' + idTest);
   var connection = connectionTable[idTest];
   if (!connection) {
@@ -68,6 +57,7 @@ function websocket(idTest, text, callback) {
     client.on('connectFailed', function(error) {
       console.log('Connect Error: ' + error.toString());
     });
+    connectionCB[idTest] = callback;
 
     client.on('connect', function(connection) {
       connectionTable[idTest] = connection;
@@ -84,7 +74,7 @@ function websocket(idTest, text, callback) {
           console.log("Received: '" + message.utf8Data + "'");
           //connectionTable[idTest].close();
           connectionsText[idTest] += message.utf8Data;
-          callback(message.utf8Data);
+          connectionCB[idTest](message.utf8Data);
         }
       });
 
@@ -95,6 +85,7 @@ function websocket(idTest, text, callback) {
     client.connect('wss://localhost:8080/', 'push-notification');
   } else {
     console.log('Ya teníamos cliente, lo enviamos por ahí');
+    connectionCB[idTest] = callback;       // Update callback
     connection.sendUTF(text);
   }
 }
