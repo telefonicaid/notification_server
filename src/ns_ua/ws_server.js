@@ -321,6 +321,7 @@ server.prototype = {
             {
               messageType: "hello",
               uaid: "<a valid UAID>",
+              channelIDs: [channelID1, channelID2, ...],
               interface: {
                 ip: "<current device IP address>",
                 port: "<TCP or UDP port in which the device is waiting for wake up notifications>"
@@ -360,21 +361,22 @@ server.prototype = {
                   });
                   return;
                 }
-                var WAtokensUrl = [];
-                if (data.wa) {
-                  WAtokensUrl = (data.wa).map(function(watoken) {
-                    return helpers.getNotificationURL(watoken);
-                  });
-                }
                 connection.res({
                   errorcode: errorcodes.NO_ERROR,
                   extradata: {
                     messageType: 'hello',
                     uaid: uaid,
-                    status: (data.dt.canBeWakeup ? statuscodes.UDPREGISTERED : statuscodes.REGISTERED),
-                    channelIDs: WAtokensUrl
+                    status: (data.dt.canBeWakeup ? statuscodes.UDPREGISTERED : statuscodes.REGISTERED)
                   }
                 });
+
+                // Recovery channels process
+                if (query.channelIDs) {
+                  setTimeout(function recoveryChannels() {
+                    log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', this);
+                    // TODO sync channels with client
+                  }.bind(query));
+                }
                 log.debug('WS::onWSMessage --> OK register UA');
               });
             });
@@ -477,23 +479,6 @@ server.prototype = {
             if (query.messageId) {
               dataManager.removeMessage(query.messageId, connection.uaid);
             }
-            break;
-
-          /**
-            {
-              messageType: “clientState”,
-              channelIDs: [{“channelID”: channelID, version: …}, …]
-            }
-           */
-          case 'clientState':
-            // TODO: Recovery method. Update channels registrations (add & remove)
-            connection.res({
-              errorcode: errorcodes.NO_ERROR,
-              extradata: {
-                messageType: 'clientState',
-                status: statuscodes.OK
-              }
-            });
             break;
 
           /////////////////////////////////
