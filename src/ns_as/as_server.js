@@ -199,6 +199,14 @@ server.prototype = {
     var path = url.pathname.split('/');
     log.debug('NS_AS::onHTTPMessage --> Splitted URL path: ', path);
 
+    // CORS support
+    if (request.method === 'OPTIONS') {
+      log.debug('NS_AS::onHTTPMessage --> Received an OPTIONS method');
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'POST, PUT, GET, OPTIONS');
+      return response.end();
+    }
+
     // Frontend for the Mozilla SimplePush API
     if (request.method === 'PUT') {
       log.debug('NS_AS::onHTTPMessage --> Received a PUT');
