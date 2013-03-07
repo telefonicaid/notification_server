@@ -114,7 +114,7 @@ server.prototype = {
     var options = {
       key: fs.readFileSync(consts.key),
       cert: fs.readFileSync(consts.cert),
-      requestCert: true,
+      requestCert: false,
       rejectUnauthorized: false
     };
     this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
