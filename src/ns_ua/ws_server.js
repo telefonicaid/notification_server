@@ -353,7 +353,7 @@ server.prototype = {
                 return;
               }
               dataManager.getNodeData(uaid, function(error, data) {
-                if (error) {
+                if (error || !data) {
                   log.debug('WS::onWSMessage --> Failing registering UA');
                   connection.res({
                     errorcode: errorcodesWS.FAILED_REGISTERUA,
