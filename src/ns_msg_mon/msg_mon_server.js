@@ -9,7 +9,8 @@
 var log = require('../common/logger.js'),
     crypto = require('../common/cryptography.js'),
     msgBroker = require('../common/msgbroker.js'),
-    dataStore = require('../common/datastore.js');
+    dataStore = require('../common/datastore.js'),
+    connectionstate = require('../common/constants.js').connectionstate;
 
 function monitor() {
   this.ready = false;
@@ -133,7 +134,7 @@ function onNodeData(nodeData, json) {
   }
 
   // Is the node connected? AKA: is websocket?
-  if (!nodeData.co) {
+  if (nodeData.co === connectionstate.DISCONNECTED) {
     log.debug('MSG_mon::onNodeData --> Node recovered but not connected, just delaying');
     return;
   }
