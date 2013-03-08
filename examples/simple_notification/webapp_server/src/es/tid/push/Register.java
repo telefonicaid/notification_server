@@ -1,13 +1,12 @@
 package es.tid.push;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,26 +16,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.annotation.*;
 
-import org.json.JSONObject;
-
-import sun.misc.BASE64Encoder;
-
 /**
  * Servlet implementation class Monitor
  */
 @WebServlet(name = "Register",
             loadOnStartup=2,
             urlPatterns = {"/register"},
-            initParams={ @WebInitParam(name="public_key", value="/WEB-INF/public.pem"),
-                         @WebInitParam(name="watoken", value="push_app"),
-                         @WebInitParam(name="url_param", value="push_url") })
+            initParams={ @WebInitParam(name="url_endpoint", value="push_url"),
+	                     @WebInitParam(name="url_version", value="version")})
 
 public class Register extends HttpServlet {
   private static final long serialVersionUID = 1L;
-  private static String pub_key;
-  private static String watoken;
   private RegistrationListener clientListener;
   List<String> clients;
+  Map<Long, String> notifications;
        
   /**
    * @throws IOException 
@@ -50,32 +43,9 @@ public class Register extends HttpServlet {
   public void init( ServletConfig cfg ) throws javax.servlet.ServletException{
     super.init(cfg);
 
-    watoken = cfg.getInitParameter("watoken");
-    try {
-      pub_key = ReadFile(cfg.getInitParameter("public_key"));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-
     clients = (ArrayList<String>)getServletContext().getAttribute("registrations");
     clientListener = (RegistrationListener)getServletContext().getAttribute("clientListener");
-  }
-
-  String ReadFile(String path) throws IOException{
-    byte [] buffer = new byte[4096];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    int read = 0;
-    InputStream is = getServletContext().getResourceAsStream(path);
-
-    while ((read = is.read(buffer)) != -1 ) {
-      baos.write(buffer, 0, read);
-    }
-
-    is.close();
-    baos.close();
-
-    String pbk64 = new BASE64Encoder().encode(baos.toByteArray()).replace("\n", "");
-    return pbk64;
+    notifications = (Map<Long, String>)getServletContext().getAttribute("notifications");
   }
 
   /**
@@ -85,27 +55,37 @@ public class Register extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     response.setContentType("text/html");
 
-    String value = request.getParameter(getInitParameter("url_param"));
-    if(value == null){
-      JSONObject msg = new JSONObject();
-      msg.put("key", pub_key);
-      msg.put("watoken", watoken);
-
-      OutputStream os = response.getOutputStream();
-      os.write(msg.toString().getBytes());
+    String endpoint_value = request.getParameter(getInitParameter("url_endpoint"));
+    String version_value = request.getParameter(getInitParameter("url_version"));
+    if(endpoint_value == null && version_value == null){
+      response.sendError(400, "Push_url malformed");
     }
     else{
-      try {
-        new URL(value);
-        if(clients.contains(value)) {
-          response.sendError(409, "Client already registered");
-          return;
-        }
+      if(endpoint_value != null){
+        try {
+          new URL(endpoint_value);
+          if(clients.contains(endpoint_value)) {
+            return;
+          }
 
-        clients.add(value);
-        clientListener.onNewClientRegistered(value);
-      } catch (MalformedURLException e) {
-        response.sendError(400, "Push_url malformed");
+          clients.add(endpoint_value);
+          clientListener.onNewClientRegistered(endpoint_value);
+        } catch (MalformedURLException e) {
+          response.sendError(400, "Push_url malformed");
+        }
+      }
+      if(version_value != null){
+    	long version = -1;
+    	try{
+    	  version = Long.parseLong(version_value);
+    	} catch (NumberFormatException e) {
+    		response.sendError(400, "Invalid version");
+    	}
+    	String msg = notifications.remove(version);
+    	if(msg != null){
+    		OutputStream os = response.getOutputStream();
+    		os.write(msg.getBytes());
+    	}
       }
     }
   }
