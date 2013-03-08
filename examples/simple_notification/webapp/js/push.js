@@ -58,7 +58,7 @@ var Push = {
       }
 
       this.requestURL();
-//this.clearDB();
+      //this.clearDB();
     }.bind(this));
   },
 
