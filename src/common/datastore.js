@@ -103,14 +103,14 @@ var DataStore = function() {
           }
         },
         { safe: true, upsert: true },
-        function(err, data) {
+        function(err, res) {
           if (err) {
             log.error('datastore::registerNode --> Error inserting/updating node into MongoDB -- ' + err);
             callback(err);
             return;
           }
           log.debug('dataStore::registerNode --> Node inserted/updated ', uaid);
-          callback(null, data, uaid);
+          callback(null, res, data);
           return;
         }
       );

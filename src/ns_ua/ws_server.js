@@ -335,6 +335,7 @@ server.prototype = {
           case 'hello':
             if (!query.uaid || !token.verify(query.uaid)) {
               query.uaid = token.get();
+              query.channelIDs = null;
               self.tokensGenerated++;
             }
             log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.uaid);
@@ -343,7 +344,7 @@ server.prototype = {
 
             // New UA registration
             log.debug('WS::onWSMessage --> HELLO - UA registration message');
-            dataManager.registerNode(query, connection, function onNodeRegistered(error, data, uaid) {
+            dataManager.registerNode(query, connection, function onNodeRegistered(error, res, data) {
               if (error) {
                 connection.res({
                   errorcode: errorcodesWS.FAILED_REGISTERUA,
@@ -352,33 +353,23 @@ server.prototype = {
                 log.debug('WS::onWSMessage --> Failing registering UA');
                 return;
               }
-              dataManager.getNodeData(uaid, function(error, data) {
-                if (error || !data) {
-                  log.debug('WS::onWSMessage --> Failing registering UA');
-                  connection.res({
-                    errorcode: errorcodesWS.FAILED_REGISTERUA,
-                    extradata: { messageType: 'hello' }
-                  });
-                  return;
+              connection.res({
+                errorcode: errorcodes.NO_ERROR,
+                extradata: {
+                  messageType: 'hello',
+                  uaid: query.uaid,
+                  status: (data.canBeWakeup ? statuscodes.UDPREGISTERED : statuscodes.REGISTERED)
                 }
-                connection.res({
-                  errorcode: errorcodes.NO_ERROR,
-                  extradata: {
-                    messageType: 'hello',
-                    uaid: uaid,
-                    status: (data.dt.canBeWakeup ? statuscodes.UDPREGISTERED : statuscodes.REGISTERED)
-                  }
-                });
-
-                // Recovery channels process
-                if (query.channelIDs) {
-                  setTimeout(function recoveryChannels() {
-                    log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', this);
-                    // TODO sync channels with client
-                  }.bind(query));
-                }
-                log.debug('WS::onWSMessage --> OK register UA');
               });
+
+              // Recovery channels process
+              if (query.channelIDs) {
+                setTimeout(function recoveryChannels() {
+                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', this);
+                  // TODO sync channels with client
+                }.bind(query));
+              }
+              log.debug('WS::onWSMessage --> OK register UA');
             });
 
             //onNodeRegistered.bind(connection));
