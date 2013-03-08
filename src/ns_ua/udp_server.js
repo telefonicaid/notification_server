@@ -27,7 +27,7 @@ function onNewMessage(message) {
 
   /**
    * Messages are formed like this:
-   * { "data": {
+   * { "dt": {
    *    "uatoken": "UATOKEN",
    *    "interface": {
    *      "ip": "IP",
