@@ -57,28 +57,28 @@ public class MonitorManager extends WebSocketServlet {
 
   public void init( ServletConfig cfg ) throws javax.servlet.ServletException {
     super.init(cfg);
-    
+
     try {
-		DisableCertValidattion();
-	} catch (KeyManagementException | NoSuchAlgorithmException e1) {
-		e1.printStackTrace();
-	}
-    
+      DisableCertValidattion();
+    } catch (KeyManagementException | NoSuchAlgorithmException e1) {
+      e1.printStackTrace();
+    }
+
     ServletContext app = getServletContext();
     file = (File)app.getAttribute("javax.servlet.context.tempdir");
     file = new File(file, cfg.getInitParameter("data_file"));
 
     try {
-        FileReader fileReader = new FileReader(file);
-        BufferedReader bufferedReader = new BufferedReader(fileReader);
-        String initial = bufferedReader.readLine();
-        counter = Long.parseLong(initial);
-        bufferedReader.close();
+      FileReader fileReader = new FileReader(file);
+      BufferedReader bufferedReader = new BufferedReader(fileReader);
+      String initial = bufferedReader.readLine();
+      counter = Long.parseLong(initial);
+      bufferedReader.close();
     } catch (FileNotFoundException ignored) {
-       System.out.println("Counter file not found: counter set to 0");
-       SaveCounter();
+      System.out.println("Counter file not found: counter set to 0");
+      SaveCounter();
     } catch (Exception e) {
-    	e.printStackTrace();
+      e.printStackTrace();
     }
     
     clients = new ArrayList<String>();
@@ -117,15 +117,15 @@ public class MonitorManager extends WebSocketServlet {
   
   private void SaveCounter(){
     try {
-        FileWriter fileWriter = new FileWriter(file);
-        String initial = Long.toString(counter);
-        fileWriter.write(initial, 0, initial.length());
-        fileWriter.close();
-        return;
-      }
-      catch (IOException e) {
-        e.printStackTrace();
-      }
+      FileWriter fileWriter = new FileWriter(file);
+      String initial = Long.toString(counter);
+      fileWriter.write(initial, 0, initial.length());
+      fileWriter.close();
+      return;
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
   }
   
   @Override
@@ -178,9 +178,8 @@ public class MonitorManager extends WebSocketServlet {
       String error = sendRequest(url, notificationMsg);
       if(error != null) {
         response.put("error", "Error sending notification:\n" + error);
-        sendNotifyResponse(response);
-      } else
-	    sendNotifyResponse(response);
+      }
+      sendNotifyResponse(response);
     }
 
     private void sendNotifyResponse(JSONObject response) {
@@ -220,7 +219,7 @@ public class MonitorManager extends WebSocketServlet {
         }
         rd.close();
       } catch (IOException e) {
-        System.out.println("--- " + e.getMessage());
+        System.out.println(e.getMessage());
         return e.getMessage();
       }
       return null;
@@ -254,32 +253,32 @@ public class MonitorManager extends WebSocketServlet {
   }
   
   void DisableCertValidattion() throws NoSuchAlgorithmException, KeyManagementException {
-	// Create a trust manager that does not validate certificate chains
-      TrustManager[] trustAllCerts = new TrustManager[] { 
-    	new X509TrustManager() {
-          public X509Certificate[] getAcceptedIssuers() {
-            return null;
-          }
+    // Create a trust manager that does not validate certificate chains
+    TrustManager[] trustAllCerts = new TrustManager[] { 
+      new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
 
-          public void checkClientTrusted(X509Certificate[] certs, String authType) {
-          }
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        }
 
-          public void checkServerTrusted(X509Certificate[] certs, String authType) {
-          }
-    	}
-      };
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        }
+      }
+    };
 
-      SSLContext sc = SSLContext.getInstance("SSL");
-      sc.init(null, trustAllCerts, new java.security.SecureRandom());
-      HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-      // Create all-trusting host name verifier
-      HostnameVerifier allHostsValid = new HostnameVerifier() {
-          public boolean verify(String hostname, SSLSession session) {
-              return true;
-          }
-      };
-      
-      // Install the all-trusting host verifier
-      HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+    SSLContext sc = SSLContext.getInstance("SSL");
+    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    // Create all-trusting host name verifier
+    HostnameVerifier allHostsValid = new HostnameVerifier() {
+      public boolean verify(String hostname, SSLSession session) {
+        return true;
+      }
+    };
+
+    // Install the all-trusting host verifier
+    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
   }
 }

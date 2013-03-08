@@ -23,7 +23,7 @@ import javax.servlet.annotation.*;
             loadOnStartup=2,
             urlPatterns = {"/register"},
             initParams={ @WebInitParam(name="url_endpoint", value="push_url"),
-	                     @WebInitParam(name="url_version", value="version")})
+                         @WebInitParam(name="url_version", value="version")})
 
 public class Register extends HttpServlet {
   private static final long serialVersionUID = 1L;
@@ -75,17 +75,17 @@ public class Register extends HttpServlet {
         }
       }
       if(version_value != null){
-    	long version = -1;
-    	try{
-    	  version = Long.parseLong(version_value);
-    	} catch (NumberFormatException e) {
-    		response.sendError(400, "Invalid version");
-    	}
-    	String msg = notifications.remove(version);
-    	if(msg != null){
-    		OutputStream os = response.getOutputStream();
-    		os.write(msg.getBytes());
-    	}
+        long version = -1;
+        try{
+          version = Long.parseLong(version_value);
+        } catch (NumberFormatException e) {
+          response.sendError(400, "Invalid version");
+        }
+        String msg = notifications.remove(version);
+        if(msg != null){
+          OutputStream os = response.getOutputStream();
+          os.write(msg.getBytes());
+        }
       }
     }
   }
