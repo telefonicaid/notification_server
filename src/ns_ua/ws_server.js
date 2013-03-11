@@ -655,11 +655,16 @@ server.prototype = {
     }
 
     // Connection accepted
-    var connection = request.accept('push-notification', request.origin);
-    this.wsConnections++;
-    log.debug('WS::onWSRequest --> Connection accepted.');
-    connection.on('message', this.onWSMessage);
-    connection.on('close', this.onWSClose);
+    try {
+      var connection = request.accept('push-notification', request.origin);
+      this.wsConnections++;
+      log.debug('WS::onWSRequest --> Connection accepted.');
+      connection.on('message', this.onWSMessage);
+      connection.on('close', this.onWSClose);
+    } catch(e) {
+      log.debug('WS::onWSRequest --> Connection from origin ' + request.origin + 'rejected. Bad WebSocket sub-protocol.');
+      return request.reject();
+    }
   },
 
   ///////////////////////
