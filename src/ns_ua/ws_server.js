@@ -273,8 +273,8 @@ server.prototype = {
         if (payload.errorcode[0] > 299) {    // Out of the 2xx series
           if (!res.status) {
             res.status = 'ERROR';
-              }
-              res.reason = payload.errorcode[1];
+          }
+          res.reason = payload.errorcode[1];
         } else {
           if (!res.status) {
             res.status = 'OK';

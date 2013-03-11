@@ -27,8 +27,9 @@ function onNewMessage(message) {
 
   /**
    * Messages are formed like this:
-   * { "data": {
-   *    "uatoken": "UATOKEN",
+   * {
+   *  "uaid": "<UAID>",
+   *  "dt": {
    *    "interface": {
    *      "ip": "IP",
    *      "port": "PORT"
@@ -36,14 +37,20 @@ function onNewMessage(message) {
    *    "mobilenetwork": {
    *      "mcc": "MCC",
    *      "mnc": "MNC"
+   *    },
+   *    "protocol": "udp|tcp",
+   *    "canBeWakeup": "true|false",
+   *    "payload": {
+   *      "app": "<appToken>",
+   *      "ch": "<channelID>",
+   *      "vs": "x"
    *    }
-   *  },
-   *  "messageType": "registerUA"
+   *  }
    * }
    */
   // If message does not follow the above standard, return.
   log.debug('UDP::queue::onNewMessage --> messageData =', messageData);
-  if (!messageData.uatoken ||
+  if (!messageData.uaid ||
      !messageData.dt ||
      !messageData.dt.interface ||
      !messageData.dt.interface.ip ||
@@ -55,7 +62,7 @@ function onNewMessage(message) {
   }
 
   // Notify the hanset with the associated Data
-  log.notify('Notifying node: ' + messageData.uatoken +
+  log.notify('Notifying node: ' + messageData.uaid +
       ' to ' + messageData.dt.interface.ip +
       ':' + messageData.dt.interface.port +
       ' on network ' + messageData.dt.mobilenetwork.mcc +
