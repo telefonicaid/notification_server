@@ -8,16 +8,21 @@
 
 var a = 0;
 
-function sendNotification() {
-    var http = require("http");
+if (process.argv.length < 3) {
+  console.log("It's needed the apptoken");
+  process.exit();
+}
+
+function sendNotification(vers) {
+    var https = require("https");
     var options = {
       host: "localhost",//owd-push-qa-fe1.hi.inet",
       port: 8081,
-      path: "/notify/b578c949551625b05bcac73fb81a9d8bf9272bb0c2a47ff8f7bc6b8bb44554ef",
-      method: 'POST'
+      path: "/v1/notify/"+process.argv[2],
+      method: 'PUT'
     };
 
-    var req = http.request(options, function(res) {
+    var req = https.request(options, function(res) {
       res.setEncoding('utf8');
       res.on('data', function (chunk) {
 	//console.log(chunk);
@@ -32,12 +37,12 @@ function sendNotification() {
     });
 
     // write data to request body
-    req.write('{"messageType":"notification","id":1234,"message":"Hola","ttl":0,"timestamp":"SINCE_EPOCH_TIME","priority":1}');
+    req.write('version='+vers);
     req.end();
 }
 
 for (var i = 100000 - 1; i >= 0; i--) {
-  sendNotification();
+  sendNotification(i);
 };
 
 function onClose() {
