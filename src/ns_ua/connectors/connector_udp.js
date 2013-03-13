@@ -43,7 +43,7 @@ connector_udp.prototype = {
     if (this.autocloseTimeout)
       clearTimeout(this.autocloseTimeout);
     this.autocloseTimeout = setTimeout(function() {
-      this.close();
+      this.drop(4774, "UDP Wakeup");
     }.bind(this.connection), 10000);
   },
 
