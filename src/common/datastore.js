@@ -502,25 +502,54 @@ var DataStore = function() {
         log.error('datastore::newVersion --> There was a problem opening the nodes collection: ' + err);
         return;
       }
-      collection.findAndModify(
-        //Find any sub-object on chs array that ch contains channelID
+      collection.findOne(
         {
           "ch.app": appToken
         },
-        [],
-        { $push:
-          {
-            ch: msg
-          }
+        {
+          ch: true
         },
         function(err, data) {
           if (err) {
-            log.error('dataStore::newVersion --> Error updating version for node: ' + err);
-          } else {
-            log.debug('dataStore::newVersion --> Version updated');
+            log.error('dataStore::newVersion --> Error locating channel for appToken: ' + appToken);
+            return;
           }
-        }
-      );
+          var uaid = data._id;
+          var channelData = data.ch[0];
+          collection.update(
+            {
+              "ch.app": appToken
+            },
+            {
+              $pull: {
+                ch: channelData
+              }
+            },
+            function(err,data) {
+              if (err) {
+                log.error('dataStore::newVersion --> Error removing old version for appToken: ' + appToken);
+                return;
+              }
+              channelData.version = version;
+              log.debug("channelData = ", channelData);
+              collection.update(
+                {
+                  _id: uaid
+                },
+                {
+                  $push: {
+                    ch: channelData
+                  }
+                },
+                function(err,data) {
+                  if (err) {
+                    log.error('dataStore::newVersion --> Error setting new version for appToken: ' + appToken);
+                    return;
+                  }
+                  log.debug('dataStore::newVersion --> Version updated');
+                })
+            })
+        });
     });
     return msg;
   },
