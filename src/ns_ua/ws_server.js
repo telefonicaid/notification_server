@@ -379,10 +379,10 @@ server.prototype = {
                   }
                   var channelsUpdate = [];
                   for (x in data.ch) {
-                    if (data.ch[x].version) {
+                    if (data.ch[x].vs) {
                       channelsUpdate.push({
                         channelID: data.ch[x].ch,
-                        version: data.ch[x].version
+                        version: data.ch[x].vs
                       })
                     }
                   }

@@ -527,14 +527,13 @@ var DataStore = function() {
             return;
           }
           var uaid = data._id;
-          var channelData = data.ch[0];
           collection.update(
             {
               "ch.app": appToken
             },
             {
               $pull: {
-                ch: channelData
+                ch: data.ch[0]
               }
             },
             function(err,data) {
@@ -542,15 +541,13 @@ var DataStore = function() {
                 log.error('dataStore::newVersion --> Error removing old version for appToken: ' + appToken);
                 return;
               }
-              channelData.version = version;
-              log.debug("channelData = ", channelData);
               collection.update(
                 {
                   _id: uaid
                 },
                 {
                   $push: {
-                    ch: channelData
+                    ch: msg
                   }
                 },
                 function(err,data) {
