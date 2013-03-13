@@ -369,6 +369,32 @@ server.prototype = {
                   // TODO sync channels with client
                 }.bind(query));
               }
+
+              // Pending notifications process
+              setTimeout(function pendingNotifications() {
+                log.debug('WS::onWSMessage::pendingNotifications --> Sending pending notifications');
+                dataManager.getNodeData(query.uaid, function(err, data) {
+                  if (err) {
+                    return;
+                  }
+                  var channelsUpdate = [];
+                  for (x in data.ch) {
+                    if (data.ch[x].version) {
+                      channelsUpdate.push({
+                        channelID: data.ch[x].ch,
+                        version: data.ch[x].version
+                      })
+                    }
+                  }
+                  connection.res({
+                    errorcode: errorcodes.NO_ERROR,
+                    extradata: {
+                      messageType: 'notification',
+                      updates: channelsUpdate
+                    }
+                  });
+                });
+              }.bind(query));
               log.debug('WS::onWSMessage --> OK register UA');
             });
 
