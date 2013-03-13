@@ -266,27 +266,39 @@ var DataStore = function() {
     });
 
     this.db.collection('nodes', function(err, collection) {
-      callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::unregisterApplication --> there was a problem opening the nodes collection: ' + err);
-        callback(err);
+        log.error('datastore::newVersion --> There was a problem opening the nodes collection: ' + err);
         return;
       }
-      collection.update(
-        { _id: uaid },
-        { $pull:
-          {
-            "ch.app": appToken
-          }
+      collection.findOne(
+        {
+          _id: uaid
         },
-        { safe: true },
+        {
+          ch: true
+        },
         function(err, data) {
           if (err) {
-            log.debug('datastore::unregisterApplication --> Error removing apptoken from the nodes: ' + err);
-            return callback(err);
+            log.error('dataStore::unregisterApplication --> Error locating channel for appToken: ' + appToken);
+            return;
           }
-          log.debug('datastore::unregisterApplication --> Application removed from node data');
-          return callback(null, data);
+          collection.update(
+            {
+              "ch.app": appToken
+            },
+            {
+              $pull: {
+                ch: data.ch[0]
+              }
+            },
+            function(err,data) {
+              if (err) {
+                log.debug('datastore::unregisterApplication --> Error removing apptoken from the nodes: ' + err);
+                return callback(err);
+              }
+              log.debug('datastore::unregisterApplication --> Application removed from node data');
+              return callback(null, data);
+            })
         });
     });
 
