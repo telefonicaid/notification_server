@@ -276,7 +276,7 @@ var DataStore = function() {
         { _id: uaid },
         { $pull:
           {
-            "ch.ch": appToken
+            "ch.app": appToken
           }
         },
         { safe: true },
@@ -466,10 +466,12 @@ var DataStore = function() {
         return;
       }
       collection.findAndModify(
-        { ch: apptoken },
+        {
+          "ch.app": apptoken
+        },
         [],
         {
-        $addToSet: {
+          $addToSet: {
             ms: msg
           }
         },
@@ -502,7 +504,9 @@ var DataStore = function() {
       }
       collection.findAndModify(
         //Find any sub-object on chs array that ch contains channelID
-        { "ch.ch": channelID },
+        {
+          "ch.app": appToken
+        },
         [],
         { $push:
           {
