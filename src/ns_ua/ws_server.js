@@ -365,9 +365,9 @@ server.prototype = {
               // Recovery channels process
               if (query.channelIDs) {
                 setTimeout(function recoveryChannels() {
-                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', this);
+                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query);
                   // TODO sync channels with client
-                }.bind(query));
+                });
               }
 
               // Pending notifications process
@@ -394,7 +394,7 @@ server.prototype = {
                     }
                   });
                 });
-              }.bind(query));
+              });
               log.debug('WS::onWSMessage --> OK register UA');
             });
 
