@@ -494,10 +494,17 @@ server.prototype = {
                 });
                 log.debug('WS::onWSMessage::unregister --> OK unregistering channelID');
               } else {
-                connection.res({
-                  errorcode: errorcodes.NOT_READY,
-                  extradata: { messageType: 'unregister' }
-                });
+                if (error == -1) {
+                  connection.res({
+                    errorcode: errorcodesWS.NOT_VALID_CHANNELID,
+                    extradata: { messageType: 'unregister' }
+                  });
+                } else {
+                  connection.res({
+                    errorcode: errorcodes.NOT_READY,
+                    extradata: { messageType: 'unregister' }
+                  });
+                }
                 log.debug('WS::onWSMessage::unregister --> Failing unregistering channelID');
               }
             });

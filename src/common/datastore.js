@@ -258,7 +258,11 @@ var DataStore = function() {
         function(err, data) {
           if (err) {
             log.error('dataStore::unregisterApplication --> Some error occured ' + err);
-            return;
+            return callback(err);
+          }
+          if (!data) {
+            log.debug('dataStore::unregisterApplication --> appToken not found');
+            return callback(-1);
           }
           log.debug('dataStore::unregisterApplication --> Deleted node from apps collection');
         }
@@ -280,7 +284,7 @@ var DataStore = function() {
         function(err, data) {
           if (err) {
             log.error('dataStore::unregisterApplication --> Error locating channel for appToken: ' + appToken);
-            return;
+            return callback(err);
           }
           collection.update(
             {
@@ -297,7 +301,7 @@ var DataStore = function() {
                 return callback(err);
               }
               log.debug('datastore::unregisterApplication --> Application removed from node data');
-              return callback(null, data);
+              return callback(null);
             })
         });
     });
