@@ -422,7 +422,7 @@ server.prototype = {
               });
               //There must be a problem on the client, because channelID is the way to identify an app
               //Close in this case.
-              connection.close();
+              return connection.close();
             }
 
             // Register and store in database
@@ -462,6 +462,22 @@ server.prototype = {
              */
           case 'unregister':
             log.debug('WS::onWSMessage::unregister --> Application un-registration message');
+
+            // Close the connection if the channelID is null
+            var channelID = query.channelID;
+            if (!channelID) {
+              log.debug('WS::onWSMessage::unregister --> Null channelID');
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CHANNELID,
+                extradata: {
+                  messageType: 'unregister'
+                }
+              });
+              //There must be a problem on the client, because channelID is the way to identify an app
+              //Close in this case.
+              return connection.close();
+            }
+
             appToken = helpers.getAppToken(query.channelID, connection.uaid);
             dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
               if (!error) {
