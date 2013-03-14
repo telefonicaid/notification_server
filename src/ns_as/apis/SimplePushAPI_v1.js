@@ -15,7 +15,7 @@ var dataStore = require('../../common/datastore'),
 
 var kMozASFrontendVersion = 'v1';
 
-var MozASFrontendv1 = function() {
+var SimplePushAPI_v1 = function() {
   this.processRequest = function(request, body, response) {
     var URI = request.url.split('/');
     if (URI.length < 3) {
@@ -75,4 +75,4 @@ var MozASFrontendv1 = function() {
   };
 };
 
-module.exports = MozASFrontendv1;
+module.exports = SimplePushAPI_v1;

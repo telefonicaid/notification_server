@@ -18,7 +18,7 @@ var log = require('../common/logger'),
     errorcodesAS = require('../common/constants').errorcodes.AS,
     pages = require('../common/pages.js');
 
-var MozillaASv1 = require('./mozilla/MozillaASv1');
+var SimplePushAPI_v1 = require('./apis/SimplePushAPI_v1');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -210,9 +210,9 @@ server.prototype = {
     // Frontend for the Mozilla SimplePush API
     if (request.method === 'PUT') {
       log.debug('NS_AS::onHTTPMessage --> Received a PUT');
-      var moz = new MozillaASv1();
+      var simplepush = new SimplePushAPI_v1();
       request.on('data', function(body) {
-        moz.processRequest(request, body, response);
+        simplepush.processRequest(request, body, response);
       });
       return;
     }
