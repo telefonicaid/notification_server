@@ -41,7 +41,7 @@ function sendNotification(vers) {
     req.end();
 }
 
-for (var i = 100000 - 1; i >= 0; i--) {
+for (var i = 0; i < 100000; i++) {
   sendNotification(i);
 };
 
