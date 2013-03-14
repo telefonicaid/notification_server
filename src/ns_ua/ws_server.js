@@ -386,13 +386,15 @@ server.prototype = {
                       })
                     }
                   }
-                  connection.res({
-                    errorcode: errorcodes.NO_ERROR,
-                    extradata: {
-                      messageType: 'notification',
-                      updates: channelsUpdate
-                    }
-                  });
+                  if (channelsUpdate.length > 0) {
+                    connection.res({
+                      errorcode: errorcodes.NO_ERROR,
+                      extradata: {
+                        messageType: 'notification',
+                        updates: channelsUpdate
+                      }
+                    });
+                  }
                 });
               });
               log.debug('WS::onWSMessage --> OK register UA');
