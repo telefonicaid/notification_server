@@ -16,27 +16,37 @@ var dataStore = require('../../common/datastore'),
 var kMozASFrontendVersion = 'v1';
 
 var SimplePushAPI_v1 = function() {
-  this.processRequest = function(request, body, response) {
+  this.processRequest = function(request, body, response, path) {
+    log.debug("SimplePushAPI_v1");
+    if (request.method !== 'PUT') {
+      return false;
+    }
+
+    log.debug('NS_AS::onHTTPMessage --> Received a PUT');
+    request.on('data', function(body) {
+      apis[0].processRequest(request, body, response);
+    });
+
     var URI = request.url.split('/');
     if (URI.length < 3) {
       response.statusCode = 404;
       response.end('{ reason: "Not enough path data"}');
       log.debug('NS_UA_Moz_v1::processMozRequest --> Not enough path');
-      return;
+      return true;
     }
 
     if (URI[1] !== kMozASFrontendVersion) {
       response.statusCode = 400;
       response.end('{ reason: "Protocol version not supported"}');
       log.debug('NS_UA_Moz_v1::processMozRequest --> Version not supported, received: ' + URI[1]);
-      return;
+      return true;
     }
 
     if (URI[2] !== 'notify') {
       response.statusCode = 404;
       response.end('{ reason: "API not known"}');
       log.debug('NS_UA_Moz_v1::processMozRequest --> API call not known, received: ' + URI[2]);
-      return;
+      return true;
     }
 
     var appToken = URI[3];
@@ -44,7 +54,7 @@ var SimplePushAPI_v1 = function() {
       response.statusCode = 404;
       response.end('{ reason: "Not enough path data"}');
       log.debug('NS_UA_Moz_v1::processMozRequest --> Not enough path');
-      return;
+      return true;
     }
 
     var versions = String(body).split('=');
@@ -52,7 +62,7 @@ var SimplePushAPI_v1 = function() {
       response.statusCode = 404;
       response.end('{ reason: "Bad body"}');
       log.debug('NS_UA_Moz_v1::processMozRequest --> Bad body, received lhs: ' + versions[0]);
-      return;
+      return true;
     }
 
     //Check version TODO, possible function?
@@ -60,7 +70,7 @@ var SimplePushAPI_v1 = function() {
       response.statusCode = 404;
       response.end('{ reason: "Bad version"}');
       log.debug('NS_UA_Moz_v1::processMozRequest --> Bad body, received lhs: ' + versions[0]);
-      return;
+      return true;
     }
 
     //Now, we are safe to start using the path and data
@@ -70,9 +80,9 @@ var SimplePushAPI_v1 = function() {
       msgBroker.push('newMessages', msg);
       response.statusCode = 200;
       response.end('{}');
-      return;
     });
+    return true;
   };
 };
 
-module.exports = SimplePushAPI_v1;
+module.exports = new SimplePushAPI_v1();
