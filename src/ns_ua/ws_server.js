@@ -20,19 +20,24 @@ var log = require('../common/logger.js'),
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesWS = require('../common/constants').errorcodes.UAWS,
     statuscodes = require('../common/constants').statuscodes,
-    pages = require('../common/pages.js'),
+    counters = require('../common/counters'),
     url = require('url'),
     http = require('http'),
     https = require('https');
+
+var apis = {
+  http: [],
+  ws: []
+};
+apis.http[0] = require('./apis/infoAPI');
 
 function server(ip, port, ssl) {
   this.ip = ip;
   this.port = port;
   this.ssl = ssl;
   this.ready = false;
-  this.tokensGenerated = 0;
-  this.wsConnections = 0;
-  this.wsMaxConnections = 1000;
+  counters.set('wsMaxConnections', 1000);
+  counters.set('numProcesses', config.numProcesses);
 }
 
 server.prototype = {
@@ -174,7 +179,7 @@ server.prototype = {
         return log.error('ulimit error: ' + error);
       }
       log.debug('ulimit = ' + ulimit);
-      this.wsMaxConnections = ulimit - 200;
+      counters.set('wsMaxConnections', ulimit - 200);
     }.bind(this));
 
   },
@@ -210,44 +215,30 @@ server.prototype = {
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
       var url = this.parseURL(request.url);
-
       log.debug('WS::onHTTPMessage --> Parsed URL:', url);
-      switch (url.messageType) {
-        case 'about':
-          if (consts.PREPRODUCTION_MODE) {
-            try {
-              var p = new pages();
-                  p.setTemplate('views/aboutWS.tmpl');
-                  text = p.render(function(t) {
-                    switch (t) {
-                      case '{{GIT_VERSION}}':
-                        return require('fs').readFileSync('version.info');
-                      case '{{MODULE_NAME}}':
-                        return 'User Agent Frontend';
-                      case '{{PARAM_TOKENSGENERATED}}':
-                        return this.tokensGenerated;
-                      case '{{PARAM_CONNECTIONS}}':
-                        return this.wsConnections;
-                      case '{{PARAM_MAXCONNECTIONS}}':
-                        return this.wsMaxConnections;
-                      case '{{PARAM_NUMPROCESSES}}':
-                        return config.numProcesses;
-                      default:
-                        return "";
-                    }
-                  }.bind(this));
-            } catch (e) {
-              text = 'No version.info file';
-            }
-            return response.res(errorcodes.NO_ERROR, text);
-          } else {
-            return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
-          }
-          break;
 
-        default:
+      // Process received message with one of the loaded APIs
+      var self = this;
+      function processMsg(request, body, response, url) {
+        var validAPI = false;
+        for (var i=0; i<apis.http.length; i++) {
+          if (apis.http[i].processRequest(request, body, response, url)) {
+            log.debug('WS::onHTTPMessage::processMsg -> Cool, HTTP API accepted !');
+            validAPI = true;
+            break;
+          }
+        }
+        if (!validAPI) {
           log.debug('WS::onHTTPMessage --> messageType not recognized');
           return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
+        }
+      }
+      if (request.method == 'PUT' || request.method == 'POST') {
+        request.on('data', function(body) {
+          processMsg(request, body, response, url);
+        });
+      } else {
+        processMsg(request, '', response, url);
       }
     }
   },
@@ -336,7 +327,7 @@ server.prototype = {
             if (!query.uaid || !token.verify(query.uaid)) {
               query.uaid = token.get();
               query.channelIDs = null;
-              self.tokensGenerated++;
+              counters.inc('tokensGenerated');
             }
             log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.uaid);
             log.debug('WS:onWSMessage --> Accepted uaid=' + query.uaid);
@@ -675,7 +666,7 @@ server.prototype = {
 
     var self = this;
     this.onWSClose = function(reasonCode, description) {
-      self.wsConnections--;
+      counters.dec('wsConnections');
       dataManager.unregisterNode(connection.uaid);
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uaid ' + connection.uaid);
     };
@@ -693,7 +684,7 @@ server.prototype = {
     ///////////////////////
 
     // Check limits
-    if (this.wsConnections >= this.wsMaxConnections) {
+    if (counters.get('wsConnections') >= counters.get('wsMaxConnections')) {
       log.debug('WS::onWSRequest --> Connection unaccepted. To many open connections');
       return request.reject();
     }
@@ -708,7 +699,7 @@ server.prototype = {
     // Connection accepted
     try {
       var connection = request.accept('push-notification', request.origin);
-      this.wsConnections++;
+      counters.inc('wsConnections');
       log.debug('WS::onWSRequest --> Connection accepted.');
       connection.on('message', this.onWSMessage);
       connection.on('close', this.onWSClose);
