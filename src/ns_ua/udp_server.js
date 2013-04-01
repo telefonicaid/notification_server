@@ -10,6 +10,7 @@ var log = require('../common/logger.js'),
     msgBroker = require('../common/msgbroker.js'),
     mn = require('../common/mobilenetwork.js'),
     http = require('http'),
+    https = require('https'),
     urlparser = require('url');
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -85,27 +86,37 @@ function onNewMessage(message) {
     // Send HTTP Notification Message
     var address = urlparser.parse(op.wakeup);
 
-    if (!address.hostname) {
+    if (!address.href) {
       log.error('UDP:queue:onNewMessage --> Bad address to notify', address);
       return;
     }
 
-    var options = {
-      host: address.hostname,
-      port: address.port,
-      path: '/?ip=' + messageData.dt.wakeup_hostport.ip + '&port=' + messageData.dt.wakeup_hostport.port + '&proto=' + messageData.dt.protocol,
-      method: 'GET'
-    };
-
-    var req = http.request(options, function(res) {
-      log.debug('Message status: ' + res.statusCode);
-    });
-
-    req.on('error', function(e) {
-      log.debug('problem with request: ' + e.message);
-    });
-
-    req.end();
+    var protocolHandler = null;
+    switch (address.protocol) {
+    case 'http:':
+      protocolHandler = http;
+      break;
+    case 'https:':
+      protocolHandler = https;
+      break;
+    default:
+      protocolHandler = null;
+    }
+    if (!protocolHandler) {
+      log.debug('UDP:queue:onNewMessage --> Non valid URL (invalid protocol)');
+      return;
+    }
+    var req = protocolHandler.get(address.href +
+      '/?ip=' + messageData.dt.wakeup_hostport.ip +
+      '&port=' + messageData.dt.wakeup_hostport.port +
+      '&proto=' + messageData.dt.protocol,
+      function(res) {
+        res.on('data', function(d) {
+          log.debug('UDP:WakeUpConnection response: ' + d);
+        });
+      }).on('error', function(e) {
+        log.debug('UDP:WakeUpConnection error: ' + e);
+      });
   }.bind(this));
 }
 
