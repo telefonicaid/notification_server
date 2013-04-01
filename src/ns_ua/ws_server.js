@@ -272,12 +272,12 @@ server.prototype = {
         }
         if (payload.errorcode[0] > 299) {    // Out of the 2xx series
           if (!res.status) {
-            res.status = 'ERROR';
+            res.status = payload.errorcode[0];
           }
           res.reason = payload.errorcode[1];
         } else {
           if (!res.status) {
-            res.status = 'OK';
+            res.status = 200;
           }
         }
         connection.sendUTF(JSON.stringify(res));
