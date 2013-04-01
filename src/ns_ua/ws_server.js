@@ -322,10 +322,10 @@ server.prototype = {
               messageType: "hello",
               uaid: "<a valid UAID>",
               channelIDs: [channelID1, channelID2, ...],
-              interface: {
+              wakeup_hostport: {
                 ip: "<current device IP address>",
                 port: "<TCP or UDP port in which the device is waiting for wake up notifications>"
-                },
+              },
               mobilenetwork: {
                 mcc: "<Mobile Country Code>",
                 mnc: "<Mobile Network Code>"

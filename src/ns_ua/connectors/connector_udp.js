@@ -24,7 +24,7 @@ connector_udp.prototype = {
   },
 
   getInterface: function() {
-    return this.data.interface;
+    return this.data.wakeup_hostport;
   },
 
   getMobileNetwork: function() {
@@ -53,7 +53,7 @@ connector_udp.prototype = {
 
   notify: function(msgList) {
     // Notify the handset with the associated Data
-    log.error('Connector UDP: Notify to ' + this.data.interface.ip + ' not valid with this connector');
+    log.error('Connector UDP: Notify to ' + this.data.wakeup_hostport.ip + ' not valid with this connector');
   }
 };
 
