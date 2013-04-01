@@ -22,7 +22,7 @@ Connector.prototype = {
   getConnector: function(data, connection, callback) {
     if (this.nodesConnectors[data.uaid]) {
       return callback(null, this.nodesConnectors[data.uaid]);
-    } else if (data.interface && data.interface.ip && data.interface.port &&
+    } else if (data.wakeup_hostport && data.wakeup_hostport.ip && data.wakeup_hostport.port &&
        data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc) {
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {

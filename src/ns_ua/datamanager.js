@@ -35,7 +35,7 @@ datamanager.prototype = {
           data.uaid,
           connector.getServer(),
           {
-            interface: connector.getInterface(),
+            wakeup_hostport: connector.getInterface(),
             mobilenetwork: connector.getMobileNetwork(),
             protocol: connector.getProtocol(),
             canBeWakeup: connector.canBeWakeup()
