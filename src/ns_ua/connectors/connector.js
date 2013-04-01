@@ -8,6 +8,7 @@
 
 var mn = require('../../common/mobilenetwork.js'),
     log = require('../../common/logger.js'),
+    net = require('net'),
     connector_ws = require('./connector_ws.js'),
     connector_udp = require('./connector_udp.js');
 
@@ -23,7 +24,11 @@ Connector.prototype = {
     if (this.nodesConnectors[data.uaid]) {
       return callback(null, this.nodesConnectors[data.uaid]);
     } else if (data.wakeup_hostport && data.wakeup_hostport.ip && data.wakeup_hostport.port &&
-       data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc) {
+        data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc &&
+        net.isIP(data.wakeup_hostport.ip) &&                                // Is a valid IP address
+        !isNaN(parseInt(data.wakeup_hostport.port)) &&                      // The port is a Number
+        data.wakeup_hostport.port > 0 && data.wakeup_hostport.port <= 65535 // The port has a valid value
+      ) {
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {
           log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
