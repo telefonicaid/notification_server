@@ -14,7 +14,7 @@ var Push = {
 
   init: function() {
     debug("Init");
-    this.waurl = "http://192.168.1.48:8888";
+    this.waurl = "http://192.168.1.48:9999";
     this.endpoint = null;
 
     this.indexedDB = window.mozIndexedDB || window.webkitIndexedDB || window.indexedDB;
@@ -64,12 +64,12 @@ var Push = {
 
   requestURL: function() {
     var self = this;
-    var req = navigator.pushNotification.register();
+    var req = navigator.push.register();
 
     req.onsuccess = function(e) {
-      self.endpoint = req.result.pushEndpoint;
+      self.endpoint = req.result;
       debug("New endpoint: " + self.endpoint);
-      self.saveData(req.result.pushEndpoint);
+      self.saveData(self.endpoint);
       self.sendEndpointToWAServer(self.endpoint);
     };
 
