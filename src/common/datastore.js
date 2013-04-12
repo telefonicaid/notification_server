@@ -530,6 +530,10 @@ var DataStore = function() {
             log.error('dataStore::newVersion --> Error locating channel for appToken: ' + appToken);
             return;
           }
+          if (!data) {
+            log.debug('dataStore::newVersion --> No data recovered for appToken: ' + appToken);
+            return;
+          }
           var uaid = data._id;
           collection.update(
             {
