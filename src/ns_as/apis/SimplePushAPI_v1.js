@@ -15,6 +15,30 @@ var dataStore = require('../../common/datastore'),
 
 var kMozASFrontendVersion = 'v1';
 
+/**
+ * Check if a version is a valid one for this API (v1)
+ * In v1 case:
+ *   - should be a number
+ *   - should not be NaN
+ *   - should be greater or equal than 0
+ */
+var isVersion = function(version) {
+  var number = parseInt(version);
+  if (typeof number !== 'number') {
+    return false;
+  }
+
+  if (isNaN(number)) {
+    return false;
+  }
+
+  if (number < 0) {
+    return false;
+  }
+
+  return true;
+}
+
 var SimplePushAPI_v1 = function() {
   this.processRequest = function(request, body, response) {
     var URI = request.url.split('/');
@@ -55,18 +79,18 @@ var SimplePushAPI_v1 = function() {
       return;
     }
 
-    //Check version TODO, possible function?
-    if (!versions[1]) {
+    var version = versions[1]
+    if (!isVersion(version)) {
       response.statusCode = 404;
       response.end('{ reason: "Bad version"}');
-      log.debug('NS_UA_Moz_v1::processMozRequest --> Bad body, received lhs: ' + versions[0]);
+      log.debug('NS_UA_Moz_v1::processMozRequest --> Bad version, received rhs: ' + version);
       return;
     }
 
     //Now, we are safe to start using the path and data
-    log.notify('appToken=' + appToken + ' -- version=' + versions[1]);
+    log.notify('appToken=' + appToken + ' -- version=' + version);
     dataStore.getChannelIDForAppToken(appToken, function(error, channelID) {
-      var msg = dataStore.newVersion(appToken, channelID, versions[1]);
+      var msg = dataStore.newVersion(appToken, channelID, version);
       msgBroker.push('newMessages', msg);
       response.statusCode = 200;
       response.end('{}');
