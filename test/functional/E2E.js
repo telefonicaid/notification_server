@@ -17,37 +17,10 @@
  * will be debug information showing what failed.
  */
 
-var debug = require('./common').debug;
+var debug = require('./common').debug,
+    fs = require('fs');
 
  var PushTest = {
-
-  getToken: function getToken() {
-    PushTest.port =  require('../../src/config.js').NS_UA_WS.interfaces[0].port;
-    PushTest.host = '127.0.0.1';
-    var date = new Date().getTime();
-    PushTest.NOTIFICATION = '{"messageType":"notification","id":1234,"message":"Hola","signature":"691cb72015afdba8742349431500b497fe689523c7bd8b9ab9d905160efed20e8c70e7ba1aec112c494721f253b8874f90d611b8ebd78e5017aaf971f0f01503e2d3ba1949cd11c145f0537b7c80a7933368f405d12b723f8107c92af1e1d58a93c48a9af3f55ee519719b8ba1632e1fd12f9d3eb99846abb849793516bf1fa0","ttl":0,"timestamp":"' + date + '","priority":1}';
-
-    var https = require("https");
-    var options = {
-      host: PushTest.host,
-      port: PushTest.port,
-      path: '/token',
-      method: 'GET'
-    };
-    var req = https.request(options, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-	debug(chunk);
-	PushTest.token = chunk.toString();
-      });
-    });
-    req.on('error', function(e) {
-      console.log('problem with request: ' + e.message);
-    });
-    // write data to request body
-    req.end();
-  },
-
   registerUA: function registerUA() {
     var port = require('../../src/config.js').NS_UA_WS.interfaces[0].port;
     var WebSocketClient = require('websocket').client;
@@ -61,39 +34,38 @@ var debug = require('./common').debug;
       PushTest.connection = connection;
       debug('WebSocket client connected');
       connection.on('error', function(error) {
-	console.log("Connection Error: " + error.toString());
+	      console.log("Connection Error: " + error.toString());
       });
       connection.on('close', function() {
-	debug('push-notification Connection Closed');
+        debug('push-notification Connection Closed');
       });
       connection.on('message', function(message) {
-	if (message.type === 'utf8') {
-	  debug("Received: '" + message.utf8Data + "'");
-	  var msg = JSON.parse(message.utf8Data);
-	  debug(msg);
-	  var notificationJSON = JSON.parse(PushTest.NOTIFICATION);
-	  if (!Array.isArray(msg)) msg = [msg];
-	  if (msg[0].status == 'REGISTERED' && msg[0].messageType == "registerUA") {
-	    PushTest.registerUAOK = true;
-	    debug("UA registered");
-	  } else if (msg[0].status == 'REGISTERED' && msg[0].messageType == 'registerWA') {
-	    PushTest.registerWAOK = true;
-	    PushTest.url = msg[0].url;
-	    debug("WA registered with url -- " + msg[0].url);
-	  } else if (msg[0].messageType == 'notification') {
-	    PushTest.gotNotification = true;
-	    PushTest.connection.sendUTF('{"messageType": "ack", "messageId": "' + msg[0].messageId+ '"}');
-	    debug("Notification received!! Sending ACK");
-	  }
-	}
+        if (message.type === 'utf8') {
+          debug("Received: '" + message.utf8Data + "'");
+          var msg = JSON.parse(message.utf8Data);
+          debug(msg);
+          if (!Array.isArray(msg)) msg = [msg];
+          if (msg[0].status == 200 && msg[0].messageType == "hello") {
+            PushTest.registerUAOK = true;
+            debug("UA registered");
+          } else if (msg[0].status == 200 && msg[0].messageType == 'register') {
+            PushTest.registerWAOK = true;
+            PushTest.url = msg[0].pushEndpoint;
+            debug("WA registered with url -- " + msg[0].pushEndpoint);
+          } else if (msg[0].messageType == 'notification') {
+            PushTest.gotNotification = true;
+            PushTest.connection.sendUTF('{"messageType": "ack", "messageId": "' + msg[0].messageId+ '"}');
+            debug("Notification received!! Sending ACK");
+          }
+        }
       });
 
       function sendRegisterUAMessage() {
-	if (connection.connected) {
-	  var msg = ('{"data": {"uatoken":"' + PushTest.token + '"}, "messageType":"registerUA"}');
-	  connection.sendUTF(msg.toString());
-	  PushTest.registerUAOK = false;
-	}
+        if (connection.connected) {
+          var msg = ('{"uaid": null, "messageType":"hello"}');
+          connection.sendUTF(msg.toString());
+          PushTest.registerUAOK = false;
+        }
       }
       sendRegisterUAMessage();
     });
@@ -101,8 +73,9 @@ var debug = require('./common').debug;
   },
 
   registerWA: function registerWA() {
-    var pbkbase64 = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRREZXMTRTbml3Q2ZKUy8vb0t4U0hpbi91QzENClA2SUJIaUl2WXIyTW1oQlJjUnkwanVOSkg4T1ZndmlGS0VWM2loSGlUTFVTajk0bWdmbGo5Unh6US8wWFI4dHoNClB5d0tIeFNHdzRBbWY3aktGMVpzaENVZHlyT2k4Y0xmemR3SXoxblB2REY0d3diaTJmcXNlWDVZN1lsWXhmcEYNCmx4OEd2Ym5ZSkhPLzUwUUdrUUlEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t';
-    var msg = '{"data": {"watoken": "testApp", "pbkbase64":"' + pbkbase64 + '"}, "messageType":"registerWA" }';
+//    var certUrl = 'https://dl.dropbox.com/s/gq4pxsb4a9ujmne/client.crt?token_hash=AAGulx4d1zPg5g-LIkPfiSnNNl_7fJ_Zat_EJDHzuVTqvA&dl=1';
+//    var msg = '{"data": {"watoken": "testApp", "certUrl":"' + certUrl + '"}, "messageType":"registerWA" }';
+    var msg = '{"channelID": "testApp", "messageType":"register" }';
     PushTest.connection.sendUTF(msg.toString());
   },
 
@@ -121,13 +94,17 @@ var debug = require('./common').debug;
       host: urlData.hostname,
       port: urlData.port,
       path: urlData.pathname,
-      method: 'POST'
+      method: 'PUT',
+      key: fs.readFileSync('../../scripts/certs/client.key'),
+      cert: fs.readFileSync('../../scripts/certs/client.crt'),
+      passphrase: '1234'
     };
+    options.agent = new https.Agent(options);
 
     var req = https.request(options, function(res) {
       res.on('data', function(chunk) {
-	debug('E2E::sendNotification::request --> ' + chunk);
-	debug('E2E::sendNotification::request --> ' + res.statusCode);
+        debug('E2E::sendNotification::request --> ' + chunk);
+        debug('E2E::sendNotification::request --> ' + res.statusCode);
       });
     });
 
@@ -141,7 +118,10 @@ var debug = require('./common').debug;
   },
 
   init: function init() {
-    setTimeout(this.getToken, 0);
+    PushTest.port =  require('../../src/config.js').NS_UA_WS.interfaces[0].port;
+    PushTest.host = '127.0.0.1';
+    PushTest.NOTIFICATION = 'version=1';
+
     setTimeout(this.registerUA, 1000);
     setTimeout(this.registerWA, 2000);
     setTimeout(this.sendNotification, 3000);
@@ -167,4 +147,4 @@ var debug = require('./common').debug;
 
 
 PushTest.init();
-setTimeout(PushTest.check, 5000);
+setTimeout(PushTest.check, 15000);

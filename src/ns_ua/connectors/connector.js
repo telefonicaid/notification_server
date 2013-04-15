@@ -8,6 +8,7 @@
 
 var mn = require('../../common/mobilenetwork.js'),
     log = require('../../common/logger.js'),
+    net = require('net'),
     connector_ws = require('./connector_ws.js'),
     connector_udp = require('./connector_udp.js');
 
@@ -20,10 +21,14 @@ Connector.prototype = {
    * Create and return a connector object based on the data received
    */
   getConnector: function(data, connection, callback) {
-    if (this.nodesConnectors[data.uatoken]) {
-      return callback(null, this.nodesConnectors[data.uatoken]);
-    } else if (data.interface && data.interface.ip && data.interface.port &&
-       data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc) {
+    if (this.nodesConnectors[data.uaid]) {
+      return callback(null, this.nodesConnectors[data.uaid]);
+    } else if (data.wakeup_hostport && data.wakeup_hostport.ip && data.wakeup_hostport.port &&
+        data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc &&
+        net.isIP(data.wakeup_hostport.ip) &&                                // Is a valid IP address
+        !isNaN(parseInt(data.wakeup_hostport.port)) &&                      // The port is a Number
+        data.wakeup_hostport.port > 0 && data.wakeup_hostport.port <= 65535 // The port has a valid value
+      ) {
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {
           log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
@@ -33,26 +38,26 @@ Connector.prototype = {
           log.debug('UDP::queue::onNewMessage --> No WakeUp server found for MCC=' +
                      data.mobilenetwork.mcc + ' and MNC=' + data.mobilenetwork.mnc);
           var connector = new connector_ws(data, connection);
-          this.nodesConnectors[data.uatoken] = connector;
+          this.nodesConnectors[data.uaid] = connector;
           callback(null, connector);
           return;
         }
         var connector = null;
         log.debug('getConnector: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
         connector = new connector_udp(data, connection);
-        this.nodesConnectors[data.uatoken] = connector;
+        this.nodesConnectors[data.uaid] = connector;
         callback(null, connector);
       }.bind(this));
     } else {
       //Fallback
       var connector = new connector_ws(data, connection);
-      this.nodesConnectors[data.uatoken] = connector;
+      this.nodesConnectors[data.uaid] = connector;
       callback(null, connector);
     }
   },
 
-  getConnectorForUAtoken: function(uatoken) {
-    return this.nodesConnectors[uatoken];
+  getConnectorForUAID: function(uaid) {
+    return this.nodesConnectors[uaid];
   },
 
   getUAtokenForConnection: function(connection) {
@@ -62,10 +67,10 @@ Connector.prototype = {
     });
   },
 
-  unregisterUAToken: function(uatoken) {
-    if (this.nodesConnectors[uatoken]) {
-      this.nodesConnectors[uatoken].getConnection().close();
-      delete this.nodesConnectors[uatoken];
+  unregisterUAID: function(uaid) {
+    if (this.nodesConnectors[uaid]) {
+      this.nodesConnectors[uaid].getConnection().close();
+      delete this.nodesConnectors[uaid];
     }
   }
 };

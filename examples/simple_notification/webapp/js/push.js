@@ -7,114 +7,87 @@ var STORE_NAME = 'push_app_store';
 function debug(msg) {
   if (!DEBUG)
     return;
-  //console.log('[DEBUG] PushApp: ' + msg);
   dump('[DEBUG] PushApp: ' + msg + '\n');
 }
 
 var Push = {
 
   init: function() {
-
-    this.clearButton = document.getElementById('buttonClear');
-    this.clearButton.addEventListener('click', function(){
-      navigator.mozPush.getCurrentURL();
-    });
-
-    navigator.mozApps.getSelf().onsuccess = function getSelfCB(evt) {
-      var app = evt.target.result;
-      app.launch('settings');
-    };
-
     debug("Init");
-    this.waurl = "http://192.168.43.252:8888";
-    this.watoken = null;
-    this.pbk = null;
+    this.waurl = "http://192.168.1.48:9999";
+    this.endpoint = null;
 
     this.indexedDB = window.mozIndexedDB || window.webkitIndexedDB || window.indexedDB;
     this.database;
 
-    this.registerAppButton = document.getElementById('buttonRegisterApp');
-    this.getURLButton = document.getElementById('buttonGetURL');
-    this.clearButton = document.getElementById('buttonClear');
     this.logArea = document.getElementById('logarea');
 
     try {
       // Register for messaging
       var self = this
-      navigator.mozSetMessageHandler("push-notification", function(msg) {
+      navigator.mozSetMessageHandler('push', function(msg) {
         debug("New Message: " + JSON.stringify(msg));
-        self.logMessage(JSON.stringify(msg));
 
-          try {
-            var activity = new MozActivity({
-              name: 'notify',
-              data: {
-                type: 'webpush/push'
-              }
-            });
-          } catch (e) {
-            debug('WebActivities unavailable? : ' + e);
+        // Bring app to foreground
+        navigator.mozApps.getSelf().onsuccess = function getSelfCB(evt) {
+          var app = evt.target.result;
+          app.launch('push');
+        };
+
+        var version = msg.version;
+        var serverURL = self.waurl + '/ApplicationServer/register?version=' + version;
+        self.requestToApplicationServer(serverURL, function(success, error){
+          if (error) {
+            debug(error);
+          } else {
+            self.logMessage(success);
           }
+        });
+
       });
     } catch(e) {
       debug("This platform does not support system messages.");
     }
 
     this.initStore(function (success, error){
-      if (success) {
-        this.watoken = success.watoken;
-        this.pbk = success.pbk;
+      if (success && success.endpoint) {
+        this.endpoint = success.endpoint;
+        debug("endpoint from db: " + this.endpoint);
+        this.sendEndpointToWAServer(this.endpoint);
+        return;
       }
 
-      debug("watoken: " + this.watoken);
-      debug("pbk: " + this.pbk);
-
-      if (!this.watoken || !this.pbk) {
-        // Request watoken & public key to application server
-        debug("Request watoken and public key to app server");
-        var url = this.waurl + '/ApplicationServer/register';
-        var self = this;
-        this.requestToApplicationServer(url, function(success, error){
-          if (error) {
-            debug(error);
-          } else {
-            var response = JSON.parse(success);
-            self.saveData(response.key, response.watoken, function(){
-              self.watoken = response.watoken;
-              self.pbk = response.key;
-              debug("watoken: " + self.watoken);
-              debug("pbk: " + self.pbk);
-              self.requestURL();
-            });
-          }
-        });
-      } else {
-        this.requestURL();
-      }
+      this.requestURL();
+      //this.clearDB();
     }.bind(this));
   },
 
   requestURL: function() {
     var self = this;
-    var req = navigator.mozPush.requestURL(this.watoken, this.pbk);
+    var req = navigator.push.register();
 
     req.onsuccess = function(e) {
-      debug("Push URL = " + req.result);
-
-      // Send url to application server
-      var serverURL = self.waurl + '/ApplicationServer/register?push_url=' + req.result;
-      self.requestToApplicationServer(serverURL, function(success, error){
-        if (error) {
-          debug(error);
-        } else {
-          debug("Application ready to receive notifications");
-        }
-      });
+      self.endpoint = req.result;
+      debug("New endpoint: " + self.endpoint);
+      self.saveData(self.endpoint);
+      self.sendEndpointToWAServer(self.endpoint);
     };
 
     req.onerror = function(e) {
-      debug("Error registering app: " + e);
+      debug("Error registering app: " + JSON.stringify(e));
     }
+  },
+
+  sendEndpointToWAServer: function(endpoint) {
+    // Send url to application server
+    var serverURL = this.waurl + '/ApplicationServer/register?push_url=' + endpoint;
+    this.requestToApplicationServer(serverURL, function(success, error){
+      if (error) {
+        debug(error);
+      } else {
+        debug("Application ready to receive notifications");
+      }
+    });
   },
 
   requestToApplicationServer: function(url, callback) {
@@ -173,13 +146,11 @@ var Push = {
     var transaction = db.transaction([STORE_NAME], "readonly");
     var store = transaction.objectStore(STORE_NAME);
 
-    var result = {watoken: null,
-                  pbk: null};
+    var result = {endpoint: null};
     var req = store.get("server_app_data");
     req.onsuccess = function (event) {
       if (this.result) {
-        result.watoken = this.result.watoken;
-        result.pbk =this.watoken = this.result.pbk;
+        result.endpoint = this.result.endpoint;
       }
       callback(result, null);
     };
@@ -189,21 +160,22 @@ var Push = {
     };
   },
 
-  saveData: function saveData(pbk, watoken, callback) {
+  saveData: function saveData(endpoint) {
     var transaction = this.db.transaction([STORE_NAME], "readwrite");
     var store = transaction.objectStore(STORE_NAME);
 
-    //var req = store.put({pbk: pbk, watoken: watoken}, "app_server_data");
-    var req = store.put({id: "server_app_data", watoken: watoken, pbk: pbk});
+    var req = store.put({id: "server_app_data", endpoint: endpoint});
     req.onerror = function (event) {
       if (DEBUG) {
         debug("fails on saveAData: " + event.errorCode);
       }
     }
+  },
 
-    req.onsuccess = function (event) {
-      callback();
-    }
+  clearDB: function clearDB() {
+    var transaction = this.db.transaction([STORE_NAME], "readwrite");
+    var store = transaction.objectStore(STORE_NAME);
+    store.clear();
   },
 
   onclear: function() {

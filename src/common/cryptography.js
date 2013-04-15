@@ -7,91 +7,70 @@
  */
 
 // Crypto module. See: http://nodejs.org/docs/v0.3.1/api/crypto.html
-var crypto = require('crypto');
+var crypto = require('crypto'),
+    exec = require('child_process').exec;
 
 function cryptography() {}
 
 cryptography.prototype = {
-  ////////////////////////////////////////////
-  // Simmetric encryption
-  ////////////////////////////////////////////
-
-  /**
-   * Simmetric Encrypt
-   */
-  _encrypt: function(data, key, algorithm)
-  {
-    var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex';            // hex, base64
-
-    var cipher = crypto.createCipher(algorithm, key);
-    var ciphertext = '';
-    ciphertext = cipher.update(data, clearEncoding, cipherEncoding);
-    ciphertext += cipher.final(cipherEncoding);
-
-    return (ciphertext);
-  },
-
-  /**
-   * Simmetric Decrypt
-   */
-  _decrypt: function(ciphertext, key, algorithm) {
-    var clearEncoding = 'utf8';
-    var cipherEncoding = 'hex';            // hex, base64
-
-    var decipher = crypto.createDecipher(algorithm, key);
-    var data = '';
-    try {
-      data = decipher.update(ciphertext, cipherEncoding, clearEncoding);
-      data += decipher.final(cipherEncoding);
-    } catch (err) {}
-    return data;
-  },
-
-  /**
-   * AES Encrypt
-   */
-  encryptAES: function(data, key) {
-    var algorithm = 'aes-128-cbc';
-    return this._encrypt(data, key, algorithm);
-  },
-
-  /**
-   * AES Decrypt
-   */
-  decryptAES: function(data, key) {
-    var algorithm = 'aes-128-cbc';
-    return this._decrypt(data, key, algorithm);
-  },
 
   ////////////////////////////////////////////
-  // Signature validations
+  // Certificate validations
   ////////////////////////////////////////////
 
   /**
-   * Verify signature using RSA-SHA256
+   * Verify client certificate and return modulus
+   * and fingerprint.
    *
-   * Use Public/Private keys for signatures:
-   * Private Key generation:
-   *  openssl genrsa 1024 > private.key
-   * Public Key generation:
-   *  openssl rsa -in private.key -out public.pem -outform PEM -pubout
-   * Signing data using private key:
-   *  openssl dgst -hex -sha256 -sign private.key msg.txt
+   * Howto to generate client certificates:
+   *  http://www.sslshopper.com/article-most-common-openssl-commands.html
+   *  http://blog.nategood.com/client-side-certificate-authentication-in-ngi
    *
-   * See:
-   *  http://www.openssl.org/docs/HOWTO/keys.txt
-   *  http://www.codealias.info/technotes/openssl_rsa_sign_and_verify_howto
+   * -> Generate your own CA
+   *  openssl genrsa -des3 -out ca.key 4096
+   *  openssl req -new -x509 -days 365 -key ca.key -out ca.crt
+   *
+   * -> Create a client private key
+   *  openssl genrsa -des3 -out client.key 1024
+   *
+   * -> Generate the CSR (Cert. Sign Request)
+   *  openssl req -new -key client.key -out client.csr
+   *
+   * -> Generate the client certificate signing with the CA
+   *  openssl x509 -req -days 365 -in client.csr -CA ca.crt -CAkey ca.key -set_serial 01 -out client.crt
+   *
+   * Afterthat, use the certificate (client.crt) to identify the webapp
+   * and use the private key & certificate at server side to connect with AS
    */
-  verifySignature: function(data,signature,publicKey) {
-    var algorithm = 'RSA-SHA256';
-    var verifier = crypto.createVerify(algorithm);
-    verifier.update(data);
-    return verifier.verify(publicKey, signature, 'hex');
+  parseClientCertificate: function(cert, cb) {
+    var baseCmd = 'openssl x509 -noout';
+    var certificate = {
+      c: cert.toString('utf8').trim()
+    };
+    var self = this;
+    var cmdSubject = exec(baseCmd+' -subject', function(err,stdout,stderr) {
+      if (err) {
+        cb('[parseClientCertificate] Error, invalid certificate: ' + stderr,
+          null);
+        return;
+      }
+      certificate.s = stdout.substring(stdout.search('=')+1,stdout.length-1);
+
+      // Fingerprint
+      var cmdFP = exec(baseCmd+' -fingerprint', function(err,stdout,stderr) {
+        certificate.f = stdout.substring(stdout.search('=')+1,stdout.length-1);
+        certificate.fs = this.hashSHA256(certificate.f);
+        cb(null, certificate);
+      }.bind(self));
+      cmdFP.stdin.write(cert);
+      cmdFP.stdin.end();
+    });
+    cmdSubject.stdin.write(cert);
+    cmdSubject.stdin.end();
   },
 
   ////////////////////////////////////////////
-  // HASH funcitons
+  // HASH functions
   ////////////////////////////////////////////
   hashMD5: function(data) {
     return crypto.createHash('md5').update(data).digest('hex');
@@ -103,7 +82,13 @@ cryptography.prototype = {
 
   hashSHA512: function(data) {
     return crypto.createHash('sha512').update(data).digest('hex');
+  },
+
+  // Lets go with SHA-1 for now, can change it later on
+  generateHMAC: function(data,key) {
+     return crypto.createHmac('sha1', key).update(data).digest('hex');
   }
+
 };
 
 ///////////////////////////////////////////

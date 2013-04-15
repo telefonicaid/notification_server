@@ -14,18 +14,18 @@ function onHTTPMessage(req, res) {
         fullBody += chunk.toString();
       });
       req.on('end', function() {
-        var uatoken = null;
+        var idTest = null;
         try {
-          uatoken = JSON.parse(fullBody).uatoken || JSON.parse(fullBody).data.uatoken;
+          idTest = JSON.parse(fullBody).idTest || JSON.parse(fullBody).data.idTest;
         } catch(e) {
           console.log('no se puede parsear la petición');
           return res.end('no se puede parsear la petición');
         }
-        websocket(uatoken, fullBody, function(salida) {
+        websocket(idTest, fullBody, function(salida) {
           console.log("salida para post --> " + salida);
-          res.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
-          return res.end(salida);
-        });
+          this.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
+          return this.end(salida);
+        }.bind(res));
         return;
       });
     } else {
@@ -33,8 +33,7 @@ function onHTTPMessage(req, res) {
       res.write("Petition in /websocket not a POST");
       return res.end();
     }
-  }
-  else {
+  } else {
     res.writeHead(200, {'Content-Type': 'text/plain', 'access-control-allow-origin': '*'});
     res.write("Malformed petition");
     return res.end();
@@ -43,59 +42,54 @@ function onHTTPMessage(req, res) {
 
 var connectionTable = {};
 var connectionsText = {};
+var connectionCB = {};
 
-function websocket(uatoken, text, callback) {
-  if (!connectionsText[uatoken]) connectionsText[uatoken] = '';
-  var messageType = '';
-  try {
-    messageType = JSON.parse(text).messageType;
-  } catch(e) {
-    console.log('no se puede parsear respuesta de websocket');
-  }
-  if (messageType == 'getAllMessages') {
-    console.log('Getting getAllMessages for the connection of the ua ' + uatoken);
-    var ret = connectionsText[uatoken];
-    connectionsText[uatoken] = '';
-    return callback(ret);
-  }
-  console.log('Buscando conexión para uatoken=' + uatoken);
-  var connection = connectionTable[uatoken];
+function websocket(idTest, text, callback) {
+  if (!connectionsText[idTest]) connectionsText[idTest] = '';
+  console.log('Buscando conexión para idTest=' + idTest);
+  var connection = connectionTable[idTest];
   if (!connection) {
     console.log('Creating a new client…');
 
     var WebSocketClient = require('websocket').client;
-    connectionTable[uatoken] = new WebSocketClient();
-    client = connectionTable[uatoken];
+    connectionTable[idTest] = new WebSocketClient();
+    client = connectionTable[idTest];
     client.on('connectFailed', function(error) {
       console.log('Connect Error: ' + error.toString());
     });
+    connectionCB[idTest] = callback;
 
     client.on('connect', function(connection) {
-      connectionTable[uatoken] = connection;
+      connectionTable[idTest] = connection;
       console.log('WebSocket client connected');
-      connectionTable[uatoken].on('error', function(error) {
+      connectionTable[idTest].on('error', function(error) {
         console.log("Connection Error: " + error.toString());
       });
-      connectionTable[uatoken].on('close', function() {
+      connectionTable[idTest].on('close', function() {
         console.log('push-notification Connection Closed');
-        connectionTable[uatoken] = null;
+        connectionTable[idTest] = null;
       });
-      connectionTable[uatoken].on('message', function(message) {
+      connectionTable[idTest].on('message', function(message) {
         if (message.type === 'utf8') {
           console.log("Received: '" + message.utf8Data + "'");
-          //connectionTable[uatoken].close();
-          connectionsText[uatoken] += message.utf8Data;
-          callback(message.utf8Data);
+          //connectionTable[idTest].close();
+          connectionsText[idTest] += message.utf8Data;
+          connectionCB[idTest](message.utf8Data);
         }
       });
 
-      if (connectionTable[uatoken].connected) {
-        connectionTable[uatoken].sendUTF(text);
+      if (connectionTable[idTest].connected) {
+        connectionTable[idTest].sendUTF(text);
       }
     });
-    client.connect('ws://localhost:8080/', 'push-notification');
+    client.connect('wss://localhost:8080/', 'push-notification');
   } else {
     console.log('Ya teníamos cliente, lo enviamos por ahí');
+    connectionCB[idTest] = callback;       // Update callback
+    if (!connection) {
+      connectionCB[idTest]('ERROR EN EL WEBSOCKET');
+      return console.log('Error, no hay conexión websocket');
+    }
     connection.sendUTF(text);
   }
 }

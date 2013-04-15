@@ -744,7 +744,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">1</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${TEST_floodingNotifications_threads}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1350647861000</longProp>
         <longProp name="ThreadGroup.end_time">1350647861000</longProp>
@@ -770,7 +770,7 @@
           <boolProp name="LoopController.continue_forever">false</boolProp>
           <stringProp name="LoopController.loops">${TEST_floodingNotifications_monitor}</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${TEST_floodingNotifications_threads}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
         <longProp name="ThreadGroup.start_time">1350886807000</longProp>
         <longProp name="ThreadGroup.end_time">1350886807000</longProp>

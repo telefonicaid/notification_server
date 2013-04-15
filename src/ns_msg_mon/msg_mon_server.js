@@ -9,7 +9,8 @@
 var log = require('../common/logger.js'),
     crypto = require('../common/cryptography.js'),
     msgBroker = require('../common/msgbroker.js'),
-    dataStore = require('../common/datastore.js');
+    dataStore = require('../common/datastore.js'),
+    connectionstate = require('../common/constants.js').connectionstate;
 
 function monitor() {
   this.ready = false;
@@ -68,34 +69,50 @@ function onNewMessage(msg) {
   } catch (e) {
     return log.error('MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check');
   }
+  log.debug('MSG_mon::onNewMessage --> Message from the queue:', json);
 
-  /**
-   * Messages are formed like this:
-   *      {
-   *        messageId,
-   *        uatoken,
-   *        dt: {
-   *          interface,
-   *          mobilenetwork,
-   *          protocol
-   *        }
-   *        payload: {
-   *          messageType: 'notification',
-   *          id,
-   *          message,
-   *          ttl,
-   *          timestamp,
-   *          priority,
-   *          messageId,
-   *          appToken
-   *     }
-   */
-
-  if (!json.appToken) {
-    return log.error('MSG_mon::onNewMessage --> newMessages has a message without appToken attribute');
+  //MsgType is either 0, 1, or 2.
+  // 0 is "old" full notifications, with body, to be used by apps directly
+  // 1 is Thialfy notifications, just have app and vs attributes
+  // 2 is Desktop notifications, have a id (to be acked), a version and a body
+  var msgType = -1;
+  if (json.appToken) {
+    msgType = 0;
+  } else if (json.app && json.vs) {
+    msgType = 1;
+  } else if (json.body) {
+    msgType = 2;
   }
-  log.debug('MSG_mon::onNewMessage --> Mensaje desde la cola:', json);
+
+  console.log("MSGType is= " + msgType);
+
+  switch (msgType) {
+    case 0:
+      handleOldNotification(json);
+      break;
+    case 1:
+      handleThialfiNotification(json);
+      break;
+    case 2:
+      handleDesktopNotification(json);
+      break;
+    default:
+      log.error('MSG_mon::onNewMessage --> Bad msgType: ', json);
+      return;
+  }
+}
+
+function handleOldNotification(json) {
   dataStore.getApplication(json.appToken, onApplicationData, json);
+}
+
+function handleThialfiNotification(json) {
+  dataStore.getApplication(json.app, onApplicationData, json);
+}
+
+function handleDesktopNotification(json) {
+  //TODO
+  console.log('I\'m handling a Desktop notification');
 }
 
 function onApplicationData(error, appData, json) {
@@ -117,7 +134,7 @@ function onNodeData(nodeData, json) {
   }
 
   // Is the node connected? AKA: is websocket?
-  if (!nodeData.co) {
+  if (nodeData.co === connectionstate.DISCONNECTED) {
     log.debug('MSG_mon::onNodeData --> Node recovered but not connected, just delaying');
     return;
   }
@@ -126,7 +143,7 @@ function onNodeData(nodeData, json) {
   log.notify('MSG_mon::onNodeData --> Notify into the messages queue of node ' + nodeData.si + ' # ' + json.messageId);
   var body = {
     messageId: json.messageId,
-    uatoken: nodeData._id,
+    uaid: nodeData._id,
     dt: nodeData.dt,
     payload: json
   };
