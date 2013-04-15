@@ -43,6 +43,8 @@ var closed = [];
 var getter = setInterval(function() {
   getConnection(total, function(id, conn) {
     console.log('Connection ' + id + ' established');
+    conn.sendUTF('{ "messageType": "hello", "uaid": null}');
+
     conn.on('error', function(error) {
       console.log("Connection Error: " + error.toString());
     });

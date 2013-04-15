@@ -1,76 +1,92 @@
 package es.tid.push;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.PrivateKey;
-import java.security.Security;
-import java.security.Signature;
-import java.security.SignatureException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
+import javax.net.ssl.SSLSession;
 import javax.servlet.ServletConfig;
-import javax.servlet.annotation.WebInitParam;
+import javax.servlet.ServletContext;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.annotation.WebInitParam;
 
 import org.apache.catalina.websocket.MessageInbound;
 import org.apache.catalina.websocket.StreamInbound;
 import org.apache.catalina.websocket.WebSocketServlet;
 import org.apache.catalina.websocket.WsOutbound;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 @WebServlet(name = "Monitor",
             loadOnStartup=1,
             urlPatterns = {"/monitor"},
-            initParams={ @WebInitParam(name="private_key", value="/WEB-INF/private.pk8") })
+            initParams={ @WebInitParam(name="data_file", value="data.txt") })
 
 public class MonitorManager extends WebSocketServlet {
   private static final long serialVersionUID = 2L;
-  private static PrivateKey priv_key;
   private static List<String> clients;
   private static RegistrationListener clientListener;
   private static Map<String, MessageManager> connections;
+  private static Map<Long, String> notifications;
+  private static long counter = 0;
+  private static File file;
 
   public void init( ServletConfig cfg ) throws javax.servlet.ServletException {
     super.init(cfg);
 
     try {
-      Security.addProvider(new BouncyCastleProvider());
-
-      byte[] buf = ReadFile(cfg.getInitParameter("private_key"));
-
-      PKCS8EncodedKeySpec kspec = new PKCS8EncodedKeySpec(buf);
-      KeyFactory kf = KeyFactory.getInstance("RSA");
-      priv_key = kf.generatePrivate(kspec);
-
-    } catch (IOException | NoSuchAlgorithmException | InvalidKeySpecException e) {
-      e.printStackTrace();
+      DisableCertValidattion();
+    } catch (KeyManagementException | NoSuchAlgorithmException e1) {
+      e1.printStackTrace();
     }
 
+    ServletContext app = getServletContext();
+    file = (File)app.getAttribute("javax.servlet.context.tempdir");
+    file = new File(file, cfg.getInitParameter("data_file"));
+
+    try {
+      FileReader fileReader = new FileReader(file);
+      BufferedReader bufferedReader = new BufferedReader(fileReader);
+      String initial = bufferedReader.readLine();
+      counter = Long.parseLong(initial);
+      bufferedReader.close();
+    } catch (FileNotFoundException ignored) {
+      System.out.println("Counter file not found: counter set to 0");
+      SaveCounter();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    
     clients = new ArrayList<String>();
     getServletContext().setAttribute("registrations", clients);
 
+    notifications = new HashMap<Long, String>();
+    getServletContext().setAttribute("notifications", notifications);
+    
     connections = new HashMap<String, MessageManager>();
     clientListener = new RegistrationListener() {
       @Override
@@ -92,22 +108,26 @@ public class MonitorManager extends WebSocketServlet {
 
     getServletContext().setAttribute("clientListener", clientListener);
   }
-
-  byte[] ReadFile(String path) throws IOException {
-    byte [] buffer = new byte[4096];
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    int read = 0;
-    InputStream is = getServletContext().getResourceAsStream(path);
-
-    while ((read = is.read(buffer)) != -1 ) {
-      baos.write(buffer, 0, read);
-    }
-
-    is.close();
-    baos.close();
-    return baos.toByteArray();
+  
+  @Override
+  public void destroy() {
+    super.destroy();
+    SaveCounter();
   }
-
+  
+  private void SaveCounter(){
+    try {
+      FileWriter fileWriter = new FileWriter(file);
+      String initial = Long.toString(counter);
+      fileWriter.write(initial, 0, initial.length());
+      fileWriter.close();
+      return;
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+  
   @Override
   protected StreamInbound createWebSocketInbound(String subProtocol, HttpServletRequest request) {
     String id = request.getSession().getId();
@@ -155,19 +175,11 @@ public class MonitorManager extends WebSocketServlet {
         return;
       }
 
-      String data = generateNotificationMessage(notificationMsg);
-      if(data == null) {
-        response.put("error", "Error generating signature");
-        sendNotifyResponse(response);
-        return;
-      }
-
-      String error = sendRequest(url, data);
+      String error = sendRequest(url, notificationMsg);
       if(error != null) {
         response.put("error", "Error sending notification:\n" + error);
-        sendNotifyResponse(response);
-      } else
-	sendNotifyResponse(response);
+      }
+      sendNotifyResponse(response);
     }
 
     private void sendNotifyResponse(JSONObject response) {
@@ -177,48 +189,34 @@ public class MonitorManager extends WebSocketServlet {
         e.printStackTrace();
       }
     }
-
-    private String generateNotificationMessage(String message) {
-      byte[] sigBytes = null;
-      try {
-        Signature signature = Signature.getInstance("SHA256withRSA", "BC");
-        signature.initSign(priv_key);
-        signature.update(message.getBytes());
-        sigBytes = signature.sign();
-      } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | NoSuchProviderException e) {
-        e.printStackTrace();
-        return null;
-      }
-
-      JSONObject msg = new JSONObject();
-      msg.put("messageType", "notification");
-      msg.put("id", "1234");
-      msg.put("message", message);
-      msg.put("signature", getHex(sigBytes));
-      msg.put("ttl", 0);
-      msg.put("timestamp", new Date().getTime());
-      msg.put("priority", 1);
-
-      return msg.toString();
-    }
-
+    
     private String sendRequest(String postUrl, String msg) {
       URL url;
       try {
+        String params = "version=" + URLEncoder.encode(Long.toString(counter), "UTF-8");
+
+        notifications.put(counter, msg);
+        
+        counter++;
         url = new URL(postUrl);
-        URLConnection conn = url.openConnection();
-        conn.setDoOutput(true);
-        OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
-        wr.write(msg);
+        HttpURLConnection httpCon = (HttpURLConnection) url.openConnection();
+        httpCon.setDoOutput(true);
+        httpCon.setRequestMethod("PUT");
+        httpCon.setFixedLengthStreamingMode(params.getBytes().length);
+        httpCon.setRequestProperty("Content-Length", Integer.toString(params.getBytes().length));
+        httpCon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+
+        OutputStreamWriter wr = new OutputStreamWriter(httpCon.getOutputStream());
+        wr.write(params);
         wr.flush();
+        wr.close();
 
         // Get the response
-        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        BufferedReader rd = new BufferedReader(new InputStreamReader(httpCon.getInputStream()));
         String line;
         while ((line = rd.readLine()) != null) {
-          System.out.println(line);
+          //System.out.println(line);
         }
-        wr.close();
         rd.close();
       } catch (IOException e) {
         System.out.println(e.getMessage());
@@ -253,17 +251,34 @@ public class MonitorManager extends WebSocketServlet {
       super.onClose(status);
     }
   }
+  
+  void DisableCertValidattion() throws NoSuchAlgorithmException, KeyManagementException {
+    // Create a trust manager that does not validate certificate chains
+    TrustManager[] trustAllCerts = new TrustManager[] { 
+      new X509TrustManager() {
+        public X509Certificate[] getAcceptedIssuers() {
+          return null;
+        }
 
-  static final String HEXES = "0123456789ABCDEF";
-  public static String getHex( byte [] raw ) {
-    if ( raw == null ) {
-      return null;
-    }
-    final StringBuilder hex = new StringBuilder( 2 * raw.length );
-    for ( final byte b : raw ) {
-      hex.append(HEXES.charAt((b & 0xF0) >> 4))
-         .append(HEXES.charAt((b & 0x0F)));
-    }
-    return hex.toString();
+        public void checkClientTrusted(X509Certificate[] certs, String authType) {
+        }
+
+        public void checkServerTrusted(X509Certificate[] certs, String authType) {
+        }
+      }
+    };
+
+    SSLContext sc = SSLContext.getInstance("SSL");
+    sc.init(null, trustAllCerts, new java.security.SecureRandom());
+    HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    // Create all-trusting host name verifier
+    HostnameVerifier allHostsValid = new HostnameVerifier() {
+      public boolean verify(String hostname, SSLSession session) {
+        return true;
+      }
+    };
+
+    // Install the all-trusting host verifier
+    HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
   }
 }

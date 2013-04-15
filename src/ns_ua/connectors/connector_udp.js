@@ -6,7 +6,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var dgram = require('dgram');
+var dgram = require('dgram'),
+    log = require('../../common/logger.js');
 
 function connector_udp(data, connection) {
   this.data = data;
@@ -23,7 +24,7 @@ connector_udp.prototype = {
   },
 
   getInterface: function() {
-    return this.data.interface;
+    return this.data.wakeup_hostport;
   },
 
   getMobileNetwork: function() {
@@ -34,13 +35,25 @@ connector_udp.prototype = {
     return 'udp';
   },
 
+  canBeWakeup: function() {
+    return true;
+  },
+
+  resetAutoclose: function() {
+    if (this.autocloseTimeout)
+      clearTimeout(this.autocloseTimeout);
+    this.autocloseTimeout = setTimeout(function() {
+      this.drop(4774, "UDP Wakeup");
+    }.bind(this.connection), 10000);
+  },
+
   getConnection: function() {
     return this.connection;
   },
 
   notify: function(msgList) {
     // Notify the handset with the associated Data
-    log.error('Connector UDP: Notify to ' + this.data.interface.ip + ' not valid with this connector');
+    log.error('Connector UDP: Notify to ' + this.data.wakeup_hostport.ip + ' not valid with this connector');
   }
 };
 

@@ -8,31 +8,8 @@ exports.serverData = {
 };
 
 var date = new Date().getTime();
-exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","ttl":0,"timestamp":"' + date + '","priority":1}';
-
-exports.getToken = function getToken(callback) {
-  var https = require("https");
-
-  var options = {
-    host: exports.serverData.host,
-    port: exports.serverData.port,
-    path: '/token',
-    method: 'GET'
-  };
-
-  var req = https.request(options, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-	debug('common::getToken::response --> ' + chunk);
-	callback(null, chunk);
-      });
-  });
-  req.on('error', function(e) {
-    debug('problem with request: ' + e.message);
-  });
-  // write data to request body
-  req.end();
-};
+//exports.testNotificationText = '{"messageType":"notification","id":1234,"message":"Hola","ttl":0,"timestamp":"' + date + '","priority":1}';
+exports.testNotificationText = 'version=1';
 
 exports.registerUA = function registerUA(connection, token, callback) {
 

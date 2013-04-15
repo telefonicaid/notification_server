@@ -27,27 +27,34 @@ function onNewMessage(message) {
 
   /**
    * Messages are formed like this:
-   * { "data": {
-   *    "uatoken": "UATOKEN",
-   *    "interface": {
+   * {
+   *  "uaid": "<UAID>",
+   *  "dt": {
+   *    "wakeup_hostport": {
    *      "ip": "IP",
    *      "port": "PORT"
    *    },
    *    "mobilenetwork": {
    *      "mcc": "MCC",
    *      "mnc": "MNC"
+   *    },
+   *    "protocol": "udp|tcp",
+   *    "canBeWakeup": "true|false",
+   *    "payload": {
+   *      "app": "<appToken>",
+   *      "ch": "<channelID>",
+   *      "vs": "x"
    *    }
-   *  },
-   *  "messageType": "registerUA"
+   *  }
    * }
    */
   // If message does not follow the above standard, return.
   log.debug('UDP::queue::onNewMessage --> messageData =', messageData);
-  if (!messageData.uatoken ||
+  if (!messageData.uaid ||
      !messageData.dt ||
-     !messageData.dt.interface ||
-     !messageData.dt.interface.ip ||
-     !messageData.dt.interface.port ||
+     !messageData.dt.wakeup_hostport ||
+     !messageData.dt.wakeup_hostport.ip ||
+     !messageData.dt.wakeup_hostport.port ||
      !messageData.dt.mobilenetwork ||
      !messageData.dt.mobilenetwork.mcc ||
      !messageData.dt.mobilenetwork.mnc) {
@@ -55,9 +62,9 @@ function onNewMessage(message) {
   }
 
   // Notify the hanset with the associated Data
-  log.notify('Notifying node: ' + messageData.uatoken +
-      ' to ' + messageData.dt.interface.ip +
-      ':' + messageData.dt.interface.port +
+  log.notify('Notifying node: ' + messageData.uaid +
+      ' to ' + messageData.dt.wakeup_hostport.ip +
+      ':' + messageData.dt.wakeup_hostport.port +
       ' on network ' + messageData.dt.mobilenetwork.mcc +
       '-' + messageData.dt.mobilenetwork.mnc +
       ' and using protocol: ' + messageData.dt.protocol
@@ -87,7 +94,7 @@ function onNewMessage(message) {
     var options = {
       host: address.host,
       port: address.port,
-      path: '/?ip=' + messageData.dt.interface.ip + '&port=' + messageData.dt.interface.port + '&proto=' + messageData.dt.protocol,
+      path: '/?ip=' + messageData.dt.wakeup_hostport.ip + '&port=' + messageData.dt.wakeup_hostport.port + '&proto=' + messageData.dt.protocol,
       method: 'GET'
     };
 
