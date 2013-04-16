@@ -15,6 +15,35 @@ exports.registerUA = function registerUA(connection, token, callback) {
 
 };
 
+exports.sendSimplePushV1Notification = function(url, versionText, callback) {
+  var https = require("https");
+  var urllib = require('url');
+  var urlData = urllib.parse(url);
+  var options = {
+    host: urlData.hostname,
+    port: urlData.port,
+    path: urlData.pathname,
+    method: 'PUT'
+  };
+  //options.agent = new https.Agent(options);
+
+  var req = https.request(options, function(res) {
+    res.setEncoding('utf8');
+    res.on('data', function(chunk) {
+      callback(null, res.statusCode, chunk, versionText);
+    });
+  });
+
+  req.on('error', function(e) {
+    debug('problem with request: ' + e.message);
+    callback(e.message, null, null, versionText);
+  });
+
+  // write data to request body
+  req.write(versionText);
+  req.end();
+}
+
 var fs = require('fs');
 exports.sendNotification = function sendNotification(url, text, callback) {
   var https = require("https");
