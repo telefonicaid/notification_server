@@ -40,7 +40,10 @@ var DataStore = function() {
         {
           rs_name: ddbbsettings.replicasetName,
           read_secondary: true,
-          w: 1
+          w: 1,
+          socketOptions: {
+            keepalive: 1200
+          }
         }
       );
 
@@ -302,7 +305,7 @@ var DataStore = function() {
               }
               log.debug('datastore::unregisterApplication --> Application removed from node data');
               return callback(null);
-            })
+            });
         });
     });
 
@@ -443,7 +446,7 @@ var DataStore = function() {
 
   this.getChannelIDForAppToken = function(apptoken, callback) {
     var apptoken = apptoken.toString();
-    log.debug('datastore::getChannelIDForAppToken --> Going to find the certificate for the appToken ' + apptoken);
+    log.debug('datastore::getChannelIDForAppToken --> Going to find the channelID for the appToken ' + apptoken);
     this.db.collection('apps', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
@@ -458,7 +461,7 @@ var DataStore = function() {
           return;
         }
         if (!data) {
-          log.debug('There are no appToken=' + apptoken + ' in the DDBB');
+          log.debug('datastore::getChannelIDForAppToken --> There are no appToken=' + apptoken + ' in the DDBB');
           callback(null, null);
           return;
         }
@@ -564,8 +567,8 @@ var DataStore = function() {
                     return;
                   }
                   log.debug('dataStore::newVersion --> Version updated');
-                })
-            })
+                });
+            });
         });
     });
     return msg;

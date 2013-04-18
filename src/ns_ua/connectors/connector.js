@@ -21,14 +21,21 @@ Connector.prototype = {
    * Create and return a connector object based on the data received
    */
   getConnector: function(data, connection, callback) {
+    //Is valid IP?
+    var ip = data.wakeup_hostport && data.wakeup_hostport.ip &&
+             net.isIP(data.wakeup_hostport.ip);
+    //Is valid Port?
+    var port = data.wakeup_hostport && data.wakeup_hostport.port &&
+               (data.wakeup_hostport.port > 0) && (data.wakeup_hostport.port < 65535);
+    //Is valid MCC?
+    var mcc = data.mobilenetwork && data.mobilenetwork.mcc &&
+              !isNaN(parseInt(data.mobilenetwork.mcc, 10));
+    //Is valid MNC?
+    var mnc = data.mobilenetwork && data.mobilenetwork.mnc &&
+              !isNaN(parseInt(data.mobilenetwork.mnc, 10));
     if (this.nodesConnectors[data.uaid]) {
       return callback(null, this.nodesConnectors[data.uaid]);
-    } else if (data.wakeup_hostport && data.wakeup_hostport.ip && data.wakeup_hostport.port &&
-        data.mobilenetwork && data.mobilenetwork.mcc && data.mobilenetwork.mnc &&
-        net.isIP(data.wakeup_hostport.ip) &&                                // Is a valid IP address
-        !isNaN(parseInt(data.wakeup_hostport.port)) &&                      // The port is a Number
-        data.wakeup_hostport.port > 0 && data.wakeup_hostport.port <= 65535 // The port has a valid value
-      ) {
+    } else if (ip && port && mcc && mnc) {
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {
           log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);

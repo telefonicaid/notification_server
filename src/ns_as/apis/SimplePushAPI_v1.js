@@ -1,3 +1,5 @@
+/* jshint node: true */
+
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -23,7 +25,7 @@ var kSimplePushASFrontendVersion = 'v1';
  *   - should be greater or equal than 0
  */
 var isVersion = function(version) {
-  var number = parseInt(version);
+  var number = parseInt(version, 10);
   if (typeof number !== 'number') {
     return false;
   }
@@ -37,7 +39,7 @@ var isVersion = function(version) {
   }
 
   return true;
-}
+};
 
 var SimplePushAPI_v1 = function() {
   this.processRequest = function(request, body, response) {
@@ -79,7 +81,7 @@ var SimplePushAPI_v1 = function() {
       return;
     }
 
-    var version = versions[1]
+    var version = versions[1];
     if (!isVersion(version)) {
       response.statusCode = 404;
       response.end('{ reason: "Bad version"}');
@@ -90,6 +92,13 @@ var SimplePushAPI_v1 = function() {
     //Now, we are safe to start using the path and data
     log.notify('appToken=' + appToken + ' -- version=' + version);
     dataStore.getChannelIDForAppToken(appToken, function(error, channelID) {
+      // If there is no channelID associated with a appToken,
+      // fool the sender with a OK response, but nothing is done here.
+      if (!channelID) {
+        response.statusCode = 200;
+        response.end('{}');
+        return;
+      }
       var msg = dataStore.newVersion(appToken, channelID, version);
       msgBroker.push('newMessages', msg);
       response.statusCode = 200;
