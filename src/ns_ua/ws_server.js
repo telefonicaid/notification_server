@@ -257,7 +257,6 @@ server.prototype = {
   //////////////////////////////////////////////
   onWSRequest: function(request) {
     // Common variables
-    var appToken = null;
     var self = this;
 
     ///////////////////////
@@ -267,10 +266,10 @@ server.prototype = {
       connection.res = function responseWS(payload) {
         log.debug('WS::responseWS:', payload);
         var res = {};
-        if (payload.extradata) {
+        if (payload && payload.extradata) {
           res = payload.extradata;
         }
-        if (payload.errorcode[0] > 299) {    // Out of the 2xx series
+        if (payload && payload.errorcode[0] > 299) {    // Out of the 2xx series
           if (!res.status) {
             res.status = payload.errorcode[0];
           }
@@ -288,7 +287,7 @@ server.prototype = {
         if (message.utf8Data == 'PING') {
           return connection.sendUTF('PONG');
         }
-        var query = null;
+        var query = {};
         try {
           query = JSON.parse(message.utf8Data);
         } catch (e) {
@@ -344,6 +343,8 @@ server.prototype = {
 
             // New UA registration
             log.debug('WS::onWSMessage --> HELLO - UA registration message');
+            //query parameters are validated while getting the connector in
+            // connectors/connector.js
             dataManager.registerNode(query, connection, function onNodeRegistered(error, res, data) {
               if (error) {
                 connection.res({
@@ -362,53 +363,58 @@ server.prototype = {
                 }
               });
 
-              // Recovery channels process
+              // If uaid do not have any channelIDs (first connection), we do not launch this processes.
               if (query.channelIDs) {
+                //Start recovery protocol
                 setTimeout(function recoveryChannels() {
                   log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query);
                   // TODO sync channels with client
                 });
-              }
 
-              // Pending notifications process
-              setTimeout(function pendingNotifications() {
-                log.debug('WS::onWSMessage::pendingNotifications --> Sending pending notifications');
-                dataManager.getNodeData(query.uaid, function(err, data) {
-                  if (err) {
-                    return;
-                  }
-                  var channelsUpdate = [];
-                  for (x in data.ch) {
-                    if (data.ch[x].vs) {
-                      channelsUpdate.push({
-                        channelID: data.ch[x].ch,
-                        version: data.ch[x].vs
-                      })
+                //Start sending pending notifications
+                setTimeout(function pendingNotifications() {
+                  log.debug('WS::onWSMessage::pendingNotifications --> Sending pending notifications');
+                  dataManager.getNodeData(query.uaid, function(err, data) {
+                    if (err) {
+                      log.error('WS::onWSMessage::pendingNotifications --> There was an error getting the node');
+                      return;
                     }
-                  }
-                  if (channelsUpdate.length > 0) {
-                    connection.res({
-                      errorcode: errorcodes.NO_ERROR,
-                      extradata: {
-                        messageType: 'notification',
-                        updates: channelsUpdate
+                    // In this case, there are no nodes for this (strange, since it was just registered)
+                    if (!data || !data.ch || !Array.isArray(data.ch)) {
+                      log.error('WS::onWSMessage::pendingNotifications --> No channels for this node.');
+                      return;
+                    }
+                    var channelsUpdate = [];
+                    for (var x in data.ch) {
+                      if (data.ch[x].vs) {
+                        channelsUpdate.push({
+                          channelID: data.ch[x].ch,
+                          version: data.ch[x].vs
+                        });
                       }
-                    });
-                  }
+                    }
+                    if (channelsUpdate.length > 0) {
+                      connection.res({
+                        errorcode: errorcodes.NO_ERROR,
+                        extradata: {
+                          messageType: 'notification',
+                          updates: channelsUpdate
+                        }
+                      });
+                    }
+                  });
                 });
-              });
+              }
               log.debug('WS::onWSMessage --> OK register UA');
             });
-
-            //onNodeRegistered.bind(connection));
             break;
 
-            /**
-              {
-                messageType: "register",
-                channelId: <channelId>
-              }
-             */
+          /**
+            {
+              messageType: "register",
+              channelId: <channelId>
+            }
+           */
           case 'register':
             log.debug('WS::onWSMessage::register --> Application registration message');
 
@@ -429,7 +435,7 @@ server.prototype = {
 
             // Register and store in database
             log.debug('WS::onWSMessage::register uaid: ' + connection.uaid);
-            appToken = helpers.getAppToken(channelID, connection.uaid);
+            var appToken = helpers.getAppToken(channelID, connection.uaid);
             dataManager.registerApplication(appToken, channelID, connection.uaid, null, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
@@ -456,17 +462,16 @@ server.prototype = {
             });
             break;
 
-            /**
-              {
-                messageType: "unregister",
-                channelId: <channelId>
-              }
-             */
+          /**
+            {
+              messageType: "unregister",
+              channelId: <channelId>
+            }
+           */
           case 'unregister':
-            log.debug('WS::onWSMessage::unregister --> Application un-registration message');
-
             // Close the connection if the channelID is null
             var channelID = query.channelID;
+            log.debug('WS::onWSMessage::unregister --> Application un-registration message for ' + channelID);
             if (!channelID) {
               log.debug('WS::onWSMessage::unregister --> Null channelID');
               connection.res({
@@ -480,7 +485,7 @@ server.prototype = {
               return connection.close();
             }
 
-            appToken = helpers.getAppToken(query.channelID, connection.uaid);
+            var appToken = helpers.getAppToken(query.channelID, connection.uaid);
             dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
@@ -673,7 +678,6 @@ server.prototype = {
       }
     };
 
-    var self = this;
     this.onWSClose = function(reasonCode, description) {
       self.wsConnections--;
       dataManager.unregisterNode(connection.uaid);
