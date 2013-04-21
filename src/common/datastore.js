@@ -271,7 +271,7 @@ var DataStore = function() {
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::newVersion --> There was a problem opening the nodes collection: ' + err);
+        log.error('datastore::unregisterApplication --> There was a problem opening the nodes collection: ' + err);
         return;
       }
       collection.findOne(
@@ -302,8 +302,9 @@ var DataStore = function() {
               }
               log.debug('datastore::unregisterApplication --> Application removed from node data');
               return callback(null);
-            })
-        });
+          });
+        }
+      );
     });
 
     //Remove the appToken if the nodelist (no) is empty
@@ -512,6 +513,7 @@ var DataStore = function() {
     msg.app = appToken;
     msg.ch = channelID;
     msg.vs = version;
+    msg.new = 1;
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
@@ -564,9 +566,12 @@ var DataStore = function() {
                     return;
                   }
                   log.debug('dataStore::newVersion --> Version updated');
-                })
-            })
-        });
+                }
+              );
+            }
+          );
+        }
+      );
     });
     return msg;
   },
@@ -611,7 +616,7 @@ var DataStore = function() {
     log.debug('dataStore::removeMessage --> Going to remove message with _id=' + messageId + 'for the uaid=' + uaid);
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::removeMessage --> There was a problem opening the messages collection');
+        log.error('datastore::removeMessage --> There was a problem opening the nodes collection');
         return;
       }
       collection.update(
@@ -634,6 +639,32 @@ var DataStore = function() {
           }
           log.notify('datastore::removeMessage --> Message removed from MongoDB ' + messageId);
         }
+      );
+    });
+  },
+
+  /**
+   * This ACKs a message by putting a "new" flag to 0 on the node, on the channelID ACKed
+   *
+   */
+  this.ackMessage = function(uaid, channelID, version) {
+    log.debug('dataStore::ackMessage --> Going to ACK message from uaid=' + uaid + ' for channelID=' + channelID + ' and version=' + version);
+    this.db.collection('nodes', function(error, collection) {
+      if (error) {
+        log.error('datastore::ackMessage --> There was a problem opening the nodes collection');
+        return;
+      }
+      collection.update(
+        {
+          _id: uaid,
+          'ch.ch': channelID
+        },
+        {
+          $set: {
+            'ch.$.new': 0
+          }
+        },
+        {upsert: true}
       );
     });
   },

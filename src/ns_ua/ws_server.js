@@ -110,7 +110,7 @@ server.prototype = {
             if (nodeConnector) {
               var notification = json.payload;
 
-              // Not send the appToken
+              // Not send the appToken or other attributes
               //TODO: Not insert the appToken into the MQ
               /**
                 {
@@ -125,6 +125,7 @@ server.prototype = {
               */
               delete notification.appToken;
               delete notification.app;
+              delete notification.new;
               if (notification.ch) {
                 notification.channelID = notification.ch;
                 delete notification.ch;
@@ -517,10 +518,15 @@ server.prototype = {
             }
            */
           case 'ack':
-            // TODO: ----
-            if (query.messageId) {
-              dataManager.removeMessage(query.messageId, connection.uaid);
+            if(!Array.isArray(query.updates)) {
+              return;
             }
+            query.updates.forEach(function(el) {
+              if (!el.channelID || !el.version) {
+                return;
+              }
+              dataManager.ackMessage(connection.uaid, el.channelID, el.version);
+            });
             break;
 
           /////////////////////////////////
