@@ -54,7 +54,7 @@ var debug = require('./common').debug,
             debug("WA registered with url -- " + msg[0].pushEndpoint);
           } else if (msg[0].messageType == 'notification') {
             PushTest.gotNotification = true;
-            PushTest.connection.sendUTF('{"messageType": "ack", "messageId": "' + msg[0].messageId+ '"}');
+            PushTest.connection.sendUTF('{"messageType": "ack", "updates":' + JSON.stringify(msg[0].updates) + '}');
             debug("Notification received!! Sending ACK");
           }
         }
@@ -73,8 +73,6 @@ var debug = require('./common').debug,
   },
 
   registerWA: function registerWA() {
-//    var certUrl = 'https://dl.dropbox.com/s/gq4pxsb4a9ujmne/client.crt?token_hash=AAGulx4d1zPg5g-LIkPfiSnNNl_7fJ_Zat_EJDHzuVTqvA&dl=1';
-//    var msg = '{"data": {"watoken": "testApp", "certUrl":"' + certUrl + '"}, "messageType":"registerWA" }';
     var msg = '{"channelID": "testApp", "messageType":"register" }';
     PushTest.connection.sendUTF(msg.toString());
   },
@@ -94,10 +92,7 @@ var debug = require('./common').debug,
       host: urlData.hostname,
       port: urlData.port,
       path: urlData.pathname,
-      method: 'PUT',
-      key: fs.readFileSync('../../scripts/certs/client.key'),
-      cert: fs.readFileSync('../../scripts/certs/client.crt'),
-      passphrase: '1234'
+      method: 'PUT'
     };
     options.agent = new https.Agent(options);
 
@@ -147,4 +142,4 @@ var debug = require('./common').debug,
 
 
 PushTest.init();
-setTimeout(PushTest.check, 15000);
+setTimeout(PushTest.check, 5000);
