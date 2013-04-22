@@ -1,9 +1,9 @@
-var host = "localhost:8888";
+var host = "localhost:9999";
 var ws = null;
 var clients = [];
 
 function connect() {
-  var URL = 'ws://' + host + '/ApplicationServer/monitor';
+  var URL = 'ws://' + host + '/ApplicationServer_b/monitor';
   if ('WebSocket' in window) {
     ws = new WebSocket(URL);
   } else if ('MozWebSocket' in window) {
