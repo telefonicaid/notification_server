@@ -83,26 +83,29 @@ exports.logger = {
 /********************* Common Queue ***********************************/
 /**
  * Choose your host, port and other self-explanatory options
+ * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
     host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
+    password: 'guest',
+    heartbeat: 1200
   },
   {
     host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
+    password: 'guest',
+    heartbeat: 1200
   },
   {
     host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
-  }
-];
+    password: 'guest',
+    heartbeat: 1200
+  }];
 
 /********************* Database configuration *************************/
 /**
