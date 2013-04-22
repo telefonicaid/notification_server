@@ -7,7 +7,7 @@ var STORE_NAME = 'push_app_store';
 function debug(msg) {
   if (!DEBUG)
     return;
-  dump('[DEBUG] PushApp: ' + msg + '\n');
+  dump('[DEBUG] PushApp_A: ' + msg + '\n');
 }
 
 var Push = {
@@ -35,7 +35,7 @@ var Push = {
         };
 
         var version = msg.version;
-        var serverURL = self.waurl + '/ApplicationServer/register?version=' + version;
+        var serverURL = self.waurl + '/ApplicationServer_a/register?version=' + version;
         self.requestToApplicationServer(serverURL, function(success, error){
           if (error) {
             debug(error);
