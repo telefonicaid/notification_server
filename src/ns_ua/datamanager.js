@@ -152,6 +152,13 @@ datamanager.prototype = {
       return;
     }
     dataStore.removeMessage(messageId, uaid);
+  },
+
+  /**
+   * ACKs an ack'ed message
+   */
+  ackMessage: function(uaid, channelID, version) {
+    dataStore.ackMessage(uaid, channelID, version);
   }
 };
 
