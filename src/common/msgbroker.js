@@ -101,13 +101,13 @@ var MsgBroker = function() {
     }).bind(this));
 
     conn.on('close', (function() {
-      if (!gControlledClose) {
-        this.emit('queuedisconnected');
-        log.error('msgbroker::queue --> one message broker disconnected!!!');
-      }
       var index = this.queues.indexOf(conn);
       if (index >= 0) {
         this.queues.splice(index, 1);
+      }
+      if (!gControlledClose) {
+        this.emit('queuedisconnected');
+        log.error('msgbroker::queue --> one message broker disconnected!!!');
       }
     }).bind(this));
 
