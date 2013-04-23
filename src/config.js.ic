@@ -112,7 +112,8 @@ exports.queue = [{
     ["owd-push-qa-be2", 27017]
   ],
   ddbbname: "push_notification_server",
-  replicasetName: "Server_Push"
+  replicasetName: "Server_Push",
+  keepalive: 1200
 };*/
 
 //DDBB defaults to use a single MongoDB instance
@@ -121,7 +122,8 @@ exports.ddbbsettings = {
     ["127.0.0.1", 27017]
   ],
   ddbbname: "push_notification_server",
-  replicasetName: null
+  replicasetName: null,
+  keepalive: 1200
 };
 
 ////////////////////////////////////////////////////////////////////////

@@ -26,6 +26,11 @@ var DataStore = function() {
     this.callbacks.push(helpers.checkCallback(callback));
   },
 
+  /*
+   * MongoDB.Server => https://github.com/mongodb/node-mongodb-native/blob/1.3-dev/lib/mongodb/connection/server.js#L16
+   * MongoDB.Db => https://github.com/mongodb/node-mongodb-native/blob/1.3-dev/lib/mongodb/db.js#L37
+   * MongoDB.ReplSet => https://github.com/mongodb/node-mongodb-native/blob/1.3-dev/lib/mongodb/connection/repl_set.js#L24
+   */
   this.init = function() {
     log.info('datastore::starting --> MongoDB data store loading.');
     events.EventEmitter.call(this);
@@ -34,21 +39,27 @@ var DataStore = function() {
       //Filling the replicaset data
       var servers = [];
       ddbbsettings.machines.forEach(function(machine) {
-        servers.push(new mongodb.Server(machine[0], machine[1], { auto_reconnect: true }));
+        servers.push(new mongodb.Server(machine[0], machine[1], {
+          auto_reconnect: true,
+          socketOptions: {
+            keepalive: ddbbsettings.keepalive
+          }
+        }));
       });
       var replSet = new mongodb.ReplSetServers(servers,
         {
           rs_name: ddbbsettings.replicasetName,
           read_secondary: true,
-          w: 1,
           socketOptions: {
-            keepalive: 1200
+            keepalive: ddbbsettings.keepalive
           }
         }
       );
 
       // Connection to MongoDB
-      this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet);
+      this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet, {
+        w: 1
+      });
     } else {
       this.db = new mongodb.Db(
         ddbbsettings.ddbbname,
@@ -57,9 +68,14 @@ var DataStore = function() {
           ddbbsettings.machines[0][1], //port
           {
             auto_reconnect: true,
-            w: 1
+            socketOptions: {
+              keepalive: ddbbsettings.keepalive
+            }
           }
-        )
+        ),
+        {
+          w: 1
+        }
       );
     }
 
