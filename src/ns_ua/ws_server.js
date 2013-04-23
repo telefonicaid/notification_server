@@ -285,9 +285,6 @@ server.prototype = {
 
       if (message.type === 'utf8') {
         log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
-        if (message.utf8Data == 'PING') {
-          return connection.sendUTF('PONG');
-        }
         var query = {};
         try {
           query = JSON.parse(message.utf8Data);
@@ -317,6 +314,44 @@ server.prototype = {
         });
 
         switch (query.messageType) {
+          case undefined:
+            log.debug('WS::onWSMessage --> PING package');
+            setTimeout(function pongResponse() {
+              log.debug('WS::onWSMessage::pongResponse --> Sending pending notifications', connection.uaid);
+              dataManager.getNodeData(connection.uaid, function(err, data) {
+                if (err) {
+                  log.error('WS::onWSMessage::pongResponse --> There was an error getting the node');
+                  return connection.sendUTF('{}');
+                }
+                // In this case, there are no nodes for this (strange, since it was just registered)
+                if (!data || !data.ch || !Array.isArray(data.ch)) {
+                  log.error('WS::onWSMessage::pongResponse --> No channels for this node.');
+                  return connection.sendUTF('{}');
+                }
+                var channelsUpdate = [];
+                for (var x in data.ch) {
+                  if (data.ch[x].vs) {
+                    channelsUpdate.push({
+                      channelID: data.ch[x].ch,
+                      version: data.ch[x].vs
+                    });
+                  }
+                }
+                if (channelsUpdate.length > 0) {
+                  connection.res({
+                    errorcode: errorcodes.NO_ERROR,
+                    extradata: {
+                      messageType: 'notification',
+                      updates: channelsUpdate
+                    }
+                  });
+                } else {
+                  connection.sendUTF('{}');
+                }
+              });
+            });
+            break;
+
           /*
             {
               messageType: "hello",
