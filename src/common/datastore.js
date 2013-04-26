@@ -307,7 +307,7 @@ var DataStore = function() {
           }
 
           //Check if we have all data.
-          if (!data || !data.ch || !data.ch[0]) {
+          if (!data || !data.ch || !Array.isArray(data.ch)) {
             log.error('dataStore::unregisterApplication --> Not enough nodes info to pull from nodes collection :(');
             return callback('Error, not enough data');
           }
