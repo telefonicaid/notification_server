@@ -313,41 +313,49 @@ server.prototype = {
             nodeConnector.resetAutoclose();
         });
 
+        function getPendingMessages(cb) {
+          cb = helpers.checkCallback(cb);
+          log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
+          dataManager.getNodeData(connection.uaid, function(err, data) {
+            if (err) {
+              log.error('WS::onWSMessage::getPendingMessages --> There was an error getting the node');
+              return cb(null);
+            }
+            // In this case, there are no nodes for this (strange, since it was just registered)
+            if (!data || !data.ch || !Array.isArray(data.ch)) {
+              log.error('WS::onWSMessage::getPendingMessages --> No channels for this node.');
+              return cb(null);
+            }
+            var channelsUpdate = [];
+            data.ch.forEach(function(channel) {
+              if (channel.vs) {
+                channelsUpdate.push({
+                  channelID: channel.ch,
+                  version: channel.vs
+                });
+              }
+            });
+            if (channelsUpdate.length > 0) {
+              cb(channelsUpdate);
+            }
+          });
+        }
+
         switch (query.messageType) {
           case undefined:
             log.debug('WS::onWSMessage --> PING package');
-            setTimeout(function pongResponse() {
-              log.debug('WS::onWSMessage::pongResponse --> Sending pending notifications', connection.uaid);
-              dataManager.getNodeData(connection.uaid, function(err, data) {
-                if (err) {
-                  log.error('WS::onWSMessage::pongResponse --> There was an error getting the node');
+            setTimeout(function() {
+              getPendingMessages(function(channelsUpdate) {
+                if (!channelsUpdate) {
                   return connection.sendUTF('{}');
                 }
-                // In this case, there are no nodes for this (strange, since it was just registered)
-                if (!data || !data.ch || !Array.isArray(data.ch)) {
-                  log.error('WS::onWSMessage::pongResponse --> No channels for this node.');
-                  return connection.sendUTF('{}');
-                }
-                var channelsUpdate = [];
-                for (var x in data.ch) {
-                  if (data.ch[x].vs) {
-                    channelsUpdate.push({
-                      channelID: data.ch[x].ch,
-                      version: data.ch[x].vs
-                    });
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    messageType: 'notification',
+                    updates: channelsUpdate
                   }
-                }
-                if (channelsUpdate.length > 0) {
-                  connection.res({
-                    errorcode: errorcodes.NO_ERROR,
-                    extradata: {
-                      messageType: 'notification',
-                      updates: channelsUpdate
-                    }
-                  });
-                } else {
-                  connection.sendUTF('{}');
-                }
+                });
               });
             });
             break;
@@ -408,36 +416,19 @@ server.prototype = {
                 });
 
                 //Start sending pending notifications
-                setTimeout(function pendingNotifications() {
-                  log.debug('WS::onWSMessage::pendingNotifications --> Sending pending notifications');
-                  dataManager.getNodeData(query.uaid, function(err, data) {
-                    if (err) {
-                      log.error('WS::onWSMessage::pendingNotifications --> There was an error getting the node');
+                setTimeout(function() {
+                  getPendingMessages(function(channelsUpdate) {
+                    log.debug("CHANNELS: ",channelsUpdate);
+                    if (!channelsUpdate) {
                       return;
                     }
-                    // In this case, there are no nodes for this (strange, since it was just registered)
-                    if (!data || !data.ch || !Array.isArray(data.ch)) {
-                      log.error('WS::onWSMessage::pendingNotifications --> No channels for this node.');
-                      return;
-                    }
-                    var channelsUpdate = [];
-                    for (var x in data.ch) {
-                      if (data.ch[x].vs) {
-                        channelsUpdate.push({
-                          channelID: data.ch[x].ch,
-                          version: data.ch[x].vs
-                        });
+                    connection.res({
+                      errorcode: errorcodes.NO_ERROR,
+                      extradata: {
+                        messageType: 'notification',
+                        updates: channelsUpdate
                       }
-                    }
-                    if (channelsUpdate.length > 0) {
-                      connection.res({
-                        errorcode: errorcodes.NO_ERROR,
-                        extradata: {
-                          messageType: 'notification',
-                          updates: channelsUpdate
-                        }
-                      });
-                    }
+                    });
                   });
                 });
               }
