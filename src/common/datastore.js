@@ -305,6 +305,13 @@ var DataStore = function() {
             log.error('dataStore::unregisterApplication --> Error locating channel for appToken: ' + appToken);
             return callback(err);
           }
+
+          //Check if we have all data.
+          if (!data || !data.ch || !data.ch[0]) {
+            log.error('dataStore::unregisterApplication --> Not enough nodes info to pull from nodes collection :(');
+            return callback('Error, not enough data');
+          }
+
           collection.update(
             {
               "ch.app": appToken
