@@ -60,7 +60,7 @@ function onNewMessage(message) {
      !messageData.dt.mobilenetwork ||
      !messageData.dt.mobilenetwork.mcc ||
      !messageData.dt.mobilenetwork.mnc) {
-    return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
+    return log.error(log.messages.ERROR_UDPNODATA);
   }
 
   // Notify the hanset with the associated Data
@@ -70,12 +70,14 @@ function onNewMessage(message) {
     wakeupport: messageData.dt.wakeup_hostport.port,
     mcc: messageData.dt.mobilenetwork.mcc,
     mnc: messageData.dt.mobilenetwork.mnc,
-    protocol: mcc: messageData.dt.protocol
+    protocol: messageData.dt.protocol
   });
 
   mn.getNetwork(messageData.dt.mobilenetwork.mcc, messageData.dt.mobilenetwork.mnc, function(error, op) {
     if (error) {
-      log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
+      log.error(log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
+        "error": error
+      });
       return;
     }
     if (!op || !op.wakeup) {
@@ -88,7 +90,9 @@ function onNewMessage(message) {
     var address = urlparser.parse(op.wakeup);
 
     if (!address.href) {
-      log.error('UDP:queue:onNewMessage --> Bad address to notify', address);
+      log.error(log.messages.ERROR_UDPBADADDRESS, {
+        "address": address
+      });
       return;
     }
 

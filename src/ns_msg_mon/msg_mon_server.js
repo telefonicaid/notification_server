@@ -67,7 +67,7 @@ function onNewMessage(msg) {
   try {
     json = JSON.parse(msg);
   } catch (e) {
-    return log.error('MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check');
+    return log.error(log.messages.ERROR_MONBADJSON);
   }
   log.debug('MSG_mon::onNewMessage --> Message from the queue:', json);
 
@@ -97,7 +97,9 @@ function onNewMessage(msg) {
       handleDesktopNotification(json);
       break;
     default:
-      log.error('MSG_mon::onNewMessage --> Bad msgType: ', json);
+      log.error(log.messages.ERROR_MONBADMSGTYPE, {
+        'json': json
+      });
       return;
   }
 }
@@ -117,7 +119,7 @@ function handleDesktopNotification(json) {
 
 function onApplicationData(error, appData, json) {
   if (error) {
-    return log.error('MSG_mon::onApplicationData --> There was an error');
+    return log.error(log.messages.ERROR_MONERROR);
   }
 
   log.debug('MSG_mon::onApplicationData --> Application data recovered:', appData);
@@ -129,7 +131,11 @@ function onApplicationData(error, appData, json) {
 
 function onNodeData(nodeData, json) {
   if (!nodeData) {
-    log.error('MSG_mon::onNodeData --> No node info, FIX YOUR BACKEND!');
+    log.error(log.messages.ERROR_BACKENDERROR, {
+      "class": 'MSG_mon',
+      "method": 'onNodeData',
+      "extra": 'No node info'
+    });
     return;
   }
 

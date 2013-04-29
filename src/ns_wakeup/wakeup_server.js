@@ -58,7 +58,7 @@ server.prototype = {
   onHTTPMessage: function(request, response) {
     var msg = '';
     log.notify(log.messages.NOTIFY_RECEIVEDREQUESTFORURL, {
-      url: request:url
+      url: request.url
     });
     if(request.url === "/about") {
       if(consts.PREPRODUCTION_MODE) {
@@ -180,7 +180,7 @@ server.prototype = {
         break;
 
       default:
-        log.error('Protocol not supported !');
+        log.error(log.messages.ERROR_WAKEUPPROTOCOLNOTSUPPORTED);
         response.statusCode = 404;
         response.setHeader('Content-Type', 'text/plain');
         response.write('{"status": "ERROR", "reason": "Protocol not supported"}');

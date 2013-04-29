@@ -49,7 +49,10 @@ server.prototype = {
 
       cluster.on('exit', function(worker, code, signal) {
         if (code !== 0) {
-          log.error('worker ' + worker.process.pid + ' closed unexpectedly with code ' + code);
+          log.error(log.messages.ERROR_WORKERERROR, {
+            "pid": worker.process.pid,
+            "code": code
+          });
         } else {
           log.info('worker ' + worker.process.pid + ' exit');
         }
@@ -102,7 +105,7 @@ server.prototype = {
           // If we don't have enough data, return
           if (!json.uaid ||
               !json.payload) {
-            return log.error('WS::queue::onNewMessage --> Not enough data!');
+            return log.error(log.messages.ERROR_WSNODATA);
           }
           log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
           log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
@@ -175,7 +178,9 @@ server.prototype = {
     // Check ulimit
     helpers.getMaxFileDescriptors(function(error,ulimit) {
       if (error) {
-        return log.error('ulimit error: ' + error);
+        return log.error(log.messages.ERROR_ULIMITERROR, {
+          "error": error
+        });
       }
       log.debug('ulimit = ' + ulimit);
       this.wsMaxConnections = ulimit - 200;
@@ -321,12 +326,12 @@ server.prototype = {
           log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
           dataManager.getNodeData(connection.uaid, function(err, data) {
             if (err) {
-              log.error('WS::onWSMessage::getPendingMessages --> There was an error getting the node');
+              log.error(log.messages.ERROR_WSERRORGETTINGNODE);
               return cb(null);
             }
             // In this case, there are no nodes for this (strange, since it was just registered)
             if (!data || !data.ch || !Array.isArray(data.ch)) {
-              log.error('WS::onWSMessage::getPendingMessages --> No channels for this node.');
+              log.error(log.messages.ERROR_WSNOCHANNELS);
               return cb(null);
             }
             var channelsUpdate = [];

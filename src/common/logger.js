@@ -73,7 +73,11 @@ logger.prototype = {
       message = "ID: 0x" + message.id.toString(16) + " - " + message.m;
       if (object) {
         Object.keys(object).forEach(function(k) {
-          message = message.replace('::'+k, object[k])
+          if (typeof(object[k]) === 'object') {
+            message = message.replace('::'+k, JSON.stringify(object[k]));
+          } else {
+            message = message.replace('::'+k, object[k])
+          }
         });
         object = null;
       }

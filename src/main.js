@@ -68,7 +68,7 @@ main.prototype = {
         break;
       default:
         log.init('/tmp/push.log', 'PUSH', 1);
-        log.error('No server provided');
+        log.error(log.messages.ERROR_NOSERVERPROVIDED);
     }
   },
 
@@ -100,7 +100,7 @@ function onKill() {
     return;
   }
   m.controlledClose = true;
-  log.error('Received kill (9 or 15) signal');
+  log.error(log.messages.ERROR_RECVKILLSIGNAL);
   m.stop();
 }
 
