@@ -14,7 +14,7 @@ var dataStore = require('../../common/datastore'),
     errorcodes = require('../../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../../common/constants').errorcodes.AS,
     uuid = require('node-uuid'),
-    isVersion = require('../../common/helpers');
+    isVersion = require('../../common/helpers').isVersion;
 
 var kSimplePushASFrontendVersion = 'v1';
 
