@@ -36,13 +36,14 @@ Connector.prototype = {
     if (this.nodesConnectors[data.uaid]) {
       return callback(null, this.nodesConnectors[data.uaid]);
     } else if (ip && port && mcc && mnc) {
+      log.debug('getConnector --> Valid ip, port, mcc and mnc to search for wakeup');
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {
-          log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
+          log.error('getConnector --> Error getting the operator from the DB: ' + error);
           return;
         }
         if (!op || !op.wakeup) {
-          log.debug('UDP::queue::onNewMessage --> No WakeUp server found for MCC=' +
+          log.debug('getConnector -->  No WakeUp server found for MCC=' +
                      data.mobilenetwork.mcc + ' and MNC=' + data.mobilenetwork.mnc);
           var connector = new connector_ws(data, connection);
           this.nodesConnectors[data.uaid] = connector;
@@ -50,13 +51,14 @@ Connector.prototype = {
           return;
         }
         var connector = null;
-        log.debug('getConnector: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
+        log.debug('getConnector --> UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
         connector = new connector_udp(data, connection);
         this.nodesConnectors[data.uaid] = connector;
         callback(null, connector);
       }.bind(this));
     } else {
       //Fallback
+      log.debug('getConnector --> getting a WebSocket connector');
       var connector = new connector_ws(data, connection);
       this.nodesConnectors[data.uaid] = connector;
       callback(null, connector);
