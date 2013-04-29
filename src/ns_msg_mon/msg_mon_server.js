@@ -140,7 +140,10 @@ function onNodeData(nodeData, json) {
   }
 
   log.debug('MSG_mon::onNodeData --> Node connected:', nodeData);
-  log.notify('MSG_mon::onNodeData --> Notify into the messages queue of node ' + nodeData.si + ' # ' + json.messageId);
+  log.notify(log.messages.NOTIFY_MSGINSERTEDINTOQUEUE, {
+    serverId: nodeData.si,
+    messageId: json.messageId
+  });
   var body = {
     messageId: json.messageId,
     uaid: nodeData._id,

@@ -90,7 +90,10 @@ var SimplePushAPI_v1 = function() {
     }
 
     //Now, we are safe to start using the path and data
-    log.notify('appToken=' + appToken + ' -- version=' + version);
+    log.notify(log.messages.NOTIFY_APPTOKEN_VERSION, {
+      'appToken': appToken,
+      'version': version
+    });
     dataStore.getChannelIDForAppToken(appToken, function(error, channelID) {
       // If there is no channelID associated with a appToken,
       // fool the sender with a OK response, but nothing is done here.

@@ -105,7 +105,10 @@ server.prototype = {
             return log.error('WS::queue::onNewMessage --> Not enough data!');
           }
           log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
-          log.notify('Message with id ' + json.messageId + ' sent to ' + json.uaid);
+          log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
+            messageId: json.messageId,
+            uaid: json.uaid
+          });
           dataManager.getNode(json.uaid, function(nodeConnector) {
             if (nodeConnector) {
               var notification = json.payload;

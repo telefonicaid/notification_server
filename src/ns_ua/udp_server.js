@@ -64,13 +64,14 @@ function onNewMessage(message) {
   }
 
   // Notify the hanset with the associated Data
-  log.notify('Notifying node: ' + messageData.uaid +
-      ' to ' + messageData.dt.wakeup_hostport.ip +
-      ':' + messageData.dt.wakeup_hostport.port +
-      ' on network ' + messageData.dt.mobilenetwork.mcc +
-      '-' + messageData.dt.mobilenetwork.mnc +
-      ' and using protocol: ' + messageData.dt.protocol
-  );
+  log.notify(log.messages.NOTIFY_NOTIFINGNODE, {
+    uaid: messageData.uaid,
+    wakeupip: messageData.dt.wakeup_hostport.ip,
+    wakeupport: messageData.dt.wakeup_hostport.port,
+    mcc: messageData.dt.mobilenetwork.mcc,
+    mnc: messageData.dt.mobilenetwork.mnc,
+    protocol: mcc: messageData.dt.protocol
+  });
 
   mn.getNetwork(messageData.dt.mobilenetwork.mcc, messageData.dt.mobilenetwork.mnc, function(error, op) {
     if (error) {

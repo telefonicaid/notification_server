@@ -90,7 +90,10 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
 
     var id = uuid.v1();
     log.debug("NS_AS::onNewPushMessage --> Storing message for the '" + apptoken + "' apptoken with internal Id = '" + id + "'. Message:", normalizedNotification);
-    log.notify("Storing message for the '" + apptoken + "' apptoken. Internal Id: " + id);
+    log.notify(log.messages.NOTIFY_MSGSTORINGDB, {
+      "apptoken": apptoken,
+      "id": id
+    });
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue

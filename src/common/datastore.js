@@ -663,7 +663,9 @@ var DataStore = function() {
             log.error('dataStore::removeMessage --> Error removing message', err);
             return;
           }
-          log.notify('datastore::removeMessage --> Message removed from MongoDB ' + messageId);
+          log.notify(log.messages.NOTIFY_MSGREMOVEDDB, {
+            'messageId': messageId
+          });
         }
       );
     });
@@ -696,7 +698,7 @@ var DataStore = function() {
             log.error('dataStore::ackMessage --> Error ACK\'ing message into MongoDB', err);
             return;
           }
-          log.notify('datastore::ackMessage --> Message ACKed');
+          log.notify(log.messages.NOTIFY_MSGREMOVEDDB);
         }
       );
     });
