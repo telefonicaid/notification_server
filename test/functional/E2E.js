@@ -34,7 +34,7 @@ var debug = require('./common').debug,
       PushTest.connection = connection;
       debug('WebSocket client connected');
       connection.on('error', function(error) {
-	      console.log("Connection Error: " + error.toString());
+        console.log("Connection Error: " + error.toString());
       });
       connection.on('close', function() {
         debug('push-notification Connection Closed');
@@ -124,8 +124,8 @@ var debug = require('./common').debug,
 
   check: function check() {
     if (PushTest.registerUAOK &&
-	PushTest.registerWAOK &&
-	PushTest.gotNotification) {
+        PushTest.registerWAOK &&
+        PushTest.gotNotification) {
       debug("Everything went better than expected! http://i2.kym-cdn.com/entries/icons/original/000/001/253/everything_went_better_than_expected.jpg");
       PushTest.connection.close();
       process.exit(0);

@@ -550,12 +550,26 @@ server.prototype = {
            */
           case 'ack':
             if(!Array.isArray(query.updates)) {
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CHANNELID,
+                extradata: { messageType: 'ack' }
+              });
+              connection.close();
               return;
             }
+
             query.updates.forEach(function(el) {
-              if (!el.channelID || !el.version) {
+              if (!el.channelID || typeof el.channelID !== 'string' ||
+                  !el.version || !helpers.isVersion(el.version)) {
+                connection.res({
+                  errorcode: errorcodesWS.NOT_VALID_CHANNELID,
+                  extradata: { messageType: 'ack',
+                               channelID: el.channelID,
+                               version: el.version}
+                });
                 return;
               }
+
               dataManager.ackMessage(connection.uaid, el.channelID, el.version);
             });
             break;

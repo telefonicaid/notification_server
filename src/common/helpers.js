@@ -47,3 +47,28 @@ function getMaxFileDescriptors(cb) {
   });
 }
 exports.getMaxFileDescriptors = getMaxFileDescriptors;
+
+/**
+ * Check if a version is a valid one for this API (v1)
+ * In v1 case:
+ *   - should be a number
+ *   - should not be NaN
+ *   - should be greater or equal than 0
+ */
+function isVersion(version) {
+  var number = parseInt(version, 10);
+  if (typeof number !== 'number') {
+    return false;
+  }
+
+  if (isNaN(number)) {
+    return false;
+  }
+
+  if (number < 0) {
+    return false;
+  }
+
+  return true;
+}
+exports.isVersion = isVersion;
