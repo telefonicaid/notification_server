@@ -13,33 +13,10 @@ var dataStore = require('../../common/datastore'),
     log = require('../../common/logger'),
     errorcodes = require('../../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../../common/constants').errorcodes.AS,
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    isVersion = require('../../common/helpers');
 
 var kSimplePushASFrontendVersion = 'v1';
-
-/**
- * Check if a version is a valid one for this API (v1)
- * In v1 case:
- *   - should be a number
- *   - should not be NaN
- *   - should be greater or equal than 0
- */
-var isVersion = function(version) {
-  var number = parseInt(version, 10);
-  if (typeof number !== 'number') {
-    return false;
-  }
-
-  if (isNaN(number)) {
-    return false;
-  }
-
-  if (number < 0) {
-    return false;
-  }
-
-  return true;
-};
 
 var SimplePushAPI_v1 = function() {
   this.processRequest = function(request, body, response) {
