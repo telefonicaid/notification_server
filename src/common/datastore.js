@@ -690,7 +690,14 @@ var DataStore = function() {
             'ch.$.new': 0
           }
         },
-        {upsert: true}
+        { upsert: true },
+        function(err,d) {
+          if (err) {
+            log.error('dataStore::ackMessage --> Error ACK\'ing message into MongoDB', err);
+            return;
+          }
+          log.notify('datastore::ackMessage --> Message ACKed');
+        }
       );
     });
   },
