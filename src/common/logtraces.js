@@ -258,6 +258,29 @@ exports.logtraces = {
   ERROR_WAKEUPPROTOCOLNOTSUPPORTED: {
     id: 0x2501,
     m: "Protocol not supported !"
+  },
+
+  // CRITICAL TRACES
+
+  CRITICAL_DBCONNECTIONERROR: {
+    id: 0X3001,
+    m: "::class::::method --> Error connecting to MongoDB ! - ::error"
+  },
+  CRITICAL_MBDISCONNECTED: {
+    id: 0X3002,
+    m: "::class::::method --> MsgBroker DISCONNECTED!!'"
+  },
+  CRITICAL_DBDISCONNECTED: {
+    id: 0X3003,
+    m: "::class::::method --> DataStore DISCONNECTED!!'"
+  },
+  CRITICAL_NOTREADY: {
+    id: 0X3004,
+    m: "30 seconds has passed and we are not ready, closing'"
+  },
+  CRITICAL_WSINTERFACESNOTCONFIGURED: {
+    id: 0X3301,
+    m: "NS_UA_WS interfaces not configured'"
   }
 
 }

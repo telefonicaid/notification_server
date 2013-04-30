@@ -82,7 +82,11 @@ var DataStore = function() {
     // Establish connection to db
     this.db.open(function(err, db) {
       if (err) {
-        log.critical('datastore::starting --> Error connecting to MongoDB ! - ' + err);
+        log.critical(log.messages.CRITICAL_DBCONNECTIONERROR, {
+          "class": 'datastore',
+          "method": 'starting',
+          "error": err
+        });
         this.close();
         return;
       }

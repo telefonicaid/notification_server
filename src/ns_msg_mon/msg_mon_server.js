@@ -41,7 +41,10 @@ monitor.prototype = {
 
     msgBroker.on('brokerdisconnected', function() {
       self.ready = false;
-      log.critical('ns_msg_monitor::init --> Broker DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+        "class": 'ns_msg_monitor',
+        "method": 'init'
+      });
     });
 
     // Connect to the message broker
@@ -52,7 +55,7 @@ monitor.prototype = {
     // Check if we are alive
     setTimeout(function() {
       if (!self.ready)
-        log.critical('30 seconds has passed and we are not ready, closing');
+        log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
   },
 
