@@ -8,7 +8,8 @@
 
 var log = require('../common/logger'),
     urlparser = require('url'),
-    consts = require('../config.js').consts,
+    config = require('../config.js'),
+    consts = config.consts,
     fs = require('fs'),
     uuid = require('node-uuid'),
     crypto = require('../common/cryptography'),
@@ -67,9 +68,9 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
   }
 
   //Reject notifications with big attributes
-  if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
+  if ((normalizedNotification.message.length > config.NS_AS.MAX_PAYLOAD_SIZE) ||
       (normalizedNotification.id.length > consts.MAX_ID_SIZE)) {
-    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + config.NS_AS.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
 

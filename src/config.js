@@ -26,7 +26,6 @@ exports.servers = {
 
 /********************* Constants********************************************/
 exports.consts = {
-  MAX_PAYLOAD_SIZE: 1024,
   MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
   /**
@@ -143,6 +142,11 @@ exports.NS_AS = {
   logfile: 'NS_AS.log',
 
   /**
+   * Maximum payload for a HTTP message (20 KiB)
+   */
+  MAX_PAYLOAD_SIZE: 20480,
+
+  /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
    */
   interfaces: [
@@ -168,6 +172,11 @@ exports.NS_UA_WS = {
    * Number of processes which shall run in parallel
    */
   numProcesses: numCPUs,
+
+  /**
+   * Maximum size for a WebSocket message (20 KiB)
+   */
+  MAX_MESSAGE_SIZE: 0x5000, //20480 bytes
 
   /**
    * Binding interfaces and ports
