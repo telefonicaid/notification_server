@@ -28,7 +28,7 @@ datamanager.prototype = {
           errorcode: errorcodesWS.ERROR_GETTING_CONNECTOR,
           extradata: { messageType: 'hello' }
         });
-        return log.error('WS::onWSMessage --> Error getting connection object');
+        return log.error(log.messages.ERROR_WSERRORGETTINGCONNECTION);
       } else {
         log.debug('dataManager::registerNode --> Registraton of the node into datastore ' + data.uaid);
         dataStore.registerNode(
@@ -73,7 +73,9 @@ datamanager.prototype = {
           if (!error) {
             log.debug('dataManager::unregisterNode --> Unregistered');
           } else {
-            log.error('dataManager::unregisterNode --> There was a problem unregistering the uaid ' + uaid);
+            log.error(log.messages.ERROR_DMERRORUNREGISTERUA, {
+              "uaid": uaid
+            });
           }
         }
       );
@@ -148,7 +150,11 @@ datamanager.prototype = {
    */
   removeMessage: function(messageId, uaid) {
     if(!messageId || !uaid) {
-      log.error('dataStore::removeMessage --> FIX YOUR BACKEND');
+      log.error(log.messages.ERROR_BACKENDERROR, {
+        "class": 'dataStore',
+        "method": 'removeMessage',
+        "extra": 'No messageId nor UAID found'
+      });
       return;
     }
     dataStore.removeMessage(messageId, uaid);

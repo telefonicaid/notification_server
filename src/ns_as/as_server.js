@@ -90,7 +90,10 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
 
     var id = uuid.v1();
     log.debug("NS_AS::onNewPushMessage --> Storing message for the '" + apptoken + "' apptoken with internal Id = '" + id + "'. Message:", normalizedNotification);
-    log.notify("Storing message for the '" + apptoken + "' apptoken. Internal Id: " + id);
+    log.notify(log.messages.NOTIFY_MSGSTORINGDB, {
+      "apptoken": apptoken,
+      "id": id
+    });
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
@@ -130,7 +133,10 @@ server.prototype = {
       self.msgbrokerready = true;
     });
     msgBroker.on('brokerdisconnected', function() {
-      log.critical('NS_AS::init --> MsgBroker DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+        "class": 'NS_AS',
+        "method": 'init'
+      });
       self.msgbrokerready = false;
     });
 
@@ -140,7 +146,10 @@ server.prototype = {
       self.ddbbready = true;
     });
     dataStore.on('ddbbdisconnected', function() {
-      log.critical('NS_AS::init --> DataStore DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_DBDISCONNECTED, {
+        "class": 'NS_AS',
+        "method": 'init'
+      });
       self.ddbbready = false;
     });
 
@@ -153,7 +162,7 @@ server.prototype = {
     // Check if we are alive
     setTimeout(function() {
       if (!self.ddbbready || !self.msgbrokerready)
-        log.critical('30 seconds has passed and we are not ready, closing');
+        log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
 
   },

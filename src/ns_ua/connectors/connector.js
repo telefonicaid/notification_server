@@ -39,7 +39,9 @@ Connector.prototype = {
       log.debug('getConnector --> Valid ip, port, mcc and mnc to search for wakeup');
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {
-          log.error('getConnector --> Error getting the operator from the DB: ' + error);
+          log.error(log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
+            "error": error
+          });
           return;
         }
         if (!op || !op.wakeup) {

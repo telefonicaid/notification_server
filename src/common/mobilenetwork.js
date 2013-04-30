@@ -60,7 +60,9 @@ MobileNetwork.prototype = {
     // Check if the network if it's in the database and update cache
     datastore.getOperator(mcc, mnc, function(error, d) {
       if (error) {
-        log.error('[MobileNetwork] --> error!! ' + error);
+        log.error(log.messages.ERROR_MOBILENETWORKERROR,{
+          'error': error
+        });
         callback(error);
         return;
       }
