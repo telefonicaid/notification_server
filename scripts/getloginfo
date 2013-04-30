@@ -8,19 +8,16 @@ if (!process.argv[2]) {
   return;
 }
 
-var found=false;
 Object.keys(lt).forEach(function(k) {
   if (lt[k].id == process.argv[2]) {
-    found = true;
     console.log(' * Log trace - ' + k);
     console.log(' * ID: 0x' + lt[k].id.toString(16));
     console.log(' * Message: ' + lt[k].m);
     if (lt[k].doc) {
       console.log(' * Documentation: ' + lt[k].doc);
     }
+    process.exit();
   }
 });
 
-if (!found) {
-  console.log(' * Sorry, I didn\'t locate the log trace ID :(');
-}
+console.log(' * Sorry, I didn\'t locate the log trace ID :(');
