@@ -194,7 +194,7 @@ exports.logtraces = {
   },
 
   ERROR_MOBILENETWORKERROR: {
-    id: 0x201B,
+    id: 0x201D,
     m: "[MobileNetwork] --> error!! ::error"
   },
 
