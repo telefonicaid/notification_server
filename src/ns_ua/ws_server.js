@@ -49,7 +49,10 @@ server.prototype = {
 
       cluster.on('exit', function(worker, code, signal) {
         if (code !== 0) {
-          log.error('worker ' + worker.process.pid + ' closed unexpectedly with code ' + code);
+          log.error(log.messages.ERROR_WORKERERROR, {
+            "pid": worker.process.pid,
+            "code": code
+          });
         } else {
           log.info('worker ' + worker.process.pid + ' exit');
         }
@@ -102,10 +105,13 @@ server.prototype = {
           // If we don't have enough data, return
           if (!json.uaid ||
               !json.payload) {
-            return log.error('WS::queue::onNewMessage --> Not enough data!');
+            return log.error(log.messages.ERROR_WSNODATA);
           }
           log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
-          log.notify('Message with id ' + json.messageId + ' sent to ' + json.uaid);
+          log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
+            messageId: json.messageId,
+            uaid: json.uaid
+          });
           dataManager.getNode(json.uaid, function(nodeConnector) {
             if (nodeConnector) {
               var notification = json.payload;
@@ -154,7 +160,10 @@ server.prototype = {
         self.ready = true;
       });
       msgBroker.on('brokerdisconnected', function() {
-        log.critical('ns_ws::init --> Broker DISCONNECTED!!');
+        log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+          "class": 'ns_ws',
+          "method": 'init'
+        });
       });
 
       //Connect to msgBroker
@@ -165,14 +174,16 @@ server.prototype = {
       //Check if we are alive
       setTimeout(function() {
         if (!self.ready)
-          log.critical('30 seconds has passed and we are not ready, closing');
+          log.critical(log.messages.CRITICAL_NOTREADY);
       }, 30 * 1000); //Wait 30 seconds
     }
 
     // Check ulimit
     helpers.getMaxFileDescriptors(function(error,ulimit) {
       if (error) {
-        return log.error('ulimit error: ' + error);
+        return log.error(log.messages.ERROR_ULIMITERROR, {
+          "error": error
+        });
       }
       log.debug('ulimit = ' + ulimit);
       this.wsMaxConnections = ulimit - 200;
@@ -318,12 +329,12 @@ server.prototype = {
           log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
           dataManager.getNodeData(connection.uaid, function(err, data) {
             if (err) {
-              log.error('WS::onWSMessage::getPendingMessages --> There was an error getting the node');
+              log.error(log.messages.ERROR_WSERRORGETTINGNODE);
               return cb(null);
             }
             // In this case, there are no nodes for this (strange, since it was just registered)
             if (!data || !data.ch || !Array.isArray(data.ch)) {
-              log.error('WS::onWSMessage::getPendingMessages --> No channels for this node.');
+              log.error(log.messages.ERROR_WSNOCHANNELS);
               return cb(null);
             }
             var channelsUpdate = [];

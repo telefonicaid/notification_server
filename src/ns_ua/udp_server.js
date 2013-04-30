@@ -60,21 +60,24 @@ function onNewMessage(message) {
      !messageData.dt.mobilenetwork ||
      !messageData.dt.mobilenetwork.mcc ||
      !messageData.dt.mobilenetwork.mnc) {
-    return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
+    return log.error(log.messages.ERROR_UDPNODATA);
   }
 
   // Notify the hanset with the associated Data
-  log.notify('Notifying node: ' + messageData.uaid +
-      ' to ' + messageData.dt.wakeup_hostport.ip +
-      ':' + messageData.dt.wakeup_hostport.port +
-      ' on network ' + messageData.dt.mobilenetwork.mcc +
-      '-' + messageData.dt.mobilenetwork.mnc +
-      ' and using protocol: ' + messageData.dt.protocol
-  );
+  log.notify(log.messages.NOTIFY_NOTIFINGNODE, {
+    uaid: messageData.uaid,
+    wakeupip: messageData.dt.wakeup_hostport.ip,
+    wakeupport: messageData.dt.wakeup_hostport.port,
+    mcc: messageData.dt.mobilenetwork.mcc,
+    mnc: messageData.dt.mobilenetwork.mnc,
+    protocol: messageData.dt.protocol
+  });
 
   mn.getNetwork(messageData.dt.mobilenetwork.mcc, messageData.dt.mobilenetwork.mnc, function(error, op) {
     if (error) {
-      log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
+      log.error(log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
+        "error": error
+      });
       return;
     }
     if (!op || !op.wakeup) {
@@ -87,7 +90,9 @@ function onNewMessage(message) {
     var address = urlparser.parse(op.wakeup);
 
     if (!address.href) {
-      log.error('UDP:queue:onNewMessage --> Bad address to notify', address);
+      log.error(log.messages.ERROR_UDPBADADDRESS, {
+        "address": address
+      });
       return;
     }
 
@@ -149,7 +154,10 @@ server.prototype = {
 
     msgBroker.on('brokerdisconnected', function() {
       self.ready = false;
-      log.critical('ns_udp::init --> Broker DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+        "class": 'ns_udp',
+        "method": 'init'
+      });
     });
 
     // Subscribe to the UDP common Queue
@@ -160,7 +168,7 @@ server.prototype = {
     //Check if we are alive
     setTimeout(function() {
       if (!self.ready)
-        log.critical('30 seconds has passed and we are not ready, closing');
+        log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
 
   },
