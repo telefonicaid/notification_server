@@ -16,7 +16,8 @@ var log = require('../common/logger'),
     dataStore = require('../common/datastore'),
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../common/constants').errorcodes.AS,
-    pages = require('../common/pages.js');
+    pages = require('../common/pages.js'),
+    maintance = require('../common/maintance.js');
 
 var SimplePushAPI_v1 = require('./apis/SimplePushAPI_v1');
 var simplepush = new SimplePushAPI_v1();
@@ -252,6 +253,19 @@ server.prototype = {
         } else {
           return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
         }
+        break;
+
+      case 'status':
+        // Return status mode to be used by load-balancers
+        response.setHeader('Content-Type', 'text/html');
+        if (maintance.getStatus()) {
+          response.statusCode = 503;
+          response.write('Under Maintance');
+        } else {
+          response.statusCode = 200;
+          response.write('OK');
+        }
+        return response.end();
         break;
 
       case 'notify':
