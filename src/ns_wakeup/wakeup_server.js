@@ -11,7 +11,8 @@ var log = require('../common/logger.js'),
     fs = require('fs'),
     consts = require('../config.js').consts,
     dgram = require('dgram'),
-    pages = require('../common/pages.js');
+    pages = require('../common/pages.js'),
+    maintance = require('../common/maintance.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -86,6 +87,19 @@ server.prototype = {
         return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
       }
     }
+    if(request.url === "/status") {
+      // Return status mode to be used by load-balancers
+      response.setHeader('Content-Type', 'text/html');
+      if (maintance.getStatus()) {
+        response.statusCode = 503;
+        response.write('Under Maintance');
+      } else {
+        response.statusCode = 200;
+        response.write('OK');
+      }
+      return response.end();
+    }
+
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
     if (!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
