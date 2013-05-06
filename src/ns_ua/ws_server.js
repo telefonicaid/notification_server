@@ -80,6 +80,8 @@ server.prototype = {
         keepaliveInterval: config.websocket_params.keepaliveInterval,
         dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
         keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
+        maxReceivedMessageSize: config.websocket_params.MAX_MESSAGE_SIZE,
+        assembleFragments: true,
         autoAcceptConnections: false    // false => Use verify originIsAllowed method
       });
       this.wsServer.on('request', this.onWSRequest.bind(this));
