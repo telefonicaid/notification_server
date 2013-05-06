@@ -422,8 +422,20 @@ server.prototype = {
               if (query.channelIDs) {
                 //Start recovery protocol
                 setTimeout(function recoveryChannels() {
-                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query);
-                  // TODO sync channels with client
+                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query.channelIDs);
+                  query.channelIDs.forEach(function(ch) {
+                    log.debug("WS::onWSMessage::recoveryChannels CHANNEL: ", ch);
+
+                    var appToken = helpers.getAppToken(ch, connection.uaid);
+                    dataManager.registerApplication(appToken, ch, connection.uaid, null, function(error) {
+                      if (!error) {
+                        var notifyURL = helpers.getNotificationURL(appToken);
+                        log.debug('WS::onWSMessage::recoveryChannels --> OK registering channelID: ' + notifyURL);
+                      } else {
+                        log.debug('WS::onWSMessage::recoveryChannels --> Failing registering channelID');
+                      }
+                    });
+                  });
                 });
 
                 //Start sending pending notifications
