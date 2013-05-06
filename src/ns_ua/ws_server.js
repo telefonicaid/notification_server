@@ -209,7 +209,7 @@ server.prototype = {
         if (consts.PREPRODUCTION_MODE) {
           this.setHeader('Content-Type', 'text/plain');
           if (this.statusCode == 200) {
-                this.write('{"status":"ACCEPTED"}');
+            this.write('{"status":"ACCEPTED"}');
           } else {
             this.write('{"status":"ERROR", "reason":"' + errorCode[1] + '"}');
           }
@@ -302,10 +302,6 @@ server.prototype = {
             res.status = payload.errorcode[0];
           }
           res.reason = payload.errorcode[1];
-        } else {
-          if (!res.status) {
-            res.status = 200;
-          }
         }
         connection.sendUTF(JSON.stringify(res));
       };
