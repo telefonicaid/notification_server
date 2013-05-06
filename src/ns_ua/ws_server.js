@@ -482,7 +482,7 @@ server.prototype = {
 
             // Close the connection if the channelID is null
             var channelID = query.channelID;
-            if (!channelID) {
+            if (!channelID || typeof(channelID) !== 'string') {
               log.debug('WS::onWSMessage::register --> Null channelID');
               connection.res({
                 errorcode: errorcodesWS.NOT_VALID_CHANNELID,
@@ -534,7 +534,7 @@ server.prototype = {
             // Close the connection if the channelID is null
             var channelID = query.channelID;
             log.debug('WS::onWSMessage::unregister --> Application un-registration message for ' + channelID);
-            if (!channelID) {
+            if (!channelID || typeof(channelID) !== 'string') {
               log.debug('WS::onWSMessage::unregister --> Null channelID');
               connection.res({
                 errorcode: errorcodesWS.NOT_VALID_CHANNELID,
