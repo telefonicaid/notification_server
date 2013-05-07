@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/postwait/node-amqp.png)](http://travis-ci.org/postwait/node-amqp)
 # node-amqp
 
 IMPORTANT: This module only works with node v0.4.0 and later.
@@ -200,6 +201,13 @@ thus adopting the parent connection's values (which default to false).
 Setting these to true provide backward compability for older
 applications.
 
+The 'exclusive' option will subscribe to the queue in exclusive mode. Only one
+subscriber is allowed at a time, and subsequent attempts to subscribe to the
+same queue will result in an exception. This option differes from the exclusive
+option passed when creating in a queue in that the queue itself is not exclusive,
+only the consumers. This means that long lived durable queues can be used
+as exclusive queues.
+
 This method will emit `'basicQosOk'` when ready.
 
 
@@ -319,7 +327,7 @@ object for the second. The options are
     durable.  Durable exchanges remain active when a server restarts.
     Non-durable exchanges (transient exchanges) are purged if/when a
     server restarts.
-- `comfirm`: boolean, default false.
+- `confirm`: boolean, default false.
     If set when connecting to a exchange the channel will send acks 
     for publishes. Published tasks will emit 'ack' when it is acked.
 - `autoDelete`: boolean, default true.
@@ -374,3 +382,27 @@ If the optional boolean second argument is set, the server will only
 delete the exchange if it has no queue bindings. If the exchange has queue
 bindings the server does not delete it but raises a channel exception
 instead.
+
+### exchange.bind(srcExchange, routingKey [, callback])
+
+Binds the exchange (destination) to the given source exchange (srcExchange). 
+When one exchange is bound to another, the destination (or receiving) exchange 
+will receive all messages published to the source exchange that match the 
+given routingKey. 
+
+This method will emit `'exchangeBindOk'` when complete.
+
+Please note that Exchange to Exchange Bindings (E2E) are an extension to the 
+AMQP spec introduced by RabbitMQ, and that by using this feature, you will be 
+reliant on RabbitMQ's AMQP implementation. For more information on E2E 
+Bindings with RabbitMQ see:
+
+http://www.rabbitmq.com/e2e.html
+
+### exchange.unbind(srcExchange, routingKey [, callback])
+
+Unbinds the exchange (destination) from the given source exchange (srcExchange). 
+This is the reverse of the exchange.bind method above, and will stop messages 
+from srcExchange/routingKey from being sent to the destination exchange. 
+
+This method will emit `'exchangeUnbindOk'` when complete.

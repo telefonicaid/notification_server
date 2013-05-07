@@ -26,7 +26,6 @@ exports.servers = {
 
 /********************* Constants********************************************/
 exports.consts = {
-  MAX_PAYLOAD_SIZE: 1024,
   MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
   /**
@@ -83,26 +82,29 @@ exports.logger = {
 /********************* Common Queue ***********************************/
 /**
  * Choose your host, port and other self-explanatory options
+ * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
     host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
+    password: 'guest',
+    heartbeat: 1200
   },
   {
     host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
+    password: 'guest',
+    heartbeat: 1200
   },
   {
     host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
-  }
-];
+    password: 'guest',
+    heartbeat: 1200
+  }];
 
 /********************* Database configuration *************************/
 /**
@@ -117,7 +119,8 @@ exports.queue = [{
     ["owd-push-qa-be2", 27017]
   ],
   ddbbname: "push_notification_server",
-  replicasetName: "Server_Push"
+  replicasetName: "Server_Push",
+  keepalive: 1200
 };*/
 
 // DDBB defaults to use a single MongoDB instance
@@ -126,7 +129,8 @@ exports.ddbbsettings = {
   machines: [
     ['localhost', 27017]
   ],
-  ddbbname: 'push_notification_server'
+  ddbbname: 'push_notification_server',
+  keepalive: 1200
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -136,6 +140,11 @@ exports.ddbbsettings = {
 /********************* NS_AS *****************************************/
 exports.NS_AS = {
   logfile: 'NS_AS.log',
+
+  /**
+   * Maximum payload for a HTTP message (20 KiB)
+   */
+  MAX_PAYLOAD_SIZE: 20480,
 
   /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
@@ -163,6 +172,11 @@ exports.NS_UA_WS = {
    * Number of processes which shall run in parallel
    */
   numProcesses: numCPUs,
+
+  /**
+   * Maximum size for a WebSocket message (20 KiB)
+   */
+  MAX_MESSAGE_SIZE: 0x5000, //20480 bytes
 
   /**
    * Binding interfaces and ports

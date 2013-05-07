@@ -23,7 +23,8 @@ var log = require('../common/logger.js'),
     pages = require('../common/pages.js'),
     url = require('url'),
     http = require('http'),
-    https = require('https');
+    https = require('https'),
+    maintance = require('../common/maintance.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -49,7 +50,10 @@ server.prototype = {
 
       cluster.on('exit', function(worker, code, signal) {
         if (code !== 0) {
-          log.error('worker ' + worker.process.pid + ' closed unexpectedly with code ' + code);
+          log.error(log.messages.ERROR_WORKERERROR, {
+            "pid": worker.process.pid,
+            "code": code
+          });
         } else {
           log.info('worker ' + worker.process.pid + ' exit');
         }
@@ -76,6 +80,8 @@ server.prototype = {
         keepaliveInterval: config.websocket_params.keepaliveInterval,
         dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
         keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
+        maxReceivedMessageSize: config.websocket_params.MAX_MESSAGE_SIZE,
+        assembleFragments: true,
         autoAcceptConnections: false    // false => Use verify originIsAllowed method
       });
       this.wsServer.on('request', this.onWSRequest.bind(this));
@@ -102,15 +108,18 @@ server.prototype = {
           // If we don't have enough data, return
           if (!json.uaid ||
               !json.payload) {
-            return log.error('WS::queue::onNewMessage --> Not enough data!');
+            return log.error(log.messages.ERROR_WSNODATA);
           }
           log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
-          log.notify('Message with id ' + json.messageId + ' sent to ' + json.uaid);
+          log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
+            messageId: json.messageId,
+            uaid: json.uaid
+          });
           dataManager.getNode(json.uaid, function(nodeConnector) {
             if (nodeConnector) {
               var notification = json.payload;
 
-              // Not send the appToken
+              // Not send the appToken or other attributes
               //TODO: Not insert the appToken into the MQ
               /**
                 {
@@ -125,6 +134,7 @@ server.prototype = {
               */
               delete notification.appToken;
               delete notification.app;
+              delete notification.new;
               if (notification.ch) {
                 notification.channelID = notification.ch;
                 delete notification.ch;
@@ -153,7 +163,10 @@ server.prototype = {
         self.ready = true;
       });
       msgBroker.on('brokerdisconnected', function() {
-        log.critical('ns_ws::init --> Broker DISCONNECTED!!');
+        log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+          "class": 'ns_ws',
+          "method": 'init'
+        });
       });
 
       //Connect to msgBroker
@@ -164,14 +177,16 @@ server.prototype = {
       //Check if we are alive
       setTimeout(function() {
         if (!self.ready)
-          log.critical('30 seconds has passed and we are not ready, closing');
+          log.critical(log.messages.CRITICAL_NOTREADY);
       }, 30 * 1000); //Wait 30 seconds
     }
 
     // Check ulimit
     helpers.getMaxFileDescriptors(function(error,ulimit) {
       if (error) {
-        return log.error('ulimit error: ' + error);
+        return log.error(log.messages.ERROR_ULIMITERROR, {
+          "error": error
+        });
       }
       log.debug('ulimit = ' + ulimit);
       this.wsMaxConnections = ulimit - 200;
@@ -194,7 +209,7 @@ server.prototype = {
         if (consts.PREPRODUCTION_MODE) {
           this.setHeader('Content-Type', 'text/plain');
           if (this.statusCode == 200) {
-                this.write('{"status":"ACCEPTED"}');
+            this.write('{"status":"ACCEPTED"}');
           } else {
             this.write('{"status":"ERROR", "reason":"' + errorCode[1] + '"}');
           }
@@ -245,6 +260,19 @@ server.prototype = {
           }
           break;
 
+        case 'status':
+          // Return status mode to be used by load-balancers
+          response.setHeader('Content-Type', 'text/html');
+          if (maintance.getStatus()) {
+            response.statusCode = 503;
+            response.write('Under Maintance');
+          } else {
+            response.statusCode = 200;
+            response.write('OK');
+          }
+          return response.end();
+          break;
+
         default:
           log.debug('WS::onHTTPMessage --> messageType not recognized');
           return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
@@ -257,7 +285,6 @@ server.prototype = {
   //////////////////////////////////////////////
   onWSRequest: function(request) {
     // Common variables
-    var appToken = null;
     var self = this;
 
     ///////////////////////
@@ -267,28 +294,21 @@ server.prototype = {
       connection.res = function responseWS(payload) {
         log.debug('WS::responseWS:', payload);
         var res = {};
-        if (payload.extradata) {
+        if (payload && payload.extradata) {
           res = payload.extradata;
         }
-        if (payload.errorcode[0] > 299) {    // Out of the 2xx series
+        if (payload && payload.errorcode[0] > 299) {    // Out of the 2xx series
           if (!res.status) {
             res.status = payload.errorcode[0];
           }
           res.reason = payload.errorcode[1];
-        } else {
-          if (!res.status) {
-            res.status = 200;
-          }
         }
         connection.sendUTF(JSON.stringify(res));
       };
 
       if (message.type === 'utf8') {
         log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
-        if (message.utf8Data == 'PING') {
-          return connection.sendUTF('PONG');
-        }
-        var query = null;
+        var query = {};
         try {
           query = JSON.parse(message.utf8Data);
         } catch (e) {
@@ -316,7 +336,53 @@ server.prototype = {
             nodeConnector.resetAutoclose();
         });
 
+        function getPendingMessages(cb) {
+          cb = helpers.checkCallback(cb);
+          log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
+          dataManager.getNodeData(connection.uaid, function(err, data) {
+            if (err) {
+              log.error(log.messages.ERROR_WSERRORGETTINGNODE);
+              return cb(null);
+            }
+            // In this case, there are no nodes for this (strange, since it was just registered)
+            if (!data || !data.ch || !Array.isArray(data.ch)) {
+              log.error(log.messages.ERROR_WSNOCHANNELS);
+              return cb(null);
+            }
+            var channelsUpdate = [];
+            data.ch.forEach(function(channel) {
+              if (channel.vs) {
+                channelsUpdate.push({
+                  channelID: channel.ch,
+                  version: channel.vs
+                });
+              }
+            });
+            if (channelsUpdate.length > 0) {
+              cb(channelsUpdate);
+            }
+          });
+        }
+
         switch (query.messageType) {
+          case undefined:
+            log.debug('WS::onWSMessage --> PING package');
+            setTimeout(function() {
+              getPendingMessages(function(channelsUpdate) {
+                if (!channelsUpdate) {
+                  return connection.sendUTF('{}');
+                }
+                connection.res({
+                  errorcode: errorcodes.NO_ERROR,
+                  extradata: {
+                    messageType: 'notification',
+                    updates: channelsUpdate
+                  }
+                });
+              });
+            });
+            break;
+
           /*
             {
               messageType: "hello",
@@ -344,6 +410,8 @@ server.prototype = {
 
             // New UA registration
             log.debug('WS::onWSMessage --> HELLO - UA registration message');
+            //query parameters are validated while getting the connector in
+            // connectors/connector.js
             dataManager.registerNode(query, connection, function onNodeRegistered(error, res, data) {
               if (error) {
                 connection.res({
@@ -362,31 +430,33 @@ server.prototype = {
                 }
               });
 
-              // Recovery channels process
+              // If uaid do not have any channelIDs (first connection), we do not launch this processes.
               if (query.channelIDs) {
+                //Start recovery protocol
                 setTimeout(function recoveryChannels() {
-                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query);
-                  // TODO sync channels with client
-                });
-              }
+                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query.channelIDs);
+                  query.channelIDs.forEach(function(ch) {
+                    log.debug("WS::onWSMessage::recoveryChannels CHANNEL: ", ch);
 
-              // Pending notifications process
-              setTimeout(function pendingNotifications() {
-                log.debug('WS::onWSMessage::pendingNotifications --> Sending pending notifications');
-                dataManager.getNodeData(query.uaid, function(err, data) {
-                  if (err) {
-                    return;
-                  }
-                  var channelsUpdate = [];
-                  for (x in data.ch) {
-                    if (data.ch[x].vs) {
-                      channelsUpdate.push({
-                        channelID: data.ch[x].ch,
-                        version: data.ch[x].vs
-                      })
+                    var appToken = helpers.getAppToken(ch, connection.uaid);
+                    dataManager.registerApplication(appToken, ch, connection.uaid, null, function(error) {
+                      if (!error) {
+                        var notifyURL = helpers.getNotificationURL(appToken);
+                        log.debug('WS::onWSMessage::recoveryChannels --> OK registering channelID: ' + notifyURL);
+                      } else {
+                        log.debug('WS::onWSMessage::recoveryChannels --> Failing registering channelID');
+                      }
+                    });
+                  });
+                });
+
+                //Start sending pending notifications
+                setTimeout(function() {
+                  getPendingMessages(function(channelsUpdate) {
+                    log.debug("CHANNELS: ",channelsUpdate);
+                    if (!channelsUpdate) {
+                      return;
                     }
-                  }
-                  if (channelsUpdate.length > 0) {
                     connection.res({
                       errorcode: errorcodes.NO_ERROR,
                       extradata: {
@@ -394,27 +464,25 @@ server.prototype = {
                         updates: channelsUpdate
                       }
                     });
-                  }
+                  });
                 });
-              });
+              }
               log.debug('WS::onWSMessage --> OK register UA');
             });
-
-            //onNodeRegistered.bind(connection));
             break;
 
-            /**
-              {
-                messageType: "register",
-                channelId: <channelId>
-              }
-             */
+          /**
+            {
+              messageType: "register",
+              channelId: <channelId>
+            }
+           */
           case 'register':
             log.debug('WS::onWSMessage::register --> Application registration message');
 
             // Close the connection if the channelID is null
             var channelID = query.channelID;
-            if (!channelID) {
+            if (!channelID || typeof(channelID) !== 'string') {
               log.debug('WS::onWSMessage::register --> Null channelID');
               connection.res({
                 errorcode: errorcodesWS.NOT_VALID_CHANNELID,
@@ -429,7 +497,7 @@ server.prototype = {
 
             // Register and store in database
             log.debug('WS::onWSMessage::register uaid: ' + connection.uaid);
-            appToken = helpers.getAppToken(channelID, connection.uaid);
+            var appToken = helpers.getAppToken(channelID, connection.uaid);
             dataManager.registerApplication(appToken, channelID, connection.uaid, null, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
@@ -456,18 +524,17 @@ server.prototype = {
             });
             break;
 
-            /**
-              {
-                messageType: "unregister",
-                channelId: <channelId>
-              }
-             */
+          /**
+            {
+              messageType: "unregister",
+              channelId: <channelId>
+            }
+           */
           case 'unregister':
-            log.debug('WS::onWSMessage::unregister --> Application un-registration message');
-
             // Close the connection if the channelID is null
             var channelID = query.channelID;
-            if (!channelID) {
+            log.debug('WS::onWSMessage::unregister --> Application un-registration message for ' + channelID);
+            if (!channelID || typeof(channelID) !== 'string') {
               log.debug('WS::onWSMessage::unregister --> Null channelID');
               connection.res({
                 errorcode: errorcodesWS.NOT_VALID_CHANNELID,
@@ -480,7 +547,7 @@ server.prototype = {
               return connection.close();
             }
 
-            appToken = helpers.getAppToken(query.channelID, connection.uaid);
+            var appToken = helpers.getAppToken(query.channelID, connection.uaid);
             dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
@@ -517,10 +584,29 @@ server.prototype = {
             }
            */
           case 'ack':
-            // TODO: ----
-            if (query.messageId) {
-              dataManager.removeMessage(query.messageId, connection.uaid);
+            if(!Array.isArray(query.updates)) {
+              connection.res({
+                errorcode: errorcodesWS.NOT_VALID_CHANNELID,
+                extradata: { messageType: 'ack' }
+              });
+              connection.close();
+              return;
             }
+
+            query.updates.forEach(function(el) {
+              if (!el.channelID || typeof el.channelID !== 'string' ||
+                  !el.version || !helpers.isVersion(el.version)) {
+                connection.res({
+                  errorcode: errorcodesWS.NOT_VALID_CHANNELID,
+                  extradata: { messageType: 'ack',
+                               channelID: el.channelID,
+                               version: el.version}
+                });
+                return;
+              }
+
+              dataManager.ackMessage(connection.uaid, el.channelID, el.version);
+            });
             break;
 
           /////////////////////////////////
@@ -673,7 +759,6 @@ server.prototype = {
       }
     };
 
-    var self = this;
     this.onWSClose = function(reasonCode, description) {
       self.wsConnections--;
       dataManager.unregisterNode(connection.uaid);

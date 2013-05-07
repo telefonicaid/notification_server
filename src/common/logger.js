@@ -8,7 +8,8 @@
 
 var fs = require('fs'),
     logparams = require('../config.js').logger,
-    loglevel = require('./constants.js').loglevels;
+    loglevel = require('./constants.js').loglevels,
+    logtraces = require('./logtraces.js').logtraces;
 
 /**
  * Log levels:
@@ -27,6 +28,7 @@ var fs = require('fs'),
 function logger() {
   this.consoleOutput = logparams.CONSOLEOUTPUT;
   this.logLevel = logparams.LOGLEVEL;
+  this.messages = logtraces;
   this.debug('logger::logger --> Logger created but not initialized. Use init(logfile,appname,consoleOutput) method !');
 }
 
@@ -66,6 +68,22 @@ logger.prototype = {
       return;
     }
 
+    // Check if using standarized logtraces or not
+    if (typeof(message) === 'object') {
+      message = "ID: 0x" + message.id.toString(16) + " - " + message.m;
+      if (object) {
+        Object.keys(object).forEach(function(k) {
+          if (typeof(object[k]) === 'object') {
+            message = message.replace('::'+k, JSON.stringify(object[k]));
+          } else {
+            message = message.replace('::'+k, object[k])
+          }
+        });
+        object = null;
+      }
+    }
+
+    // Print trace
     var logmsg = '[' + this.appname + ' # ' + level + '] - {' + (new Date()) + ' (' + Date.now() + ')} - ' + message;
     if (object) {
       logmsg += ' ' + this.color_PURPLE + JSON.stringify(object);

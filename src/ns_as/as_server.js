@@ -8,7 +8,8 @@
 
 var log = require('../common/logger'),
     urlparser = require('url'),
-    consts = require('../config.js').consts,
+    config = require('../config.js'),
+    consts = config.consts,
     fs = require('fs'),
     uuid = require('node-uuid'),
     crypto = require('../common/cryptography'),
@@ -16,9 +17,11 @@ var log = require('../common/logger'),
     dataStore = require('../common/datastore'),
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../common/constants').errorcodes.AS,
-    pages = require('../common/pages.js');
+    pages = require('../common/pages.js'),
+    maintance = require('../common/maintance.js');
 
 var SimplePushAPI_v1 = require('./apis/SimplePushAPI_v1');
+var simplepush = new SimplePushAPI_v1();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -66,9 +69,9 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
   }
 
   //Reject notifications with big attributes
-  if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
+  if ((normalizedNotification.message.length > config.NS_AS.MAX_PAYLOAD_SIZE) ||
       (normalizedNotification.id.length > consts.MAX_ID_SIZE)) {
-    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + config.NS_AS.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
 
@@ -89,7 +92,10 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
 
     var id = uuid.v1();
     log.debug("NS_AS::onNewPushMessage --> Storing message for the '" + apptoken + "' apptoken with internal Id = '" + id + "'. Message:", normalizedNotification);
-    log.notify("Storing message for the '" + apptoken + "' apptoken. Internal Id: " + id);
+    log.notify(log.messages.NOTIFY_MSGSTORINGDB, {
+      "apptoken": apptoken,
+      "id": id
+    });
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
@@ -129,7 +135,10 @@ server.prototype = {
       self.msgbrokerready = true;
     });
     msgBroker.on('brokerdisconnected', function() {
-      log.critical('NS_AS::init --> MsgBroker DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+        "class": 'NS_AS',
+        "method": 'init'
+      });
       self.msgbrokerready = false;
     });
 
@@ -139,7 +148,10 @@ server.prototype = {
       self.ddbbready = true;
     });
     dataStore.on('ddbbdisconnected', function() {
-      log.critical('NS_AS::init --> DataStore DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_DBDISCONNECTED, {
+        "class": 'NS_AS',
+        "method": 'init'
+      });
       self.ddbbready = false;
     });
 
@@ -152,7 +164,7 @@ server.prototype = {
     // Check if we are alive
     setTimeout(function() {
       if (!self.ddbbready || !self.msgbrokerready)
-        log.critical('30 seconds has passed and we are not ready, closing');
+        log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
 
   },
@@ -210,7 +222,6 @@ server.prototype = {
     // Frontend for the Mozilla SimplePush API
     if (request.method === 'PUT') {
       log.debug('NS_AS::onHTTPMessage --> Received a PUT');
-      var simplepush = new SimplePushAPI_v1();
       request.on('data', function(body) {
         simplepush.processRequest(request, body, response);
       });
@@ -243,6 +254,19 @@ server.prototype = {
         } else {
           return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
         }
+        break;
+
+      case 'status':
+        // Return status mode to be used by load-balancers
+        response.setHeader('Content-Type', 'text/html');
+        if (maintance.getStatus()) {
+          response.statusCode = 503;
+          response.write('Under Maintance');
+        } else {
+          response.statusCode = 200;
+          response.write('OK');
+        }
+        return response.end();
         break;
 
       case 'notify':

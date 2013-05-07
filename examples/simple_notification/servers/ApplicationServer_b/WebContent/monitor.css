@@ -1,0 +1,64 @@
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  background-color: #999999;
+}
+
+.title {
+  text-align:center;
+  font-family:sans-serif;
+  color:white;
+}
+
+table {
+  margin-top: 35px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+td {
+  font-family: Helvetica, Geneva, Arial, sans-serif;
+  color: #000000;
+  background-color: #CCCCCC;
+}
+
+.header {
+  font-weight: bold;
+  color: #FFFFFF;
+  background-color: #444444; 
+}
+
+.alertPanel {
+  background-color: #ffffff;
+  -webkit-border-radius: 16px; -moz-border-radius: 16px; border-radius: 16px;
+  border-color: #bbbbbb;
+  border-width: 6px;
+  border-style: solid;
+  padding: 20px 10px;
+  text-align: center;
+}
+
+.alertText {
+  font-size: medium;
+  margin: 0;
+}
+
+.alertBg {
+  position:absolute;
+  background-color: #000000;
+  height:100%;
+  width:100%;
+  -moz-opacity:0.8;
+  opacity: 0.8;
+  filter:alpha(opacity=80);
+  -khtml-opacity: 0.8;
+}
+
+.alertContainer {
+  position:absolute;
+  width: 100%;
+  height: 100%;
+  display:-webkit-box; -webkit-box-pack:center; -webkit-box-align:center;
+  display: -moz-box; -moz-box-pack: center; -moz-box-align: center;
+  display: -ms-box; -ms-box-pack: center; -ms-box-align: center;
+  display: box; box-pack: center; box-align: center;
+}

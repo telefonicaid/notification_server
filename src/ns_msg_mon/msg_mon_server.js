@@ -41,7 +41,10 @@ monitor.prototype = {
 
     msgBroker.on('brokerdisconnected', function() {
       self.ready = false;
-      log.critical('ns_msg_monitor::init --> Broker DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+        "class": 'ns_msg_monitor',
+        "method": 'init'
+      });
     });
 
     // Connect to the message broker
@@ -52,7 +55,7 @@ monitor.prototype = {
     // Check if we are alive
     setTimeout(function() {
       if (!self.ready)
-        log.critical('30 seconds has passed and we are not ready, closing');
+        log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
   },
 
@@ -67,7 +70,7 @@ function onNewMessage(msg) {
   try {
     json = JSON.parse(msg);
   } catch (e) {
-    return log.error('MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check');
+    return log.error(log.messages.ERROR_MONBADJSON);
   }
   log.debug('MSG_mon::onNewMessage --> Message from the queue:', json);
 
@@ -97,7 +100,9 @@ function onNewMessage(msg) {
       handleDesktopNotification(json);
       break;
     default:
-      log.error('MSG_mon::onNewMessage --> Bad msgType: ', json);
+      log.error(log.messages.ERROR_MONBADMSGTYPE, {
+        'json': json
+      });
       return;
   }
 }
@@ -117,7 +122,7 @@ function handleDesktopNotification(json) {
 
 function onApplicationData(error, appData, json) {
   if (error) {
-    return log.error('MSG_mon::onApplicationData --> There was an error');
+    return log.error(log.messages.ERROR_MONERROR);
   }
 
   log.debug('MSG_mon::onApplicationData --> Application data recovered:', appData);
@@ -129,7 +134,11 @@ function onApplicationData(error, appData, json) {
 
 function onNodeData(nodeData, json) {
   if (!nodeData) {
-    log.error('MSG_mon::onNodeData --> No node info, FIX YOUR BACKEND!');
+    log.error(log.messages.ERROR_BACKENDERROR, {
+      "class": 'MSG_mon',
+      "method": 'onNodeData',
+      "extra": 'No node info'
+    });
     return;
   }
 
@@ -140,7 +149,10 @@ function onNodeData(nodeData, json) {
   }
 
   log.debug('MSG_mon::onNodeData --> Node connected:', nodeData);
-  log.notify('MSG_mon::onNodeData --> Notify into the messages queue of node ' + nodeData.si + ' # ' + json.messageId);
+  log.notify(log.messages.NOTIFY_MSGINSERTEDINTOQUEUE, {
+    serverId: nodeData.si,
+    messageId: json.messageId
+  });
   var body = {
     messageId: json.messageId,
     uaid: nodeData._id,

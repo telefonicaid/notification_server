@@ -53,7 +53,9 @@ connector_udp.prototype = {
 
   notify: function(msgList) {
     // Notify the handset with the associated Data
-    log.error('Connector UDP: Notify to ' + this.data.wakeup_hostport.ip + ' not valid with this connector');
+    log.error(log.messages.ERROR_CONNECTORERRORNOTVALID, {
+      "wakeupip": this.data.wakeup_hostport.ip
+    });
   }
 };
 

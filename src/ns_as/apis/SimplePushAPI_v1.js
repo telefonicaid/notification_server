@@ -1,3 +1,5 @@
+/* jshint node: true */
+
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -11,9 +13,10 @@ var dataStore = require('../../common/datastore'),
     log = require('../../common/logger'),
     errorcodes = require('../../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../../common/constants').errorcodes.AS,
-    uuid = require('node-uuid');
+    uuid = require('node-uuid'),
+    isVersion = require('../../common/helpers').isVersion;
 
-var kMozASFrontendVersion = 'v1';
+var kSimplePushASFrontendVersion = 'v1';
 
 var SimplePushAPI_v1 = function() {
   this.processRequest = function(request, body, response) {
@@ -21,21 +24,21 @@ var SimplePushAPI_v1 = function() {
     if (URI.length < 3) {
       response.statusCode = 404;
       response.end('{ reason: "Not enough path data"}');
-      log.debug('NS_UA_Moz_v1::processMozRequest --> Not enough path');
+      log.debug('NS_UA_SimplePush_v1::processRequest --> Not enough path');
       return;
     }
 
-    if (URI[1] !== kMozASFrontendVersion) {
+    if (URI[1] !== kSimplePushASFrontendVersion) {
       response.statusCode = 400;
       response.end('{ reason: "Protocol version not supported"}');
-      log.debug('NS_UA_Moz_v1::processMozRequest --> Version not supported, received: ' + URI[1]);
+      log.debug('NS_UA_SimplePush_v1::processRequest --> Version not supported, received: ' + URI[1]);
       return;
     }
 
     if (URI[2] !== 'notify') {
       response.statusCode = 404;
       response.end('{ reason: "API not known"}');
-      log.debug('NS_UA_Moz_v1::processMozRequest --> API call not known, received: ' + URI[2]);
+      log.debug('NS_UA_SimplePush_v1::processRequest --> API call not known, received: ' + URI[2]);
       return;
     }
 
@@ -43,7 +46,7 @@ var SimplePushAPI_v1 = function() {
     if (!appToken) {
       response.statusCode = 404;
       response.end('{ reason: "Not enough path data"}');
-      log.debug('NS_UA_Moz_v1::processMozRequest --> Not enough path');
+      log.debug('NS_UA_SimplePush_v1::processRequest --> Not enough path');
       return;
     }
 
@@ -51,22 +54,32 @@ var SimplePushAPI_v1 = function() {
     if (versions[0] !== 'version') {
       response.statusCode = 404;
       response.end('{ reason: "Bad body"}');
-      log.debug('NS_UA_Moz_v1::processMozRequest --> Bad body, received lhs: ' + versions[0]);
+      log.debug('NS_UA_SimplePush_v1::processRequest --> Bad body, received lhs: ' + versions[0]);
       return;
     }
 
-    //Check version TODO, possible function?
-    if (!versions[1]) {
+    var version = versions[1];
+    if (!isVersion(version)) {
       response.statusCode = 404;
       response.end('{ reason: "Bad version"}');
-      log.debug('NS_UA_Moz_v1::processMozRequest --> Bad body, received lhs: ' + versions[0]);
+      log.debug('NS_UA_SimplePush_v1::processRequest --> Bad version, received rhs: ' + version);
       return;
     }
 
     //Now, we are safe to start using the path and data
-    log.notify('appToken=' + appToken + ' -- version=' + versions[1]);
+    log.notify(log.messages.NOTIFY_APPTOKEN_VERSION, {
+      'appToken': appToken,
+      'version': version
+    });
     dataStore.getChannelIDForAppToken(appToken, function(error, channelID) {
-      var msg = dataStore.newVersion(appToken, channelID, versions[1]);
+      // If there is no channelID associated with a appToken,
+      // fool the sender with a OK response, but nothing is done here.
+      if (!channelID) {
+        response.statusCode = 200;
+        response.end('{}');
+        return;
+      }
+      var msg = dataStore.newVersion(appToken, channelID, version);
       msgBroker.push('newMessages', msg);
       response.statusCode = 200;
       response.end('{}');
