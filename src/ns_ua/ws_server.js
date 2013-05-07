@@ -54,7 +54,10 @@ server.prototype = {
 
       cluster.on('exit', function(worker, code, signal) {
         if (code !== 0) {
-          log.error('worker ' + worker.process.pid + ' closed unexpectedly with code ' + code);
+          log.error(log.messages.ERROR_WORKERERROR, {
+            "pid": worker.process.pid,
+            "code": code
+          });
         } else {
           log.info('worker ' + worker.process.pid + ' exit');
         }
@@ -81,6 +84,8 @@ server.prototype = {
         keepaliveInterval: config.websocket_params.keepaliveInterval,
         dropConnectionOnKeepaliveTimeout: config.websocket_params.dropConnectionOnKeepaliveTimeout,
         keepaliveGracePeriod: config.websocket_params.keepaliveGracePeriod,
+        maxReceivedMessageSize: config.websocket_params.MAX_MESSAGE_SIZE,
+        assembleFragments: true,
         autoAcceptConnections: false    // false => Use verify originIsAllowed method
       });
       this.wsServer.on('request', this.onWSRequest.bind(this));
@@ -107,15 +112,18 @@ server.prototype = {
           // If we don't have enough data, return
           if (!json.uaid ||
               !json.payload) {
-            return log.error('WS::queue::onNewMessage --> Not enough data!');
+            return log.error(log.messages.ERROR_WSNODATA);
           }
           log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
-          log.notify('Message with id ' + json.messageId + ' sent to ' + json.uaid);
+          log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
+            messageId: json.messageId,
+            uaid: json.uaid
+          });
           dataManager.getNode(json.uaid, function(nodeConnector) {
             if (nodeConnector) {
               var notification = json.payload;
 
-              // Not send the appToken
+              // Not send the appToken or other attributes
               //TODO: Not insert the appToken into the MQ
               /**
                 {
@@ -130,6 +138,7 @@ server.prototype = {
               */
               delete notification.appToken;
               delete notification.app;
+              delete notification.new;
               if (notification.ch) {
                 notification.channelID = notification.ch;
                 delete notification.ch;
@@ -158,7 +167,10 @@ server.prototype = {
         self.ready = true;
       });
       msgBroker.on('brokerdisconnected', function() {
-        log.critical('ns_ws::init --> Broker DISCONNECTED!!');
+        log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+          "class": 'ns_ws',
+          "method": 'init'
+        });
       });
 
       //Connect to msgBroker
@@ -169,14 +181,16 @@ server.prototype = {
       //Check if we are alive
       setTimeout(function() {
         if (!self.ready)
-          log.critical('30 seconds has passed and we are not ready, closing');
+          log.critical(log.messages.CRITICAL_NOTREADY);
       }, 30 * 1000); //Wait 30 seconds
     }
 
     // Check ulimit
     helpers.getMaxFileDescriptors(function(error,ulimit) {
       if (error) {
-        return log.error('ulimit error: ' + error);
+        return log.error(log.messages.ERROR_ULIMITERROR, {
+          "error": error
+        });
       }
       log.debug('ulimit = ' + ulimit);
       counters.set('wsMaxConnections', ulimit - 200);
@@ -199,7 +213,7 @@ server.prototype = {
         if (consts.PREPRODUCTION_MODE) {
           this.setHeader('Content-Type', 'text/plain');
           if (this.statusCode == 200) {
-                this.write('{"status":"ACCEPTED"}');
+            this.write('{"status":"ACCEPTED"}');
           } else {
             this.write('{"status":"ERROR", "reason":"' + errorCode[1] + '"}');
           }
@@ -248,7 +262,6 @@ server.prototype = {
   //////////////////////////////////////////////
   onWSRequest: function(request) {
     // Common variables
-    var appToken = null;
     var self = this;
 
     ///////////////////////

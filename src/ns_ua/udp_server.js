@@ -9,7 +9,9 @@
 var log = require('../common/logger.js'),
     msgBroker = require('../common/msgbroker.js'),
     mn = require('../common/mobilenetwork.js'),
-    http = require('http');
+    http = require('http'),
+    https = require('https'),
+    urlparser = require('url');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
@@ -30,7 +32,7 @@ function onNewMessage(message) {
    * {
    *  "uaid": "<UAID>",
    *  "dt": {
-   *    "interface": {
+   *    "wakeup_hostport": {
    *      "ip": "IP",
    *      "port": "PORT"
    *    },
@@ -52,27 +54,30 @@ function onNewMessage(message) {
   log.debug('UDP::queue::onNewMessage --> messageData =', messageData);
   if (!messageData.uaid ||
      !messageData.dt ||
-     !messageData.dt.interface ||
-     !messageData.dt.interface.ip ||
-     !messageData.dt.interface.port ||
+     !messageData.dt.wakeup_hostport ||
+     !messageData.dt.wakeup_hostport.ip ||
+     !messageData.dt.wakeup_hostport.port ||
      !messageData.dt.mobilenetwork ||
      !messageData.dt.mobilenetwork.mcc ||
      !messageData.dt.mobilenetwork.mnc) {
-    return log.error('UDP::queue::onNewMessage --> Not enough data to find server');
+    return log.error(log.messages.ERROR_UDPNODATA);
   }
 
   // Notify the hanset with the associated Data
-  log.notify('Notifying node: ' + messageData.uaid +
-      ' to ' + messageData.dt.interface.ip +
-      ':' + messageData.dt.interface.port +
-      ' on network ' + messageData.dt.mobilenetwork.mcc +
-      '-' + messageData.dt.mobilenetwork.mnc +
-      ' and using protocol: ' + messageData.dt.protocol
-  );
+  log.notify(log.messages.NOTIFY_NOTIFINGNODE, {
+    uaid: messageData.uaid,
+    wakeupip: messageData.dt.wakeup_hostport.ip,
+    wakeupport: messageData.dt.wakeup_hostport.port,
+    mcc: messageData.dt.mobilenetwork.mcc,
+    mnc: messageData.dt.mobilenetwork.mnc,
+    protocol: messageData.dt.protocol
+  });
 
   mn.getNetwork(messageData.dt.mobilenetwork.mcc, messageData.dt.mobilenetwork.mnc, function(error, op) {
     if (error) {
-      log.error('UDP::queue::onNewMessage --> Error getting the operator from the DB: ' + error);
+      log.error(log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
+        "error": error
+      });
       return;
     }
     if (!op || !op.wakeup) {
@@ -82,31 +87,41 @@ function onNewMessage(message) {
     log.debug('onNewMessage: UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
 
     // Send HTTP Notification Message
-    var address = {};
-    address.host = op.wakeup.split(':')[0] || null;
-    address.port = op.wakeup.split(':')[1] || null;
+    var address = urlparser.parse(op.wakeup);
 
-    if (!address.host || !address.port) {
-      log.error('UDP:queue:onNewMessage --> Bad address to notify', address);
+    if (!address.href) {
+      log.error(log.messages.ERROR_UDPBADADDRESS, {
+        "address": address
+      });
       return;
     }
 
-    var options = {
-      host: address.host,
-      port: address.port,
-      path: '/?ip=' + messageData.dt.interface.ip + '&port=' + messageData.dt.interface.port + '&proto=' + messageData.dt.protocol,
-      method: 'GET'
-    };
-
-    var req = http.request(options, function(res) {
-      log.debug('Message status: ' + res.statusCode);
-    });
-
-    req.on('error', function(e) {
-      log.debug('problem with request: ' + e.message);
-    });
-
-    req.end();
+    var protocolHandler = null;
+    switch (address.protocol) {
+    case 'http:':
+      protocolHandler = http;
+      break;
+    case 'https:':
+      protocolHandler = https;
+      break;
+    default:
+      protocolHandler = null;
+    }
+    if (!protocolHandler) {
+      log.debug('UDP:queue:onNewMessage --> Non valid URL (invalid protocol)');
+      return;
+    }
+    var req = protocolHandler.get(address.href +
+      '/?ip=' + messageData.dt.wakeup_hostport.ip +
+      '&port=' + messageData.dt.wakeup_hostport.port +
+      '&proto=' + messageData.dt.protocol,
+      function(res) {
+        res.on('data', function(d) {
+          log.debug('UDP:WakeUpConnection response: ' + d);
+        });
+      }).on('error', function(e) {
+        log.debug('UDP:WakeUpConnection error: ' + e);
+      });
   }.bind(this));
 }
 
@@ -139,7 +154,10 @@ server.prototype = {
 
     msgBroker.on('brokerdisconnected', function() {
       self.ready = false;
-      log.critical('ns_udp::init --> Broker DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+        "class": 'ns_udp',
+        "method": 'init'
+      });
     });
 
     // Subscribe to the UDP common Queue
@@ -150,7 +168,7 @@ server.prototype = {
     //Check if we are alive
     setTimeout(function() {
       if (!self.ready)
-        log.critical('30 seconds has passed and we are not ready, closing');
+        log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
 
   },

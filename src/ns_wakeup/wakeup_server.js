@@ -11,7 +11,8 @@ var log = require('../common/logger.js'),
     fs = require('fs'),
     consts = require('../config.js').consts,
     dgram = require('dgram'),
-    pages = require('../common/pages.js');
+    pages = require('../common/pages.js'),
+    maintance = require('../common/maintance.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -57,7 +58,9 @@ server.prototype = {
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
     var msg = '';
-    log.notify('NS_WakeUp::onHTTPMessage --> Received request for ' + request.url);
+    log.notify(log.messages.NOTIFY_RECEIVEDREQUESTFORURL, {
+      url: request.url
+    });
     if(request.url === "/about") {
       if(consts.PREPRODUCTION_MODE) {
         try {
@@ -84,6 +87,19 @@ server.prototype = {
         return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
       }
     }
+    if(request.url === "/status") {
+      // Return status mode to be used by load-balancers
+      response.setHeader('Content-Type', 'text/html');
+      if (maintance.getStatus()) {
+        response.statusCode = 503;
+        response.write('Under Maintance');
+      } else {
+        response.statusCode = 200;
+        response.write('OK');
+      }
+      return response.end();
+    }
+
     var WakeUpHost = this.parseURL(request.url).parsedURL.query;
     if (!WakeUpHost.ip || !WakeUpHost.port) {
       log.debug('NS_WakeUp::onHTTPMessage --> URL Format error - discarding');
@@ -129,7 +145,10 @@ server.prototype = {
         });
         tcp4Client.on('error', function(e) {
           log.debug('TCP Client error ' + JSON.stringify(e));
-          log.notify('WakeUp TCP packet to ' + WakeUpHost.ip + ':' + WakeUpHost.port + ' - FAILED');
+          log.notify(log.messages.NOTIFY_WAKEUPPACKAGEFAILED, {
+            ip: WakeUpHost.ip,
+            port: WakeUpHost.port
+          });
 
           response.statusCode = 404;
           response.setHeader('Content-Type', 'text/plain');
@@ -138,7 +157,10 @@ server.prototype = {
         });
         tcp4Client.on('end', function() {
           log.debug('TCP Client disconected');
-          log.notify('WakeUp TCP packet succesfully sent to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
+          log.notify(log.messages.NOTIFY_WAKEUPPACKAGEOK, {
+            ip: WakeUpHost.ip,
+            port: WakeUpHost.port
+          });
 
           response.statusCode = 200;
           response.setHeader('Content-Type', 'text/plain');
@@ -157,7 +179,10 @@ server.prototype = {
               log.info('Error sending UDP Datagram to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
             }
             else {
-              log.notify('WakeUp Datagram sent to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
+              log.notify(log.messages.NOTIFY_WAKEUPPACKAGEUDPDGRAMSENT, {
+                ip: WakeUpHost.ip,
+                port: WakeUpHost.port
+              });
               udp4Client.close();
             }
           });
@@ -169,7 +194,7 @@ server.prototype = {
         break;
 
       default:
-        log.error('Protocol not supported !');
+        log.error(log.messages.ERROR_WAKEUPPROTOCOLNOTSUPPORTED);
         response.statusCode = 404;
         response.setHeader('Content-Type', 'text/plain');
         response.write('{"status": "ERROR", "reason": "Protocol not supported"}');

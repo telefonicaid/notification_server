@@ -9,12 +9,14 @@
 var pages = require('../../common/pages.js'),
     log = require('../../common/logger'),
     consts = require('../../config.js').consts,
-    errorcodes = require('../../common/constants').errorcodes.GENERAL;
+    errorcodes = require('../../common/constants').errorcodes.GENERAL,
+    maintance = require('../../common/maintance.js');
 
 var infoAPI = function() {
   this.processRequest = function(request, body, response, path) {
     log.debug("infoAPI");
-    if (path[1] === 'about') {
+    switch (path[1]) {
+    case 'about':
       if (consts.PREPRODUCTION_MODE) {
         try {
           var p = new pages();
@@ -40,7 +42,21 @@ var infoAPI = function() {
         response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
       }
       return true;
+
+    case 'status':
+      // Return status mode to be used by load-balancers
+      response.setHeader('Content-Type', 'text/html');
+      if (maintance.getStatus()) {
+        response.statusCode = 503;
+        response.write('Under Maintance');
+      } else {
+        response.statusCode = 200;
+        response.write('OK');
+      }
+      response.end();
+      return true;
     }
+
     return false;
   };
 };

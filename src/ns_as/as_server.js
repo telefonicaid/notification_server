@@ -8,14 +8,17 @@
 
 var log = require('../common/logger'),
     urlparser = require('url'),
-    consts = require('../config.js').consts,
+    config = require('../config.js'),
+    consts = config.consts,
     fs = require('fs'),
     uuid = require('node-uuid'),
     crypto = require('../common/cryptography'),
     msgBroker = require('../common/msgbroker'),
     dataStore = require('../common/datastore'),
     errorcodes = require('../common/constants').errorcodes.GENERAL,
-    errorcodesAS = require('../common/constants').errorcodes.AS;
+    errorcodesAS = require('../common/constants').errorcodes.AS,
+    pages = require('../common/pages.js'),
+    maintance = require('../common/maintance.js');
 
 var apis = [];
 apis[0] = require('./apis/SimplePushAPI_v1');
@@ -68,9 +71,9 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
   }
 
   //Reject notifications with big attributes
-  if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
+  if ((normalizedNotification.message.length > config.NS_AS.MAX_PAYLOAD_SIZE) ||
       (normalizedNotification.id.length > consts.MAX_ID_SIZE)) {
-    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + config.NS_AS.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
     return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
 
@@ -91,7 +94,10 @@ function onNewPushMessage(notification, certificate, apptoken, callback) {
 
     var id = uuid.v1();
     log.debug("NS_AS::onNewPushMessage --> Storing message for the '" + apptoken + "' apptoken with internal Id = '" + id + "'. Message:", normalizedNotification);
-    log.notify("Storing message for the '" + apptoken + "' apptoken. Internal Id: " + id);
+    log.notify(log.messages.NOTIFY_MSGSTORINGDB, {
+      "apptoken": apptoken,
+      "id": id
+    });
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
@@ -131,7 +137,10 @@ server.prototype = {
       self.msgbrokerready = true;
     });
     msgBroker.on('brokerdisconnected', function() {
-      log.critical('NS_AS::init --> MsgBroker DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+        "class": 'NS_AS',
+        "method": 'init'
+      });
       self.msgbrokerready = false;
     });
 
@@ -141,7 +150,10 @@ server.prototype = {
       self.ddbbready = true;
     });
     dataStore.on('ddbbdisconnected', function() {
-      log.critical('NS_AS::init --> DataStore DISCONNECTED!!');
+      log.critical(log.messages.CRITICAL_DBDISCONNECTED, {
+        "class": 'NS_AS',
+        "method": 'init'
+      });
       self.ddbbready = false;
     });
 
@@ -154,7 +166,7 @@ server.prototype = {
     // Check if we are alive
     setTimeout(function() {
       if (!self.ddbbready || !self.msgbrokerready)
-        log.critical('30 seconds has passed and we are not ready, closing');
+        log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
 
   },
@@ -224,6 +236,7 @@ server.prototype = {
         return response.res(errorcodesAS.BAD_URL);
       }
     }
+
     if (request.method == 'PUT' || request.method == 'POST') {
       request.on('data', function(body) {
         processMsg(request, body, response, path);

@@ -89,7 +89,8 @@ var MsgBroker = function() {
       port: queuesConf[i].port,
       host: queuesConf[i].host,
       login: queuesConf[i].login,
-      password: queuesConf[i].password
+      password: queuesConf[i].password,
+      heartbeat: queuesConf[i].heartbeat
     });
 
     // Events for this queue
@@ -100,22 +101,28 @@ var MsgBroker = function() {
     }).bind(this));
 
     conn.on('close', (function() {
+      var index = this.queues.indexOf(conn);
+      if (index >= 0) {
+        this.queues.splice(index, 1);
+      }
       if (!gControlledClose) {
         this.emit('queuedisconnected');
-        log.error('msgbroker::queue --> one message broker disconnected!!!');
+        log.error(log.messages.ERROR_MBERRORBROKERDISCONNECTED);
       }
+    }).bind(this));
+
+    conn.on('error', (function(error) {
+      log.error(log.messages.ERROR_MBCONNECTIONERROR, {
+        "error": error
+      });
       var index = this.queues.indexOf(conn);
       if (index >= 0) {
         this.queues.splice(index, 1);
       }
     }).bind(this));
 
-    conn.on('error', (function(error) {
-      log.error('msgbroker::queue.onerror --> There was an error in one of the connections: ' + error);
-      var index = this.queues.indexOf(conn);
-      if (index >= 0) {
-        this.queues.splice(index, 1);
-      }
+    conn.on('heartbeat', (function() {
+      log.debug('msgbroker::heartbeat');
     }).bind(this));
   };
 };

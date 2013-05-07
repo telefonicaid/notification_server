@@ -24,8 +24,13 @@ exports.servers = {
 
 /********************* Constants********************************************/
 exports.consts = {
-  MAX_PAYLOAD_SIZE: 1024,
+  MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
+
+  /**
+   * Default Maximum Time To Live
+   * If no provided by AS this TTL will be assigned to the message
+   */
   MAX_TTL: 2592000, // 30 days, in seconds (60*60*24*30)
 
   /**
@@ -74,24 +79,28 @@ exports.logger = {
 /********************* Common Queue ***********************************/
 /**
  * Choose your host, port and other self-explanatory options
+ * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
     host: '127.0.0.1',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
+    password: 'guest',
+    heartbeat: 1200
   },
   {
     host: '127.0.0.1',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
+    password: 'guest',
+    heartbeat: 1200
   },
   {
     host: '127.0.0.1',
     port: 5672, //AMQP default port
     login: 'guest',
-    password: 'guest'
+    password: 'guest',
+    heartbeat: 1200
   }
 ];
 
@@ -108,7 +117,8 @@ exports.queue = [{
     ["owd-push-qa-be2", 27017]
   ],
   ddbbname: "push_notification_server",
-  replicasetName: "Server_Push"
+  replicasetName: "Server_Push",
+  keepalive: 1200
 };*/
 
 //DDBB defaults to use a single MongoDB instance
@@ -117,7 +127,8 @@ exports.ddbbsettings = {
     ["127.0.0.1", 27017]
   ],
   ddbbname: "push_notification_server",
-  replicasetName: null
+  replicasetName: null,
+  keepalive: 1200
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -127,6 +138,11 @@ exports.ddbbsettings = {
 /********************* NS_AS *****************************************/
 exports.NS_AS = {
   logfile: "NS_AS.log",
+
+  /**
+   * Maximum size for a HTTP message (20 KiB)
+   */
+  MAX_MESSAGE_SIZE: 20480,
 
   /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
@@ -155,6 +171,11 @@ exports.NS_UA_WS = {
    * Number of processes which shall run in parallel
    */
   numProcesses: numCPUs,
+
+  /**
+   * Maximum size for a WebSocket message (20 KiB)
+   */
+  MAX_MESSAGE_SIZE: 0x5000, //20480 bytes
 
   /**
    * Binding interfaces and ports

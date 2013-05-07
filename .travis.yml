@@ -11,6 +11,7 @@ branches:
   only:
     - develop
     - master
+    - v1-fix
 
 before_install:
   - npm rebuild

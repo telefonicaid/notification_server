@@ -26,6 +26,11 @@ var DataStore = function() {
     this.callbacks.push(helpers.checkCallback(callback));
   },
 
+  /*
+   * MongoDB.Server => https://github.com/mongodb/node-mongodb-native/blob/1.3-dev/lib/mongodb/connection/server.js#L16
+   * MongoDB.Db => https://github.com/mongodb/node-mongodb-native/blob/1.3-dev/lib/mongodb/db.js#L37
+   * MongoDB.ReplSet => https://github.com/mongodb/node-mongodb-native/blob/1.3-dev/lib/mongodb/connection/repl_set.js#L24
+   */
   this.init = function() {
     log.info('datastore::starting --> MongoDB data store loading.');
     events.EventEmitter.call(this);
@@ -34,18 +39,27 @@ var DataStore = function() {
       //Filling the replicaset data
       var servers = [];
       ddbbsettings.machines.forEach(function(machine) {
-        servers.push(new mongodb.Server(machine[0], machine[1], { auto_reconnect: true }));
+        servers.push(new mongodb.Server(machine[0], machine[1], {
+          auto_reconnect: true,
+          socketOptions: {
+            keepalive: ddbbsettings.keepalive
+          }
+        }));
       });
       var replSet = new mongodb.ReplSetServers(servers,
         {
           rs_name: ddbbsettings.replicasetName,
           read_secondary: true,
-          w: 1
+          socketOptions: {
+            keepalive: ddbbsettings.keepalive
+          }
         }
       );
 
       // Connection to MongoDB
-      this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet);
+      this.db = new mongodb.Db(ddbbsettings.ddbbname, replSet, {
+        w: 1
+      });
     } else {
       this.db = new mongodb.Db(
         ddbbsettings.ddbbname,
@@ -54,16 +68,25 @@ var DataStore = function() {
           ddbbsettings.machines[0][1], //port
           {
             auto_reconnect: true,
-            w: 1
+            socketOptions: {
+              keepalive: ddbbsettings.keepalive
+            }
           }
-        )
+        ),
+        {
+          w: 1
+        }
       );
     }
 
     // Establish connection to db
     this.db.open(function(err, db) {
       if (err) {
-        log.critical('datastore::starting --> Error connecting to MongoDB ! - ' + err);
+        log.critical(log.messages.CRITICAL_DBCONNECTIONERROR, {
+          "class": 'datastore',
+          "method": 'starting',
+          "error": err
+        });
         this.close();
         return;
       }
@@ -88,7 +111,10 @@ var DataStore = function() {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::registerNode --> There was a problem opening the nodes collection -- ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'registerNode',
+          "error": err
+        });
         callback(err);
         return;
       }
@@ -105,7 +131,9 @@ var DataStore = function() {
         { safe: true, upsert: true },
         function(err, res) {
           if (err) {
-            log.error('datastore::registerNode --> Error inserting/updating node into MongoDB -- ' + err);
+            log.error(log.messages.ERROR_DSERRORINSERTINGNODEINDB, {
+              "error": err
+            });
             callback(err);
             return;
           }
@@ -124,7 +152,10 @@ var DataStore = function() {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::unregisterNode --> There was a problem opening the nodes collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'unregisterNode',
+          "error": err
+        });
         callback(err);
         return;
       }
@@ -139,7 +170,9 @@ var DataStore = function() {
         { safe: true },
         function(err, data) {
           if (err) {
-            log.error('dataStore::unregisterNode --> There was a problem removing the node: ' + err);
+            log.error(log.messages.ERROR_DSERRORREMOVINGNODE, {
+              "error": err
+            });
             return callback(err);
           }
           log.debug('datastore::unregisterNode --> Node removed from MongoDB');
@@ -158,13 +191,18 @@ var DataStore = function() {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getNodeData --> there was a problem opening the nodes collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'getNodeData',
+          "error": err
+        });
         callback(err);
         return;
       }
       collection.findOne({ _id: uaid }, function(err, data) {
       if (err) {
-        log.error('datastore::getNodeData --> Error finding node into MongoDB: ' + err);
+          log.error(log.messages.ERROR_DSERRORFINDINGNODE, {
+            "error": err
+          });
           callback(err);
           return;
         }
@@ -197,19 +235,27 @@ var DataStore = function() {
           { safe: true, upsert: true },
           function(err, data) {
             if (err) {
-              log.error('datastore::registerApplication --> Error inserting application into MongoDB: ' + err);
+              log.error(log.messages.ERROR_DSERRORINSERTINGAPPINDB, {
+                "error": err
+              });
             } else {
               log.debug('datastore::registerApplication --> Application inserted into MongoDB');
             }
           });
       } else {
-        log.error('datastore::registerApplication --> there was a problem opening the apps collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'registerApplication',
+          "error": err
+        });
       }
     });
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('dataStore::registerApplication --> Error opening nodes collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'registerApplication',
+          "error": err
+        });
         callback(err);
         return;
       }
@@ -226,7 +272,10 @@ var DataStore = function() {
         { safe: true, upsert: true },
         function(err, data) {
           if (err) {
-            log.error('dataStore::registerApplication --> Error inserting message to node: ' + err);
+            log.error(log.messages.ERROR_DSERRORINSERTINGMSGTONODE, {
+              "method": registerApplication,
+              "error": err
+            });
             callback(err);
             return;
           }
@@ -244,7 +293,10 @@ var DataStore = function() {
     // Remove from MongoDB
     this.db.collection('apps', function(err, collection) {
       if (err) {
-        log.error('dataStore::unregisterApplication --> Error opening apps collection');
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'unregisterApplication',
+          "error": err
+        });
         return;
       }
       collection.update(
@@ -257,7 +309,9 @@ var DataStore = function() {
         { safe: true },
         function(err, data) {
           if (err) {
-            log.error('dataStore::unregisterApplication --> Some error occured ' + err);
+            log.error(log.messages.ERROR_DSUNDETERMINEDERROR, {
+              "error": err
+            });
             return callback(err);
           }
           if (!data) {
@@ -271,7 +325,10 @@ var DataStore = function() {
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::newVersion --> There was a problem opening the nodes collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'unregisterApplication',
+          "error": err
+        });
         return;
       }
       collection.findOne(
@@ -283,9 +340,19 @@ var DataStore = function() {
         },
         function(err, data) {
           if (err) {
-            log.error('dataStore::unregisterApplication --> Error locating channel for appToken: ' + appToken);
+            log.error(log.messages.ERROR_DSERRORLOCATINGCHANNEL4APPTOKEN, {
+              "method": 'newVersion',
+              "apptoken": appToken
+            });
             return callback(err);
           }
+
+          //Check if we have all data.
+          if (!data || !data.ch || !Array.isArray(data.ch)) {
+            log.error(log.messages.ERROR_DSNOTENOUGHNODESINFO);
+            return callback('Error, not enough data');
+          }
+
           collection.update(
             {
               "ch.app": appToken
@@ -302,8 +369,9 @@ var DataStore = function() {
               }
               log.debug('datastore::unregisterApplication --> Application removed from node data');
               return callback(null);
-            })
-        });
+          });
+        }
+      );
     });
 
     //Remove the appToken if the nodelist (no) is empty
@@ -313,7 +381,10 @@ var DataStore = function() {
   this.removeApplicationIfEmpty = function(appToken) {
     this.db.collection('apps', function(err, collection) {
       if (err) {
-        log.error('datastore::removeApplicationIfEmpty --> there was a problem opening the apps collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'removeApplicationIfEmpty',
+          "error": err
+        });
         return;
       }
       collection.findAndModify(
@@ -345,7 +416,10 @@ var DataStore = function() {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getApplicationsForUA --> there was a problem opening the apps collection');
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'getApplicationsForUA',
+          "error": err
+        });
         callback(err);
       }
       collection.find(
@@ -353,7 +427,9 @@ var DataStore = function() {
         { ch: true }
       ).toArray(function(err, data) {
         if (err) {
-          log.error('datastore::getApplicationsForUA --> Error finding applications from MongoDB: ' + err);
+          log.error(log.messages.ERROR_DSERRORFINDINGAPPS, {
+            "error": err
+          });
           return callback(err);
         }
         if (data.length) {
@@ -376,7 +452,10 @@ var DataStore = function() {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getApplication --> there was a problem opening the apps collection');
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'getApplication',
+          "error": err
+        });
         callback(err);
         return;
       }
@@ -392,7 +471,9 @@ var DataStore = function() {
         }
       ).toArray(function(err, data) {
         if (err) {
-          log.error('datastore::getApplication --> Error finding application from MongoDB: ' + err);
+          log.error(log.messages.ERROR_DSERRORFINDINGAPP, {
+            "error": err
+          });
           callback(err);
           return;
         }
@@ -414,13 +495,19 @@ var DataStore = function() {
     this.db.collection('apps', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getCertificateApplication --> there was a problem opening the apps collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'getCertificateApplication',
+          "error": err
+        });
         callback(err);
         return;
       }
       collection.findOne({ _id: channeID }, function(err, data) {
         if (err) {
-          log.error('datastore::getCertificateApplication --> There was a problem finding the certificate - ' + err);
+          log.error(log.messages.ERROR_DSERRORFINDINGCERTIFICATE, {
+            "method": 'getCertificateApplication',
+            "error": err
+          });
           callback(err);
           return;
         }
@@ -443,22 +530,28 @@ var DataStore = function() {
 
   this.getChannelIDForAppToken = function(apptoken, callback) {
     var apptoken = apptoken.toString();
-    log.debug('datastore::getChannelIDForAppToken --> Going to find the certificate for the appToken ' + apptoken);
+    log.debug('datastore::getChannelIDForAppToken --> Going to find the channelID for the appToken ' + apptoken);
     this.db.collection('apps', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getChannelIDForAppToken --> there was a problem opening the apps collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'getChannelIDForAppToken',
+          "error": err
+        });
         callback(err);
         return;
       }
       collection.findOne({ _id: apptoken }, function(err, data) {
         if (err) {
-          log.error('datastore::getChannelIDForAppToken --> There was a problem finding the certificate - ' + err);
+          log.error(log.messages.ERROR_DSERRORFINDINGCERTIFICATE, {
+            "method": 'getChannelIDForAppToken',
+            "error": err
+          });
           callback(err);
           return;
         }
         if (!data) {
-          log.debug('There are no appToken=' + apptoken + ' in the DDBB');
+          log.debug('datastore::getChannelIDForAppToken --> There are no appToken=' + apptoken + ' in the DDBB');
           callback(null, null);
           return;
         }
@@ -478,7 +571,10 @@ var DataStore = function() {
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::newMessage --> There was a problem opening the nodes collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'newMessage',
+          "error": err
+        });
         return;
       }
       collection.findAndModify(
@@ -493,7 +589,10 @@ var DataStore = function() {
         },
         function(err, data) {
           if (err) {
-            log.error('dataStore::newMessage --> Error inserting message to node: ' + err);
+            log.error(log.messages.ERROR_DSERRORINSERTINGMSGTONODE, {
+              "method": newMessage,
+              "error": err
+            });
           } else {
             log.debug('dataStore::newMessage --> Message inserted');
           }
@@ -512,10 +611,14 @@ var DataStore = function() {
     msg.app = appToken;
     msg.ch = channelID;
     msg.vs = version;
+    msg.new = 1;
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::newVersion --> There was a problem opening the nodes collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'newVersion',
+          "error": err
+        });
         return;
       }
       collection.findOne(
@@ -527,7 +630,14 @@ var DataStore = function() {
         },
         function(err, data) {
           if (err) {
-            log.error('dataStore::newVersion --> Error locating channel for appToken: ' + appToken);
+            log.error(log.messages.ERROR_DSERRORLOCATINGCHANNEL4APPTOKEN, {
+              "method": 'newVersion',
+              "apptoken": appToken
+            });
+            return;
+          }
+          if (!data) {
+            log.debug('dataStore::newVersion --> No data recovered for appToken: ' + appToken);
             return;
           }
           var uaid = data._id;
@@ -542,7 +652,9 @@ var DataStore = function() {
             },
             function(err,data) {
               if (err) {
-                log.error('dataStore::newVersion --> Error removing old version for appToken: ' + appToken);
+                log.error(log.messages.ERROR_DSERRORREMOVINGOLDVERSION, {
+                  "apptoken": appToken
+                });
                 return;
               }
               collection.update(
@@ -556,13 +668,18 @@ var DataStore = function() {
                 },
                 function(err,data) {
                   if (err) {
-                    log.error('dataStore::newVersion --> Error setting new version for appToken: ' + appToken);
+                    log.error(log.messages.ERROR_DSERRORSETTINGNEWVERSION, {
+                      "apptoken": appToken
+                    });
                     return;
                   }
                   log.debug('dataStore::newVersion --> Version updated');
-                })
-            })
-        });
+                }
+              );
+            }
+          );
+        }
+      );
     });
     return msg;
   },
@@ -576,7 +693,10 @@ var DataStore = function() {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getAllMessagesForUA --> There was a problem opening the messages collection: ' + err);
+        log.error(log.messages.ERROR_DSERROROPENINGMESSAGESCOLLECTION, {
+          "method": 'getAllMessagesForUA',
+          "error": err
+        });
         callback(err);
         return;
       }
@@ -585,7 +705,9 @@ var DataStore = function() {
         { ms: true }
       ).toArray(function(err, data) {
         if (err) {
-          log.error('datastore::getAllMessagesForUA --> There was a problem finding the message: ' + err);
+          log.error(log.messages.ERROR_DSERRORFINDINGMSG, {
+            "error": err
+          });
           callback(err);
           return;
         }
@@ -607,7 +729,10 @@ var DataStore = function() {
     log.debug('dataStore::removeMessage --> Going to remove message with _id=' + messageId + 'for the uaid=' + uaid);
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::removeMessage --> There was a problem opening the messages collection');
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'removeMessage',
+          "error": err
+        });
         return;
       }
       collection.update(
@@ -618,17 +743,59 @@ var DataStore = function() {
           {
             ms:
               {
-                'messageId': messageId
+                "messageId": messageId
               }
           }
         },
         { safe: true },
         function(err, d) {
           if (err) {
-            log.error('dataStore::removeMessage --> Error removing message', err);
+            log.error(log.messages.ERROR_DSERRORREMOVINGMESSAGE, {
+              "error": err
+            });
             return;
           }
-          log.notify('datastore::removeMessage --> Message removed from MongoDB ' + messageId);
+          log.notify(log.messages.NOTIFY_MSGREMOVEDDB, {
+            "messageId": messageId
+          });
+        }
+      );
+    });
+  },
+
+  /**
+   * This ACKs a message by putting a "new" flag to 0 on the node, on the channelID ACKed
+   *
+   */
+  this.ackMessage = function(uaid, channelID, version) {
+    log.debug('dataStore::ackMessage --> Going to ACK message from uaid=' + uaid + ' for channelID=' + channelID + ' and version=' + version);
+    this.db.collection('nodes', function(error, collection) {
+      if (error) {
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'ackMessage',
+          "error": err
+        });
+        return;
+      }
+      collection.update(
+        {
+          _id: uaid,
+          'ch.ch': channelID
+        },
+        {
+          $set: {
+            'ch.$.new': 0
+          }
+        },
+        { upsert: true },
+        function(err,d) {
+          if (err) {
+            log.error(log.messages.ERROR_DSERRORACKMSGINDB, {
+              "error": err
+            });
+            return;
+          }
+          log.notify(log.messages.NOTIFY_MSGREMOVEDDB);
         }
       );
     });
@@ -644,7 +811,10 @@ var DataStore = function() {
     this.db.collection('operators', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
-        log.error('datastore::getOperator --> There was a problem opening the operators collection');
+        log.error(log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
+          "method": 'getOperator',
+          "error": err
+        });
         callback(err);
         return;
       }
@@ -664,36 +834,54 @@ var DataStore = function() {
   this.flushDb = function() {
     this.db.collection('apps', function(err, collection) {
       if (err) {
-        log.error('datastore::flushDb --> There was a problem opening the apps collection');
+        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
+          "method": 'flushDb',
+          "error": err
+        });
         return;
       }
       collection.remove({}, function(err, removed) {
       if (err) {
-        log.error('datastore::flushDb --> There was a problem removing the apps collection');
+        log.error(log.messages.ERROR_DSERRORREMOVINGXXXCOLLECTION, {
+          "collection": 'apps',
+          "error": err
+        });
         return;
       }
       });
     });
     this.db.collection('nodes', function(err, collection) {
       if (err) {
-        log.error('datastore::flushDb --> There was a problem opening the nodes collection');
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'flushDb',
+          "error": err
+        });
         return;
       }
       collection.remove({}, function(err, removed) {
       if (err) {
-        log.error('datastore::flushDb --> There was a problem removing the nodes collection');
+        log.error(log.messages.ERROR_DSERRORREMOVINGXXXCOLLECTION, {
+          "collection": 'nodes',
+          "error": err
+        });
         return;
       }
       });
     });
     this.db.collection('operators', function(err, collection) {
       if (err) {
-        log.error('datastore::flushDb --> There was a problem opening the operators collection');
+        log.error(log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
+          "method": 'flushDb',
+          "error": err
+        });
         return;
       }
       collection.remove({}, function(err, removed) {
       if (err) {
-        log.error('datastore::flushDb --> There was a problem removing the operators collection');
+        log.error(log.messages.ERROR_DSERRORREMOVINGXXXCOLLECTION, {
+          "collection": 'operators',
+          "error": err
+        });
         return;
       }
       });
