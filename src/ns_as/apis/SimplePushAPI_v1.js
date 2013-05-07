@@ -20,12 +20,12 @@ var kSimplePushASFrontendVersion = 'v1';
 
 var SimplePushAPI_v1 = function() {
   this.processRequest = function(request, body, response, path) {
-    log.debug("SimplePushAPI_v1");
+    log.debug("NS_AS::onHTTPMessage - SimplePushAPI_v1");
     if (request.method !== 'PUT') {
       return false;
     }
 
-    log.debug('NS_AS::onHTTPMessage --> Received a PUT');
+    log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1 --> Received a PUT');
     request.on('data', function(body) {
       apis[0].processRequest(request, body, response);
     });
@@ -34,21 +34,21 @@ var SimplePushAPI_v1 = function() {
     if (URI.length < 3) {
       response.statusCode = 404;
       response.end('{ reason: "Not enough path data"}');
-      log.debug('NS_UA_SimplePush_v1::processRequest --> Not enough path');
+      log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1::processRequest --> Not enough path');
       return true;
     }
 
     if (URI[1] !== kSimplePushASFrontendVersion) {
       response.statusCode = 400;
       response.end('{ reason: "Protocol version not supported"}');
-      log.debug('NS_UA_SimplePush_v1::processRequest --> Version not supported, received: ' + URI[1]);
+      log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1::processRequest --> Version not supported, received: ' + URI[1]);
       return true;
     }
 
     if (URI[2] !== 'notify') {
       response.statusCode = 404;
       response.end('{ reason: "API not known"}');
-      log.debug('NS_UA_SimplePush_v1::processRequest --> API call not known, received: ' + URI[2]);
+      log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1::processRequest --> API call not known, received: ' + URI[2]);
       return true;
     }
 
@@ -56,7 +56,7 @@ var SimplePushAPI_v1 = function() {
     if (!appToken) {
       response.statusCode = 404;
       response.end('{ reason: "Not enough path data"}');
-      log.debug('NS_UA_SimplePush_v1::processRequest --> Not enough path');
+      log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1::processRequest --> Not enough path');
       return true;
     }
 
@@ -64,7 +64,7 @@ var SimplePushAPI_v1 = function() {
     if (versions[0] !== 'version') {
       response.statusCode = 404;
       response.end('{ reason: "Bad body"}');
-      log.debug('NS_UA_SimplePush_v1::processRequest --> Bad body, received lhs: ' + versions[0]);
+      log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1::processRequest --> Bad body, received lhs: ' + versions[0]);
       return true;
     }
 
@@ -72,7 +72,7 @@ var SimplePushAPI_v1 = function() {
     if (!isVersion(version)) {
       response.statusCode = 404;
       response.end('{ reason: "Bad version"}');
-      log.debug('NS_UA_SimplePush_v1::processRequest --> Bad version, received rhs: ' + version);
+      log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1::processRequest --> Bad version, received rhs: ' + version);
       return true;
     }
 

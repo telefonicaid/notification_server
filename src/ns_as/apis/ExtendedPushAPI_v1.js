@@ -13,21 +13,21 @@ var pages = require('../../common/pages.js'),
 
 var ExtendedPushAPI_v1 = function() {
   this.processRequest = function(request, body, response, path) {
-    log.debug("ExtendedPushAPI_v1");
+    log.debug("NS_AS::onHTTPMessage - ExtendedPushAPI_v1");
     if (path[1] === 'notify') {
       var token = path[2];
       if (!token) {
-        log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
+        log.debug('NS_AS::onHTTPMessage.ExtendedPushAPI_v1 --> No valid url (no apptoken)');
         response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
         return true;
       }
       if (request.method != 'POST') {
-        log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for notifications)');
+        log.debug('NS_AS::onHTTPMessage.ExtendedPushAPI_v1 --> No valid method (only POST for notifications)');
         response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
         return true;
       }
 
-      log.debug('NS_AS::onHTTPMessage --> Notification for ' + token);
+      log.debug('NS_AS::onHTTPMessage.ExtendedPushAPI_v1 --> Notification for ' + token);
       request.on('data', function(notification) {
         onNewPushMessage(notification, request.connection.getPeerCertificate(), token, function(err) {
           response.res(err);

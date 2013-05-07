@@ -28,6 +28,7 @@ var apis = {
   ws: []
 };
 apis.http[0] = require('./apis/infoAPI');
+// Index => Websocket subprotocol name
 apis.ws['push-notification'] = require('./apis/SimplePushAPI_WS_v1');
 apis.ws['push-extendednotification'] = require('./apis/ExtendedPushAPI_WS_v1');
 

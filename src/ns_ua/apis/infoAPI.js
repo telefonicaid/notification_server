@@ -15,7 +15,7 @@ var pages = require('../../common/pages.js'),
 
 var infoAPI = function() {
   this.processRequest = function(request, body, response, url) {
-    log.debug("infoAPI");
+    log.debug("NS_UA_WS::onHTTPMessage - infoAPI");
     switch (url.messageType) {
     case 'about':
       if (consts.PREPRODUCTION_MODE) {
