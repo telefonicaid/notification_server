@@ -359,8 +359,11 @@ server.prototype = {
               }
             });
             if (channelsUpdate.length > 0) {
-              cb(channelsUpdate);
+              return cb(channelsUpdate);
             }
+            
+            //No channelsUpdate (no new)
+            return cb(null);
           });
         }
 
