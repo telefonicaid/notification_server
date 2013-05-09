@@ -611,7 +611,6 @@ var DataStore = function() {
     msg.app = appToken;
     msg.ch = channelID;
     msg.vs = version;
-    msg.new = 1;
 
     this.db.collection('nodes', function(err, collection) {
       if (err) {
@@ -621,63 +620,24 @@ var DataStore = function() {
         });
         return;
       }
-      collection.findOne(
-        {
-          "ch.app": appToken
+      collection.findAndModify(
+        { "ch.app" : appToken },
+        [],
+        { $set:
+          {
+            "ch.$.vs" : version,
+            "ch.$.new" : 1
+          }
         },
-        {
-          ch: true
-        },
-        function(err, data) {
+        { upsert: true },
+        function(error, data) {
           if (err) {
-            log.error(log.messages.ERROR_DSERRORLOCATINGCHANNEL4APPTOKEN, {
-              "method": 'newVersion',
+            log.error(log.messages.ERROR_DSERRORSETTINGNEWVERSION, {
               "apptoken": appToken
             });
             return;
           }
-          if (!data) {
-            log.debug('dataStore::newVersion --> No data recovered for appToken: ' + appToken);
-            return;
-          }
-          var uaid = data._id;
-          collection.update(
-            {
-              "ch.app": appToken
-            },
-            {
-              $pull: {
-                ch: data.ch[0]
-              }
-            },
-            function(err,data) {
-              if (err) {
-                log.error(log.messages.ERROR_DSERRORREMOVINGOLDVERSION, {
-                  "apptoken": appToken
-                });
-                return;
-              }
-              collection.update(
-                {
-                  _id: uaid
-                },
-                {
-                  $push: {
-                    ch: msg
-                  }
-                },
-                function(err,data) {
-                  if (err) {
-                    log.error(log.messages.ERROR_DSERRORSETTINGNEWVERSION, {
-                      "apptoken": appToken
-                    });
-                    return;
-                  }
-                  log.debug('dataStore::newVersion --> Version updated');
-                }
-              );
-            }
-          );
+          log.debug('dataStore::newVersion --> Version updated');
         }
       );
     });
