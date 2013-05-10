@@ -83,7 +83,7 @@ var SimplePushAPI_v1 = function() {
       if (!channelID) {
         response.statusCode = 200;
         response.end('{}');
-        return;
+        return true;
       }
       var msg = dataStore.newVersion(appToken, channelID, version);
       msgBroker.push('newMessages', msg);
