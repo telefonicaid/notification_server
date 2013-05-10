@@ -12,24 +12,19 @@ function counters() {
 
 counters.prototype = {
   get: function(c) {
-    if (!this._counters[c])
-      return 0;
-    return this._counters[c];
+    return this._counters[c] || 0;
   },
 
   set: function(c,val) {
-    this._counters[c] = val;
-    return this.get(c);
+    return this._counters[c] = val;
   },
 
   inc: function(c) {
-    this._counters[c] = this.get(c) + 1;
-    return this.get(c);
+    return this._counters[c] = this.get(c) + 1;
   },
 
   dec: function(c) {
-    this._counters[c] = this.get(c) - 1;
-    return this.get(c);
+    return this._counters[c] = this.get(c) - 1;
   }
 }
 
