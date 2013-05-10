@@ -8,42 +8,42 @@
 
 var log = require('./logger.js');
 
-function maintance() {
-  this.onmaintance = false;
+function maintenance() {
+  this.onmaintenance = false;
 }
 
-maintance.prototype = {
+maintenance.prototype = {
   active: function() {
-    log.debug("Setting under Maintance");
-    this.onmaintance = true;
+    log.debug("Setting under Maintenance");
+    this.onmaintenance = true;
   },
 
   inactive: function() {
-    log.debug("Removing under Maintance");
-    this.onmaintance = false;
+    log.debug("Removing under Maintenance");
+    this.onmaintenance = false;
   },
 
   getStatus: function() {
-    return this.onmaintance;
+    return this.onmaintenance;
   }
 };
 
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
-var _maintance = new maintance();
-function getMaintance() {
-  return _maintance;
+var _maintenance = new maintenance();
+function getMaintenance() {
+  return _maintenance;
 }
 
 ///////////////////////////////////////////
-// Manage onmaintance status with signals
+// Manage onmaintenance status with signals
 ///////////////////////////////////////////
 process.on('SIGUSR1', function() {
-  getMaintance().active();
+  getMaintenance().active();
 });
 process.on('SIGUSR2', function() {
-  getMaintance().inactive();
+  getMaintenance().inactive();
 });
 
-module.exports = getMaintance();
+module.exports = getMaintenance();
