@@ -18,7 +18,7 @@ var log = require('../common/logger'),
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../common/constants').errorcodes.AS,
     pages = require('../common/pages.js'),
-    maintance = require('../common/maintance.js');
+    maintenance = require('../common/maintenance.js');
 
 var apis = [];
 apis[0] = require('./apis/SimplePushAPI_v1');

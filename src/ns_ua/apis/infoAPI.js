@@ -11,7 +11,7 @@ var pages = require('../../common/pages.js'),
     consts = require('../../config.js').consts,
     counters = require('../../common/counters'),
     errorcodes = require('../../common/constants').errorcodes.GENERAL,
-    maintance = require('../../common/maintance.js');
+    maintenance = require('../../common/maintenance.js');
 
 var infoAPI = function() {
   this.processRequest = function(request, body, response, url) {
@@ -52,9 +52,9 @@ var infoAPI = function() {
     case 'status':
       // Return status mode to be used by load-balancers
       response.setHeader('Content-Type', 'text/html');
-      if (maintance.getStatus()) {
+      if (maintenance.getStatus()) {
         response.statusCode = 503;
-        response.write('Under Maintance');
+        response.write('Under Maintenance');
       } else {
         response.statusCode = 200;
         response.write('OK');
