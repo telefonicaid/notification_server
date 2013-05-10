@@ -24,11 +24,7 @@ var SimplePushAPI_v1 = function() {
     if (request.method !== 'PUT') {
       return false;
     }
-
     log.debug('NS_AS::onHTTPMessage.SimplePushAPI_v1 --> Received a PUT');
-    request.on('data', function(body) {
-      apis[0].processRequest(request, body, response);
-    });
 
     var URI = request.url.split('/');
     if (URI.length < 3) {
