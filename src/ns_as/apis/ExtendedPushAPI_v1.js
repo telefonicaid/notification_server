@@ -23,8 +23,7 @@ var ExtendedPushAPI_v1 = function() {
       }
       if (request.method != 'POST') {
         log.debug('NS_AS::onHTTPMessage.ExtendedPushAPI_v1 --> No valid method (only POST for notifications)');
-        response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
-        return true;
+        return false;
       }
 
       log.debug('NS_AS::onHTTPMessage.ExtendedPushAPI_v1 --> Notification for ' + token);
