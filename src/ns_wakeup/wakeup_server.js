@@ -12,7 +12,7 @@ var log = require('../common/logger.js'),
     consts = require('../config.js').consts,
     dgram = require('dgram'),
     pages = require('../common/pages.js'),
-    maintance = require('../common/maintance.js');
+    maintenance = require('../common/maintenance.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -90,9 +90,9 @@ server.prototype = {
     if(request.url === "/status") {
       // Return status mode to be used by load-balancers
       response.setHeader('Content-Type', 'text/html');
-      if (maintance.getStatus()) {
+      if (maintenance.getStatus()) {
         response.statusCode = 503;
-        response.write('Under Maintance');
+        response.write('Under Maintenance');
       } else {
         response.statusCode = 200;
         response.write('OK');

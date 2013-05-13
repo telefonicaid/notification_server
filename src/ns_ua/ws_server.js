@@ -12,28 +12,33 @@ var log = require('../common/logger.js'),
     cluster = require('cluster'),
     crypto = require('../common/cryptography.js'),
     dataManager = require('./datamanager.js'),
-    token = require('../common/token.js'),
     helpers = require('../common/helpers.js'),
     msgBroker = require('../common/msgbroker.js'),
     config = require('../config.js').NS_UA_WS,
     consts = require('../config.js').consts,
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesWS = require('../common/constants').errorcodes.UAWS,
-    statuscodes = require('../common/constants').statuscodes,
-    pages = require('../common/pages.js'),
+    counters = require('../common/counters'),
     url = require('url'),
     http = require('http'),
-    https = require('https'),
-    maintance = require('../common/maintance.js');
+    https = require('https');
+
+var apis = {
+  http: [],
+  ws: []
+};
+apis.http[0] = require('./apis/infoAPI');
+// Index => Websocket subprotocol name
+apis.ws['push-notification'] = require('./apis/SimplePushAPI_WS_v1');
+apis.ws['push-extendednotification'] = require('./apis/ExtendedPushAPI_WS_v1');
 
 function server(ip, port, ssl) {
   this.ip = ip;
   this.port = port;
   this.ssl = ssl;
   this.ready = false;
-  this.tokensGenerated = 0;
-  this.wsConnections = 0;
-  this.wsMaxConnections = 1000;
+  counters.set('wsMaxConnections', 1000);
+  counters.set('numProcesses', config.numProcesses);
 }
 
 server.prototype = {
@@ -189,7 +194,7 @@ server.prototype = {
         });
       }
       log.debug('ulimit = ' + ulimit);
-      this.wsMaxConnections = ulimit - 200;
+      counters.set('wsMaxConnections', ulimit - 200);
     }.bind(this));
 
   },
@@ -225,57 +230,30 @@ server.prototype = {
     } else {
       log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
       var url = this.parseURL(request.url);
-
       log.debug('WS::onHTTPMessage --> Parsed URL:', url);
-      switch (url.messageType) {
-        case 'about':
-          if (consts.PREPRODUCTION_MODE) {
-            try {
-              var p = new pages();
-                  p.setTemplate('views/aboutWS.tmpl');
-                  text = p.render(function(t) {
-                    switch (t) {
-                      case '{{GIT_VERSION}}':
-                        return require('fs').readFileSync('version.info');
-                      case '{{MODULE_NAME}}':
-                        return 'User Agent Frontend';
-                      case '{{PARAM_TOKENSGENERATED}}':
-                        return this.tokensGenerated;
-                      case '{{PARAM_CONNECTIONS}}':
-                        return this.wsConnections;
-                      case '{{PARAM_MAXCONNECTIONS}}':
-                        return this.wsMaxConnections;
-                      case '{{PARAM_NUMPROCESSES}}':
-                        return config.numProcesses;
-                      default:
-                        return "";
-                    }
-                  }.bind(this));
-            } catch (e) {
-              text = 'No version.info file';
-            }
-            return response.res(errorcodes.NO_ERROR, text);
-          } else {
-            return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
-          }
-          break;
 
-        case 'status':
-          // Return status mode to be used by load-balancers
-          response.setHeader('Content-Type', 'text/html');
-          if (maintance.getStatus()) {
-            response.statusCode = 503;
-            response.write('Under Maintance');
-          } else {
-            response.statusCode = 200;
-            response.write('OK');
+      // Process received message with one of the loaded APIs
+      var self = this;
+      function processMsg(request, body, response, url) {
+        var validAPI = false;
+        for (var i=0; i<apis.http.length; i++) {
+          if (apis.http[i].processRequest(request, body, response, url)) {
+            log.debug('WS::onHTTPMessage::processMsg -> Cool, HTTP API accepted !');
+            validAPI = true;
+            break;
           }
-          return response.end();
-          break;
-
-        default:
+        }
+        if (!validAPI) {
           log.debug('WS::onHTTPMessage --> messageType not recognized');
           return response.res(errorcodesWS.BAD_MESSAGE_NOT_RECOGNIZED);
+        }
+      }
+      if (request.method == 'PUT' || request.method == 'POST') {
+        request.on('data', function(body) {
+          processMsg(request, body, response, url);
+        });
+      } else {
+        processMsg(request, '', response, url);
       }
     }
   },
@@ -290,477 +268,9 @@ server.prototype = {
     ///////////////////////
     // WS Callbacks
     ///////////////////////
-    this.onWSMessage = function(message) {
-      connection.res = function responseWS(payload) {
-        log.debug('WS::responseWS:', payload);
-        var res = {};
-        if (payload && payload.extradata) {
-          res = payload.extradata;
-        }
-        if (payload && payload.errorcode[0] > 299) {    // Out of the 2xx series
-          if (!res.status) {
-            res.status = payload.errorcode[0];
-          }
-          res.reason = payload.errorcode[1];
-        }
-        connection.sendUTF(JSON.stringify(res));
-      };
-
-      if (message.type === 'utf8') {
-        log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
-        var query = {};
-        try {
-          query = JSON.parse(message.utf8Data);
-        } catch (e) {
-          log.debug('WS::onWSMessage --> Data received is not a valid JSON package');
-          connection.res({
-            errorcode: errorcodesWS.NOT_VALID_JSON_PACKAGE
-          });
-          return connection.close();
-        }
-
-        //Check for uaid in the connection
-        if (!connection.uaid && query.messageType !== 'hello') {
-          log.debug('WS:onWSMessage --> No uaid for this connection');
-          connection.res({
-            errorcode: errorcodesWS.UAID_NOT_FOUND,
-            extradata: { messageType: query.messageType }
-          });
-          connection.close();
-          return;
-        }
-
-        // Restart autoclosing timeout
-        dataManager.getNode(connection.uaid, function(nodeConnector) {
-          if(nodeConnector)
-            nodeConnector.resetAutoclose();
-        });
-
-        function getPendingMessages(cb) {
-          cb = helpers.checkCallback(cb);
-          log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
-          dataManager.getNodeData(connection.uaid, function(err, data) {
-            if (err) {
-              log.error(log.messages.ERROR_WSERRORGETTINGNODE);
-              return cb(null);
-            }
-            // In this case, there are no nodes for this (strange, since it was just registered)
-            if (!data || !data.ch || !Array.isArray(data.ch)) {
-              log.error(log.messages.ERROR_WSNOCHANNELS);
-              return cb(null);
-            }
-            var channelsUpdate = [];
-            data.ch.forEach(function(channel) {
-              if (channel.vs) {
-                channelsUpdate.push({
-                  channelID: channel.ch,
-                  version: channel.vs
-                });
-              }
-            });
-            if (channelsUpdate.length > 0) {
-              cb(channelsUpdate);
-            }
-          });
-        }
-
-        switch (query.messageType) {
-          case undefined:
-            log.debug('WS::onWSMessage --> PING package');
-            setTimeout(function() {
-              getPendingMessages(function(channelsUpdate) {
-                if (!channelsUpdate) {
-                  return connection.sendUTF('{}');
-                }
-                connection.res({
-                  errorcode: errorcodes.NO_ERROR,
-                  extradata: {
-                    messageType: 'notification',
-                    updates: channelsUpdate
-                  }
-                });
-              });
-            });
-            break;
-
-          /*
-            {
-              messageType: "hello",
-              uaid: "<a valid UAID>",
-              channelIDs: [channelID1, channelID2, ...],
-              wakeup_hostport: {
-                ip: "<current device IP address>",
-                port: "<TCP or UDP port in which the device is waiting for wake up notifications>"
-              },
-              mobilenetwork: {
-                mcc: "<Mobile Country Code>",
-                mnc: "<Mobile Network Code>"
-              }
-            }
-           */
-          case 'hello':
-            if (!query.uaid || !token.verify(query.uaid)) {
-              query.uaid = token.get();
-              query.channelIDs = null;
-              self.tokensGenerated++;
-            }
-            log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.uaid);
-            log.debug('WS:onWSMessage --> Accepted uaid=' + query.uaid);
-            connection.uaid = query.uaid;
-
-            // New UA registration
-            log.debug('WS::onWSMessage --> HELLO - UA registration message');
-            //query parameters are validated while getting the connector in
-            // connectors/connector.js
-            dataManager.registerNode(query, connection, function onNodeRegistered(error, res, data) {
-              if (error) {
-                connection.res({
-                  errorcode: errorcodesWS.FAILED_REGISTERUA,
-                  extradata: { messageType: 'hello' }
-                });
-                log.debug('WS::onWSMessage --> Failing registering UA');
-                return;
-              }
-              connection.res({
-                errorcode: errorcodes.NO_ERROR,
-                extradata: {
-                  messageType: 'hello',
-                  uaid: query.uaid,
-                  status: (data.canBeWakeup ? statuscodes.UDPREGISTERED : statuscodes.REGISTERED)
-                }
-              });
-
-              // If uaid do not have any channelIDs (first connection), we do not launch this processes.
-              if (query.channelIDs) {
-                //Start recovery protocol
-                setTimeout(function recoveryChannels() {
-                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query.channelIDs);
-                  query.channelIDs.forEach(function(ch) {
-                    log.debug("WS::onWSMessage::recoveryChannels CHANNEL: ", ch);
-
-                    var appToken = helpers.getAppToken(ch, connection.uaid);
-                    dataManager.registerApplication(appToken, ch, connection.uaid, null, function(error) {
-                      if (!error) {
-                        var notifyURL = helpers.getNotificationURL(appToken);
-                        log.debug('WS::onWSMessage::recoveryChannels --> OK registering channelID: ' + notifyURL);
-                      } else {
-                        log.debug('WS::onWSMessage::recoveryChannels --> Failing registering channelID');
-                      }
-                    });
-                  });
-                });
-
-                //Start sending pending notifications
-                setTimeout(function() {
-                  getPendingMessages(function(channelsUpdate) {
-                    log.debug("CHANNELS: ",channelsUpdate);
-                    if (!channelsUpdate) {
-                      return;
-                    }
-                    connection.res({
-                      errorcode: errorcodes.NO_ERROR,
-                      extradata: {
-                        messageType: 'notification',
-                        updates: channelsUpdate
-                      }
-                    });
-                  });
-                });
-              }
-              log.debug('WS::onWSMessage --> OK register UA');
-            });
-            break;
-
-          /**
-            {
-              messageType: "register",
-              channelId: <channelId>
-            }
-           */
-          case 'register':
-            log.debug('WS::onWSMessage::register --> Application registration message');
-
-            // Close the connection if the channelID is null
-            var channelID = query.channelID;
-            if (!channelID || typeof(channelID) !== 'string') {
-              log.debug('WS::onWSMessage::register --> Null channelID');
-              connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CHANNELID,
-                extradata: {
-                  messageType: 'register'
-                }
-              });
-              //There must be a problem on the client, because channelID is the way to identify an app
-              //Close in this case.
-              return connection.close();
-            }
-
-            // Register and store in database
-            log.debug('WS::onWSMessage::register uaid: ' + connection.uaid);
-            var appToken = helpers.getAppToken(channelID, connection.uaid);
-            dataManager.registerApplication(appToken, channelID, connection.uaid, null, function(error) {
-              if (!error) {
-                var notifyURL = helpers.getNotificationURL(appToken);
-                connection.res({
-                  errorcode: errorcodes.NO_ERROR,
-                  extradata: {
-                    messageType: 'register',
-                    status: statuscodes.REGISTERED,
-                    pushEndpoint: notifyURL,
-                    'channelID': channelID
-                  }
-                });
-                log.debug('WS::onWSMessage::register --> OK registering channelID');
-              } else {
-                connection.res({
-                  errorcode: errorcodes.NOT_READY,
-                  extradata: {
-                    'channelID': channelID,
-                    messageType: 'register'
-                  }
-                });
-                log.debug('WS::onWSMessage::register --> Failing registering channelID');
-              }
-            });
-            break;
-
-          /**
-            {
-              messageType: "unregister",
-              channelId: <channelId>
-            }
-           */
-          case 'unregister':
-            // Close the connection if the channelID is null
-            var channelID = query.channelID;
-            log.debug('WS::onWSMessage::unregister --> Application un-registration message for ' + channelID);
-            if (!channelID || typeof(channelID) !== 'string') {
-              log.debug('WS::onWSMessage::unregister --> Null channelID');
-              connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CHANNELID,
-                extradata: {
-                  messageType: 'unregister'
-                }
-              });
-              //There must be a problem on the client, because channelID is the way to identify an app
-              //Close in this case.
-              return connection.close();
-            }
-
-            var appToken = helpers.getAppToken(query.channelID, connection.uaid);
-            dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
-              if (!error) {
-                var notifyURL = helpers.getNotificationURL(appToken);
-                connection.res({
-                  errorcode: errorcodes.NO_ERROR,
-                  extradata: {
-                    channelID: query.channelID,
-                    messageType: 'unregister',
-                    status: statuscodes.UNREGISTERED
-                  }
-                });
-                log.debug('WS::onWSMessage::unregister --> OK unregistering channelID');
-              } else {
-                if (error == -1) {
-                  connection.res({
-                    errorcode: errorcodesWS.NOT_VALID_CHANNELID,
-                    extradata: { messageType: 'unregister' }
-                  });
-                } else {
-                  connection.res({
-                    errorcode: errorcodes.NOT_READY,
-                    extradata: { messageType: 'unregister' }
-                  });
-                }
-                log.debug('WS::onWSMessage::unregister --> Failing unregistering channelID');
-              }
-            });
-            break;
-
-          /**
-            {
-                messageType: “ack”,
-                updates: [{"channelID": channelID, “version”: xxx}, ...]
-            }
-           */
-          case 'ack':
-            if(!Array.isArray(query.updates)) {
-              connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CHANNELID,
-                extradata: { messageType: 'ack' }
-              });
-              connection.close();
-              return;
-            }
-
-            query.updates.forEach(function(el) {
-              if (!el.channelID || typeof el.channelID !== 'string' ||
-                  !el.version || !helpers.isVersion(el.version)) {
-                connection.res({
-                  errorcode: errorcodesWS.NOT_VALID_CHANNELID,
-                  extradata: { messageType: 'ack',
-                               channelID: el.channelID,
-                               version: el.version}
-                });
-                return;
-              }
-
-              dataManager.ackMessage(connection.uaid, el.channelID, el.version);
-            });
-            break;
-
-          /////////////////////////////////
-          // TODO: Extended API
-          /////////////////////////////////
-
-          case 'registerExtended':
-            log.debug('WS::onWSMessage::register --> Extended Application registration message');
-
-            // Close the connection if the watoken is null
-            var watoken = query.watoken;
-            if (!watoken) {
-              log.debug('WS::onWSMessage::register --> Null WAtoken');
-              connection.res({
-                errorcode: errorcodesWS.NOT_VALID_WATOKEN,
-                extradata: { messageType: 'register' }
-              });
-              //There must be a problem on the client, because WAtoken is the way to identify an app
-              //Close in this case.
-              connection.close();
-            }
-
-            var certUrl = query.certUrl;
-            if(!certUrl && query.pbkbase64) {
-              certUrl = query.pbkbase64;
-            }
-            if (!certUrl) {
-              log.debug('WS::onWSMessage::registerWA --> Null certificate URL');
-              //In this case, there is a problem, but there are no certificate.
-              //We just reject the registration but we do not close the connection
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
-            }
-
-            // Recover certificate
-            var certUrl = url.parse(certUrl);
-            if (!certUrl.href || !certUrl.protocol ) {
-              log.debug('WS::onWSMessage::registerWA --> Non valid URL');
-              //In this case, there is a problem, but there are no certificate.
-              //We just reject the registration but we do not close the connection
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
-            }
-            // Protocol to use: HTTP or HTTPS ?
-            var protocolHandler = null;
-            switch (certUrl.protocol) {
-            case 'http:':
-              protocolHandler = http;
-              break;
-            case 'https:':
-              protocolHandler = https;
-              break;
-            default:
-              protocolHandler = null;
-            }
-            if (!protocolHandler) {
-              log.debug('WS::onWSMessage::registerWA --> Non valid URL (invalid protocol)');
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
-            }
-            var req = protocolHandler.get(certUrl.href, function(res) {
-                res.on('data', function(d) {
-                  req.abort();
-                  log.debug('Certificate received');
-                  crypto.parseClientCertificate(d,function(err,cert) {
-                    log.debug('Certificate processed');
-                    if(err) {
-                      log.debug('[ERROR] ' + err);
-                      return connection.res({
-                        errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                        extradata: {
-                          'watoken': watoken,
-                          messageType: 'registerWA'
-                        }
-                      });
-                    }
-                    log.debug('[VALID CERTIFICATE] ' + cert.c);
-                    log.debug('[VALID CERTIFICATE FINGERPRINT] ' + cert.f);
-
-                    // Valid certificate, register and store in database
-                    log.debug('WS::onWSMessage::registerWA uaid: ' + connection.uaid);
-                      appToken = helpers.getAppToken(watoken, cert.f);
-                      dataManager.registerApplication(appToken, watoken, connection.uaid, cert, function(error) {
-                        if (!error) {
-                          var notifyURL = helpers.getNotificationURL(appToken);
-                          connection.res({
-                            errorcode: errorcodes.NO_ERROR,
-                            extradata: {
-                              'watoken': watoken,
-                              messageType: 'registerWA',
-                              status: 'REGISTERED',
-                              url: notifyURL
-                            }
-                          });
-                          log.debug('WS::onWSMessage::registerWA --> OK registering WA');
-                        } else {
-                          connection.res({
-                            errorcode: errorcodes.NOT_READY,
-                            extradata: {
-                              'watoken': watoken,
-                              messageType: 'registerWA'
-                            }
-                          });
-                          log.debug('WS::onWSMessage::registerWA --> Failing registering WA');
-                        }
-                      });
-                  });
-                });
-            }).on('error', function(e) {
-              log.debug('Error downloading client certificate ', e);
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
-            });
-            break;
-
-          default:
-            log.debug('WS::onWSMessage::default --> messageType not recognized');
-            connection.res({
-              errorcode: errorcodesWS.MESSAGETYPE_NOT_RECOGNIZED
-            });
-            return connection.close();
-        }
-      } else if (message.type === 'binary') {
-        // No binary data supported yet
-        log.debug('WS::onWSMessage --> Received Binary Message of ' + message.binaryData.length + ' bytes');
-        connection.res({
-          errorcode: errorcodesWS.BINARY_MSG_NOT_SUPPORTED
-        });
-        return connection.close();
-      }
-    };
-
+    var self = this;
     this.onWSClose = function(reasonCode, description) {
-      self.wsConnections--;
+      counters.dec('wsConnections');
       dataManager.unregisterNode(connection.uaid);
       log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uaid ' + connection.uaid);
     };
@@ -778,7 +288,7 @@ server.prototype = {
     ///////////////////////
 
     // Check limits
-    if (this.wsConnections >= this.wsMaxConnections) {
+    if (counters.get('wsConnections') >= counters.get('wsMaxConnections')) {
       log.debug('WS::onWSRequest --> Connection unaccepted. To many open connections');
       return request.reject();
     }
@@ -790,15 +300,35 @@ server.prototype = {
       return request.reject();
     }
 
-    // Connection accepted
-    try {
-      var connection = request.accept('push-notification', request.origin);
-      this.wsConnections++;
-      log.debug('WS::onWSRequest --> Connection accepted.');
-      connection.on('message', this.onWSMessage);
-      connection.on('close', this.onWSClose);
-    } catch(e) {
-      log.debug('WS::onWSRequest --> Connection from origin ' + request.origin + 'rejected. Bad WebSocket sub-protocol.');
+    // Connection accepted only for loaded sub-protocols
+    // Client could inform multiple protocols. In this version we only care about only one
+    log.debug('WS::onWSRequest: Client subprotocols: ',request.requestedProtocols);
+    var subprotocol = "";
+    var accepted = false;
+    for (i in request.requestedProtocols) {
+      subprotocol = request.requestedProtocols[i];
+      log.debug('WS::onWSRequest: Testing subprotocol: ' + subprotocol);
+      if (!apis.ws[subprotocol]) {
+        log.debug('WS::onWSRequest: Subprotocol ' + subprotocol + ' not supported');
+        continue;
+      }
+      try {
+        var connection = request.accept(subprotocol, request.origin);
+        counters.inc('wsConnections');
+        log.debug('WS::onWSRequest --> Connection accepted with subprotocol: ' + subprotocol);
+        connection.on('message', function(message) {
+          apis.ws[subprotocol](message,connection);
+        });
+        connection.on('close', this.onWSClose);
+        accepted = true;
+        break;
+      } catch(e) {
+        log.debug('WS::onWSRequest --> Connection from origin ' + request.origin + ' rejected. Bad WebSocket sub-protocol.');
+        return request.reject();
+      }
+    }
+    if (!accepted) {
+      log.debug('WS::onWSRequest --> Connection from origin ' + request.origin + ' rejected. Bad WebSocket sub-protocol.');
       return request.reject();
     }
   },
