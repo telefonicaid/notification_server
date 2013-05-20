@@ -12,7 +12,8 @@ var log = require('../common/logger.js'),
     consts = require('../config.js').consts,
     dgram = require('dgram'),
     pages = require('../common/pages.js'),
-    maintance = require('../common/maintance.js');
+    maintance = require('../common/maintance.js'),
+    helpers = require('../common/helpers.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -34,19 +35,8 @@ server.prototype = {
 
     // Create a new HTTP(S) Server
     if (this.ssl) {
-      var ca = (function() {
-        var _i, _len, _results;
-
-        _results = [];
-        for (_i = 0, _len = consts.ca_files.length; _i < _len; _i++) {
-          file = consts.ca_files[_i];
-          _results.push(fs.readFileSync(file));
-        }
-        return _results;
-      })();
-
       var options = {
-        ca: ca,
+        ca: helpers.getCaChanel(),
         key: fs.readFileSync(consts.key),
         cert: fs.readFileSync(consts.cert)
       };

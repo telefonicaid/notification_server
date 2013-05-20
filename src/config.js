@@ -40,7 +40,7 @@ exports.consts = {
    * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
    */
 
-  ca_files: ['/opt/certs/rootcatid_ROOTCATID_3.pem', '/opt/certs/issuecatid.hi.inet_ISSUECATID_3.pem'],
+  caDir: '/opt/certs/cas',
   key: '/opt/certs/key_nopwd_pushserv.pem',
   cert: '/opt/certs/cert_pushserv.pem',
 

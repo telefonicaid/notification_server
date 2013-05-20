@@ -18,7 +18,8 @@ var log = require('../common/logger'),
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../common/constants').errorcodes.AS,
     pages = require('../common/pages.js'),
-    maintance = require('../common/maintance.js');
+    maintance = require('../common/maintance.js'),
+    helpers = require('../common/helpers.js');
 
 var SimplePushAPI_v1 = require('./apis/SimplePushAPI_v1');
 var simplepush = new SimplePushAPI_v1();
@@ -118,19 +119,8 @@ server.prototype = {
   init: function() {
      
     // Create a new HTTPS Server
-    var ca = (function() {
-      var _i, _len, _results;
-
-      _results = [];
-      for (_i = 0, _len = consts.ca_files.length; _i < _len; _i++) {
-        file = consts.ca_files[_i];
-        _results.push(fs.readFileSync(file));
-      }
-      return _results;
-    })();
-
     var options = {
-      ca: ca,
+      ca: helpers.getCaChanel(),
       key: fs.readFileSync(consts.key),
       cert: fs.readFileSync(consts.cert),
       requestCert: false,
