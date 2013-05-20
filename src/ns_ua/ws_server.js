@@ -93,7 +93,7 @@ server.prototype = {
 
       // Subscribe to my own Queue
       var self = this;
-      msgBroker.on('brokerconnected', function() {
+      msgBroker.once('brokerconnected', function() {
         var args = {
           durable: false,
           autoDelete: true,
@@ -167,7 +167,7 @@ server.prototype = {
         });
         self.ready = true;
       });
-      msgBroker.on('brokerdisconnected', function() {
+      msgBroker.once('brokerdisconnected', function() {
         log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
           "class": 'ns_ws',
           "method": 'init'
@@ -194,7 +194,11 @@ server.prototype = {
         });
       }
       log.debug('ulimit = ' + ulimit);
-      counters.set('wsMaxConnections', ulimit - 200);
+      var limit = ulimit - 200;
+      if (limit < 10) {
+        log.critical(log.messages.CRITICAL_WSERRORULIMIT);
+      }
+      counters.set('wsMaxConnections', limit);
     }.bind(this));
 
   },
@@ -268,7 +272,6 @@ server.prototype = {
     ///////////////////////
     // WS Callbacks
     ///////////////////////
-    var self = this;
     this.onWSClose = function(reasonCode, description) {
       counters.dec('wsConnections');
       dataManager.unregisterNode(connection.uaid);
@@ -305,7 +308,7 @@ server.prototype = {
     log.debug('WS::onWSRequest: Client subprotocols: ',request.requestedProtocols);
     var subprotocol = "";
     var accepted = false;
-    for (i in request.requestedProtocols) {
+    for (var i in request.requestedProtocols) {
       subprotocol = request.requestedProtocols[i];
       log.debug('WS::onWSRequest: Testing subprotocol: ' + subprotocol);
       if (!apis.ws[subprotocol]) {
