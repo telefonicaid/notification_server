@@ -120,7 +120,7 @@ server.prototype = {
      
     // Create a new HTTPS Server
     var options = {
-      ca: helpers.getCaChanel(),
+      ca: helpers.getCaChannel(),
       key: fs.readFileSync(consts.key),
       cert: fs.readFileSync(consts.cert),
       requestCert: false,

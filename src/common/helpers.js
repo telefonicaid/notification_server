@@ -74,7 +74,7 @@ function isVersion(version) {
 exports.isVersion = isVersion;
 
 
-function getCaChanel() {
+function getCaChannel() {
     
   var caDir = require('../config.js').consts.caDir;
   var fs = require('fs');
@@ -91,5 +91,5 @@ function getCaChanel() {
   }  
   return ca;
 }
-exports.getCaChanel = getCaChanel;
+exports.getCaChannel = getCaChannel;
 

@@ -62,7 +62,7 @@ server.prototype = {
       // Create a new HTTP(S) Server
       if (this.ssl) {
         var options = {
-          ca: helpers.getCaChanel(),
+          ca: helpers.getCaChannel(),
           key: fs.readFileSync(consts.key),
           cert: fs.readFileSync(consts.cert)
         };
@@ -352,7 +352,7 @@ server.prototype = {
             }
             var channelsUpdate = [];
             data.ch.forEach(function(channel) {
-              if (channel.vs) {
+              if (channel.vs && channel.new) {
                 channelsUpdate.push({
                   channelID: channel.ch,
                   version: channel.vs
@@ -360,8 +360,12 @@ server.prototype = {
               }
             });
             if (channelsUpdate.length > 0) {
+              return cb(channelsUpdate);
               cb(channelsUpdate);
             }
+
+            //No channelsUpdate (no new)
+            return cb(null); 
           });
         }
 

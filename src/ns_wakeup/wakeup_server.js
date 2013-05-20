@@ -36,7 +36,7 @@ server.prototype = {
     // Create a new HTTP(S) Server
     if (this.ssl) {
       var options = {
-        ca: helpers.getCaChanel(),
+        ca: helpers.getCaChannel(),
         key: fs.readFileSync(consts.key),
         cert: fs.readFileSync(consts.cert)
       };
