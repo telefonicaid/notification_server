@@ -61,7 +61,19 @@ server.prototype = {
     } else {
       // Create a new HTTP(S) Server
       if (this.ssl) {
+        var ca = (function() {
+          var _i, _len, _results;
+
+          _results = [];
+          for (_i = 0, _len = consts.ca_files.length; _i < _len; _i++) {
+            file = consts.ca_files[_i];
+            _results.push(fs.readFileSync(file));
+          }
+          return _results;
+        })();
+        
         var options = {
+          ca: ca,
           key: fs.readFileSync(consts.key),
           cert: fs.readFileSync(consts.cert)
         };
@@ -351,7 +363,7 @@ server.prototype = {
             }
             var channelsUpdate = [];
             data.ch.forEach(function(channel) {
-              if (channel.vs && channel.new) {
+              if (channel.vs) {
                 channelsUpdate.push({
                   channelID: channel.ch,
                   version: channel.vs
@@ -359,11 +371,8 @@ server.prototype = {
               }
             });
             if (channelsUpdate.length > 0) {
-              return cb(channelsUpdate);
+              cb(channelsUpdate);
             }
-            
-            //No channelsUpdate (no new)
-            return cb(null);
           });
         }
 

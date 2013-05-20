@@ -40,14 +40,15 @@ exports.consts = {
    * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
    */
 
-  key: '../examples/ssl_cert/server-key.pem',
-  cert: '../examples/ssl_cert/server-cert.pem',
+  ca_files: ['/opt/certs/rootcatid_ROOTCATID_3.pem', '/opt/certs/issuecatid.hi.inet_ISSUECATID_3.pem'],
+  key: '/opt/certs/key_nopwd_pushserv.pem',
+  cert: '/opt/certs/cert_pushserv.pem',
 
   /**
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: 'https://localhost:8081/v1',
+  publicBaseURL: 'https://pushdev.srv.openwebdevice.com:8081/v1',
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
