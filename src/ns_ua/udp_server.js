@@ -140,7 +140,7 @@ server.prototype = {
     log.info('NS_UDP:init --> Starting UA-UDP server');
 
     var self = this;
-    msgBroker.on('brokerconnected', function() {
+    msgBroker.once('brokerconnected', function() {
       self.ready = true;
       var args = {
         durable: false,
@@ -152,7 +152,7 @@ server.prototype = {
       msgBroker.subscribe('UDP', args, function(msg) { onNewMessage(msg); });
     });
 
-    msgBroker.on('brokerdisconnected', function() {
+    msgBroker.once('brokerdisconnected', function() {
       self.ready = false;
       log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
         "class": 'ns_udp',
