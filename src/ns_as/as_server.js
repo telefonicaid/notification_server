@@ -130,11 +130,11 @@ server.prototype = {
 
     var self = this;
     // Events from msgBroker
-    msgBroker.on('brokerconnected', function() {
+    msgBroker.once('brokerconnected', function() {
       log.info('NS_AS::init --> MsgBroker ready and connected');
       self.msgbrokerready = true;
     });
-    msgBroker.on('brokerdisconnected', function() {
+    msgBroker.once('brokerdisconnected', function() {
       log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
         "class": 'NS_AS',
         "method": 'init'
@@ -143,7 +143,7 @@ server.prototype = {
     });
 
     //Events from dataStore
-    dataStore.on('ddbbconnected', function() {
+    dataStore.once('ddbbconnected', function() {
       log.info('NS_AS::init --> DataStore ready and connected');
       self.ddbbready = true;
     });
