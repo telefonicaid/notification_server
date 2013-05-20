@@ -9,137 +9,67 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="FrontendServer1_uaws" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_uaws</stringProp>
-            <stringProp name="Argument.value">${__property(FrontendServer1_uaws)}</stringProp>
+            <stringProp name="Argument.value">10.101.5.162</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_uaws" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_uaws</stringProp>
-            <stringProp name="Argument.value">${__property(FrontendServer2_uaws)}</stringProp>
+            <stringProp name="Argument.value">10.101.5.163</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer1_nsas" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_nsas</stringProp>
-            <stringProp name="Argument.value">${__property(FrontendServer1_nsas)}</stringProp>
+            <stringProp name="Argument.value">10.101.5.168</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_nsas" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_nsas</stringProp>
-            <stringProp name="Argument.value">${__property(FrontendServer2_nsas)}</stringProp>
+            <stringProp name="Argument.value">10.101.5.169</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer1_nsuaudp" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_nsuaudp</stringProp>
-            <stringProp name="Argument.value">${__property(FrontendServer1_nsuaudp)}</stringProp>
+            <stringProp name="Argument.value">10.101.5.172</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_nsuaudp" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_nsuaudp</stringProp>
-            <stringProp name="Argument.value">${__property(FrontendServer2_nsuaudp)}</stringProp>
+            <stringProp name="Argument.value">10.101.5.173</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_db</stringProp>
-            <stringProp name="Argument.value">${__property(BackendServer1_db)}</stringProp>
+            <stringProp name="Argument.value">10.101.6.51</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_db</stringProp>
-            <stringProp name="Argument.value">${__property(BackendServer2_db)}</stringProp>
+            <stringProp name="Argument.value">10.101.6.52</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer3_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer3_db</stringProp>
-            <stringProp name="Argument.value">${__property(BackendServer3_db)}</stringProp>
+            <stringProp name="Argument.value">10.101.6.53</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_nsmq" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_nsmq</stringProp>
-            <stringProp name="Argument.value">${__property(BackendServer1_nsmq)}</stringProp>
+            <stringProp name="Argument.value">10.101.6.41</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_nsmq" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_nsmq</stringProp>
-            <stringProp name="Argument.value">${__property(BackendServer2_nsmq)}</stringProp>
+            <stringProp name="Argument.value">10.101.6.42</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_nsmon" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_nsmon</stringProp>
-            <stringProp name="Argument.value">${__property(BackendServer1_nsmon)}</stringProp>
+            <stringProp name="Argument.value">10.101.6.34</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_nsmon" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_nsmon</stringProp>
-            <stringProp name="Argument.value">${__property(BackendServer2_nsmon)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_getTokens_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_getTokens_threads</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_getTokens_threads)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_getTokens_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_getTokens_duration</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_getTokens_duration)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerUA_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerUA_threads</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_registerUA_threads)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerUA_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerUA_duration</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_registerUA_duration)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerApp_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerApp_threads</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_registerApp_threads)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerApp_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerApp_duration</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_registerApp_duration)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_receiveNotification_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_receiveNotification_threads</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_receiveNotification_threads)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_receiveNotification_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_receiveNotification_duration</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_receiveNotification_duration)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_floodingNotifications_connections" elementType="Argument">
-            <stringProp name="Argument.name">TEST_floodingNotifications_connections</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_connections)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_floodingNotifications_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_floodingNotifications_duration</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_duration)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_floodingNotifications_monitor" elementType="Argument">
-            <stringProp name="Argument.name">TEST_floodingNotifications_monitor</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_monitor)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_floodingNotifications_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_floodingNotifications_threads</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_floodingNotifications_threads)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="ResultsPath" elementType="Argument">
-            <stringProp name="Argument.name">ResultsPath</stringProp>
-            <stringProp name="Argument.value">${__property(ResultsPath)}</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="jmeterengine.startlistenerslater" elementType="Argument">
-            <stringProp name="Argument.name">jmeterengine.startlistenerslater</stringProp>
-            <stringProp name="Argument.value">false</stringProp>
+            <stringProp name="Argument.value">10.101.6.35</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -147,17 +77,17 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="false">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="FrontEndServer1" elementType="Argument">
             <stringProp name="Argument.name">FrontEndServer1</stringProp>
-            <stringProp name="Argument.value">10.101.5.162</stringProp>
+            <stringProp name="Argument.value">owd-push-qa-fe1.hi.inet</stringProp>
             <stringProp name="Argument.desc">This is the front end server under load</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontEndServer2" elementType="Argument">
             <stringProp name="Argument.name">FrontEndServer2</stringProp>
-            <stringProp name="Argument.value">10.101.5.163</stringProp>
+            <stringProp name="Argument.value">owd-push-qa-fe2.hi.inet</stringProp>
             <stringProp name="Argument.desc">This is the front end that runs the POST to websocket node</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -173,21 +103,57 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Slave back end</stringProp>
           </elementProp>
+          <elementProp name="TEST_hello&amp;reg_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello&amp;reg_threads</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.desc">Number of virtual users for the Hello test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_hello&amp;reg_iterations" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello&amp;reg_iterations</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.desc">Duration of the Hello test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_sendnotifications_threads</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.desc">Number of virtual users sending notifications</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_sendnotifications_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.desc">Duration of the send notifications test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_channelup_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_channelup_threads</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.desc">Number of virtual users for the channel update test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_channelup_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_channelup_duration</stringProp>
+            <stringProp name="Argument.value">5</stringProp>
+            <stringProp name="Argument.desc">Duration of the channel update test</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="TEST_getTokens_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_getTokens_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Number of virtual users for the getTokens test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_getTokens_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_getTokens_duration</stringProp>
-            <stringProp name="Argument.value">300</stringProp>
+            <stringProp name="Argument.value">30</stringProp>
             <stringProp name="Argument.desc">Duration of the getTokens test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_registerUA_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_registerUA_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Number of virtual users for the registerUA test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -199,7 +165,7 @@
           </elementProp>
           <elementProp name="TEST_registerApp_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_registerApp_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Number of virtual users for the registerApp test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -211,13 +177,13 @@
           </elementProp>
           <elementProp name="TEST_receiveNotification_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_receiveNotification_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Number of virtual users for the receiveNotification test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_floodingNotifications_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_floodingNotifications_duration</stringProp>
-            <stringProp name="Argument.value">3600000</stringProp>
+            <stringProp name="Argument.value">300000</stringProp>
             <stringProp name="Argument.desc">Duration of the flood notifications test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -247,105 +213,227 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>false</message>
-            <threadName>true</threadName>
-            <dataType>false</dataType>
-            <encoding>false</encoding>
-            <assertions>false</assertions>
-            <subresults>false</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>true</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <url>true</url>
-            <hostname>true</hostname>
-            <threadCounts>true</threadCounts>
-            <sampleCount>true</sampleCount>
-            <idleTime>true</idleTime>
-          </value>
-        </objProp>
-        <stringProp name="filename">${ResultsPath}/results.jtl</stringProp>
-      </ResultCollector>
-      <hashTree/>
-      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>false</assertions>
-            <subresults>false</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>false</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-      </ResultCollector>
-      <hashTree/>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Get token" enabled="true">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-930322830">
-            <stringProp name="135803609">${TEST_getTokens_threads}</stringProp>
-            <stringProp name="48">0</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="-145682140">${TEST_getTokens_duration}</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-        </collectionProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
-        </elementProp>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Hello &amp; Channel Registration" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-      </kg.apc.jmeter.threads.UltimateThreadGroup>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${TEST_hello&amp;reg_iterations}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${TEST_hello&amp;reg_threads}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">60</stringProp>
+        <longProp name="ThreadGroup.start_time">1362561818000</longProp>
+        <longProp name="ThreadGroup.end_time">1362561818000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Get token" enabled="true">
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
-            <collectionProp name="Arguments.arguments"/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Hello" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&quot;messageType&quot;: &quot;hello&quot;,&quot;uaid&quot;: null,&quot;idTest&quot;:&quot;${idTest}&quot;}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
-          <stringProp name="HTTPSampler.port">8080</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
+          <stringProp name="HTTPSampler.port">8888</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/websocket</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="TestPlan.comments">This is the basic hello message to get a valid UAID</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <BSFPreProcessor guiclass="TestBeanGUI" testclass="BSFPreProcessor" testname="idTest" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="script">var idTest=Math.floor(Math.random()*10000001);
+vars.put(&quot;idTest&quot;,idTest);</stringProp>
+            <stringProp name="scriptLanguage">javascript</stringProp>
+          </BSFPreProcessor>
+          <hashTree/>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Check hello" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="1908789522">\{&quot;messageType&quot;:&quot;hello&quot;,&quot;uaid&quot;:&quot;.+?&quot;,&quot;status&quot;:.+?\}</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If register is ok" enabled="true">
+          <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
+        <hashTree>
+          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write idTest to disk" enabled="true">
+            <boolProp name="WAITING">true</boolProp>
+            <boolProp name="SUCCESFULL">true</boolProp>
+            <stringProp name="RESPONSE_CODE">200</stringProp>
+            <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
+            <stringProp name="REQUEST_DATA"></stringProp>
+            <stringProp name="RESPONSE_DATA">${idTest}</stringProp>
+            <stringProp name="RESPONSE_TIME">0</stringProp>
+            <stringProp name="LATENCY">0</stringProp>
+          </kg.apc.jmeter.samplers.DummySampler>
+          <hashTree>
+            <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write idTest to text file" enabled="true">
+              <stringProp name="filename">${ResultsPath}\id_Test.csv</stringProp>
+              <stringProp name="columns">responseData|\r\n</stringProp>
+              <boolProp name="overwrite">false</boolProp>
+              <stringProp name="header"></stringProp>
+              <stringProp name="footer"></stringProp>
+            </kg.apc.jmeter.reporters.FlexibleFileWriter>
+            <hashTree/>
+          </hashTree>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">100</stringProp>
+          </ConstantTimer>
+          <hashTree/>
+        </hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read idTest from file" enabled="false">
+          <stringProp name="filename">results\id_Test.csv</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="variableNames">idTest_F</stringProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">Todos los hilos</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Channel registration" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&quot;messageType&quot;:&quot;register&quot;,&quot;channelID&quot;:&quot;${idTest}&quot;,&quot;idTest&quot;:&quot;${idTest}&quot;}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
+          <stringProp name="HTTPSampler.port">8888</stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/websocket</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="TestPlan.comments">This is the basic registration message to get your channel ID registered</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Check register" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="123705038">\{&quot;messageType&quot;:&quot;register&quot;,&quot;status&quot;:.+?,&quot;pushEndpoint&quot;:&quot;https:\/\/.+?&quot;,&quot;channelID&quot;:&quot;.+?&quot;\}</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">2</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Extract channel" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">URL</stringProp>
+            <stringProp name="RegexExtractor.regex">\{&quot;messageType&quot;:&quot;register&quot;,&quot;status&quot;:.+?,&quot;pushEndpoint&quot;:&quot;https:\/\/(.+?):(.+?)\/(.+?)&quot;,&quot;channelID&quot;:&quot;(.+?)&quot;\}</stringProp>
+            <stringProp name="RegexExtractor.template">$1$,$2$,$3$,$4$</stringProp>
+            <stringProp name="RegexExtractor.default">failed</stringProp>
+            <stringProp name="RegexExtractor.match_number">1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+        </hashTree>
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If channel is ok" enabled="true">
+          <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
+          <boolProp name="IfController.evaluateAll">false</boolProp>
+        </IfController>
+        <hashTree>
+          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write channelID to disk" enabled="true">
+            <boolProp name="WAITING">true</boolProp>
+            <boolProp name="SUCCESFULL">true</boolProp>
+            <stringProp name="RESPONSE_CODE">200</stringProp>
+            <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
+            <stringProp name="REQUEST_DATA"></stringProp>
+            <stringProp name="RESPONSE_DATA">${URL}</stringProp>
+            <stringProp name="RESPONSE_TIME">0</stringProp>
+            <stringProp name="LATENCY">0</stringProp>
+          </kg.apc.jmeter.samplers.DummySampler>
+          <hashTree>
+            <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write channelID to text file" enabled="true">
+              <stringProp name="filename">${ResultsPath}\channelID_URL.csv</stringProp>
+              <stringProp name="columns">responseData|\r\n</stringProp>
+              <boolProp name="overwrite">false</boolProp>
+              <stringProp name="header"></stringProp>
+              <stringProp name="footer"></stringProp>
+            </kg.apc.jmeter.reporters.FlexibleFileWriter>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Send notifications" enabled="false">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${TEST_sendnotifications_duration}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${TEST_sendnotifications_threads}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1363014360000</longProp>
+        <longProp name="ThreadGroup.end_time">1363014360000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read Channel Id and URL" enabled="true">
+          <stringProp name="filename">results\channelID_URL.csv</stringProp>
+          <stringProp name="fileEncoding"></stringProp>
+          <stringProp name="variableNames">IP,port,URL,channelID</stringProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">Todos los hilos</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Notification" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">version=1</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
+          <stringProp name="HTTPSampler.port">${port}</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol">HTTPS</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/token</stringProp>
-          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <stringProp name="HTTPSampler.path">${URL}</stringProp>
+          <stringProp name="HTTPSampler.method">PUT</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -353,438 +441,56 @@
           <boolProp name="HTTPSampler.monitor">false</boolProp>
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
         </HTTPSamplerProxy>
-        <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
-          </ResponseAssertion>
-          <hashTree/>
-          <SizeAssertion guiclass="SizeAssertionGui" testclass="SizeAssertion" testname="Size Assertion" enabled="true">
-            <stringProp name="Assertion.test_field">SizeAssertion.response_data</stringProp>
-            <stringProp name="SizeAssertion.size">320</stringProp>
-            <intProp name="SizeAssertion.operator">1</intProp>
-          </SizeAssertion>
-          <hashTree/>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="RE: get the token" enabled="true">
-            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-            <stringProp name="RegexExtractor.refname">token</stringProp>
-            <stringProp name="RegexExtractor.regex">.*</stringProp>
-            <stringProp name="RegexExtractor.template">$0$</stringProp>
-            <stringProp name="RegexExtractor.default">failed</stringProp>
-            <stringProp name="RegexExtractor.match_number">1</stringProp>
-          </RegexExtractor>
-          <hashTree/>
-        </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If token is valid" enabled="true">
-          <stringProp name="TestPlan.comments">We check the length of the token only</stringProp>
-          <stringProp name="IfController.condition">${__javaScript(&apos;${token}&apos;.length)}==320</stringProp>
-          <boolProp name="IfController.evaluateAll">false</boolProp>
-        </IfController>
-        <hashTree>
-          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write token to disk" enabled="true">
-            <boolProp name="WAITING">false</boolProp>
-            <boolProp name="SUCCESFULL">true</boolProp>
-            <stringProp name="RESPONSE_CODE">200</stringProp>
-            <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
-            <stringProp name="REQUEST_DATA"></stringProp>
-            <stringProp name="RESPONSE_DATA">${token}</stringProp>
-            <stringProp name="RESPONSE_TIME"></stringProp>
-            <stringProp name="LATENCY"></stringProp>
-          </kg.apc.jmeter.samplers.DummySampler>
-          <hashTree>
-            <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token to text file" enabled="true">
-              <stringProp name="filename">${ResultsPath}/tokens_new.txt</stringProp>
-              <stringProp name="columns">responseData|\r\n</stringProp>
-              <boolProp name="overwrite">false</boolProp>
-              <stringProp name="header"></stringProp>
-              <stringProp name="footer"></stringProp>
-            </kg.apc.jmeter.reporters.FlexibleFileWriter>
-            <hashTree/>
-          </hashTree>
-        </hashTree>
-      </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Register UA" enabled="true">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="-1598965108">
-            <stringProp name="1468522606">${TEST_registerUA_threads}</stringProp>
-            <stringProp name="48">0</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="-1781066193">${TEST_registerUA_duration}</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-        </collectionProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-      </kg.apc.jmeter.threads.UltimateThreadGroup>
-      <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register UA" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;data&quot;: {&quot;uatoken&quot;:&quot;${token}&quot;}, &quot;messageType&quot;:&quot;registerUA&quot;}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer2_uaws}</stringProp>
-          <stringProp name="HTTPSampler.port">8888</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/websocket</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.BROWSER_COMPATIBLE_MULTIPART">true</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Retrieve token from text file" enabled="true">
-            <stringProp name="delimiter">,</stringProp>
-            <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">../../../../../${ResultsPath}/tokens_new.txt</stringProp>
-            <boolProp name="quotedData">false</boolProp>
-            <boolProp name="recycle">true</boolProp>
-            <stringProp name="shareMode">All threads</stringProp>
-            <boolProp name="stopThread">false</boolProp>
-            <stringProp name="variableNames">token</stringProp>
-          </CSVDataSet>
-          <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Check response" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="1216502566">{&quot;status&quot;:&quot;REGISTERED&quot;, &quot;messageType&quot;: &quot;registerUA&quot;}</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
-          </ResponseAssertion>
-          <hashTree/>
-        </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If token is registered" enabled="true">
-          <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
-          <boolProp name="IfController.evaluateAll">false</boolProp>
-        </IfController>
-        <hashTree>
-          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Response writer" enabled="true">
-            <boolProp name="WAITING">false</boolProp>
-            <boolProp name="SUCCESFULL">true</boolProp>
-            <stringProp name="RESPONSE_CODE">200</stringProp>
-            <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
-            <stringProp name="REQUEST_DATA"></stringProp>
-            <stringProp name="RESPONSE_DATA">${token}</stringProp>
-            <stringProp name="RESPONSE_TIME">0</stringProp>
-            <stringProp name="LATENCY">0</stringProp>
-          </kg.apc.jmeter.samplers.DummySampler>
-          <hashTree>
-            <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token to text file" enabled="true">
-              <stringProp name="filename">${ResultsPath}/tokens_registered.txt</stringProp>
-              <stringProp name="columns">responseData|\r\n</stringProp>
-              <boolProp name="overwrite">false</boolProp>
-              <stringProp name="header"></stringProp>
-              <stringProp name="footer"></stringProp>
-            </kg.apc.jmeter.reporters.FlexibleFileWriter>
-            <hashTree/>
-          </hashTree>
-        </hashTree>
-      </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Register App" enabled="true">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="754134232">
-            <stringProp name="1221135659">${TEST_registerApp_threads}</stringProp>
-            <stringProp name="0">0</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="-860126958">${TEST_registerApp_duration}</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-        </collectionProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-      </kg.apc.jmeter.threads.UltimateThreadGroup>
-      <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Register WA" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;data&quot;:{&quot;uatoken&quot;:&quot;${token}&quot;,&quot;pbkbase64&quot;:&quot;LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1JR2ZNQTBHQ1NxR1NJYjNEUUVCQVFVQUE0R05BRENCaVFLQmdRREZXMTRTbml3Q2ZKUy8vb0t4U0hpbi91QzENClA2SUJIaUl2WXIyTW1oQlJjUnkwanVOSkg4T1ZndmlGS0VWM2loSGlUTFVTajk0bWdmbGo5Unh6US8wWFI4dHoNClB5d0tIeFNHdzRBbWY3aktGMVpzaENVZHlyT2k4Y0xmemR3SXoxblB2REY0d3diaTJmcXNlWDVZN1lsWXhmcEYNCmx4OEd2Ym5ZSkhPLzUwUUdrUUlEQVFBQg0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0t&quot;,&quot;watoken&quot;:&quot;${__RandomString(1024,abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890)}&quot;},&quot;messageType&quot;:&quot;registerWA&quot;}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer2_uaws}</stringProp>
-          <stringProp name="HTTPSampler.port">8888</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/websocket</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.BROWSER_COMPATIBLE_MULTIPART">true</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Retrieve token from text file" enabled="true">
-            <stringProp name="delimiter">,</stringProp>
-            <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">../../../../../${ResultsPath}/tokens_registered.txt</stringProp>
-            <boolProp name="quotedData">false</boolProp>
-            <boolProp name="recycle">true</boolProp>
-            <stringProp name="shareMode">All threads</stringProp>
-            <boolProp name="stopThread">false</boolProp>
-            <stringProp name="variableNames">token</stringProp>
-          </CSVDataSet>
-          <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
-          </ResponseAssertion>
-          <hashTree/>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Extract URL" enabled="true">
-            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-            <stringProp name="RegexExtractor.refname">URL</stringProp>
-            <stringProp name="RegexExtractor.regex">http:\/\/[^ \n\r]+(?=[&quot;])</stringProp>
-            <stringProp name="RegexExtractor.template">$0$</stringProp>
-            <stringProp name="RegexExtractor.default">failed</stringProp>
-            <stringProp name="RegexExtractor.match_number">1</stringProp>
-          </RegexExtractor>
-          <hashTree/>
-        </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If URL is correct" enabled="true">
-          <stringProp name="IfController.condition">&quot;${URL}&quot;!=&quot;failed&quot;</stringProp>
-          <boolProp name="IfController.evaluateAll">false</boolProp>
-        </IfController>
-        <hashTree>
-          <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Write token and URL to disk" enabled="true">
-            <boolProp name="WAITING">false</boolProp>
-            <boolProp name="SUCCESFULL">true</boolProp>
-            <stringProp name="RESPONSE_CODE">200</stringProp>
-            <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
-            <stringProp name="REQUEST_DATA"></stringProp>
-            <stringProp name="RESPONSE_DATA">${token}	${URL}</stringProp>
-            <stringProp name="RESPONSE_TIME">0</stringProp>
-            <stringProp name="LATENCY">0</stringProp>
-          </kg.apc.jmeter.samplers.DummySampler>
-          <hashTree>
-            <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write token and URL to text file" enabled="true">
-              <stringProp name="filename">${ResultsPath}/tokens_url.txt</stringProp>
-              <stringProp name="columns">responseData|\r\n</stringProp>
-              <boolProp name="overwrite">false</boolProp>
-              <stringProp name="header"></stringProp>
-              <stringProp name="footer"></stringProp>
-            </kg.apc.jmeter.reporters.FlexibleFileWriter>
-            <hashTree/>
-          </hashTree>
-        </hashTree>
-      </hashTree>
-      <kg.apc.jmeter.threads.UltimateThreadGroup guiclass="kg.apc.jmeter.threads.UltimateThreadGroupGui" testclass="kg.apc.jmeter.threads.UltimateThreadGroup" testname="Receive notification" enabled="true">
-        <collectionProp name="ultimatethreadgroupdata">
-          <collectionProp name="1479121754">
-            <stringProp name="-1222443461">${TEST_receiveNotification_threads}</stringProp>
-            <stringProp name="0">0</stringProp>
-            <stringProp name="1722">60</stringProp>
-            <stringProp name="698331650">${TEST_receiveNotification_duration}</stringProp>
-            <stringProp name="1722">60</stringProp>
-          </collectionProp>
-        </collectionProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <intProp name="LoopController.loops">-1</intProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-      </kg.apc.jmeter.threads.UltimateThreadGroup>
-      <hashTree>
-        <kg.apc.jmeter.samplers.DummySampler guiclass="kg.apc.jmeter.samplers.DummySamplerGui" testclass="kg.apc.jmeter.samplers.DummySampler" testname="Get token, SERVER and PATH" enabled="true">
-          <boolProp name="WAITING">true</boolProp>
-          <boolProp name="SUCCESFULL">true</boolProp>
-          <stringProp name="RESPONSE_CODE">200</stringProp>
-          <stringProp name="RESPONSE_MESSAGE">OK</stringProp>
-          <stringProp name="REQUEST_DATA"></stringProp>
-          <stringProp name="RESPONSE_DATA">${URL}</stringProp>
-          <stringProp name="RESPONSE_TIME">0</stringProp>
-          <stringProp name="LATENCY">0</stringProp>
-        </kg.apc.jmeter.samplers.DummySampler>
-        <hashTree>
-          <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Retrieve URL from text file" enabled="true">
-            <stringProp name="delimiter">\t</stringProp>
-            <stringProp name="fileEncoding"></stringProp>
-            <stringProp name="filename">../../../../../${ResultsPath}/tokens_url.txt</stringProp>
-            <boolProp name="quotedData">false</boolProp>
-            <boolProp name="recycle">true</boolProp>
-            <stringProp name="shareMode">Hilo actual</stringProp>
-            <boolProp name="stopThread">false</boolProp>
-            <stringProp name="variableNames">token,URL</stringProp>
-          </CSVDataSet>
-          <hashTree/>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Extract SERVER" enabled="true">
-            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-            <stringProp name="RegexExtractor.refname">SERVER</stringProp>
-            <stringProp name="RegexExtractor.regex">http:\/\/(.+?):8081\/</stringProp>
-            <stringProp name="RegexExtractor.template">$1$</stringProp>
-            <stringProp name="RegexExtractor.default">failed</stringProp>
-            <stringProp name="RegexExtractor.match_number">1</stringProp>
-            <stringProp name="Scope.variable">URL</stringProp>
-          </RegexExtractor>
-          <hashTree/>
-          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="Extract PATH" enabled="true">
-            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
-            <stringProp name="RegexExtractor.refname">PATH</stringProp>
-            <stringProp name="RegexExtractor.regex">:8081(.*)</stringProp>
-            <stringProp name="RegexExtractor.template">$1$</stringProp>
-            <stringProp name="RegexExtractor.default">failed</stringProp>
-            <stringProp name="RegexExtractor.match_number">1</stringProp>
-            <stringProp name="Scope.variable">URL</stringProp>
-          </RegexExtractor>
-          <hashTree/>
-        </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST notification" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;messageType&quot;:&quot;notification&quot;,&quot;id&quot;:1234,&quot;message&quot;:&quot;Hola&quot;,&quot;signature&quot;:&quot;691cb72015afdba8742349431500b497fe689523c7bd8b9ab9d905160efed20e8c70e7ba1aec112c494721f253b8874f90d611b8ebd78e5017aaf971f0f01503e2d3ba1949cd11c145f0537b7c80a7933368f405d12b723f8107c92af1e1d58a93c48a9af3f55ee519719b8ba1632e1fd12f9d3eb99846abb849793516bf1fa0&quot;,&quot;ttl&quot;:0,&quot;timestamp&quot;:&quot;SINCE_EPOCH_TIME&quot;,&quot;priority&quot;:1}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${SERVER}</stringProp>
-          <stringProp name="HTTPSampler.port">8081</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">${PATH}</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.BROWSER_COMPATIBLE_MULTIPART">true</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="200 Assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="49586">200</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
-          </ResponseAssertion>
-          <hashTree/>
-          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="Notification received assertion" enabled="true">
-            <collectionProp name="Asserion.test_strings">
-              <stringProp name="-1535429035">{&quot;status&quot;: &quot;ACCEPTED&quot;}</stringProp>
-            </collectionProp>
-            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
-            <boolProp name="Assertion.assume_success">false</boolProp>
-            <intProp name="Assertion.test_type">8</intProp>
-          </ResponseAssertion>
-          <hashTree/>
-        </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Retrieve notification" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&quot;data&quot;: {&quot;uatoken&quot;:&quot;${token}&quot;}, &quot;messageType&quot;:&quot;getAllMessages&quot;}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontEndServer2}</stringProp>
-          <stringProp name="HTTPSampler.port">8888</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/websocket</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">false</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.BROWSER_COMPATIBLE_MULTIPART">true</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-        </HTTPSamplerProxy>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Flood notifications" enabled="true">
+      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Flood notifications" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="Threads initial delay">0</stringProp>
+        <stringProp name="Start users count">0</stringProp>
+        <stringProp name="Start users period">0</stringProp>
+        <stringProp name="Stop users count">0</stringProp>
+        <stringProp name="Stop users period">0</stringProp>
+        <stringProp name="flighttime">1</stringProp>
+        <stringProp name="rampUp">0</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">1</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <longProp name="ThreadGroup.start_time">1350647861000</longProp>
-        <longProp name="ThreadGroup.end_time">1350647861000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-      </ThreadGroup>
+      </kg.apc.jmeter.threads.SteppingThreadGroup>
       <hashTree>
         <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="Flooding notifications" enabled="true">
           <stringProp name="TestPlan.comments">This ssh command executes a flooding script to verify how many simultaneous notifications can be handled by the whole system</stringProp>
-          <stringProp name="hostname">${FrontendServer2_uaws}</stringProp>
+          <stringProp name="hostname">${FrontEndServer1}</stringProp>
           <intProp name="port">22</intProp>
           <stringProp name="username">owd</stringProp>
-          <stringProp name="password">owd1</stringProp>
-          <stringProp name="command">nohup node ./flood-push-server.js ${FrontendServer1_uaws} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ./flood_notification.out</stringProp>
+          <stringProp name="password">owd</stringProp>
+          <stringProp name="command">nohup node ./flood-push-server.js ${FrontEndServer1} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ./flood_notification.out</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Connections Monitor" enabled="true">
-        <stringProp name="TestPlan.comments">Command to count the number of opened connections by flood notification</stringProp>
+      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Monitoring flood notifications" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="Threads initial delay">0</stringProp>
+        <stringProp name="Start users count">0</stringProp>
+        <stringProp name="Start users period">0</stringProp>
+        <stringProp name="Stop users count">0</stringProp>
+        <stringProp name="Stop users period">0</stringProp>
+        <stringProp name="flighttime">300</stringProp>
+        <stringProp name="rampUp">5</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${TEST_floodingNotifications_monitor}</stringProp>
+          <intProp name="LoopController.loops">-1</intProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <longProp name="ThreadGroup.start_time">1350886807000</longProp>
-        <longProp name="ThreadGroup.end_time">1350886807000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-      </ThreadGroup>
+      </kg.apc.jmeter.threads.SteppingThreadGroup>
       <hashTree>
         <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="netstat" enabled="true">
           <stringProp name="TestPlan.comments">Command to monitor the number of opened connections to manage notifications</stringProp>
-          <stringProp name="hostname">${FrontendServer2_uaws}</stringProp>
+          <stringProp name="hostname">${FrontEndServer1}</stringProp>
           <intProp name="port">22</intProp>
           <stringProp name="username">owd</stringProp>
-          <stringProp name="password">owd1</stringProp>
+          <stringProp name="password">owd</stringProp>
           <stringProp name="command">./connections_and_date.sh</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree>
@@ -820,194 +526,9 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.TransactionsPerSecondGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Transactions per Second" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>true</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-        <longProp name="interval_grouping">1000</longProp>
-        <boolProp name="graph_aggregated">false</boolProp>
-        <stringProp name="include_sample_labels"></stringProp>
-        <stringProp name="exclude_sample_labels"></stringProp>
-      </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
-      <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ThreadsStateOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Active Threads Over Time" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>false</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>true</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-        <longProp name="interval_grouping">500</longProp>
-        <boolProp name="graph_aggregated">false</boolProp>
-        <stringProp name="include_sample_labels"></stringProp>
-        <stringProp name="exclude_sample_labels"></stringProp>
-      </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
-      <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ThroughputVsThreadsGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Transaction Throughput vs Threads" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>true</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-        <longProp name="interval_grouping">500</longProp>
-        <boolProp name="graph_aggregated">false</boolProp>
-        <stringProp name="include_sample_labels"></stringProp>
-        <stringProp name="exclude_sample_labels"></stringProp>
-      </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
-      <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.ResponseTimesDistributionGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Response Times Distribution" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>true</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-        <longProp name="interval_grouping">100</longProp>
-        <boolProp name="graph_aggregated">false</boolProp>
-        <stringProp name="include_sample_labels"></stringProp>
-        <stringProp name="exclude_sample_labels"></stringProp>
-      </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
-      <hashTree/>
-      <kg.apc.jmeter.vizualizers.CorrectedResultCollector guiclass="kg.apc.jmeter.vizualizers.BytesThroughputOverTimeGui" testclass="kg.apc.jmeter.vizualizers.CorrectedResultCollector" testname="Bytes Throughput Over Time" enabled="false">
-        <boolProp name="ResultCollector.error_logging">false</boolProp>
-        <objProp>
-          <name>saveConfig</name>
-          <value class="SampleSaveConfiguration">
-            <time>true</time>
-            <latency>true</latency>
-            <timestamp>true</timestamp>
-            <success>true</success>
-            <label>true</label>
-            <code>true</code>
-            <message>true</message>
-            <threadName>true</threadName>
-            <dataType>true</dataType>
-            <encoding>false</encoding>
-            <assertions>true</assertions>
-            <subresults>true</subresults>
-            <responseData>false</responseData>
-            <samplerData>false</samplerData>
-            <xml>true</xml>
-            <fieldNames>false</fieldNames>
-            <responseHeaders>false</responseHeaders>
-            <requestHeaders>false</requestHeaders>
-            <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
-            <assertionsResultsToSave>0</assertionsResultsToSave>
-            <bytes>true</bytes>
-            <threadCounts>true</threadCounts>
-          </value>
-        </objProp>
-        <stringProp name="filename"></stringProp>
-        <longProp name="interval_grouping">1000</longProp>
-        <boolProp name="graph_aggregated">false</boolProp>
-        <stringProp name="include_sample_labels"></stringProp>
-        <stringProp name="exclude_sample_labels"></stringProp>
-      </kg.apc.jmeter.vizualizers.CorrectedResultCollector>
-      <hashTree/>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="true"/>
       <hashTree>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="false">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1037,7 +558,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/localhost.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/localhost_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1100,34 +621,40 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${FrontendServer1_uaws}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${FrontendServer1_uaws}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="-1294242237">
-              <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
+            <collectionProp name="1041802919">
+              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="700010738">
-              <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
+            <collectionProp name="-1258911402">
+              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="812350754">
-              <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
+            <collectionProp name="-1146571386">
+              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1359544029">
-              <stringProp name="2121474907">${FrontendServer1_uaws}</stringProp>
+            <collectionProp name="-599378111">
+              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="630097849">
+              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="2112896831">Disks I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -1163,32 +690,32 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${FrontendServer2_uaws}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${FrontendServer2_uaws}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="-418727122">
-              <stringProp name="-1285988708">${FrontendServer2_uaws}</stringProp>
+            <collectionProp name="1146339538">
+              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1575525853">
-              <stringProp name="-1285988708">${FrontendServer2_uaws}</stringProp>
+            <collectionProp name="-1154374783">
+              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1687865869">
-              <stringProp name="-1285988708">${FrontendServer2_uaws}</stringProp>
+            <collectionProp name="-1042034767">
+              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-2059908152">
-              <stringProp name="-1285988708">${FrontendServer2_uaws}</stringProp>
+            <collectionProp name="-494841492">
+              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
@@ -1226,32 +753,32 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${FrontendServer1_nsas}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${FrontendServer1_nsas}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="727298759">
-              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
+            <collectionProp name="-1528828277">
+              <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1266954216">
-              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
+            <collectionProp name="771886044">
+              <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="839638775">
-              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
+            <collectionProp name="-1416488261">
+              <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1386832050">
-              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
+            <collectionProp name="-869294986">
+              <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
@@ -1289,32 +816,32 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${FrontendServer2_nsas}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${FrontendServer2_nsas}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="550778507">
-              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
+            <collectionProp name="974457866">
+              <stringProp name="1182480843">${BackEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1443474468">
-              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
+            <collectionProp name="-1019795109">
+              <stringProp name="1182480843">${BackEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="663118523">
-              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
+            <collectionProp name="1086797882">
+              <stringProp name="1182480843">${BackEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1210311798">
-              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
+            <collectionProp name="1633991157">
+              <stringProp name="1182480843">${BackEndServer2}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
@@ -1322,7 +849,7 @@
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer1_nsuaudp" enabled="true">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer1_nsuaudp" enabled="false">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1352,7 +879,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${FrontendServer1_nsuaudp}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${FrontendServer1_nsuaudp}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1385,7 +912,7 @@
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer2_nsuaudp" enabled="true">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer2_nsuaudp" enabled="false">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1415,7 +942,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${FrontendServer2_nsuaudp}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${FrontendServer2_nsuaudp}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1478,7 +1005,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${BackendServer1_db}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer1_db}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1541,7 +1068,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${BackendServer2_db}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer2_db}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1604,7 +1131,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${BackendServer3_db}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer3_db}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1667,7 +1194,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${BackendServer1_nsmq}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer1_nsmq}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1730,7 +1257,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${BackendServer2_nsmq}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer2_nsmq}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1793,7 +1320,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${BackendServer1_nsmon}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer1_nsmon}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1856,7 +1383,7 @@
               <threadCounts>true</threadCounts>
             </value>
           </objProp>
-          <stringProp name="filename">${ResultsPath}/${BackendServer2_nsmon}.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer2_nsmon}_${__time(yyyyMMdd,)}.csv</stringProp>
           <longProp name="interval_grouping">1000</longProp>
           <boolProp name="graph_aggregated">false</boolProp>
           <stringProp name="include_sample_labels"></stringProp>
@@ -1890,6 +1417,77 @@
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
       </hashTree>
+      <ResultCollector guiclass="SimpleDataWriter" testclass="ResultCollector" testname="Simple Data Writer" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>true</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>true</responseData>
+            <samplerData>true</samplerData>
+            <xml>true</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>true</responseHeaders>
+            <requestHeaders>true</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <url>true</url>
+            <fileName>true</fileName>
+            <hostname>true</hostname>
+            <threadCounts>true</threadCounts>
+            <sampleCount>true</sampleCount>
+            <idleTime>true</idleTime>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
     </hashTree>
   </hashTree>
 </jmeterTestPlan>
