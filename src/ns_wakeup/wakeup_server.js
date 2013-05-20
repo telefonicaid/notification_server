@@ -12,7 +12,8 @@ var log = require('../common/logger.js'),
     consts = require('../config.js').consts,
     dgram = require('dgram'),
     pages = require('../common/pages.js'),
-    maintance = require('../common/maintance.js');
+    maintance = require('../common/maintance.js'),
+    helpers = require('../common/helpers.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -35,6 +36,7 @@ server.prototype = {
     // Create a new HTTP(S) Server
     if (this.ssl) {
       var options = {
+        ca: helpers.getCaChannel(),
         key: fs.readFileSync(consts.key),
         cert: fs.readFileSync(consts.cert)
       };
