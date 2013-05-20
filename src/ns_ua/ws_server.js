@@ -365,7 +365,7 @@ server.prototype = {
             }
 
             //No channelsUpdate (no new)
-            return cb(null); 
+            return cb(null);
           });
         }
 

@@ -117,7 +117,6 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
-     
     // Create a new HTTPS Server
     var options = {
       ca: helpers.getCaChannel(),
