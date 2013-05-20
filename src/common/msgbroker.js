@@ -31,9 +31,7 @@ var MsgBroker = function() {
   // Get some events love
   this.on('queueconnected', (function() {
     log.debug('msgBroker::queueconnected --> New queue connected, we have ' + this.queues.length + ' connections opened');
-    if (this.queues.length === 1) {
-      this.emit('brokerconnected');
-    }
+    this.emit('brokerconnected');
   }).bind(this));
 
   this.on('queuedisconnected', (function() {
@@ -106,8 +104,8 @@ var MsgBroker = function() {
         this.queues.splice(index, 1);
       }
       if (!gControlledClose) {
-        this.emit('queuedisconnected');
-        log.error(log.messages.ERROR_MBERRORBROKERDISCONNECTED);
+        this.emit('queuedisconnected', index);
+        log.info(log.messages.ERROR_MBERRORBROKERDISCONNECTED);
       }
     }).bind(this));
 

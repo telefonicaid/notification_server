@@ -27,7 +27,7 @@ MobileNetwork.prototype = {
 
   init: function() {
     this.resetCache();
-    datastore.on('ddbbconnected', (function() {
+    datastore.once('ddbbconnected', (function() {
       log.debug('[MobileNetwork] library loaded');
       this.ready = true;
       var callbacks = this.callbacks || [];
