@@ -236,6 +236,10 @@ exports.logtraces = {
     id: 0x2308,
     m: "WS::onWSMessage::getPendingMessages --> No channels for this node."
   },
+  CRITICAL_WSERRORULIMIT: {
+    id: 0x2309,
+    m: "WS:init --> Ulimit too low, please, raise the value"
+  },
 
   ERROR_CONNECTORERRORNOTVALID: {
     id: 0x2401,

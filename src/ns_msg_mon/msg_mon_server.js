@@ -19,7 +19,7 @@ function monitor() {
 monitor.prototype = {
   init: function() {
     var self = this;
-    msgBroker.on('brokerconnected', function() {
+    msgBroker.once('brokerconnected', function() {
       log.info('MSG_mon::init --> MSG monitor server running');
       self.ready = true;
       //We want a durable queue, that do not autodeletes on last closed connection, and
@@ -39,7 +39,7 @@ monitor.prototype = {
       );
     });
 
-    msgBroker.on('brokerdisconnected', function() {
+    msgBroker.once('brokerdisconnected', function() {
       self.ready = false;
       log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
         "class": 'ns_msg_monitor',
