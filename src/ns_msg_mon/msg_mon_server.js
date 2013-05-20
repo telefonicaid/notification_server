@@ -6,10 +6,11 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger.js"),
-    crypto = require("../common/cryptography.js"),
-    msgBroker = require("../common/msgbroker.js"),
-    dataStore = require("../common/datastore.js");
+var log = require('../common/logger.js'),
+    crypto = require('../common/cryptography.js'),
+    msgBroker = require('../common/msgbroker.js'),
+    dataStore = require('../common/datastore.js'),
+    connectionstate = require('../common/constants.js').connectionstate;
 
 function monitor() {
   this.ready = false;
@@ -30,7 +31,7 @@ monitor.prototype = {
           'x-ha-policy': 'all'
         }
       };
-      msgBroker.subscribe("newMessages",
+      msgBroker.subscribe('newMessages',
                           args,
                           function(msg) {
                             onNewMessage(msg);
@@ -44,21 +45,20 @@ monitor.prototype = {
     });
 
     // Connect to the message broker
-    setTimeout(function() {
+    process.nextTick(function() {
       msgBroker.init();
-    }, 10);
+    });
 
     // Check if we are alive
     setTimeout(function() {
       if (!self.ready)
         log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30*1000); //Wait 30 seconds
+    }, 30 * 1000); //Wait 30 seconds
   },
 
-  stop: function(callback) {
+  stop: function() {
     msgBroker.close();
     dataStore.close();
-    callback(null);
   }
 };
 
@@ -66,73 +66,88 @@ function onNewMessage(msg) {
   var json = {};
   try {
     json = JSON.parse(msg);
-  } catch(e) {
-    return log.error('MSG_mon::onNewMessage --> newMessages queue recived a bad JSON. Check');
+  } catch (e) {
+    return log.error('MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check');
+  }
+  log.debug('MSG_mon::onNewMessage --> Message from the queue:', json);
+
+  //MsgType is either 0, 1, or 2.
+  // 0 is "old" full notifications, with body, to be used by apps directly
+  // 1 is Thialfy notifications, just have app and vs attributes
+  // 2 is Desktop notifications, have a id (to be acked), a version and a body
+  var msgType = -1;
+  if (json.appToken) {
+    msgType = 0;
+  } else if (json.app && json.vs) {
+    msgType = 1;
+  } else if (json.body) {
+    msgType = 2;
   }
 
-  /**
-   * Messages are formed like this:
-   * { "messageId": "UUID",
-   *   "uatoken": "UATOKEN",
-   *   "data": {
-   *     "fillmein"
-   *   },
-   *   "payload": {
-   *      "_id": "internalMongoDBidentifier",
-   *      "watoken": "WATOKEN",
-   *      "payload": {
-   *        //Standard notification
-   *        "id",
-   *        "message": "original Payload",
-   *        "ttl",
-   *        "timestamp",
-   *        "priority",
-   *        "messageId": "equals the first messageId",
-   *        "url": URL_TO_PUSH
-   *     }
-   *   }
-   * }
-   */
+  console.log("MSGType is= " + msgType);
 
-  if (!json.watoken) {
-    return log.error('MSG_mon::onNewMessage --> newMessages has a message without WAtoken attribute');
+  switch (msgType) {
+    case 0:
+      handleOldNotification(json);
+      break;
+    case 1:
+      handleThialfiNotification(json);
+      break;
+    case 2:
+      handleDesktopNotification(json);
+      break;
+    default:
+      log.error('MSG_mon::onNewMessage --> Bad msgType: ', json);
+      return;
   }
-  log.debug('MSG_mon::onNewMessage --> Mensaje desde la cola:' + JSON.stringify(json));
-  dataStore.getApplication(json.watoken.toString(), onApplicationData, json);
 }
 
-function onApplicationData(appData, json) {
-  if (!appData || !appData.node) {
-    log.debug("No node or application detected. Message removed ! - " + JSON.stringify(json));
-    dataStore.removeMessage(json._id);
-    return log.debug("MSG_mon::onApplicationData --> No nodes, message removed and aborting");
+function handleOldNotification(json) {
+  dataStore.getApplication(json.appToken, onApplicationData, json);
+}
+
+function handleThialfiNotification(json) {
+  dataStore.getApplication(json.app, onApplicationData, json);
+}
+
+function handleDesktopNotification(json) {
+  //TODO
+  console.log('I\'m handling a Desktop notification');
+}
+
+function onApplicationData(error, appData, json) {
+  if (error) {
+    return log.error('MSG_mon::onApplicationData --> There was an error');
   }
 
-  log.debug("MSG_mon::onApplicationData --> Application data recovered: " + JSON.stringify(appData));
-  appData.node.forEach(function (nodeData, i) {
-    log.debug("MSG_mon::onApplicationData --> Notifying node: " + i + ": " + JSON.stringify(nodeData));
-    dataStore.getNode(nodeData, onNodeData, json);
+  log.debug('MSG_mon::onApplicationData --> Application data recovered:', appData);
+  appData.forEach(function(nodeData, i) {
+    log.debug('MSG_mon::onApplicationData --> Notifying node: ' + i + ':', nodeData);
+    onNodeData(nodeData, json);
   });
 }
 
 function onNodeData(nodeData, json) {
   if (!nodeData) {
-    return log.debug("No node info found!");
+    log.error('MSG_mon::onNodeData --> No node info, FIX YOUR BACKEND!');
+    return;
   }
 
-  log.debug("MSG_mon::onNodeData --> Node data recovered: " + JSON.stringify(nodeData));
-  log.debug("MSG_mon::onNodeData --> Notify into the messages queue of node " + nodeData.serverId + " # " + json._id);
+  // Is the node connected? AKA: is websocket?
+  if (nodeData.co === connectionstate.DISCONNECTED) {
+    log.debug('MSG_mon::onNodeData --> Node recovered but not connected, just delaying');
+    return;
+  }
+
+  log.debug('MSG_mon::onNodeData --> Node connected:', nodeData);
+  log.notify('MSG_mon::onNodeData --> Notify into the messages queue of node ' + nodeData.si + ' # ' + json.messageId);
   var body = {
-    "messageId": json._id,
-    "uatoken": nodeData._id,
-    "data": nodeData.data,
-    "payload": json
+    messageId: json.messageId,
+    uaid: nodeData._id,
+    dt: nodeData.dt,
+    payload: json
   };
-  msgBroker.push(
-    nodeData.serverId,
-    body
-  );
+  msgBroker.push(nodeData.si, body);
 }
 
-// Exports
 exports.monitor = monitor;

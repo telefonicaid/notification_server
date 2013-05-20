@@ -6,18 +6,46 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-function connector_websocket(data,conn) {
+function connector_websocket(data, connection) {
   this.data = data;
-  this.connection = conn;
+  this.connection = connection;
 }
 
 connector_websocket.prototype = {
   getType: function() {
-    return "WS";
+    return 'WS';
+  },
+
+  getServer: function() {
+    return process.serverId;
   },
 
   getConnection: function() {
     return this.connection;
+  },
+
+  getUAtoken: function() {
+    return this.data.uaid;
+  },
+
+  getInterface: function() {
+    return null;
+  },
+
+  getMobileNetwork: function() {
+    return null;
+  },
+
+  getProtocol: function() {
+    return 'ws';
+  },
+
+  canBeWakeup: function() {
+    return false;
+  },
+
+  resetAutoclose: function() {
+    return; // nothing to do on this connector
   },
 
   notify: function(msgList) {

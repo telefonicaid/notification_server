@@ -1,0 +1,32 @@
+Application Server
+------------------
+This server application emulates a third party server of a gaia's web application
+that sends push notifications to the app running on a Firefox OS device.
+
+This application is composed by one servlet and one web page.
+
+One servlet, called Register, is mapped to /ApplicationServer/register path and
+is responsible to listen for the requests of the mobile clients to perform two
+operations.
+
+If the client sends an URL parameter called 'push_url', then it will save the url to
+send push notifications.
+
+If the client sends an URL parameter called 'version', it will return the message with the
+requested version.
+
+On the other hand, the Monitor.html web can be used to see which clients are registered
+and it allows to send push notification messages to the registered clients.
+
+So, the urls to access to the server are the following:
+
+- Register a notification URL: http://host:port/ApplicationServer/register?push_url=<URL>  
+- Retrieve the public key:     http://host:port/ApplicationServer/register?version=<version>
+- Access to monitor:           http://host:port/ApplicationServer/Monitor.html
+
+
+Configuration
+-------------
+- For websockets is required jdk 1.7
+- Configure the address of the machine where this server is running. It is configured
+  in WEB-INF/Monitor.js (var host = <host:port>).

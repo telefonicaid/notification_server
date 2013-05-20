@@ -1,0 +1,26 @@
+{
+  "name": "TwitterPush",
+  "description": "Push Twitter stream client",
+  "launch_path": "/index.html",
+  "developer": {
+    "name": "Fernando Rodriguez Sela",
+    "url": "https://github.com/telefonicaid/notification_server"
+  },
+  "locales": {
+    "en-US": {
+      "name": "Twitter Push stream client",
+      "description": "Client which receives stream tweets via Push server"
+    },
+    "es": {
+      "name": "Notificaciones push nativas",
+      "description": "Cliente para recibir tweets a través del servidor Push"
+    }
+  },
+  "default_locale": "en-US",
+  "icons": {
+    "120": "/style/icons/PushIcon.png"
+  },
+  "permissions": {
+    "mobileconnection":{}
+  }
+}

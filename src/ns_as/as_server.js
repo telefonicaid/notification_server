@@ -6,27 +6,32 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var log = require("../common/logger"),
-    consts = require("../config.js").consts,
-    https = require('https'),
+var log = require('../common/logger'),
+    urlparser = require('url'),
+    consts = require('../config.js').consts,
     fs = require('fs'),
-    uuid = require("node-uuid"),
-    crypto = require("../common/cryptography"),
-    msgBroker = require("../common/msgbroker"),
-    dataStore = require("../common/datastore");
+    uuid = require('node-uuid'),
+    crypto = require('../common/cryptography'),
+    msgBroker = require('../common/msgbroker'),
+    dataStore = require('../common/datastore'),
+    errorcodes = require('../common/constants').errorcodes.GENERAL,
+    errorcodesAS = require('../common/constants').errorcodes.AS,
+    pages = require('../common/pages.js');
+
+var SimplePushAPI_v1 = require('./apis/SimplePushAPI_v1');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
-function onNewPushMessage(notification, apptoken, callback) {
+function onNewPushMessage(notification, certificate, apptoken, callback) {
   var json = null;
 
   //Only accept valid JSON messages
   try {
     json = JSON.parse(notification);
   } catch (err) {
-    log.debug('NS_AS::onNewPushMessage --> Not valid JSON notification');
-    return callback('{"status":"ERROR", "reason":"JSON not valid"}', 400);
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid JSON notification');
+    return callback(errorcodesAS.JSON_NOTVALID_ERROR);
   }
 
   //Get all attributes and save it to a new normalized notification
@@ -35,55 +40,61 @@ function onNewPushMessage(notification, apptoken, callback) {
 
   //These are mandatory
   normalizedNotification.messageType = json.messageType;
-  //normalizedNotification.sig = json.signature;
   normalizedNotification.id = json.id;
 
   //This are optional, but we set to default parameters
   normalizedNotification.message = json.message || '';
   normalizedNotification.ttl = json.ttl || consts.MAX_TTL;
   normalizedNotification.timestamp = json.timestamp || (new Date()).getTime();
-  normalizedNotification.priority = json.priority || '4';
+  normalizedNotification.priority = json.priority ||  '4';
+
+  //Reject if no valid certificate is received
+  if (!certificate.fingerprint) {
+    return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
+  }
 
   //Only accept notification messages
-  if (normalizedNotification.messageType != "notification") {
-    log.debug('NS_AS::onNewPushMessage --> Not valid messageType');
-    return callback('{"status":"ERROR", "reason":"Not messageType=notification"}', 400);
+  if (normalizedNotification.messageType != 'notification') {
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Not valid messageType');
+    return callback(errorcodesAS.BAD_MESSAGE_TYPE_NOT_NOTIFICATION);
   }
 
-  //If not signed, reject
-  if (!json.signature) {
-    log.debug('NS_AS::onNewPushMessage --> Not signed');
-    return callback('{"status":"ERROR", "reason":"Not signed"}', 400);
-  }
-
-  //If not id, reject
-  if (!normalizedNotification.id) {
-    log.debug('NS_AS::onNewPushMessage --> Not id');
-    return callback('{"status":"ERROR", "reason":"Not id"}', 400);
+  //If bad id (null, undefided or empty), reject
+  if ((normalizedNotification.id == null) || (normalizedNotification.id == '')) {
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Bad id');
+    return callback(errorcodesAS.BAD_MESSAGE_BAD_ID);
   }
 
   //Reject notifications with big attributes
   if ((normalizedNotification.message.length > consts.MAX_PAYLOAD_SIZE) ||
-      (normalizedNotification.id.length > consts.MAX_PAYLOAD_SIZE)) {
-    log.debug('NS_AS::onNewPushMessage --> Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
-    return callback('{"status":"ERROR", "reason":"Body too big"}', 400);
+      (normalizedNotification.id.length > consts.MAX_ID_SIZE)) {
+    log.debug('NS_AS::onNewPushMessage --> Rejected. Notification with a big body (' + normalizedNotification.message.length + '>' + consts.MAX_PAYLOAD_SIZE + 'bytes), rejecting');
+    return callback(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
   }
 
-  //Get the PbK for the apptoken in the database
-  dataStore.getPbkApplication(apptoken, function(pbkbase64) {
-    var pbk = new Buffer(pbkbase64 || '', 'base64').toString('ascii');
-    if (!crypto.verifySignature(normalizedNotification.message, json.signature, pbk)) {
-      log.debug('NS_AS::onNewPushMessage --> Bad signature, dropping notification');
-      return callback('{"status":"ERROR", "reason":"Bad signature, dropping notification"}', 400);
+  //Get the Certificate for the apptoken in the database
+  dataStore.getCertificateApplication(apptoken, function(error, cert) {
+    if (error) {
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
+    }
+    if (!cert) {
+      log.debug('NS_AS::onNewPushMessage --> Rejected. AppToken not found, dropping notification');
+      return callback(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
+    }
+
+    if (crypto.hashSHA256(certificate.fingerprint) != cert.fs) {
+      log.debug('NS_AS::onNewPushMessage --> Rejected. Bad certificate, dropping notification');
+      return callback(errorcodesAS.BAD_MESSAGE_BAD_CERTIFICATE);
     }
 
     var id = uuid.v1();
-    log.debug("NS_AS::onNewPushMessage --> Storing message '" + JSON.stringify(normalizedNotification) + "' for the '" + apptoken + "'' apptoken. Internal Id: " + id);
+    log.debug("NS_AS::onNewPushMessage --> Storing message for the '" + apptoken + "' apptoken with internal Id = '" + id + "'. Message:", normalizedNotification);
+    log.notify("Storing message for the '" + apptoken + "' apptoken. Internal Id: " + id);
     // Store on persistent database
     var msg = dataStore.newMessage(id, apptoken, normalizedNotification);
     // Also send to the newMessages Queue
-    msgBroker.push("newMessages", msg);
-    return callback('{"status": "ACCEPTED"}', 200);
+    msgBroker.push('newMessages', msg);
+    return callback(errorcodes.NO_ERROR);
   });
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -99,59 +110,59 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
-    var self = this;
-
     // Create a new HTTPS Server
     var options = {
       key: fs.readFileSync(consts.key),
-      cert: fs.readFileSync(consts.cert)
+      cert: fs.readFileSync(consts.cert),
+      requestCert: false,
+      rejectUnauthorized: false
     };
-    this.server = https.createServer(options, this.onHTTPMessage.bind(this));
+    this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
     this.server.listen(this.port, this.ip);
-    log.info('NS_AS::init --> HTTP push AS server starting on ' + this.ip + ":" + this.port);
+    log.info('NS_AS::init --> HTTPS push AS server starting on ' +
+      this.ip + ':' + this.port);
 
+    var self = this;
     // Events from msgBroker
     msgBroker.on('brokerconnected', function() {
-      log.info("NS_AS::init --> MsgBroker ready and connected");
-      this.msgbrokerready = true;
-    }.bind(this));
+      log.info('NS_AS::init --> MsgBroker ready and connected');
+      self.msgbrokerready = true;
+    });
     msgBroker.on('brokerdisconnected', function() {
-      log.critical("NS_AS::init --> MsgBroker DISCONNECTED!!");
-      this.msgbrokerready = false;
-    }.bind(this));
+      log.critical('NS_AS::init --> MsgBroker DISCONNECTED!!');
+      self.msgbrokerready = false;
+    });
 
     //Events from dataStore
     dataStore.on('ddbbconnected', function() {
-      log.info("NS_AS::init --> DataStore ready and connected");
-      this.ddbbready = true;
-    }.bind(this));
-
-    //Let's wait one second to start the msgBroker and the dataStore
+      log.info('NS_AS::init --> DataStore ready and connected');
+      self.ddbbready = true;
+    });
     dataStore.on('ddbbdisconnected', function() {
-      log.critical("NS_AS::init --> DataStore DISCONNECTED!!");
-      this.ddbbready = false;
+      log.critical('NS_AS::init --> DataStore DISCONNECTED!!');
+      self.ddbbready = false;
     });
 
     //Wait until we have setup our events listeners
-    setTimeout(function() {
+    process.nextTick(function() {
       msgBroker.init();
       dataStore.init();
-    }, 10);
+    });
 
     // Check if we are alive
     setTimeout(function() {
       if (!self.ddbbready || !self.msgbrokerready)
         log.critical('30 seconds has passed and we are not ready, closing');
-    }, 30*1000); //Wait 30 seconds
+    }, 30 * 1000); //Wait 30 seconds
 
   },
 
-  stop: function(callback) {
+  stop: function() {
+    var self = this;
     this.server.close(function() {
       log.info('NS_AS::stop --> NS_AS closed correctly');
-      this.ddbbready = false;
-      this.msgbrokerready = false;
-      callback(null);
+      self.ddbbready = false;
+      self.msgbrokerready = false;
     });
   },
 
@@ -159,84 +170,105 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
+    log.debug('[onHTTPMessage auth]', request.connection.authorizationError);
+    log.debug('[onHTTPMessage received certificate]',
+      request.connection.getPeerCertificate());
+
+    response.res = function responseHTTP(errorCode) {
+      log.debug('NS_AS::responseHTTP: ', errorCode);
+      this.statusCode = errorCode[0];
+      this.setHeader('access-control-allow-origin', '*');
+      if (consts.PREPRODUCTION_MODE) {
+        this.setHeader('Content-Type', 'text/plain');
+        if (this.statusCode == 200) {
+          this.write('{"status":"ACCEPTED"}');
+        } else {
+          this.write('{"status":"ERROR", "reason":"' + errorCode[1] + '"}');
+        }
+      }
+      return this.end();
+    };
+
     if (!this.ddbbready || !this.msgbrokerready) {
       log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
-      response.statusCode = 404;
-      response.write('{"status": "ERROR", "reason": "Try again later"}');
-      return response.end();
+      return response.res(errorcodes.NOT_READY);
     }
 
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
-    var url = this.parseURL(request.url);
-    log.debug("NS_AS::onHTTPMessage --> Parsed URL: " + JSON.stringify(url));
-    switch (url.messageType) {
-    case 'about':
-      if(consts.PREPRODUCTION_MODE) {
-        try {
-          var fs = require("fs");
-          text = "Push Notification Server (Application Server Frontend)<br />";
-          text += "&copy; Telef&oacute;nica Digital, 2012<br />";
-          text += "Version: " + fs.readFileSync("version.info") + "<br /><br />";
-          text += "<a href=\"https://github.com/telefonicaid/notification_server\">Collaborate !</a><br />";
-        } catch(e) {
-          text = "No version.info file";
-        }
-        response.setHeader("Content-Type", "text/html");
-        response.statusCode = 200;
-        response.write(text);
-        return response.end();
-      } else {
-        response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "Not allowed on production system"}');
-        return response.end();
-      }
-      break;
+    var url = urlparser.parse(request.url, true);
+    var path = url.pathname.split('/');
+    log.debug('NS_AS::onHTTPMessage --> Splitted URL path: ', path);
 
-    case 'notify':
-      if (!url.token) {
-        log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
-        response.statusCode = 404;
-        response.write('{"status": "ERROR", "reason": "No valid apptoken"}');
-        return response.end();
-      }
-
-      log.debug("NS_AS::onHTTPMessage --> Notification for " + url.token);
-      request.on("data", function(notification) {
-        onNewPushMessage(notification, url.token, function(body, code) {
-            response.statusCode = code;
-            response.setHeader("Content-Type", "text/plain");
-            response.setHeader("access-control-allow-origin", "*");
-            response.write(body);
-            return response.end();
-        });
-      });
-      break;
-
-    default:
-      log.debug("NS_AS::onHTTPMessage --> messageType '" + url.messageType + "' not recognized");
-      response.statusCode = 404;
-      response.setHeader("Content-Type", "text/plain");
-      response.setHeader("access-control-allow-origin", "*");
-      response.write('{"status": "ERROR", "reason": "Only notify by this interface"}');
+    // CORS support
+    if (request.method === 'OPTIONS') {
+      log.debug('NS_AS::onHTTPMessage --> Received an OPTIONS method');
+      response.setHeader('Access-Control-Allow-Origin', '*');
+      response.setHeader('Access-Control-Allow-Methods', 'POST, PUT, GET, OPTIONS');
       return response.end();
     }
-  },
 
-  ///////////////////////
-  // Auxiliar methods
-  ///////////////////////
-  parseURL: function(url) {
-    var urlparser = require('url'),
-        data = {};
-    data.parsedURL = urlparser.parse(url,true);
-    var path = data.parsedURL.pathname.split("/");
-    data.messageType = path[1];
-    if(path.length > 2) {
-      data.token = path[2];
-    } else {
-      data.token = data.parsedURL.query.token;
+    // Frontend for the Mozilla SimplePush API
+    if (request.method === 'PUT') {
+      log.debug('NS_AS::onHTTPMessage --> Received a PUT');
+      var simplepush = new SimplePushAPI_v1();
+      request.on('data', function(body) {
+        simplepush.processRequest(request, body, response);
+      });
+      return;
     }
-    return data;
+
+    switch (path[1]) {
+      case 'about':
+        if (consts.PREPRODUCTION_MODE) {
+          try {
+            var p = new pages();
+            p.setTemplate('views/about.tmpl');
+            text = p.render(function(t) {
+              switch (t) {
+                case '{{GIT_VERSION}}':
+                  return require('fs').readFileSync('version.info');
+                case '{{MODULE_NAME}}':
+                  return 'Application Server Frontend';
+                default:
+                  return '';
+              }
+            });
+          } catch(e) {
+            text = "No version.info file";
+          }
+          response.setHeader('Content-Type', 'text/html');
+          response.statusCode = 200;
+          response.write(text);
+          return response.end();
+        } else {
+          return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+        }
+        break;
+
+      case 'notify':
+        var token = path[2];
+        if (!token) {
+          log.debug('NS_AS::onHTTPMessage --> No valid url (no apptoken)');
+          return response.res(errorcodesAS.BAD_URL_NOT_VALID_APPTOKEN);
+        }
+        if (request.method != 'POST') {
+          log.debug('NS_AS::onHTTPMessage --> No valid method (only POST for notifications)');
+          return response.res(errorcodesAS.BAD_URL_NOT_VALID_METHOD);
+        }
+
+        log.debug('NS_AS::onHTTPMessage --> Notification for ' + token);
+        request.on('data', function(notification) {
+          onNewPushMessage(notification, request.connection.getPeerCertificate(), token, function(err) {
+            response.res(err);
+          });
+        });
+        break;
+        return;
+
+      default:
+        log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
+        return response.res(errorcodesAS.BAD_URL);
+    }
   }
 };
 

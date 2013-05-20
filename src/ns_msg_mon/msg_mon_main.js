@@ -7,9 +7,10 @@
  */
 
 var config = require('../config.js').NS_MSG_MON,
-    log = require("../common/logger.js");
+    log = require('../common/logger.js');
 
 function NS_MSG_MON_main() {
+  this.controlledClose = false;
 }
 
 NS_MSG_MON_main.prototype = {
@@ -17,12 +18,20 @@ NS_MSG_MON_main.prototype = {
     var monitor = require('./msg_mon_server.js').monitor;
     this.server = new monitor();
     this.server.init();
-    log.info("NS_MSG_MON server starting");
+    log.info('NS_MSG_MON server starting');
   },
 
-  stop: function(callback) {
-    log.info("NS_MSG_MON server stopping");
-    this.server.stop(callback);
+  stop: function() {
+    if (this.controlledClose) {
+      return;
+    }
+    this.controlledClose = true;
+    log.info('NS_MSG_MON server stopping');
+    this.server.stop();
+
+    setTimeout(function() {
+      process.exit(0);
+    }, 10000);
   }
 };
 

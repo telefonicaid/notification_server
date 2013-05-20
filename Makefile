@@ -1,4 +1,13 @@
-GIT = git
+GIT  ?= git
+NODE ?= node
+
+.PHONY = all
+
+all: version.info tests
 
 version.info:
-	git describe --tags > src/version.info
+	@$(GIT) describe --tags > src/version.info
+	@cat src/version.info
+
+tests:
+	@npm test

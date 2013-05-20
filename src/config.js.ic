@@ -34,14 +34,14 @@ exports.consts = {
    * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
    */
 
-  key: '../test/scripts/server-key.pem',
-  cert: '../test/scripts/server-cert.pem',
+  key: '../examples/ssl_cert/server-key.pem',
+  cert: '../examples/ssl_cert/server-cert.pem',
 
   /**
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: "https://localhost:8081",
+  publicBaseURL: "https://localhost:8081/v1",
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
@@ -52,8 +52,21 @@ exports.consts = {
 };
 
 /********************* Logger parameters ***********************************/
+var loglevel = require('./common/constants.js').loglevels;
 exports.logger = {
-  MINLOGLEVEL: 0, // 0: debug, 1: info, 2: error, 3:critical
+  /**
+   * Log levels:
+   *
+   * # NONE: Log disabled
+   * # DEBUG: Very detailed information about all the things the server is doing
+   * # INFO: General information about the things the server is doing
+   * # ERROR: Error detected, but the server can continue working
+   * # ALERT: Error detected but not directly on this process, so this is a
+   *          notification that should be investigated
+   * # NOTIFY: General notifications, ie. New connections
+   * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
+   */
+  LOGLEVEL: loglevel.CRITICAL | loglevel.NOTIFY,
   CONSOLEOUTPUT: 1,
   BASE_PATH: "/var/log/push_server/"
 };
@@ -121,7 +134,8 @@ exports.NS_AS = {
   interfaces: [
     {
       ip: "0.0.0.0",
-      port: 8081
+      port: 8081,
+      ssl: true
     }
   ]
 };
@@ -138,6 +152,11 @@ exports.NS_UA_WS = {
   logfile: "NS_UA_WS.log",
 
   /**
+   * Number of processes which shall run in parallel
+   */
+  numProcesses: numCPUs,
+
+  /**
    * Binding interfaces and ports
    * [ iface, port ]
    */
@@ -145,7 +164,8 @@ exports.NS_UA_WS = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 8080
+      port: 8080,
+      ssl: true
     }
   ],
 
@@ -183,7 +203,8 @@ exports.NS_WakeUp = {
     // Internal network
     {
       ip: "0.0.0.0",
-      port: 8090
+      port: 8090,
+      ssl: false
     }
   ]
 };
