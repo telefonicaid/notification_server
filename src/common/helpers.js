@@ -79,7 +79,7 @@ function getCaChannel() {
   var caDir = require('../config.js').consts.caDir;
   var fs = require('fs');
 
-  var files = fs.readdirSync(consts.caDir);
+  var files = fs.readdirSync(caDir);
 
   var i, 
       len;
@@ -87,7 +87,7 @@ function getCaChannel() {
   var ca = [];
 
   for (i = 0, len = files.length; i < len; i++) {
-    ca.push(fs.readFileSync(consts.caDir + "/" + files[i]));
+    ca.push(fs.readFileSync(caDir + "/" + files[i]));
   }  
   return ca;
 }
