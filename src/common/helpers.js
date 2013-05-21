@@ -72,3 +72,40 @@ function isVersion(version) {
   return true;
 }
 exports.isVersion = isVersion;
+
+function getCaChannel() {
+
+  var log = require('./logger.js');
+  var caDir = require('../config.js').consts.caDir;
+
+  var cas = [];
+  if (!caDir) {
+    log.error(log.messages.ERROR_CASDIRECTORYUNDEFINED);
+    return cas;
+  }
+
+  var path = require('path');
+  var fs = require('fs');
+  try {
+    var files = fs.readdirSync(caDir);
+
+    var i;
+    var len = files.length;
+    if (len === 0) {
+      log.error(log.messages.ERROR_NOCADEFINED);
+      return cas;
+    }
+
+    for (i = 0; i < len; i++) {
+      cas.push(fs.readFileSync(caDir + path.sep + files[i]));
+    }
+  } catch (e) {
+    log.error(log.messages.ERROR_NOCADEFINED, {
+          "method": 'getCaChannel',
+          "error": e
+    });
+  }
+
+  return cas;
+}
+exports.getCaChannel = getCaChannel;
