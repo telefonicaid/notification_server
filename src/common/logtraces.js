@@ -260,6 +260,17 @@ exports.logtraces = {
     m: "Protocol not supported !"
   },
 
+  ERROR_CASDIRECTORYUNDEFINED: {
+    id: 0x2502,
+    m: "CAs directory undefined!"
+  },
+
+  ERROR_NOCADEFINED: {
+    id: 0x2503,
+    m: "CAs directory empty or doesn't exists. "
+  },
+
+
   // CRITICAL TRACES
 
   CRITICAL_DBCONNECTIONERROR: {
