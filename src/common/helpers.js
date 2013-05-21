@@ -74,21 +74,38 @@ function isVersion(version) {
 exports.isVersion = isVersion;
 
 function getCaChannel() {
-   
-  var path = require('path');
+
+  var log = require('./logger.js');
   var caDir = require('../config.js').consts.caDir;
+
+  var cas = [];
+  if (!caDir) {
+    log.error(log.messages.ERROR_CASDIRECTORYUNDEFINED);
+    return cas;
+  }
+
+  var path = require('path');
   var fs = require('fs');
+  try {
+    var files = fs.readdirSync(caDir);
 
-  var files = fs.readdirSync(caDir);
+    var i;
+    var len = files.length;
+    if (len === 0) {
+      log.error(log.messages.ERROR_NOCADEFINED);
+      return cas;
+    }
 
-  var i, 
-      len;
+    for (i = 0; i < len; i++) {
+      cas.push(fs.readFileSync(caDir + path.sep + files[i]));
+    }
+  } catch (e) {
+    log.error(log.messages.ERROR_NOCADEFINED, {
+          "method": 'getCaChannel',
+          "error": e
+    });
+  }
 
-  var ca = [];
-
-  for (i = 0, len = files.length; i < len; i++) {
-    ca.push(fs.readFileSync(caDir + path.sep + files[i]));
-  }  
-  return ca;
+  return cas;
 }
 exports.getCaChannel = getCaChannel;
