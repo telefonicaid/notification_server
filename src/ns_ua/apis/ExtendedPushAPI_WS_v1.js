@@ -114,7 +114,7 @@ module.exports = function(message, connection) {
           });
 
           // Recovery channels process
-          if (query.channelIDs) {
+          if (query.channelIDs && Array.isArray(query.channelIDs)) {
             setTimeout(function recoveryChannels() {
               log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query);
               // TODO sync channels with client
