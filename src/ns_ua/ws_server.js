@@ -412,7 +412,6 @@ server.prototype = {
               query.channelIDs = null;
               self.tokensGenerated++;
             }
-            log.debug('WS:onWSMessage --> Theorical first connection for uaid=' + query.uaid);
             log.debug('WS:onWSMessage --> Accepted uaid=' + query.uaid);
             connection.uaid = query.uaid;
 
@@ -439,7 +438,7 @@ server.prototype = {
               });
 
               // If uaid do not have any channelIDs (first connection), we do not launch this processes.
-              if (query.channelIDs) {
+              if (query.channelIDs && Array.isArray(query.channelIDs)) {
                 //Start recovery protocol
                 setTimeout(function recoveryChannels() {
                   log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query.channelIDs);
