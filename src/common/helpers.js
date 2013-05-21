@@ -75,7 +75,8 @@ exports.isVersion = isVersion;
 
 
 function getCaChannel() {
-    
+   
+  var path = require('path');
   var caDir = require('../config.js').consts.caDir;
   var fs = require('fs');
 
@@ -87,7 +88,7 @@ function getCaChannel() {
   var ca = [];
 
   for (i = 0, len = files.length; i < len; i++) {
-    ca.push(fs.readFileSync(caDir + "/" + files[i]));
+    ca.push(fs.readFileSync(caDir + path.sep + files[i]));
   }  
   return ca;
 }
