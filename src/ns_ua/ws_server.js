@@ -365,7 +365,6 @@ server.prototype = {
             });
             if (channelsUpdate.length > 0) {
               return cb(channelsUpdate);
-              cb(channelsUpdate);
             }
 
             //No channelsUpdate (no new)
