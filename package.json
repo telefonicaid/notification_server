@@ -31,7 +31,8 @@
         "mongodb": "1.x.x",
         "amqp": "0.1.x",
         "forever-monitor": "1.1.x",
-        "string" : "*"
+        "string" : "*",
+        "range_check": "*"
     },
     "devDependencies": {
         "vows": "0.7.x",
