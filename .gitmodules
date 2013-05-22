@@ -1,3 +1,9 @@
 [submodule "doc"]
 	path = doc
 	url = https://github.com/frsela/notification_server_doc.git
+[submodule "examples/tokes/tokes_simplepush"]
+	path = examples/tokes/tokes_simplepush
+	url = https://github.com/TelefonicaPushServer/example_tokes_simplepush
+[submodule "examples/tokes/tokes_simplepush_server"]
+	path = examples/tokes/tokes_simplepush_server
+	url = https://github.com/TelefonicaPushServer/example_tokes_simplepush_server
