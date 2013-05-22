@@ -11,6 +11,7 @@ var log = require('../common/logger'),
     config = require('../config.js'),
     consts = config.consts,
     fs = require('fs'),
+    cluster = require('cluster'),
     uuid = require('node-uuid'),
     crypto = require('../common/cryptography'),
     msgBroker = require('../common/msgbroker'),
@@ -117,61 +118,84 @@ server.prototype = {
   // Constructor
   //////////////////////////////////////////////
   init: function() {
-    // Create a new HTTPS Server
-    var options = {
-      ca: helpers.getCaChannel(),
-      key: fs.readFileSync(consts.key),
-      cert: fs.readFileSync(consts.cert),
-      requestCert: false,
-      rejectUnauthorized: false
-    };
-    this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
-    this.server.listen(this.port, this.ip);
-    log.info('NS_AS::init --> HTTPS push AS server starting on ' +
-      this.ip + ':' + this.port);
+    if (cluster.isMaster) {
+      // Fork workers.
+      for (var i = 0; i < config.NS_AS.numProcesses; i++) {
+        cluster.fork();
+      }
 
-    var self = this;
-    // Events from msgBroker
-    msgBroker.once('brokerconnected', function() {
-      log.info('NS_AS::init --> MsgBroker ready and connected');
-      self.msgbrokerready = true;
-    });
-    msgBroker.once('brokerdisconnected', function() {
-      log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
-        "class": 'NS_AS',
-        "method": 'init'
+      cluster.on('exit', function(worker, code, signal) {
+        if (code !== 0) {
+          log.error(log.messages.ERROR_WORKERERROR, {
+            "pid": worker.process.pid,
+            "code": code
+          });
+        } else {
+          log.info('worker ' + worker.process.pid + ' exit');
+        }
       });
-      self.msgbrokerready = false;
-    });
+    } else {
+      // Create a new HTTPS Server
+      var options = {
+        ca: helpers.getCaChannel(),
+        key: fs.readFileSync(consts.key),
+        cert: fs.readFileSync(consts.cert),
+        requestCert: false,
+        rejectUnauthorized: false
+      };
+      this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
+      this.server.listen(this.port, this.ip);
+      log.info('NS_AS::init --> HTTPS push AS server starting on ' +
+        this.ip + ':' + this.port);
 
-    //Events from dataStore
-    dataStore.once('ddbbconnected', function() {
-      log.info('NS_AS::init --> DataStore ready and connected');
-      self.ddbbready = true;
-    });
-    dataStore.on('ddbbdisconnected', function() {
-      log.critical(log.messages.CRITICAL_DBDISCONNECTED, {
-        "class": 'NS_AS',
-        "method": 'init'
+      var self = this;
+      // Events from msgBroker
+      msgBroker.once('brokerconnected', function() {
+        log.info('NS_AS::init --> MsgBroker ready and connected');
+        self.msgbrokerready = true;
       });
-      self.ddbbready = false;
-    });
+      msgBroker.once('brokerdisconnected', function() {
+        log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
+          "class": 'NS_AS',
+          "method": 'init'
+        });
+        self.msgbrokerready = false;
+      });
 
-    //Wait until we have setup our events listeners
-    process.nextTick(function() {
-      msgBroker.init();
-      dataStore.init();
-    });
+      //Events from dataStore
+      dataStore.once('ddbbconnected', function() {
+        log.info('NS_AS::init --> DataStore ready and connected');
+        self.ddbbready = true;
+      });
+      dataStore.on('ddbbdisconnected', function() {
+        log.critical(log.messages.CRITICAL_DBDISCONNECTED, {
+          "class": 'NS_AS',
+          "method": 'init'
+        });
+        self.ddbbready = false;
+      });
 
-    // Check if we are alive
-    setTimeout(function() {
-      if (!self.ddbbready || !self.msgbrokerready)
-        log.critical(log.messages.CRITICAL_NOTREADY);
-    }, 30 * 1000); //Wait 30 seconds
+      //Wait until we have setup our events listeners
+      process.nextTick(function() {
+        msgBroker.init();
+        dataStore.init();
+      });
 
+      // Check if we are alive
+      setTimeout(function() {
+        if (!self.ddbbready || !self.msgbrokerready)
+          log.critical(log.messages.CRITICAL_NOTREADY);
+      }, 30 * 1000); //Wait 30 seconds
+    }
   },
 
   stop: function() {
+    if (cluster.isMaster) {
+      setTimeout(function() {
+        process.exit(0);
+      }, 10000);
+      return;
+    }
     var self = this;
     this.server.close(function() {
       log.info('NS_AS::stop --> NS_AS closed correctly');
