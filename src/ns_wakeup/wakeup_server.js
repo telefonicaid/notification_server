@@ -9,6 +9,8 @@
 var log = require('../common/logger.js'),
     net = require('net'),
     fs = require('fs'),
+    config = require('../config.js').NS_WakeUp,
+    cluster = require('cluster'),
     consts = require('../config.js').consts,
     dgram = require('dgram'),
     pages = require('../common/pages.js'),
@@ -31,25 +33,49 @@ server.prototype = {
   //////////////////////////////////////////////
 
   init: function() {
-    log.info('Starting WakeUp server');
+    if (cluster.isMaster) {
+      // Fork workers.
+      for (var i = 0; i < config.numProcesses; i++) {
+        cluster.fork();
+      }
 
-    // Create a new HTTP(S) Server
-    if (this.ssl) {
-      var options = {
-        ca: helpers.getCaChannel(),
-        key: fs.readFileSync(consts.key),
-        cert: fs.readFileSync(consts.cert)
-      };
-      this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
+      cluster.on('exit', function(worker, code, signal) {
+        if (code !== 0) {
+          log.error(log.messages.ERROR_WORKERERROR, {
+            "pid": worker.process.pid,
+            "code": code
+          });
+        } else {
+          log.info('worker ' + worker.process.pid + ' exit');
+        }
+      });
     } else {
-      this.server = require('http').createServer(this.onHTTPMessage.bind(this));
+      log.info('Starting WakeUp server');
+
+      // Create a new HTTP(S) Server
+      if (this.ssl) {
+        var options = {
+          ca: helpers.getCaChannel(),
+          key: fs.readFileSync(consts.key),
+          cert: fs.readFileSync(consts.cert)
+        };
+        this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
+      } else {
+        this.server = require('http').createServer(this.onHTTPMessage.bind(this));
+      }
+      this.server.listen(this.port, this.ip);
+      log.info('NS_WakeUp::init --> HTTP' + (this.ssl ? 'S' : '') +
+               ' push WakeUp server starting on ' + this.ip + ':' + this.port);
     }
-    this.server.listen(this.port, this.ip);
-    log.info('NS_WakeUp::init --> HTTP' + (this.ssl ? 'S' : '') +
-             ' push WakeUp server starting on ' + this.ip + ':' + this.port);
   },
 
   stop: function() {
+    if (cluster.isMaster) {
+      setTimeout(function() {
+        process.exit(0);
+      }, 10000);
+      return;
+    }
     this.server.close(function() {
       log.info('NS_WakeUp::stop --> NS_WakeUp closed correctly');
     });
