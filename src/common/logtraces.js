@@ -266,14 +266,14 @@ exports.logtraces = {
 
   ERROR_CASDIRECTORYUNDEFINED: {
     id: 0x2502,
-    m: "CAs directory undefined!"
+    m: "CAs directory undefined! - check config.js"
   },
 
   ERROR_NOCADEFINED: {
     id: 0x2503,
-    m: "CAs directory empty or doesn't exists. "
+    m: "CAs directory ::path is empty or doesn't exists.",
+    doc: "This directory shall contain all intermediate CAs certificates"
   },
-
 
   // CRITICAL TRACES
 

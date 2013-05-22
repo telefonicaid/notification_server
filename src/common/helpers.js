@@ -93,7 +93,9 @@ function getCaChannel() {
     var i;
     var len = files.length;
     if (len === 0) {
-      log.error(log.messages.ERROR_NOCADEFINED);
+      log.error(log.messages.ERROR_NOCADEFINED, {
+        "path": caDir
+      });
       return cas;
     }
 
@@ -102,8 +104,7 @@ function getCaChannel() {
     }
   } catch (e) {
     log.error(log.messages.ERROR_NOCADEFINED, {
-          "method": 'getCaChannel',
-          "error": e
+        "path": caDir
     });
   }
 
