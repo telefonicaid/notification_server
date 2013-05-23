@@ -6,6 +6,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+var numCPUs = require('os').cpus().length;
+
 /******************* Servers to run on this machine ********************/
 /**
  * Put to true what you want to run
@@ -26,7 +28,6 @@ exports.servers = {
 exports.consts = {
   MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
-
   /**
    * Default Maximum Time To Live
    * If no provided by AS this TTL will be assigned to the message
@@ -47,18 +48,18 @@ exports.consts = {
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: "https://localhost:8081/v1",
+  publicBaseURL: 'https://localhost:8081/v1',
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
    * This is used to verify if the token to register a UA comes from
    * this server
    */
-  cryptokey: "12345678901234567890"
+  cryptokey: '12345678901234567890'
 };
 
 /********************* Logger parameters ***********************************/
-var loglevel = require('./common/constants.js').loglevels;
+var loglevel = require('./constants.js').loglevels;
 exports.logger = {
   /**
    * Log levels:
@@ -72,9 +73,11 @@ exports.logger = {
    * # NOTIFY: General notifications, ie. New connections
    * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
    */
-  LOGLEVEL: loglevel.CRITICAL | loglevel.NOTIFY,
+  LOGLEVEL: loglevel.DEBUG | loglevel.INFO | loglevel.ERROR | loglevel.CRITICAL | loglevel.ALERT | loglevel.NOTIFY | loglevel.ALARM,
   CONSOLEOUTPUT: 1,
-  BASE_PATH: "/var/log/push_server/"
+  BASE_PATH: '/var/log/push_server/',
+  ALARM: '/var/log/push_server/alarms.log'
+
 };
 
 /********************* Common Queue ***********************************/
@@ -83,27 +86,26 @@ exports.logger = {
  * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
-    host: '127.0.0.1',
+    host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
     password: 'guest',
     heartbeat: 1200
   },
   {
-    host: '127.0.0.1',
+    host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
     password: 'guest',
     heartbeat: 1200
   },
   {
-    host: '127.0.0.1',
+    host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
     password: 'guest',
     heartbeat: 1200
-  }
-];
+  }];
 
 /********************* Database configuration *************************/
 /**
@@ -122,13 +124,13 @@ exports.queue = [{
   keepalive: 1200
 };*/
 
-//DDBB defaults to use a single MongoDB instance
+// DDBB defaults to use a single MongoDB instance
+// or sharding
 exports.ddbbsettings = {
   machines: [
-    ["127.0.0.1", 27017]
+    ['localhost', 27017]
   ],
-  ddbbname: "push_notification_server",
-  replicasetName: null,
+  ddbbname: 'push_notification_server',
   keepalive: 1200
 };
 
@@ -138,7 +140,7 @@ exports.ddbbsettings = {
 
 /********************* NS_AS *****************************************/
 exports.NS_AS = {
-  logfile: "NS_AS.log",
+  logfile: 'NS_AS.log',
 
   /**
    * Number of processes which shall run in parallel
@@ -146,18 +148,17 @@ exports.NS_AS = {
   numProcesses: numCPUs,
 
   /**
-   * Maximum size for a HTTP message (20 KiB)
+   * Maximum payload for a HTTP message (20 KiB)
    */
-  MAX_MESSAGE_SIZE: 20480,
+  MAX_PAYLOAD_SIZE: 20480,
 
   /**
    * Binding interfaces and ports to listen to. You can have multiple processes.
    */
   interfaces: [
     {
-      ip: "0.0.0.0",
-      port: 8081,
-      ssl: true
+      ip: '0.0.0.0',
+      port: 8081
     }
   ]
 };
@@ -165,13 +166,13 @@ exports.NS_AS = {
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: "NS_Monitor.log"
+  logfile: 'NS_Monitor.log'
 };
 
 /********************* NS_UA_WS **************************************/
 
 exports.NS_UA_WS = {
-  logfile: "NS_UA_WS.log",
+  logfile: 'NS_UA_WS.log',
 
   /**
    * Number of processes which shall run in parallel
@@ -185,14 +186,14 @@ exports.NS_UA_WS = {
 
   /**
    * Binding interfaces and ports
-   * [ iface, port ]
+   * [ iface, port, ssl ]
    */
   interfaces: [
     // Internal network
     {
-      ip: "0.0.0.0",
+      ip: '0.0.0.0',
       port: 8080,
-      ssl: true
+      ssl: true        // Enable SSL
     }
   ],
 
@@ -202,25 +203,27 @@ exports.NS_UA_WS = {
    * Be sure to know exactly what are you changing. Short keepaliveIntervals
    * on 3G networks causes a lot of signalling and also dropping too many connections
    * because timeouts on handset status change time.
+   * It's disabled because we do not want to track if we have an open connection
+   * with a client. It's the client who needs to keep track of it (with a PING message)
    */
   websocket_params: {
-    keepalive: true,
-    keepaliveInterval: 40000,
+    keepalive: false    // By default, currently the KA messages will be managed by the client side
+    /*keepaliveInterval: 40000,
     dropConnectionOnKeepaliveTimeout: true,
-    keepaliveGracePeriod: 30000
+    keepaliveGracePeriod: 30000*/
   }
 };
 
 /********************* NS_UA_UDP *************************************/
 
 exports.NS_UA_UDP = {
-  logfile: "NS_UA_UDP.log"
+  logfile: 'NS_UA_UDP.log'
 };
 
 /********************* NS_WakeUp *************************************/
 
 exports.NS_WakeUp = {
-  logfile: "NS_WakeUp.log",
+  logfile: 'NS_WakeUp.log',
 
   /**
    * Number of processes which shall run in parallel
@@ -229,14 +232,14 @@ exports.NS_WakeUp = {
 
   /**
    * Binding interfaces and ports
-   * [ iface, port ]
+   * [ iface, port, ssl ]
    */
   interfaces: [
     // Internal network
     {
-      ip: "0.0.0.0",
+      ip: '0.0.0.0',
       port: 8090,
-      ssl: false
+      ssl: false        // Disable SSL
     }
   ]
 };
@@ -244,5 +247,5 @@ exports.NS_WakeUp = {
 /********************* NS start.js ***********************************/
 
 exports.NS = {
-  logfile: "NS.log"
+  logfile: 'NS.log'
 };

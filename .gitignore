@@ -1,3 +1,5 @@
 node_modules/websocket/build/
 src/version.info
 twitter_server/config.js
+config.js
+config.js.ic
