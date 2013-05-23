@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var publicBaseURL = require('../config.js').consts.publicBaseURL,
+var publicBaseURL = require('./config.js').consts.publicBaseURL,
     uuid = require('node-uuid'),
     crypto = require('../common/cryptography.js'),
     exec = require('child_process').exec;
@@ -77,7 +77,7 @@ exports.isVersion = isVersion;
 function getCaChannel() {
 
   var log = require('./logger.js');
-  var caDir = require('../config.js').consts.caDir;
+  var caDir = require('./config.js').consts.caDir;
 
   var cas = [];
   if (!caDir) {

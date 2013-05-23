@@ -10,7 +10,7 @@ var _config = require('./config_default.js'),
     fs = require('fs');
 
 (function loadConfig() {
-  if(fs.existsSync('../config.js')) {
+  if(fs.existsSync('./config.js')) {
     require('../config.js').config(_config);
   };
   module.exports = _config;

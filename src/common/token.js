@@ -8,7 +8,7 @@
 
 var uuid = require('node-uuid'),
     crypto = require('./cryptography.js'),
-    cryptokey = require('../config.js').consts.cryptokey;
+    cryptokey = require('./config.js').consts.cryptokey;
 
 function token() {}
 

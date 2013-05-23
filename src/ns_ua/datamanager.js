@@ -10,7 +10,7 @@ var dataStore = require('../common/datastore'),
     log = require('../common/logger.js'),
     helpers = require('../common/helpers.js'),
     Connectors = require('./connectors/connector.js').getConnector(),
-    ddbbsettings = require('../config.js').NS_AS.ddbbsettings,
+    ddbbsettings = require('../common/config.js').NS_AS.ddbbsettings,
     connectionstate = require('../common/constants.js').connectionstate;
 
 function datamanager() {

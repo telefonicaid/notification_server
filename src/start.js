@@ -8,8 +8,8 @@
 
 var forever = require('forever-monitor'),
     fs = require('fs'),
-    starts = require('./config.js').servers,
-    config = require('./config.js'),
+    starts = require('./common/config.js').servers,
+    config = require('./common/config.js'),
     log = require('./common/logger.js');
 
 

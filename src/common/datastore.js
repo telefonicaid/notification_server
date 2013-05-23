@@ -10,7 +10,7 @@ var mongodb = require('mongodb'),
     log = require('./logger.js'),
     events = require('events'),
     util = require('util'),
-    ddbbsettings = require('../config.js').ddbbsettings,
+    ddbbsettings = require('./config.js').ddbbsettings,
     helpers = require('../common/helpers.js'),
     connectionstate = require('../common/constants.js').connectionstate;
 

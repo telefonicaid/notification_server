@@ -22,7 +22,7 @@ var debug = require('./common').debug,
 
  var PushTest = {
   registerUA: function registerUA() {
-    var port = require('../../src/config.js').NS_UA_WS.interfaces[0].port;
+    var port = require('../../src/common/config.js').NS_UA_WS.interfaces[0].port;
     var WebSocketClient = require('websocket').client;
     var client = new WebSocketClient();
 
@@ -113,7 +113,7 @@ var debug = require('./common').debug,
   },
 
   init: function init() {
-    PushTest.port =  require('../../src/config.js').NS_UA_WS.interfaces[0].port;
+    PushTest.port =  require('../../src/common/config.js').NS_UA_WS.interfaces[0].port;
     PushTest.host = '127.0.0.1';
     PushTest.NOTIFICATION = 'version=1';
 

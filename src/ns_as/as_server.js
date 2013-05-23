@@ -8,7 +8,7 @@
 
 var log = require('../common/logger'),
     urlparser = require('url'),
-    config = require('../config.js'),
+    config = require('../common/config.js'),
     consts = config.consts,
     fs = require('fs'),
     cluster = require('cluster'),
