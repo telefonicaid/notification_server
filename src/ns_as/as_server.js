@@ -248,7 +248,11 @@ server.prototype = {
     // Frontend for the Mozilla SimplePush API
     if (request.method === 'PUT') {
       log.debug('NS_AS::onHTTPMessage --> Received a PUT');
-      request.on('data', function(body) {
+      var body = "";
+      request.on('data', function(data) {
+        body += data;
+      });
+      request.on('end', function() {
         simplepush.processRequest(request, body, response);
       });
       return;
