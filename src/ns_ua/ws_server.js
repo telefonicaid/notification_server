@@ -440,21 +440,8 @@ server.prototype = {
               // If uaid do not have any channelIDs (first connection), we do not launch this processes.
               if (query.channelIDs && Array.isArray(query.channelIDs)) {
                 //Start recovery protocol
-                setTimeout(function recoveryChannels() {
-                  log.debug('WS::onWSMessage::recoveryChannels --> Recovery channels process: ', query.channelIDs);
-                  query.channelIDs.forEach(function(ch) {
-                    log.debug("WS::onWSMessage::recoveryChannels CHANNEL: ", ch);
-
-                    var appToken = helpers.getAppToken(ch, connection.uaid);
-                    dataManager.registerApplication(appToken, ch, connection.uaid, null, function(error) {
-                      if (!error) {
-                        var notifyURL = helpers.getNotificationURL(appToken);
-                        log.debug('WS::onWSMessage::recoveryChannels --> OK registering channelID: ' + notifyURL);
-                      } else {
-                        log.debug('WS::onWSMessage::recoveryChannels --> Failing registering channelID');
-                      }
-                    });
-                  });
+                process.nextTick(function() {
+                  self.recoveryChannels(connection.uaid, query.channelIDs);
                 });
 
                 //Start sending pending notifications
@@ -826,6 +813,58 @@ server.prototype = {
       data.token = data.parsedURL.query.token;
     }
     return data;
+  },
+
+  recoveryChannels: function(uaid, channelIDs) {
+    log.debug('WS::onWSMessage::recoveryChannels --> ' +
+              'Recovery channels process for UAID=' + uaid +
+              ', channelsIDs=', channelIDs);
+    dataManager.getApplicationsForUA(uaid, function(error, channels) {
+      log.debug('WS::onWSMessage::recoveryChannels --> UAID=' + uaid +
+                ', recoveredchannels=' + JSON.stringify(channels));
+      if (error) {
+        return;
+      }
+      channels.forEach(function(ch) {
+        //Already registered
+        log.debug('WS::onWSMessage::recoveryChannels --> Checking server channel=' +
+                  JSON.stringify(ch.ch));
+        if (channelIDs.indexOf(ch.ch) > -1) {
+          log.debug('WS::onWSMessage::recoveryChannels --> UAID=' + uaid +
+                    ', had previously registered=' + ch.ch);
+        } else {
+          // Need to unregister (not in send)
+          log.debug('WS::onWSMessage::recoveryChannels --> UAID=' + uaid +
+                    ', to unregister=' + ch.ch);
+          var appToken = helpers.getAppToken(ch.ch, uaid);
+          dataManager.unregisterApplication(appToken, uaid);
+          return;
+        }
+
+        // Splicing the Array, so we end up with the old array with
+        // just new registrations
+        var index = channelIDs.indexOf(ch.ch);
+        if (index > -1) {
+          channelIDs.splice(index, 1);
+        }
+      });
+      //Register the spliced channelIDs
+      log.debug('WS::onWSMessage::recoveryChannels --> UAID=' + uaid +
+                ', to register unregistered=' + channelIDs);
+      channelIDs.forEach(function(ch) {
+        log.debug('WS::onWSMessage::recoveryChannels --> UAID=' + uaid +
+                  ', to register=' + ch);
+        var appToken = helpers.getAppToken(ch, uaid);
+        dataManager.registerApplication(appToken, ch, uaid, null, function(error) {
+          if (error) {
+            log.debug('WS::onWSMessage::recoveryChannels --> Failing registering channelID');
+            return;
+          }
+          var notifyURL = helpers.getNotificationURL(appToken);
+          log.debug('WS::onWSMessage::recoveryChannels --> OK registering channelID: ' + notifyURL);
+        });
+      });
+    });
   },
 
   stop: function() {

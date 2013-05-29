@@ -291,6 +291,7 @@ var DataStore = function() {
    */
   this.unregisterApplication = function(appToken, uaid, callback) {
     // Remove from MongoDB
+    callback = helpers.checkCallback(callback);
     this.db.collection('apps', function(err, collection) {
       if (err) {
         log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
@@ -422,24 +423,25 @@ var DataStore = function() {
         });
         callback(err);
       }
-      collection.find(
+      collection.findOne(
         { _id: uaid },
-        { ch: true }
-      ).toArray(function(err, data) {
-        if (err) {
-          log.error(log.messages.ERROR_DSERRORFINDINGAPPS, {
-            "error": err
-          });
-          return callback(err);
+        { _id: false, ch: true },
+        function(err, data) {
+          if (err) {
+            log.error(log.messages.ERROR_DSERRORFINDINGAPPS, {
+              "error": err
+            });
+            return callback(err);
+          }
+          if (data && data.ch && data.ch.length) {
+            log.debug('datastore::getApplicationsOnUA --> Applications recovered, calling callback');
+            callback(null, data.ch);
+          } else {
+            log.debug('datastore::getApplicationsOnUA --> No applications recovered :(');
+            callback(null, []);
+          }
         }
-        if (data.length) {
-          log.debug('datastore::getApplicationsOnUA --> Applications recovered, calling callback');
-          callback(null, data);
-        } else {
-          log.debug('datastore::getApplicationsOnUA --> No applications recovered :(');
-          callback(null, null);
-        }
-      });
+      );
     });
   },
 
