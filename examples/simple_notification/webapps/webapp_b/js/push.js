@@ -80,7 +80,7 @@ var Push = {
 
   sendEndpointToWAServer: function(endpoint) {
     // Send url to application server
-    var serverURL = this.waurl + '/ApplicationServer/register?push_url=' + endpoint;
+    var serverURL = this.waurl + '/ApplicationServer_b/register?push_url=' + endpoint;
     this.requestToApplicationServer(serverURL, function(success, error){
       if (error) {
         debug(error);
