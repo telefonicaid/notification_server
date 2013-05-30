@@ -273,7 +273,7 @@ var DataStore = function() {
         function(err, data) {
           if (err) {
             log.error(log.messages.ERROR_DSERRORINSERTINGMSGTONODE, {
-              "method": registerApplication,
+              "method": 'registerApplication',
               "error": err
             });
             callback(err);
@@ -592,7 +592,7 @@ var DataStore = function() {
         function(err, data) {
           if (err) {
             log.error(log.messages.ERROR_DSERRORINSERTINGMSGTONODE, {
-              "method": newMessage,
+              "method": 'newMessage',
               "error": err
             });
           } else {

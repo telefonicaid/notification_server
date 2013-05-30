@@ -297,5 +297,4 @@ exports.logtraces = {
     id: 0X3301,
     m: "NS_UA_WS interfaces not configured'"
   }
-
-}
+};
