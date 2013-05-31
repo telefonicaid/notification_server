@@ -13,7 +13,6 @@ var dataStore = require('../../common/datastore'),
     log = require('../../common/logger'),
     errorcodes = require('../../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../../common/constants').errorcodes.AS,
-    uuid = require('node-uuid'),
     isVersion = require('../../common/helpers').isVersion;
 
 var kSimplePushASFrontendVersion = 'v1';
@@ -71,18 +70,17 @@ var SimplePushAPI_v1 = function() {
       'appToken': appToken,
       'version': version
     });
+    // Send the OK response always, this free some server resources
+    response.statusCode = 200;
+    response.end('{}');
+
+    //And now we proccess the notification.
     dataStore.getChannelIDForAppToken(appToken, function(error, channelID) {
-      // If there is no channelID associated with a appToken,
-      // fool the sender with a OK response, but nothing is done here.
       if (!channelID) {
-        response.statusCode = 200;
-        response.end('{}');
         return;
       }
       var msg = dataStore.newVersion(appToken, channelID, version);
       msgBroker.push('newMessages', msg);
-      response.statusCode = 200;
-      response.end('{}');
       return;
     });
   };
