@@ -133,8 +133,7 @@ function onApplicationData(error, appData, json) {
 }
 
 function onNodeData(nodeData, json) {
-  if (!nodeData || !nodeData.si || nodeData._id ||
-      !nodeData.dt || !nodeData.co || !json.messageId) {
+  if (!nodeData || !nodeData.si || !nodeData._id) {
     log.error(log.messages.ERROR_BACKENDERROR, {
       "class": 'MSG_mon',
       "method": 'onNodeData',
