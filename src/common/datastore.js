@@ -332,45 +332,27 @@ var DataStore = function() {
         });
         return;
       }
-      collection.findOne(
+
+      collection.update(
         {
-          _id: uaid
+          _id: uaid,
+          "ch.app": appToken
         },
         {
-          ch: true
+          $pull:
+            {
+              "ch": {
+                "app": appToken
+              }
+            }
         },
-        function(err, data) {
+        function(err,data) {
           if (err) {
-            log.error(log.messages.ERROR_DSERRORLOCATINGCHANNEL4APPTOKEN, {
-              "method": 'newVersion',
-              "apptoken": appToken
-            });
+            log.debug('datastore::unregisterApplication --> Error removing apptoken from the nodes: ' + err);
             return callback(err);
           }
-
-          //Check if we have all data.
-          if (!data || !data.ch || !Array.isArray(data.ch)) {
-            log.error(log.messages.ERROR_DSNOTENOUGHNODESINFO);
-            return callback('Error, not enough data');
-          }
-
-          collection.update(
-            {
-              "ch.app": appToken
-            },
-            {
-              $pull: {
-                ch: data.ch[0]
-              }
-            },
-            function(err,data) {
-              if (err) {
-                log.debug('datastore::unregisterApplication --> Error removing apptoken from the nodes: ' + err);
-                return callback(err);
-              }
-              log.debug('datastore::unregisterApplication --> Application removed from node data');
-              return callback(null);
-          });
+          log.debug('datastore::unregisterApplication --> Application removed from node data');
+          return callback(null);
         }
       );
     });
