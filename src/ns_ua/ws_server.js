@@ -356,7 +356,7 @@ server.prototype = {
             }
             var channelsUpdate = [];
             data.ch.forEach(function(channel) {
-              if (channel.vs && channel.new) {
+              if (helpers.isVersion(channel.vs) && channel.new) {
                 channelsUpdate.push({
                   channelID: channel.ch,
                   version: channel.vs
