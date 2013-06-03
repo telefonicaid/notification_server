@@ -589,7 +589,7 @@ server.prototype = {
 
             query.updates.forEach(function(el) {
               if (!el.channelID || typeof el.channelID !== 'string' ||
-                  !el.version || !helpers.isVersion(el.version)) {
+                  !helpers.isVersion(el.version)) {
                 connection.res({
                   errorcode: errorcodesWS.NOT_VALID_CHANNELID,
                   extradata: { messageType: 'ack',
