@@ -335,6 +335,13 @@ server.prototype = {
           return;
         }
 
+        // If we have a uaid for this connection, ignore this message
+        if (connection.uaid && query.messageType === 'hello') {
+          log.debug('WS:onWSMessage --> New hello message on a hello\'ed ' +
+                   'connection is discarded');
+          return;
+        }
+
         // Restart autoclosing timeout
         dataManager.getNode(connection.uaid, function(nodeConnector) {
           if(nodeConnector)
