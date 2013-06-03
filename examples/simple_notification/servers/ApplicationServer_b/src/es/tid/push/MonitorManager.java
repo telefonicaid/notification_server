@@ -104,6 +104,22 @@ public class MonitorManager extends WebSocketServlet {
           }
         }
       }
+
+      @Override
+      public void onClientUnregistered(String url) {
+        Iterator<Map.Entry<String, MessageManager>> it = connections.entrySet().iterator();
+        while (it.hasNext()) {
+          Map.Entry<String, MessageManager> pairs = (Map.Entry<String, MessageManager>)it.next();
+          try {
+            JSONObject msg = new JSONObject();
+            msg.put("type", "delete");
+            msg.put("data", url);
+            (pairs.getValue()).getWsOutbound().writeTextMessage(CharBuffer.wrap(msg.toString()));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }		
+      }
     };
 
     getServletContext().setAttribute("clientListener", clientListener);

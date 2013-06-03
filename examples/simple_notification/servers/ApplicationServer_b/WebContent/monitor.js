@@ -43,6 +43,15 @@ function connect() {
       addClient(data);
     }
 
+    if(message.type == 'delete') {
+      var data = message.data;
+      var index = clients.indexOf(data);
+      if (index > -1) {
+        clients.splice(index, 1);
+        deleteClient(index + 1);
+      }
+    }
+    
     if(message.type == 'notifyResponse') {
       document.getElementById("send").style.visibility = 'hidden';
       if(message.error)
@@ -57,6 +66,11 @@ function connect() {
   ws.onerror = function (event) {
     alert('Error connecting to server');
   };
+}
+
+function deleteClient(row) {
+  var table = document.getElementById("panel");
+  table.deleteRow(row);
 }
 
 function addClient(url) {

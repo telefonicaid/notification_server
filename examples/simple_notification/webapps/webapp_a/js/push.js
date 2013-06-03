@@ -14,13 +14,17 @@ var Push = {
 
   init: function() {
     debug("Init");
-    this.waurl = "http://192.168.1.48:9999";
+    this.waurl = "http://192.168.1.43:9999";
     this.endpoint = null;
+    this.registered = false;
 
     this.indexedDB = window.mozIndexedDB || window.webkitIndexedDB || window.indexedDB;
     this.database;
 
+    this.status = document.getElementById('status');
+    this.button = document.getElementById('button1');
     this.logArea = document.getElementById('logarea');
+    this.button.onclick = this.processButtonClick.bind(this);
 
     try {
       // Register for messaging
@@ -38,7 +42,8 @@ var Push = {
         var serverURL = self.waurl + '/ApplicationServer_a/register?version=' + version;
         self.requestToApplicationServer(serverURL, function(success, error){
           if (error) {
-            debug(error);
+            self.log("server " + serverURL + " returned " + error, true);
+            self.enableRegister();
           } else {
             self.logMessage(success);
           }
@@ -50,6 +55,7 @@ var Push = {
     }
 
     this.initStore(function (success, error){
+//      this.clearDB();
       if (success && success.endpoint) {
         this.endpoint = success.endpoint;
         debug("endpoint from db: " + this.endpoint);
@@ -58,8 +64,44 @@ var Push = {
       }
 
       this.requestURL();
-      //this.clearDB();
     }.bind(this));
+  },
+
+  register: function() {
+    var self = this;
+    this.restoreData(this.db, function(success, error){
+      if (success && success.endpoint) {
+        self.endpoint = success.endpoint;
+        debug("endpoint from db: " + self.endpoint);
+        self.sendEndpointToWAServer(self.endpoint);
+        return;
+      }
+
+      self.requestURL();
+    });
+  },
+
+  unregister: function() {
+    var self = this;
+    var req = navigator.push.unregister(this.endpoint);
+
+    req.onsuccess = function(e) {
+      var serverURL = self.waurl + '/ApplicationServer_a/unregister?push_url=' + self.endpoint;
+      self.requestToApplicationServer(serverURL, function(success, error){
+        if (error) {
+          self.log("server " + serverURL + " returned " + error, true);
+          self.enableUnregister();
+        } else {
+          self.clearDB();
+          self.enableRegister();
+        }
+      });
+    };
+
+    req.onerror = function(e) {
+      self.enableUnregister();
+      self.log("push.unregister() error: " + e.target.error.name, true);
+    };
   },
 
   requestURL: function() {
@@ -71,20 +113,30 @@ var Push = {
       debug("New endpoint: " + self.endpoint);
       self.saveData(self.endpoint);
       self.sendEndpointToWAServer(self.endpoint);
+      self.enableRegister();
     };
 
     req.onerror = function(e) {
-      debug("Error registering app: " + JSON.stringify(e));
+      self.enableRegister();
+      self.log("push.register() error: " + e.target.error.name, true);
     }
+  },
+
+  log: function(text, error) {
+    debug(text);
+    this.logMessage(text, error);
   },
 
   sendEndpointToWAServer: function(endpoint) {
     // Send url to application server
     var serverURL = this.waurl + '/ApplicationServer_a/register?push_url=' + endpoint;
+    var self = this;
     this.requestToApplicationServer(serverURL, function(success, error){
       if (error) {
-        debug(error);
+        self.log("server " + serverURL + " returned " + error, true);
+        self.enableRegister();
       } else {
+        self.enableUnregister();
         debug("Application ready to receive notifications");
       }
     });
@@ -101,7 +153,7 @@ var Push = {
           callback(xhr.responseText, null);
       } else {
         if (callback) {
-          callback(null, "Error code " + xhr.status);
+          callback(null, "error code " + xhr.status);
         }
       }
     };
@@ -182,12 +234,41 @@ var Push = {
     this.logArea.innerHTML = '';
   },
 
+  enableRegister: function() {
+    this.registered = false;
+    this.status.innerHTML = "Unregistered";
+    this.button.innerHTML = "Register"
+    this.button.style.visibility = "visible";
+  },
+
+  enableUnregister: function() {
+    this.registered = true;
+    this.status.innerHTML = "Registered";
+    this.button.innerHTML = "Unregister"
+    this.button.style.visibility = "visible";
+  },
+
+  processButtonClick: function() {
+    this.button.style.visibility = "hidden";
+    if (!this.registered){
+      this.status.innerHTML = "Registering";
+      this.register(); 
+    } else {
+      this.status.innerHTML = "Unregistering";
+      this.unregister();
+    }
+  },
+
   /**
     * Logs every message from the websocket
     */
-  logMessage: function(message) {
-    var msg = message + '</br>';
-    this.logArea.innerHTML += msg;
+  logMessage: function(message, error) {
+    var msg = document.createElement('li');
+    msg.innerHTML = message;
+    if (error) {
+      msg.className = "error";
+    }
+    this.logArea.insertBefore(msg, this.logArea.firstChild);
   }
 };
 
