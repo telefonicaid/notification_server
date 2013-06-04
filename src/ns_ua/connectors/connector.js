@@ -48,9 +48,7 @@ Connector.prototype = {
     //Is valid MNC?
     var mnc = data.mobilenetwork && data.mobilenetwork.mnc &&
               !isNaN(parseInt(data.mobilenetwork.mnc, 10));
-    if (this.nodesConnectors[data.uaid]) {
-      return callback(null, this.nodesConnectors[data.uaid]);
-    } else if (ip && port && mcc && mnc) {
+    if (ip && port && mcc && mnc) {
       log.debug('getConnector --> Valid ip, port, mcc and mnc to search for wakeup');
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {
@@ -76,6 +74,9 @@ Connector.prototype = {
       }.bind(this));
     } else {
       //Fallback
+      if (this.nodesConnectors[data.uaid]) {
+        this.nodesConnectors[data.uaid].getConnection().close();
+      }
       log.debug('getConnector --> getting a WebSocket connector');
       var connector = new connector_ws(data, connection);
       this.nodesConnectors[data.uaid] = connector;
@@ -85,13 +86,6 @@ Connector.prototype = {
 
   getConnectorForUAID: function(uaid) {
     return this.nodesConnectors[uaid];
-  },
-
-  getUAtokenForConnection: function(connection) {
-    Object.keys(this.nodesConnectors).forEach(function(elem) {
-      if (this.nodesConnectors[elem] === connection);
-      return this.nodesConnectors[elem];
-    });
   },
 
   unregisterUAID: function(uaid) {
