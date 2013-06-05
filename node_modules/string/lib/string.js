@@ -5,7 +5,7 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
 !(function() {
   "use strict";
 
-  var VERSION = '1.3.1';
+  var VERSION = '1.4.0';
 
   var ENTITIES = {};
 
@@ -91,6 +91,18 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
       return this.s.indexOf(ss) >= 0;
     },
 
+    count: function(ss) {
+      var count = 0
+        , pos = this.s.indexOf(ss)
+
+      while (pos >= 0) {
+        count += 1
+        pos = this.s.indexOf(ss, pos + 1)
+      }
+
+      return count
+    },
+
     //#modified from https://github.com/epeli/underscore.string
     dasherize: function() {
       var s = this.trim().s.replace(/[_\s]+/g, '-').replace(/([A-Z])/g, '-$1').replace(/-+/g, '-').toLowerCase();
@@ -150,6 +162,13 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
       }
     },
 
+    humanize: function() { //modified from underscore.string
+      if (this.s === null || this.s === undefined)
+        return new S('')
+      var s = this.underscore().replace(/_id$/,'').replace(/_/g, ' ').trim().capitalize()
+      return new S(s)
+    },
+
     isAlpha: function() {
       return !/[^a-z\xC0-\xFF]/.test(this.s.toLowerCase());
     },
@@ -181,14 +200,6 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
       } else {
         return this.right(-N);
       }
-    },
-
-    lines: function() {
-      var lines = this.s.split('\n')
-      for (var i = 0; i < lines.length; ++i) {
-        lines[i] = lines[i].replace(/(^\s*|\s*$)/g, '');
-      }
-      return lines;
     },
 
     pad: function(len, ch) { //https://github.com/component/pad
@@ -343,25 +354,24 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
     },
 
     toFloat: function(precision) {
-      var num = parseFloat(this.s, 10);
+      var num = parseFloat(this.s)
       if (precision)
-        return parseFloat(num.toFixed(precision));
+        return parseFloat(num.toFixed(precision))
       else
-        return num;
+        return num
     },
 
     toInt: function() { //thanks Google
       // If the string starts with '0x' or '-0x', parse as hex.
-      return /^\s*-?0x/i.test(this.s) ? parseInt(this.s, 16) : parseInt(this.s, 10);
+      return /^\s*-?0x/i.test(this.s) ? parseInt(this.s, 16) : parseInt(this.s, 10)
     },
 
     trim: function() {
       var s;
-      if (typeof String.prototype.trim === 'undefined') {
-        s = this.s.replace(/(^\s*|\s*$)/g, '');
-      } else {
-        s = this.s.trim();
-      }
+      if (typeof __nsp.trim === 'undefined') 
+        s = this.s.replace(/(^\s*|\s*$)/g, '')
+      else 
+        s = this.s.trim()
       return new S(s);
     },
 
@@ -403,7 +413,7 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
     },
 
     toCSV: function() {
-      var delim = ',', qualifier = '"', escapeChar = '\\', encloseNumbers = true, keys = false;
+      var delim = ',', qualifier = '"', escape = '\\', encloseNumbers = true, keys = false;
       var dataArray = [];
 
       function hasVal(it) {
@@ -415,7 +425,7 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
         delim = arguments[0].separator || delim;
         qualifier = arguments[0].qualifier || qualifier;
         encloseNumbers = !!arguments[0].encloseNumbers;
-        escapeChar = arguments[0].escapeChar || escapeChar;
+        escape = arguments[0].escape || escape;
         keys = !!arguments[0].keys;
       } else if (typeof arguments[0] === 'string') {
         delim = arguments[0];
@@ -438,7 +448,7 @@ string.js - Copyright (C) 2012-2013, JP Richardson <jprichardson@gmail.com>
               dataArray.push(this.orig[key]);
       }
 
-      var rep = escapeChar + qualifier;
+      var rep = escape + qualifier;
       var buildString = [];
       for (var i = 0; i < dataArray.length; ++i) {
         var shouldQualify = hasVal(qualifier)
