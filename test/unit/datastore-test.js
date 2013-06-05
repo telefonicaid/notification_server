@@ -43,36 +43,36 @@ vows.describe('DataStore tests').addBatch({
     'insert is OK (error is null)': function(error, data) {
       assert.isNull(error);
     },
-    'data should be 1 (means inserted/updated)': function(error, data) {
-      assert.equal(data, 1);
+    'data should be object (means inserted/updated)': function(error, data) {
+      assert.isObject(data);
     },
     'Looking for inserted node using getNodeData()': {
       topic: function() {
-	dataStore.getNodeData(1, this.callback);
+        dataStore.getNodeData(1, this.callback);
       },
       'query is OK (error is null)': function(error, data) {
-	assert.isNull(error);
+        assert.isNull(error);
       },
       'data retrieved is an object': function(error, data) {
-	assert.isObject(data);
+        assert.isObject(data);
       },
       'data retrieved has a _id=1 attribute': function(error, data) {
-	assert.equal(data._id, 1);
+        assert.equal(data._id, 1);
       },
       'data retrieved has a co=1 attribute': function(error, data) {
-	assert.equal(data.co, 1);
+        assert.equal(data.co, 1);
       },
       'data retrieved has a si=2 attribute': function(error, data) {
-	assert.equal(data.si, 2);
+        assert.equal(data.si, 2);
       },
       'data retrieved has a dt=3 attribute': function(error, data) {
-	assert.equal(data.dt, 3);
+        assert.equal(data.dt, 3);
       },
-      'data retrieved has a number for lt': function(error, data) {
-	assert.isNumber(data.lt);
+      'data retrieved is object for lt': function(error, data) {
+        assert.equal(typeof data.lt, 'object');
       },
       'data retrieved for lt is bigger than 0': function(error, data) {
-	assert.strictEqual(data.lt > 0, true);
+        assert.strictEqual(data.lt > 0, true);
       }
     }
   }
@@ -96,7 +96,7 @@ vows.describe('DataStore tests').addBatch({
       assert.equal(data.co, 1);
       assert.equal(data.si, 2);
       assert.equal(data.dt, 3);
-      assert.isNumber(data.lt);
+      assert.equal(typeof data.lt, 'object');
       assert.strictEqual(data.lt > 0, true);
     }
   }
