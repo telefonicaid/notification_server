@@ -90,7 +90,7 @@ var DataStore = function() {
         this.close();
         return;
       }
-      log.info('datastore::starting --> Connected to MongoDB on ' + ddbbsettings.machines + '. Database Name: ' + ddbbsettings.ddbbname);
+      log.info('datastore::init --> Connected to MongoDB on ' + ddbbsettings.machines + '. Database Name: ' + ddbbsettings.ddbbname);
       this.emit('ddbbconnected');
       this.ready = true;
       var callbacks = this.callbacks || [];
@@ -118,14 +118,15 @@ var DataStore = function() {
         callback(err);
         return;
       }
-      collection.update(
+      collection.findAndModify(
         { _id: uaid },
+        [],
         {
           $set: {
             si: serverId,
             dt: data,
             co: connectionstate.CONNECTED,
-            lt: parseInt(new Date().getTime() / 1000 , 10) // save as seconds
+            lt: new Date()
           }
         },
         { safe: true, upsert: true },
@@ -159,12 +160,13 @@ var DataStore = function() {
         callback(err);
         return;
       }
-      collection.update(
+      collection.findAndModify(
         { _id: uaid },
+        [],
         {
           $set: {
             co: fullyDisconnected,
-            lt: parseInt(new Date().getTime() / 1000 , 10) // save as seconds
+            lt: new Date()
           }
         },
         { safe: true },
@@ -220,8 +222,9 @@ var DataStore = function() {
     // Store in MongoDB
     this.db.collection('apps', function(err, collection) {
       if (!err) {
-        collection.update(
+        collection.findAndModify(
           { _id: appToken },
+          [],
           { $set:
             {
               ce: cert,
@@ -259,8 +262,9 @@ var DataStore = function() {
         callback(err);
         return;
       }
-      collection.update(
+      collection.findAndModify(
         { _id: uaid },
+        [],
         {
           $addToSet: {
             ch: {
@@ -300,8 +304,9 @@ var DataStore = function() {
         });
         return;
       }
-      collection.update(
+      collection.findAndModify(
         { _id: appToken },
+        [],
         { $pull:
           {
             no: uaid
@@ -332,12 +337,12 @@ var DataStore = function() {
         });
         return;
       }
-
-      collection.update(
+      collection.findAndModify(
         {
           _id: uaid,
           "ch.app": appToken
         },
+        [],
         {
           $pull:
             {
@@ -679,10 +684,11 @@ var DataStore = function() {
         });
         return;
       }
-      collection.update(
+      collection.findAndModify(
         {
           _id: uaid
         },
+        [],
         { $pull:
           {
             ms:
@@ -721,11 +727,12 @@ var DataStore = function() {
         });
         return;
       }
-      collection.update(
+      collection.findAndModify(
         {
           _id: uaid,
           'ch.ch': channelID
         },
+        [],
         {
           $set: {
             'ch.$.new': 0
