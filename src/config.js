@@ -158,7 +158,8 @@ exports.NS_AS = {
   interfaces: [
     {
       ip: '0.0.0.0',
-      port: 8081
+      port: 8081,
+      ssl: true        // Enable SSL
     }
   ]
 };
