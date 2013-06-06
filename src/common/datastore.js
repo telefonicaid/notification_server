@@ -475,49 +475,6 @@ var DataStore = function() {
     });
   },
 
-  /**
-   * Get the Certificate of the WA.
-   * @ return the public certificate.
-   */
-  this.getCertificateApplication = function(channelID, callback) {
-    channelID = channelID.toString();
-    log.debug('datastore::getCertificateApplication --> Going to find the certificate for the channelID ' + channelID);
-    this.db.collection('apps', function(err, collection) {
-      callback = helpers.checkCallback(callback);
-      if (err) {
-        log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
-          "method": 'getCertificateApplication',
-          "error": err
-        });
-        callback(err);
-        return;
-      }
-      collection.findOne({ _id: channelID }, function(err, data) {
-        if (err) {
-          log.error(log.messages.ERROR_DSERRORFINDINGCERTIFICATE, {
-            "method": 'getCertificateApplication',
-            "error": err
-          });
-          callback(err);
-          return;
-        }
-        if (!data) {
-          log.debug('There are no channelID=' + channelID + ' in the DDBB');
-          callback(null, null);
-          return;
-        }
-        if (data.ce) {
-          var ce = data.ce;
-          log.debug("datastore::getCertificateApplication --> Found the certificate '" + ce.s + "' for the channelID '" + channelID);
-          callback(null, ce);
-        } else {
-          log.debug('datastore::getCertificateApplication --> There are no certificate for the channelID ' + channelID);
-          callback('No certificate for the channelID=' + channelID);
-        }
-      });
-    });
-  },
-
   this.getChannelIDForAppToken = function(apptoken, callback) {
     apptoken = apptoken.toString();
     log.debug('datastore::getChannelIDForAppToken --> Going to find the channelID for the appToken ' + apptoken);
@@ -548,48 +505,6 @@ var DataStore = function() {
         callback(null, data.ch);
       });
     });
-  },
-
-  /**
-   * Save a new message
-   * @return New message as stored on DB.
-   */
-  this.newMessage = function(id, apptoken, msg) {
-    //Modify the original msg, adding messageId (a unique uuid_v1) and the url notified (probably unique)
-    msg.messageId = id;
-    msg.appToken = apptoken;
-
-    this.db.collection('nodes', function(err, collection) {
-      if (err) {
-        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
-          "method": 'newMessage',
-          "error": err
-        });
-        return;
-      }
-      collection.findAndModify(
-        {
-          "ch.app": apptoken
-        },
-        [],
-        {
-          $addToSet: {
-            ms: msg
-          }
-        },
-        function(err, data) {
-          if (err) {
-            log.error(log.messages.ERROR_DSERRORINSERTINGMSGTONODE, {
-              "method": 'newMessage',
-              "error": err
-            });
-          } else {
-            log.debug('dataStore::newMessage --> Message inserted');
-          }
-        }
-      );
-    });
-    return msg;
   },
 
   /**
@@ -632,86 +547,6 @@ var DataStore = function() {
       );
     });
     return msg;
-  },
-
-  /**
-   * Get all messages for a UA
-   */
-  this.getAllMessagesForUA = function(uaid, callback) {
-    log.debug('Looking for messages of ' + uaid);
-    // Get from MongoDB
-    this.db.collection('nodes', function(err, collection) {
-      callback = helpers.checkCallback(callback);
-      if (err) {
-        log.error(log.messages.ERROR_DSERROROPENINGMESSAGESCOLLECTION, {
-          "method": 'getAllMessagesForUA',
-          "error": err
-        });
-        callback(err);
-        return;
-      }
-      collection.find(
-        { _id: uaid },
-        { ms: true }
-      ).toArray(function(err, data) {
-        if (err) {
-          log.error(log.messages.ERROR_DSERRORFINDINGMSG, {
-            "error": err
-          });
-          callback(err);
-          return;
-        }
-        if (data.length) {
-          log.debug('datastore::getAllMessagesForUA --> Messages found, calling callback');
-          callback(null, data);
-        } else {
-          log.debug('datastore::getAllMessagesForUA --> No messages found, calling callback');
-          callback(null, null);
-        }
-      });
-    });
-  },
-
-  /**
-   * Remove a message from the dataStore
-   */
-  this.removeMessage = function(messageId, uaid) {
-    log.debug('dataStore::removeMessage --> Going to remove message with _id=' + messageId + 'for the uaid=' + uaid);
-    this.db.collection('nodes', function(err, collection) {
-      if (err) {
-        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
-          "method": 'removeMessage',
-          "error": err
-        });
-        return;
-      }
-      collection.findAndModify(
-        {
-          _id: uaid
-        },
-        [],
-        { $pull:
-          {
-            ms:
-              {
-                "messageId": messageId
-              }
-          }
-        },
-        { safe: true },
-        function(err, d) {
-          if (err) {
-            log.error(log.messages.ERROR_DSERRORREMOVINGMESSAGE, {
-              "error": err
-            });
-            return;
-          }
-          log.notify(log.messages.NOTIFY_MSGREMOVEDDB, {
-            "messageId": messageId
-          });
-        }
-      );
-    });
   },
 
   /**

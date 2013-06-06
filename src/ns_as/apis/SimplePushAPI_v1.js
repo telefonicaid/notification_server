@@ -88,4 +88,4 @@ var SimplePushAPI_v1 = function() {
   };
 };
 
-module.exports = SimplePushAPI_v1;
+module.exports = new SimplePushAPI_v1();

@@ -75,48 +75,11 @@ function onNewMessage(msg) {
   }
   log.debug('MSG_mon::onNewMessage --> Message from the queue:', json);
 
-  //MsgType is either 0, 1, or 2.
-  // 0 is "old" full notifications, with body, to be used by apps directly
-  // 1 is Thialfy notifications, just have app and vs attributes
-  // 2 is Desktop notifications, have a id (to be acked), a version and a body
-  var msgType = -1;
-  if (json.appToken) {
-    msgType = 0;
-  } else if (json.app && json.vs) {
-    msgType = 1;
-  } else if (json.body) {
-    msgType = 2;
+  if (!json.app || !json.vs) {
+    return;
   }
 
-  switch (msgType) {
-    case 0:
-      handleOldNotification(json);
-      break;
-    case 1:
-      handleThialfiNotification(json);
-      break;
-    case 2:
-      handleDesktopNotification(json);
-      break;
-    default:
-      log.error(log.messages.ERROR_MONBADMSGTYPE, {
-        'json': json
-      });
-      return;
-  }
-}
-
-function handleOldNotification(json) {
-  dataStore.getApplication(json.appToken, onApplicationData, json);
-}
-
-function handleThialfiNotification(json) {
   dataStore.getApplication(json.app, onApplicationData, json);
-}
-
-function handleDesktopNotification(json) {
-  //TODO
-  console.log('I\'m handling a Desktop notification');
 }
 
 function onApplicationData(error, appData, json) {

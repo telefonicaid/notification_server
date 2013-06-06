@@ -89,11 +89,11 @@ datamanager.prototype = {
   /**
    * Gets a node connector (from memory)
    */
-  getNode: function (uaid, callback) {
-    log.debug("dataManager::getNode --> getting node from memory: " + uaid);
+  getNodeConnector: function (uaid, callback) {
+    log.debug("dataManager::getNodeConnector --> getting node from memory: " + uaid);
     var connector = Connectors.getConnectorForUAID(uaid);
     if (connector) {
-      log.debug('dataManager::getNode --> Connector found: ' + uaid);
+      log.debug('dataManager::getNodeConnector --> Connector found: ' + uaid);
       return callback(connector);
     }
     return callback(null);
@@ -106,14 +106,6 @@ datamanager.prototype = {
     dataStore.getNodeData(uaid, callback);
   },
 
-  /**
-   * Gets a UAID from a given connection object
-   */
-  getUAID: function (connection) {
-    return connection.uaid || null;
-  },
-
-  // TODO: Verify that the node exists before add the application issue #59
   /**
    * Register a new application
    */
@@ -138,48 +130,12 @@ datamanager.prototype = {
   },
 
   /**
-   * Get all messages for a UA
-   */
-  getAllMessagesForUA: function(uaid, callback) {
-    dataStore.getAllMessagesForUA(uaid, callback);
-  },
-
-  /**
-   * Delete an ACK'ed message
-   */
-  removeMessage: function(messageId, uaid) {
-    if (!messageId || !uaid) {
-      log.error(log.messages.ERROR_BACKENDERROR, {
-        "class": 'dataStore',
-        "method": 'removeMessage',
-        "extra": 'No messageId nor UAID found'
-      });
-      return;
-    }
-    dataStore.removeMessage(messageId, uaid);
-  },
-
-  /**
    * ACKs an ack'ed message
    */
   ackMessage: function(uaid, channelID, version) {
     dataStore.ackMessage(uaid, channelID, version);
   }
 };
-
-///////////////////////////////////////////
-// Callbacks functions
-///////////////////////////////////////////
-function onMessage(message, message_info) {
-  log.debug("dataManager::onMessage --> Message payload:", message[0].payload);
-  message_info.callback(
-    {
-      messageId: message_info.id,
-      payload: message[0].payload,
-      data: message_info.callbackParam
-    }
-  );
-}
 
 ///////////////////////////////////////////
 // Singleton

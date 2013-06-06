@@ -21,10 +21,8 @@ var log = require('../common/logger'),
     errorcodesAS = require('../common/constants').errorcodes.AS,
     pages = require('../common/pages.js'),
     maintenance = require('../common/maintenance.js'),
-    helpers = require('../common/helpers.js');
-
-var SimplePushAPI_v1 = require('./apis/SimplePushAPI_v1');
-var simplepush = new SimplePushAPI_v1();
+    helpers = require('../common/helpers.js'),
+    simplepush = require('./apis/SimplePushAPI_v1');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -77,7 +75,7 @@ server.prototype = {
         log.info('NS_AS::init --> MsgBroker ready and connected');
         self.msgbrokerready = true;
       });
-      msgBroker.once('brokerdisconnected', function() {
+      msgBroker.on('brokerdisconnected', function() {
         log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
           "class": 'NS_AS',
           "method": 'init'
@@ -171,7 +169,7 @@ server.prototype = {
     // Frontend for the Mozilla SimplePush API
     if (request.method === 'PUT') {
       log.debug('NS_AS::onHTTPMessage --> Received a PUT');
-      var body = "";
+      var body = '';
       request.on('data', function(data) {
         body += data;
         // Max. payload: "version=9007199254740992" => lenght: 24
@@ -224,7 +222,7 @@ server.prototype = {
           response.statusCode = 200;
           response.write('OK');
         }
-        return response.end();
+        response.end();
         break;
 
       default:

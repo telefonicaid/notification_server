@@ -32,7 +32,8 @@ token.prototype = {
     var tokenAndHMAC = token.split('@');
 
     //  Verification
-    return (tokenAndHMAC[1] && (tokenAndHMAC[1] == crypto.generateHMAC(tokenAndHMAC[0], cryptokey)));
+    return (tokenAndHMAC[1] &&
+            (tokenAndHMAC[1] == crypto.generateHMAC(tokenAndHMAC[0], cryptokey)));
   }
 };
 

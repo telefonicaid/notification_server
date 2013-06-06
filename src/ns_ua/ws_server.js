@@ -117,7 +117,7 @@ server.prototype = {
             messageId: json.messageId,
             uaid: json.uaid
           });
-          dataManager.getNode(json.uaid, function(nodeConnector) {
+          dataManager.getNodeConnector(json.uaid, function(nodeConnector) {
             if (nodeConnector) {
               var notification = json.payload;
 
@@ -314,7 +314,7 @@ server.prototype = {
 
       // Restart autoclosing timeout
       if (connection.uaid) {
-        dataManager.getNode(connection.uaid, function(nodeConnector) {
+        dataManager.getNodeConnector(connection.uaid, function(nodeConnector) {
           if (nodeConnector)
             nodeConnector.resetAutoclose();
         });
@@ -578,139 +578,6 @@ server.prototype = {
               }
 
               dataManager.ackMessage(connection.uaid, el.channelID, el.version);
-            });
-            break;
-
-          /////////////////////////////////
-          // TODO: Extended API
-          /////////////////////////////////
-
-          case 'registerExtended':
-            log.debug('WS::onWSMessage::register --> Extended Application registration message');
-
-            // Close the connection if the watoken is null
-            var watoken = query.watoken;
-            if (!watoken) {
-              log.debug('WS::onWSMessage::register --> Null WAtoken');
-              connection.res({
-                errorcode: errorcodesWS.NOT_VALID_WATOKEN,
-                extradata: { messageType: 'register' }
-              });
-              //There must be a problem on the client, because WAtoken is the way to identify an app
-              //Close in this case.
-              connection.close();
-            }
-
-            var certUrl = query.certUrl;
-            if (!certUrl && query.pbkbase64) {
-              certUrl = query.pbkbase64;
-            }
-            if (!certUrl) {
-              log.debug('WS::onWSMessage::registerWA --> Null certificate URL');
-              //In this case, there is a problem, but there are no certificate.
-              //We just reject the registration but we do not close the connection
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
-            }
-
-            // Recover certificate
-            certUrl = url.parse(certUrl);
-            if (!certUrl.href || !certUrl.protocol ) {
-              log.debug('WS::onWSMessage::registerWA --> Non valid URL');
-              //In this case, there is a problem, but there are no certificate.
-              //We just reject the registration but we do not close the connection
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
-            }
-            // Protocol to use: HTTP or HTTPS ?
-            var protocolHandler = null;
-            switch (certUrl.protocol) {
-            case 'http:':
-              protocolHandler = http;
-              break;
-            case 'https:':
-              protocolHandler = https;
-              break;
-            default:
-              protocolHandler = null;
-            }
-            if (!protocolHandler) {
-              log.debug('WS::onWSMessage::registerWA --> Non valid URL (invalid protocol)');
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
-            }
-            var req = protocolHandler.get(certUrl.href, function(res) {
-                res.on('data', function(d) {
-                  req.abort();
-                  log.debug('Certificate received');
-                  crypto.parseClientCertificate(d,function(err,cert) {
-                    log.debug('Certificate processed');
-                    if (err) {
-                      log.debug('[ERROR] ' + err);
-                      return connection.res({
-                        errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                        extradata: {
-                          'watoken': watoken,
-                          messageType: 'registerWA'
-                        }
-                      });
-                    }
-                    log.debug('[VALID CERTIFICATE] ' + cert.c);
-                    log.debug('[VALID CERTIFICATE FINGERPRINT] ' + cert.f);
-
-                    // Valid certificate, register and store in database
-                    log.debug('WS::onWSMessage::registerWA uaid: ' + connection.uaid);
-                      appToken = helpers.getAppToken(watoken, cert.f);
-                      dataManager.registerApplication(appToken, watoken, connection.uaid, cert, function(error) {
-                        if (!error) {
-                          var notifyURL = helpers.getNotificationURL(appToken);
-                          connection.res({
-                            errorcode: errorcodes.NO_ERROR,
-                            extradata: {
-                              'watoken': watoken,
-                              messageType: 'registerWA',
-                              status: 'REGISTERED',
-                              url: notifyURL
-                            }
-                          });
-                          log.debug('WS::onWSMessage::registerWA --> OK registering WA');
-                        } else {
-                          connection.res({
-                            errorcode: errorcodes.NOT_READY,
-                            extradata: {
-                              'watoken': watoken,
-                              messageType: 'registerWA'
-                            }
-                          });
-                          log.debug('WS::onWSMessage::registerWA --> Failing registering WA');
-                        }
-                      });
-                  });
-                });
-            }).on('error', function(e) {
-              log.debug('Error downloading client certificate ', e);
-              return connection.res({
-                errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
-                extradata: {
-                  'watoken': watoken,
-                  messageType: 'registerWA'
-                }
-              });
             });
             break;
 
