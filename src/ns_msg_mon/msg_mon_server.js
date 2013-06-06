@@ -87,8 +87,6 @@ function onNewMessage(msg) {
     msgType = 2;
   }
 
-  console.log("MSGType is= " + msgType);
-
   switch (msgType) {
     case 0:
       handleOldNotification(json);
