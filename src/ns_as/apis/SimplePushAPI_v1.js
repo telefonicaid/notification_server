@@ -70,8 +70,11 @@ var SimplePushAPI_v1 = function() {
       'appToken': appToken,
       'version': version
     });
+
     // Send the OK response always, this free some server resources
     response.statusCode = 200;
+    //CORS support
+    response.setHeader('Access-Control-Allow-Origin', '*');
     response.end('{}');
 
     //And now we proccess the notification.
