@@ -48,6 +48,10 @@ Connector.prototype = {
     //Is valid MNC?
     var mnc = data.mobilenetwork && data.mobilenetwork.mnc &&
               !isNaN(parseInt(data.mobilenetwork.mnc, 10));
+
+    var connector = null;
+    var self = this;
+
     if (ip && port && mcc && mnc) {
       log.debug('getConnector --> Valid ip, port, mcc and mnc to search for wakeup');
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
@@ -55,33 +59,44 @@ Connector.prototype = {
           log.error(log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
             "error": error
           });
-          return;
+          return callback(error);
         }
-        if (!op || !op.wakeup ||
-            !isIPInNetwork(data.wakeup_hostport.ip, (op.networks || []) )) {
-          log.debug('getConnector -->  No WakeUp server found for MCC=' +
-                     data.mobilenetwork.mcc + ' and MNC=' + data.mobilenetwork.mnc);
-          var connector = new connector_ws(data, connection);
-          this.nodesConnectors[data.uaid] = connector;
-          callback(null, connector);
-          return;
+        // This is the only moment we can give a UDP connector
+        if (op && op.wakeup &&
+            isIPInNetwork(data.wakeup_hostport.ip,(op.networks || []) )) {
+          log.debug('getConnector --> UDP WakeUp server for ' + op.operator +
+                    ': ' + op.wakeup);
+          return self.getUDPconnector(data, connection, callback);
+        } else {
+          //Falback for WebSocket
+          log.debug('getConnector::UDP --> Data is not accepted by the network' +
+                    ' falling back to WebSocket');
+          return self.getWSconnector(data, connection, callback);
         }
-        var connector = null;
-        log.debug('getConnector --> UDP WakeUp server for ' + op.operator + ': ' + op.wakeup);
-        connector = new connector_udp(data, connection);
-        this.nodesConnectors[data.uaid] = connector;
-        callback(null, connector);
-      }.bind(this));
+      });
+    //Fallback for WebSocket.
     } else {
-      //Fallback
-      if (this.nodesConnectors[data.uaid]) {
-        this.nodesConnectors[data.uaid].getConnection().close();
-      }
-      log.debug('getConnector --> getting a WebSocket connector');
-      var connector = new connector_ws(data, connection);
-      this.nodesConnectors[data.uaid] = connector;
-      callback(null, connector);
+      return this.getWSconnector(data, connection, callback);
     }
+  },
+
+  getWSconnector: function(data, connection, callback) {
+    if (this.nodesConnectors[data.uaid]) {
+      this.nodesConnectors[data.uaid].getConnection().close();
+    }
+    log.debug('getConnector --> getting a WebSocket connector');
+    connector = new connector_ws(data, connection);
+    this.nodesConnectors[data.uaid] = connector;
+    return callback(null, connector);
+  },
+
+  getUDPconnector: function(data, connection, callback) {
+    if (this.nodesConnectors[data.uaid]) {
+      this.nodesConnectors[data.uaid].getConnection().close();
+    }
+    connector = new connector_udp(data, connection);
+    this.nodesConnectors[data.uaid] = connector;
+    return callback(null, connector);
   },
 
   getConnectorForUAID: function(uaid) {
