@@ -256,6 +256,11 @@ server.prototype = {
       var body = "";
       request.on('data', function(data) {
         body += data;
+        // Max. payload: "version=9007199254740992" => lenght: 24
+        if (body.length > 25) {
+          log.debug('NS_AS::onHTTPMessage --> Message rejected, too long for this API');
+          return response.res(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
+        }
       });
       request.on('end', function() {
         simplepush.processRequest(request, body, response);
