@@ -1,5 +1,4 @@
 /* jshint node: true */
-
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved

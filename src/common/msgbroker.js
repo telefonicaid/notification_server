@@ -1,3 +1,4 @@
+/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -75,7 +76,7 @@ var MsgBroker = function() {
     //TODO: send randomly , not to the first open connection (which is the easiest 'algorithm')
     var sent = false;
     this.queues.forEach(function(connection) {
-      if(connection && !sent) {
+      if (connection && !sent) {
         connection.publish(queueName, JSON.stringify(body));
         sent = true;
       }

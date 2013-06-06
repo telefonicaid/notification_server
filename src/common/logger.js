@@ -1,3 +1,4 @@
+/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -76,7 +77,7 @@ logger.prototype = {
           if (typeof(object[k]) === 'object') {
             message = message.replace('::'+k, JSON.stringify(object[k]));
           } else {
-            message = message.replace('::'+k, object[k])
+            message = message.replace('::'+k, object[k]);
           }
         });
         object = null;

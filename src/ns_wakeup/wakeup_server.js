@@ -1,3 +1,4 @@
+/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -14,7 +15,7 @@ var log = require('../common/logger.js'),
     consts = require('../config.js').consts,
     dgram = require('dgram'),
     pages = require('../common/pages.js'),
-    maintance = require('../common/maintance.js'),
+    maintenance = require('../common/maintenance.js'),
     helpers = require('../common/helpers.js');
 
 function server(ip, port, ssl) {
@@ -89,8 +90,9 @@ server.prototype = {
     log.notify(log.messages.NOTIFY_RECEIVEDREQUESTFORURL, {
       url: request.url
     });
-    if(request.url === "/about") {
-      if(consts.PREPRODUCTION_MODE) {
+
+    if (request.url === "/about") {
+      if (consts.PREPRODUCTION_MODE) {
         try {
           var p = new pages();
           p.setTemplate('views/about.tmpl');
@@ -115,12 +117,13 @@ server.prototype = {
         return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
       }
     }
-    if(request.url === "/status") {
+
+    if (request.url === "/status") {
       // Return status mode to be used by load-balancers
       response.setHeader('Content-Type', 'text/html');
-      if (maintance.getStatus()) {
+      if (maintenance.getStatus()) {
         response.statusCode = 503;
-        response.write('Under Maintance');
+        response.write('Under Maintenance');
       } else {
         response.statusCode = 200;
         response.write('OK');

@@ -1,3 +1,4 @@
+/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -19,7 +20,7 @@ var log = require('../common/logger'),
     errorcodes = require('../common/constants').errorcodes.GENERAL,
     errorcodesAS = require('../common/constants').errorcodes.AS,
     pages = require('../common/pages.js'),
-    maintance = require('../common/maintance.js'),
+    maintenance = require('../common/maintenance.js'),
     helpers = require('../common/helpers.js');
 
 var SimplePushAPI_v1 = require('./apis/SimplePushAPI_v1');
@@ -216,9 +217,9 @@ server.prototype = {
       case 'status':
         // Return status mode to be used by load-balancers
         response.setHeader('Content-Type', 'text/html');
-        if (maintance.getStatus()) {
+        if (maintenance.getStatus()) {
           response.statusCode = 503;
-          response.write('Under Maintance');
+          response.write('Under Maintenance');
         } else {
           response.statusCode = 200;
           response.write('OK');

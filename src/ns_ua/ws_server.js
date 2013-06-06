@@ -1,3 +1,4 @@
+/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -24,7 +25,7 @@ var log = require('../common/logger.js'),
     url = require('url'),
     http = require('http'),
     https = require('https'),
-    maintance = require('../common/maintance.js');
+    maintenance = require('../common/maintenance.js');
 
 function server(ip, port, ssl) {
   this.ip = ip;
@@ -268,9 +269,9 @@ server.prototype = {
         case 'status':
           // Return status mode to be used by load-balancers
           response.setHeader('Content-Type', 'text/html');
-          if (maintance.getStatus()) {
+          if (maintenance.getStatus()) {
             response.statusCode = 503;
-            response.write('Under Maintance');
+            response.write('Under Maintenance');
           } else {
             response.statusCode = 200;
             response.write('OK');
@@ -314,7 +315,7 @@ server.prototype = {
       // Restart autoclosing timeout
       if (connection.uaid) {
         dataManager.getNode(connection.uaid, function(nodeConnector) {
-          if(nodeConnector)
+          if (nodeConnector)
             nodeConnector.resetAutoclose();
         });
       }
@@ -350,42 +351,11 @@ server.prototype = {
           return;
         }
 
-        function getPendingMessages(cb) {
-          cb = helpers.checkCallback(cb);
-          log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
-          dataManager.getNodeData(connection.uaid, function(err, data) {
-            if (err) {
-              log.error(log.messages.ERROR_WSERRORGETTINGNODE);
-              return cb(null);
-            }
-            // In this case, there are no channels for this
-            if (!data || !data.ch || !Array.isArray(data.ch)) {
-              log.debug(log.messages.ERROR_WSNOCHANNELS);
-              return cb(null);
-            }
-            var channelsUpdate = [];
-            data.ch.forEach(function(channel) {
-              if (helpers.isVersion(channel.vs) && channel.new) {
-                channelsUpdate.push({
-                  channelID: channel.ch,
-                  version: channel.vs
-                });
-              }
-            });
-            if (channelsUpdate.length > 0) {
-              return cb(channelsUpdate);
-            }
-
-            //No channelsUpdate (no new)
-            return cb(null);
-          });
-        }
-
         switch (query.messageType) {
           case undefined:
             log.debug('WS::onWSMessage --> PING package');
-            setTimeout(function() {
-              getPendingMessages(function(channelsUpdate) {
+            process.nextTick(function() {
+              self.getPendingMessages(connection.uaid, function(channelsUpdate) {
                 if (!channelsUpdate) {
                   return connection.sendUTF('{}');
                 }
@@ -453,9 +423,8 @@ server.prototype = {
                   self.recoveryChannels(connection.uaid, query.channelIDs);
                 });
 
-                //Start sending pending notifications
-                setTimeout(function() {
-                  getPendingMessages(function(channelsUpdate) {
+                process.nextTick(function() {
+                  self.getPendingMessages(connection.uaid, function(channelsUpdate) {
                     if (!channelsUpdate) {
                       return;
                     }
@@ -535,7 +504,7 @@ server.prototype = {
            */
           case 'unregister':
             // Close the connection if the channelID is null
-            var channelID = query.channelID;
+            channelID = query.channelID;
             log.debug('WS::onWSMessage::unregister --> Application un-registration message for ' + channelID);
             if (!channelID || typeof(channelID) !== 'string') {
               log.debug('WS::onWSMessage::unregister --> Null channelID');
@@ -550,7 +519,7 @@ server.prototype = {
               return connection.close();
             }
 
-            var appToken = helpers.getAppToken(query.channelID, connection.uaid);
+            appToken = helpers.getAppToken(query.channelID, connection.uaid);
             dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
@@ -587,7 +556,7 @@ server.prototype = {
             }
            */
           case 'ack':
-            if(!Array.isArray(query.updates)) {
+            if (!Array.isArray(query.updates)) {
               connection.res({
                 errorcode: errorcodesWS.NOT_VALID_CHANNELID,
                 extradata: { messageType: 'ack' }
@@ -633,7 +602,7 @@ server.prototype = {
             }
 
             var certUrl = query.certUrl;
-            if(!certUrl && query.pbkbase64) {
+            if (!certUrl && query.pbkbase64) {
               certUrl = query.pbkbase64;
             }
             if (!certUrl) {
@@ -650,7 +619,7 @@ server.prototype = {
             }
 
             // Recover certificate
-            var certUrl = url.parse(certUrl);
+            certUrl = url.parse(certUrl);
             if (!certUrl.href || !certUrl.protocol ) {
               log.debug('WS::onWSMessage::registerWA --> Non valid URL');
               //In this case, there is a problem, but there are no certificate.
@@ -691,7 +660,7 @@ server.prototype = {
                   log.debug('Certificate received');
                   crypto.parseClientCertificate(d,function(err,cert) {
                     log.debug('Certificate processed');
-                    if(err) {
+                    if (err) {
                       log.debug('[ERROR] ' + err);
                       return connection.res({
                         errorcode: errorcodesWS.NOT_VALID_CERTIFICATE_URL,
@@ -822,6 +791,37 @@ server.prototype = {
       data.token = data.parsedURL.query.token;
     }
     return data;
+  },
+
+  getPendingMessages: function(uaid, callback) {
+    callback = helpers.checkCallback(callback);
+    log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
+    dataManager.getNodeData(uaid, function(err, data) {
+      if (err) {
+        log.error(log.messages.ERROR_WSERRORGETTINGNODE);
+        return callback(null);
+      }
+      // In this case, there are no channels for this
+      if (!data || !data.ch || !Array.isArray(data.ch)) {
+        log.debug(log.messages.ERROR_WSNOCHANNELS);
+        return callback(null);
+      }
+      var channelsUpdate = [];
+      data.ch.forEach(function(channel) {
+        if (helpers.isVersion(channel.vs) && channel.new) {
+          channelsUpdate.push({
+            channelID: channel.ch,
+            version: channel.vs
+          });
+        }
+      });
+      if (channelsUpdate.length > 0) {
+        return callback(channelsUpdate);
+      }
+
+      //No channelsUpdate (no new)
+      return callback(null);
+    });
   },
 
   recoveryChannels: function(uaid, channelIDs) {

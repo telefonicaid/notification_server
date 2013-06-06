@@ -1,3 +1,4 @@
+/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -147,7 +148,7 @@ datamanager.prototype = {
    * Delete an ACK'ed message
    */
   removeMessage: function(messageId, uaid) {
-    if(!messageId || !uaid) {
+    if (!messageId || !uaid) {
       log.error(log.messages.ERROR_BACKENDERROR, {
         "class": 'dataStore',
         "method": 'removeMessage',

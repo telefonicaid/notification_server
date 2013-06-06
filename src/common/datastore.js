@@ -1,3 +1,4 @@
+/* jslint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -144,7 +145,7 @@ var DataStore = function() {
         }
       );
     });
-  };
+  },
 
   /**
    * Unregister a node
@@ -182,7 +183,7 @@ var DataStore = function() {
         }
       );
     });
-   };
+   },
 
   /**
    * Gets a node - server relationship
@@ -478,9 +479,9 @@ var DataStore = function() {
    * Get the Certificate of the WA.
    * @ return the public certificate.
    */
-  this.getCertificateApplication = function(channeID, callback) {
-    var channeID = channeID.toString();
-    log.debug('datastore::getCertificateApplication --> Going to find the certificate for the channeID ' + channeID);
+  this.getCertificateApplication = function(channelID, callback) {
+    channelID = channelID.toString();
+    log.debug('datastore::getCertificateApplication --> Going to find the certificate for the channelID ' + channelID);
     this.db.collection('apps', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
@@ -491,7 +492,7 @@ var DataStore = function() {
         callback(err);
         return;
       }
-      collection.findOne({ _id: channeID }, function(err, data) {
+      collection.findOne({ _id: channelID }, function(err, data) {
         if (err) {
           log.error(log.messages.ERROR_DSERRORFINDINGCERTIFICATE, {
             "method": 'getCertificateApplication',
@@ -501,24 +502,24 @@ var DataStore = function() {
           return;
         }
         if (!data) {
-          log.debug('There are no channeID=' + channeID + ' in the DDBB');
+          log.debug('There are no channelID=' + channelID + ' in the DDBB');
           callback(null, null);
           return;
         }
         if (data.ce) {
           var ce = data.ce;
-          log.debug("datastore::getCertificateApplication --> Found the certificate '" + ce.s + "' for the channeID '" + channeID);
+          log.debug("datastore::getCertificateApplication --> Found the certificate '" + ce.s + "' for the channelID '" + channelID);
           callback(null, ce);
         } else {
-          log.debug('datastore::getCertificateApplication --> There are no certificate for the channeID ' + channeID);
-          callback('No certificate for the channeID=' + channeID);
+          log.debug('datastore::getCertificateApplication --> There are no certificate for the channelID ' + channelID);
+          callback('No certificate for the channelID=' + channelID);
         }
       });
     });
   },
 
   this.getChannelIDForAppToken = function(apptoken, callback) {
-    var apptoken = apptoken.toString();
+    apptoken = apptoken.toString();
     log.debug('datastore::getChannelIDForAppToken --> Going to find the channelID for the appToken ' + apptoken);
     this.db.collection('apps', function(err, collection) {
       callback = helpers.checkCallback(callback);
