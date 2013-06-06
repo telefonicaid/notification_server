@@ -3,7 +3,7 @@
  */
 
 exports.serverData = {
-  port: require('../../src/config.js').NS_UA_WS.interfaces[0].port,
+  port: require('../../src/common/config.js').NS_UA_WS.interfaces[0].port,
   host: '127.0.0.1'
 };
 

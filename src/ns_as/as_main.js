@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('../config.js').NS_AS,
+var config = require('../common/config.js').NS_AS,
     log = require('../common/logger.js');
 
 function NS_AS_main() {

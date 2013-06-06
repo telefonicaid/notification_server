@@ -7,7 +7,7 @@
  */
 
 var fs = require('fs'),
-    logparams = require('../config.js').logger,
+    logparams = require('./config.js').logger,
     loglevel = require('./constants.js').loglevels,
     logtraces = require('./logtraces.js').logtraces;
 

@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var config = require('./config.js'),
+var config = require('./common/config.js'),
     log = require('./common/logger.js'),
     os = require('os');
 

@@ -11,7 +11,7 @@ var assert = require('assert'),
     dataStore = require('../../src/common/datastore'),
     common = require('../functional/common'),
     mongo = require('mongodb'),
-    ddbbsettings = require("../../src/config.js").ddbbsettings;
+    ddbbsettings = require("../../src/common/config.js").ddbbsettings;
 
 
 var queries = {
