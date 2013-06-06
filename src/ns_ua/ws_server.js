@@ -311,6 +311,14 @@ server.prototype = {
         connection.sendUTF(JSON.stringify(res));
       };
 
+      // Restart autoclosing timeout
+      if (connection.uaid) {
+        dataManager.getNode(connection.uaid, function(nodeConnector) {
+          if(nodeConnector)
+            nodeConnector.resetAutoclose();
+        });
+      }
+
       if (message.type === 'utf8') {
         log.debug('WS::onWSMessage --> Received Message: ' + message.utf8Data);
         var query = {};
@@ -342,12 +350,6 @@ server.prototype = {
           return;
         }
 
-        // Restart autoclosing timeout
-        dataManager.getNode(connection.uaid, function(nodeConnector) {
-          if(nodeConnector)
-            nodeConnector.resetAutoclose();
-        });
-
         function getPendingMessages(cb) {
           cb = helpers.checkCallback(cb);
           log.debug('WS::onWSMessage::getPendingMessages --> Sending pending notifications');
@@ -356,9 +358,9 @@ server.prototype = {
               log.error(log.messages.ERROR_WSERRORGETTINGNODE);
               return cb(null);
             }
-            // In this case, there are no nodes for this (strange, since it was just registered)
+            // In this case, there are no channels for this
             if (!data || !data.ch || !Array.isArray(data.ch)) {
-              log.error(log.messages.ERROR_WSNOCHANNELS);
+              log.debug(log.messages.ERROR_WSNOCHANNELS);
               return cb(null);
             }
             var channelsUpdate = [];
@@ -454,10 +456,10 @@ server.prototype = {
                 //Start sending pending notifications
                 setTimeout(function() {
                   getPendingMessages(function(channelsUpdate) {
-                    log.debug("CHANNELS: ",channelsUpdate);
                     if (!channelsUpdate) {
                       return;
                     }
+                    log.debug("CHANNELS: ",channelsUpdate);
                     connection.res({
                       errorcode: errorcodes.NO_ERROR,
                       extradata: {
