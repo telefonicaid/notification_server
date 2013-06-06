@@ -12,6 +12,7 @@ var dgram = require('dgram'),
 function connector_udp(data, connection) {
   this.data = data;
   this.connection = connection;
+  this.resetAutoclose();
 }
 
 connector_udp.prototype = {
@@ -40,11 +41,13 @@ connector_udp.prototype = {
   },
 
   resetAutoclose: function() {
-    if (this.autocloseTimeout)
+    var con = this.connection;
+    if (this.autocloseTimeout) {
       clearTimeout(this.autocloseTimeout);
+    }
     this.autocloseTimeout = setTimeout(function() {
-      this.drop(4774, "UDP Wakeup");
-    }.bind(this.connection), 10000);
+      con.drop(4774, "UDP Wakeup");
+    }, 10000);
   },
 
   getConnection: function() {
