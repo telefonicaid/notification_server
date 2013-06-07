@@ -17,6 +17,9 @@ cryptography.prototype = {
   ////////////////////////////////////////////
   // HASH functions
   ////////////////////////////////////////////
+  hashSHA256: function(data) {
+    return crypto.createHash('sha256').update(data).digest('hex');
+  },
 
   hashSHA512: function(data) {
     return crypto.createHash('sha512').update(data).digest('hex');
