@@ -25,7 +25,7 @@ exports.logtraces = {
   },
   NOTIFY_MSGACKED: {
     id: 0x1002,
-    m: "datastore::ackMessage --> Message ACKed",
+    m: "datastore::ackMessage --> Message ACKed, for uaid= ::uaid, channelID = ::channelID and version = ::version",
     doc: "Message correctly delivered and removed from Database"
   },
   NOTIFY_APPTOKEN_VERSION: {

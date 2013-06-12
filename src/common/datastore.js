@@ -582,7 +582,11 @@ var DataStore = function() {
             });
             return;
           }
-          log.notify(log.messages.NOTIFY_MSGREMOVEDDB);
+          log.notify(log.messages.NOTIFY_MSGACKED, {
+            'uaid': uaid,
+            'channelID': channelID,
+            'version': version
+          });
         }
       );
     });

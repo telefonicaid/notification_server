@@ -25,7 +25,6 @@ var fs = require('fs'),
  * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
  * # ALARM: When we need to raise a problem. Will be written in a separate file
  */
-
 function logger() {
   this.consoleOutput = logparams.CONSOLEOUTPUT;
   this.logLevel = logparams.LOGLEVEL;
