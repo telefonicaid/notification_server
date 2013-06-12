@@ -129,9 +129,9 @@ server.prototype = {
   // HTTP callbacks
   //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
-    log.debug('[onHTTPMessage auth]', request.connection.authorizationError);
-    log.debug('[onHTTPMessage received certificate]',
-      request.connection.getPeerCertificate());
+    //log.debug('[onHTTPMessage auth]', request.connection.authorizationError);
+    //log.debug('[onHTTPMessage received certificate]',
+    //request.connection.getPeerCertificate());
 
     response.res = function responseHTTP(errorCode) {
       log.debug('NS_AS::responseHTTP: ', errorCode);
@@ -156,7 +156,6 @@ server.prototype = {
     log.debug('NS_AS::onHTTPMessage --> Received request for ' + request.url);
     var url = urlparser.parse(request.url, true);
     var path = url.pathname.split('/');
-    log.debug('NS_AS::onHTTPMessage --> Splitted URL path: ', path);
 
     // CORS support
     if (request.method === 'OPTIONS') {
