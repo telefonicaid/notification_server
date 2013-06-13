@@ -108,30 +108,11 @@ exports.queue = [{
   }];
 
 /********************* Database configuration *************************/
-/**
- * If replicasetName is not set, we ONLY use the first machine, and
- * connect to a single mongo instance.
- */
-
-//DDBB defaults to using MongoDB in a replicaset
-/*exports.ddbbsettings = {
-  machines: [
-    ["owd-push-qa-be1", 27017],
-    ["owd-push-qa-be2", 27017]
-  ],
-  ddbbname: "push_notification_server",
-  replicasetName: "Server_Push",
-  keepalive: 1200
-};*/
-
-// DDBB defaults to use a single MongoDB instance
-// or sharding
 exports.ddbbsettings = {
   machines: [
     ['localhost', 27017]
   ],
-  ddbbname: 'push_notification_server',
-  keepalive: 1200
+  ddbbname: 'push_notification_server'
 };
 
 ////////////////////////////////////////////////////////////////////////
