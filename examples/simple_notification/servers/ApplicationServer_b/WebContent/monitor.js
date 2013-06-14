@@ -96,11 +96,6 @@ function addClient(url) {
   button.type = "button";
   button.value = "Send Notification";
   button.onclick = function() {
-    if(input.value == '') {
-      alert("Error, empty message");
-      return;
-    }
-
     document.getElementById("send").style.visibility = 'visible';
     var message = {type: "notify",
                    url:   url,
@@ -109,8 +104,21 @@ function addClient(url) {
       ws.send(JSON.stringify(message));
     }
   };
-
   cell4.appendChild(button);
+}
+
+function clearAll() {
+  var table = document.getElementById('panel');
+  var rowCount = table.rows.length;
+
+  for (var x = rowCount-1; x > 0; x--) {
+    table.deleteRow(x);
+  }
+
+  var message = {type: "clear"};
+  if(ws != null) {
+    ws.send(JSON.stringify(message));
+  }
 }
 
 function disconnect() {

@@ -1,8 +1,6 @@
 'use strict';
 
 var DEBUG = true;
-var DB_NAME = 'push_app_db';
-var STORE_NAME = 'push_app_store';
 
 function debug(msg) {
   if (!DEBUG)
@@ -17,9 +15,6 @@ var Push = {
     this.waurl = "http://192.168.1.43:9999";
     this.endpoint = null;
     this.registered = false;
-
-    this.indexedDB = window.mozIndexedDB || window.webkitIndexedDB || window.indexedDB;
-    this.database;
 
     this.status = document.getElementById('status');
     this.button = document.getElementById('button1');
@@ -54,31 +49,23 @@ var Push = {
       debug("This platform does not support system messages.");
     }
 
-    this.initStore(function (success, error){
-//      this.clearDB();
-      if (success && success.endpoint) {
-        this.endpoint = success.endpoint;
-        debug("endpoint from db: " + this.endpoint);
-        this.sendEndpointToWAServer(this.endpoint);
-        return;
-      }
-
-      this.requestURL();
-    }.bind(this));
+    this.requestURL();
   },
 
-  register: function() {
+  requestURL: function() {
     var self = this;
-    this.restoreData(this.db, function(success, error){
-      if (success && success.endpoint) {
-        self.endpoint = success.endpoint;
-        debug("endpoint from db: " + self.endpoint);
-        self.sendEndpointToWAServer(self.endpoint);
-        return;
-      }
+    var req = navigator.push.register();
 
-      self.requestURL();
-    });
+    req.onsuccess = function(e) {
+      self.endpoint = req.result;
+      debug("Endpoint: " + self.endpoint);
+      self.sendEndpointToWAServer(self.endpoint);
+    };
+
+    req.onerror = function(e) {
+      self.enableRegister();
+      self.log("push.register() error: " + e.target.error.name, true);
+    }
   },
 
   unregister: function() {
@@ -92,7 +79,7 @@ var Push = {
           self.log("server " + serverURL + " returned " + error, true);
           self.enableUnregister();
         } else {
-          self.clearDB();
+          self.endpoint = null;
           self.enableRegister();
         }
       });
@@ -102,24 +89,6 @@ var Push = {
       self.enableUnregister();
       self.log("push.unregister() error: " + e.target.error.name, true);
     };
-  },
-
-  requestURL: function() {
-    var self = this;
-    var req = navigator.push.register();
-
-    req.onsuccess = function(e) {
-      self.endpoint = req.result;
-      debug("New endpoint: " + self.endpoint);
-      self.saveData(self.endpoint);
-      self.sendEndpointToWAServer(self.endpoint);
-      self.enableRegister();
-    };
-
-    req.onerror = function(e) {
-      self.enableRegister();
-      self.log("push.register() error: " + e.target.error.name, true);
-    }
   },
 
   log: function(text, error) {
@@ -167,69 +136,6 @@ var Push = {
     xhr.send();
   },
 
-  // Init store for saving info.
-  initStore: function initStore(callback) {
-    var req = this.indexedDB.open(DB_NAME, 1.0);
-
-    var self = this;
-    req.onsuccess = function(event) {
-      self.db = req.result;
-      self.restoreData(req.result, callback);
-    };
-
-    req.onerror = function(e) {
-      debug("Can not open DB.");
-      callback(null, "Can not open DB");
-    };
-
-    req.onupgradeneeded =  function(event) {
-      self.initStoreSchema(req.result);
-    };
-  },
-
-  initStoreSchema: function initStoreSchema(db) {
-    debug("Init db schema");
-
-    db.createObjectStore(STORE_NAME, { keyPath: "id" });
-  },
-
-  restoreData: function restoreData(db, callback) {
-    debug("Restore data from DB");
-    var transaction = db.transaction([STORE_NAME], "readonly");
-    var store = transaction.objectStore(STORE_NAME);
-
-    var result = {endpoint: null};
-    var req = store.get("server_app_data");
-    req.onsuccess = function (event) {
-      if (this.result) {
-        result.endpoint = this.result.endpoint;
-      }
-      callback(result, null);
-    };
-    req.onerror = function (event) {
-      debug("restoreUAData onerror");
-      callback(result, null);
-    };
-  },
-
-  saveData: function saveData(endpoint) {
-    var transaction = this.db.transaction([STORE_NAME], "readwrite");
-    var store = transaction.objectStore(STORE_NAME);
-
-    var req = store.put({id: "server_app_data", endpoint: endpoint});
-    req.onerror = function (event) {
-      if (DEBUG) {
-        debug("fails on saveAData: " + event.errorCode);
-      }
-    }
-  },
-
-  clearDB: function clearDB() {
-    var transaction = this.db.transaction([STORE_NAME], "readwrite");
-    var store = transaction.objectStore(STORE_NAME);
-    store.clear();
-  },
-
   onclear: function() {
     this.logArea.innerHTML = '';
   },
@@ -252,7 +158,7 @@ var Push = {
     this.button.style.visibility = "hidden";
     if (!this.registered){
       this.status.innerHTML = "Registering";
-      this.register(); 
+      this.requestURL(); 
     } else {
       this.status.innerHTML = "Unregistering";
       this.unregister();
