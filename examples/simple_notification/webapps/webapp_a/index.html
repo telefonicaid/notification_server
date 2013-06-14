@@ -1,18 +1,40 @@
 <!DOCTYPE html>
-<html manifest="manifest.appcache">
+<html>
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="pragma" content="no-cache">
-    <title>TestApp</title>
+    <meta charset="UTF-8">
+    <title>Push test app</title>
 
-    <link rel="stylesheet" href="style/push.css" type="text/css" />
-    <script type="text/javascript" src="shared/js/desktop.js"></script>
-    <script type="text/javascript" src="js/push.js"></script>
+    <!-- Shared styles -->
+    <link rel="stylesheet" type="text/css" href="shared/style/headers.css">
+    <link rel="stylesheet" type="text/css" href="shared/style/buttons.css">
+    <link rel="stylesheet" type="text/css" href="shared/style_unstable/lists.css">
+
+    <!-- Specific code -->
+    <link rel="stylesheet" type="text/css" href="style/push.css">
+
+    <!-- Specific code -->
+    <script defer type="application/javascript" src="js/push.js"></script>
   </head>
+
   <body>
-    <button type="button" value="" id="buttonRegisterApp">Register this application</button></br>
-    <button type="button" value="" id="buttonGetURL">Get Current URL</button></br>
-    <button type="button" value="" id="buttonClear">Clear Log</button></br>
-    <div id="logarea" style="border: 1px solid black"></div>
+    <!-- Main view -->
+    <section role="region" class="skin-organic">
+      <header class="fixed">
+        <h1>Push test app A</h1>
+      </header>
+
+      <section class="scrollable">
+        <header><h2>Status: <span id="status">registering</span></h2></header>
+        <article class="view">
+          <button id="button1" class="button" style="visibility:hidden;">Unregister</button>
+        </article>
+
+        <header><h2>Logs</h2></header>
+        <article class="view">
+          <ul id="logarea">
+          </ul>
+        </article>
+      </section>
+    </section>
   </body>
 </html>
