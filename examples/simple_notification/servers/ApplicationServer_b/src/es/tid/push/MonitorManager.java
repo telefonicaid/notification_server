@@ -104,6 +104,22 @@ public class MonitorManager extends WebSocketServlet {
           }
         }
       }
+
+      @Override
+      public void onClientUnregistered(String url) {
+        Iterator<Map.Entry<String, MessageManager>> it = connections.entrySet().iterator();
+        while (it.hasNext()) {
+          Map.Entry<String, MessageManager> pairs = (Map.Entry<String, MessageManager>)it.next();
+          try {
+            JSONObject msg = new JSONObject();
+            msg.put("type", "delete");
+            msg.put("data", url);
+            (pairs.getValue()).getWsOutbound().writeTextMessage(CharBuffer.wrap(msg.toString()));
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+        }		
+      }
     };
 
     getServletContext().setAttribute("clientListener", clientListener);
@@ -157,10 +173,24 @@ public class MonitorManager extends WebSocketServlet {
 
       JSONObject response = new JSONObject();
       response.put("type", "notifyResponse");
-
+      
+      JSONObject json;
       try {
-        JSONObject json = new JSONObject(message.toString());
+        json = new JSONObject(message.toString());
         type = json.getString("type");
+      } catch (Exception e) {
+        response.put("error", "Invalid JSON message");
+        sendNotifyResponse(response);
+        return;
+      }
+
+      if(type.equals("clear")) {
+        clients = new ArrayList<String>();
+        notifications = new HashMap<Long, String>();
+        return;
+      }
+      
+      try {
         url = json.getString("url");
         notificationMsg = json.getString("data");
       } catch (Exception e) {
@@ -168,7 +198,7 @@ public class MonitorManager extends WebSocketServlet {
         sendNotifyResponse(response);
         return;
       }
-
+      
       if(!type.equals("notify")) {
         response.put("error", "Invalid protocol message type \'" + type +"\'");
         sendNotifyResponse(response);
@@ -193,7 +223,11 @@ public class MonitorManager extends WebSocketServlet {
     private String sendRequest(String postUrl, String msg) {
       URL url;
       try {
-        String params = "version=" + URLEncoder.encode(Long.toString(counter), "UTF-8");
+        String params;
+        if (msg.length() == 0)
+        	params = "version=";
+        else
+        	params = "version=" + URLEncoder.encode(Long.toString(counter), "UTF-8");
 
         notifications.put(counter, msg);
         
@@ -215,7 +249,7 @@ public class MonitorManager extends WebSocketServlet {
         BufferedReader rd = new BufferedReader(new InputStreamReader(httpCon.getInputStream()));
         String line;
         while ((line = rd.readLine()) != null) {
-          //System.out.println(line);
+          // System.out.println(line);
         }
         rd.close();
       } catch (IOException e) {

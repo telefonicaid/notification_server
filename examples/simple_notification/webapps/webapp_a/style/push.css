@@ -1,0 +1,47 @@
+html {
+  height: 100%;
+  font-size: 62.5%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  display: block;
+  overflow: hidden;
+}
+
+section[role="region"] {
+  height: 100%;
+}
+
+section[role="region"] > header.fixed:first-child {
+  position: absolute;
+  width: 100%;
+}
+
+.scrollable {
+  overflow: scroll;
+  height: 100%;
+  -moz-box-sizing: border-box;
+  border-top: transparent solid 5rem;
+}
+
+.view {
+  margin: 1.5rem;
+}
+
+.view ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.view ul li {
+  font-size: 1.8rem;
+  padding: 0.5rem 1.5rem;
+  border-bottom: 0.1rem solid #DBD9D9;
+}
+
+.error {
+  color: #FF0000;
+}
