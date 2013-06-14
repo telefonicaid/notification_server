@@ -43,6 +43,15 @@ function connect() {
       addClient(data);
     }
 
+    if(message.type == 'delete') {
+      var data = message.data;
+      var index = clients.indexOf(data);
+      if (index > -1) {
+        clients.splice(index, 1);
+        deleteClient(index + 1);
+      }
+    }
+    
     if(message.type == 'notifyResponse') {
       document.getElementById("send").style.visibility = 'hidden';
       if(message.error)
@@ -57,6 +66,11 @@ function connect() {
   ws.onerror = function (event) {
     alert('Error connecting to server');
   };
+}
+
+function deleteClient(row) {
+  var table = document.getElementById("panel");
+  table.deleteRow(row);
 }
 
 function addClient(url) {
@@ -82,11 +96,6 @@ function addClient(url) {
   button.type = "button";
   button.value = "Send Notification";
   button.onclick = function() {
-    if(input.value == '') {
-      alert("Error, empty message");
-      return;
-    }
-
     document.getElementById("send").style.visibility = 'visible';
     var message = {type: "notify",
                    url:   url,
@@ -95,8 +104,21 @@ function addClient(url) {
       ws.send(JSON.stringify(message));
     }
   };
-
   cell4.appendChild(button);
+}
+
+function clearAll() {
+  var table = document.getElementById('panel');
+  var rowCount = table.rows.length;
+
+  for (var x = rowCount-1; x > 0; x--) {
+    table.deleteRow(x);
+  }
+
+  var message = {type: "clear"};
+  if(ws != null) {
+    ws.send(JSON.stringify(message));
+  }
 }
 
 function disconnect() {
