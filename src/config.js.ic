@@ -6,6 +6,8 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+ var numCPUs = require('os').cpus().length;
+
 /******************* Servers to run on this machine ********************/
 /**
  * Put to true what you want to run
@@ -72,9 +74,11 @@ exports.logger = {
    * # NOTIFY: General notifications, ie. New connections
    * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
    */
-  LOGLEVEL: loglevel.CRITICAL | loglevel.NOTIFY,
+  LOGLEVEL: loglevel.CRITICAL | loglevel.NOTIFY | loglevel.ALARM,
   CONSOLEOUTPUT: 1,
-  BASE_PATH: "/var/log/push_server/"
+  BASE_PATH: "/var/log/push_server/",
+  ALARM: '/var/log/push_server/alarms.log'
+
 };
 
 /********************* Common Queue ***********************************/
@@ -106,30 +110,11 @@ exports.queue = [{
 ];
 
 /********************* Database configuration *************************/
-/**
- * If replicasetName is not set, we ONLY use the first machine, and
- * connect to a single mongo instance.
- */
-
-//DDBB defaults to using MongoDB in a replicaset
-/*exports.ddbbsettings = {
-  machines: [
-    ["owd-push-qa-be1", 27017],
-    ["owd-push-qa-be2", 27017]
-  ],
-  ddbbname: "push_notification_server",
-  replicasetName: "Server_Push",
-  keepalive: 1200
-};*/
-
-//DDBB defaults to use a single MongoDB instance
 exports.ddbbsettings = {
   machines: [
-    ["127.0.0.1", 27017]
+    ['localhost', 27017]
   ],
-  ddbbname: "push_notification_server",
-  replicasetName: null,
-  keepalive: 1200
+  ddbbname: 'push_notification_server'
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -202,12 +187,15 @@ exports.NS_UA_WS = {
    * Be sure to know exactly what are you changing. Short keepaliveIntervals
    * on 3G networks causes a lot of signalling and also dropping too many connections
    * because timeouts on handset status change time.
+   * It's disabled because we do not want to track if we have an open connection
+   * with a client. It's the client who needs to keep track of it (with a PING message)
    */
   websocket_params: {
-    keepalive: true,
-    keepaliveInterval: 40000,
+    // By default, currently the KA messages will be managed by the client side
+    keepalive: false
+    /*keepaliveInterval: 40000,
     dropConnectionOnKeepaliveTimeout: true,
-    keepaliveGracePeriod: 30000
+    keepaliveGracePeriod: 30000*/
   }
 };
 
