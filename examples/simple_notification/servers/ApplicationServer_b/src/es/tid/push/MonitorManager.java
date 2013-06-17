@@ -185,8 +185,8 @@ public class MonitorManager extends WebSocketServlet {
       }
 
       if(type.equals("clear")) {
-        clients = new ArrayList<String>();
-        notifications = new HashMap<Long, String>();
+        clients.clear();
+        notifications.clear();
         return;
       }
       
