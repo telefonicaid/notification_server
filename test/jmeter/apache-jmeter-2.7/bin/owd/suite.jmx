@@ -9,67 +9,72 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="FrontendServer1_uaws" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_uaws</stringProp>
-            <stringProp name="Argument.value">10.101.5.162</stringProp>
+            <stringProp name="Argument.value">172.31.0.193</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_uaws" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_uaws</stringProp>
-            <stringProp name="Argument.value">10.101.5.163</stringProp>
+            <stringProp name="Argument.value">172.31.0.194</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer1_nsas" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_nsas</stringProp>
-            <stringProp name="Argument.value">10.101.5.168</stringProp>
+            <stringProp name="Argument.value">172.31.0.195</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_nsas" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_nsas</stringProp>
-            <stringProp name="Argument.value">10.101.5.169</stringProp>
+            <stringProp name="Argument.value">172.31.0.196</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer1_nsuaudp" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_nsuaudp</stringProp>
-            <stringProp name="Argument.value">10.101.5.172</stringProp>
+            <stringProp name="Argument.value">172.31.0.198</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_nsuaudp" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_nsuaudp</stringProp>
-            <stringProp name="Argument.value">10.101.5.173</stringProp>
+            <stringProp name="Argument.value">172.31.0.199</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_db</stringProp>
-            <stringProp name="Argument.value">10.101.6.51</stringProp>
+            <stringProp name="Argument.value">172.31.0.202</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_db</stringProp>
-            <stringProp name="Argument.value">10.101.6.52</stringProp>
+            <stringProp name="Argument.value">172.31.0.203</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer3_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer3_db</stringProp>
-            <stringProp name="Argument.value">10.101.6.53</stringProp>
+            <stringProp name="Argument.value">172.31.0.204</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BackendServer4_db" elementType="Argument">
+            <stringProp name="Argument.name">BackendServer4_db</stringProp>
+            <stringProp name="Argument.value">172.31.0.205</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_nsmq" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_nsmq</stringProp>
-            <stringProp name="Argument.value">10.101.6.41</stringProp>
+            <stringProp name="Argument.value">172.31.0.206</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_nsmq" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_nsmq</stringProp>
-            <stringProp name="Argument.value">10.101.6.42</stringProp>
+            <stringProp name="Argument.value">172.31.0.207</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_nsmon" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_nsmon</stringProp>
-            <stringProp name="Argument.value">10.101.6.34</stringProp>
+            <stringProp name="Argument.value">172.31.0.200</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_nsmon" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_nsmon</stringProp>
-            <stringProp name="Argument.value">10.101.6.35</stringProp>
+            <stringProp name="Argument.value">172.31.0.201</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -79,30 +84,6 @@
     <hashTree>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="FrontEndServer1" elementType="Argument">
-            <stringProp name="Argument.name">FrontEndServer1</stringProp>
-            <stringProp name="Argument.value">owd-push-qa-fe1.hi.inet</stringProp>
-            <stringProp name="Argument.desc">This is the front end server under load</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="FrontEndServer2" elementType="Argument">
-            <stringProp name="Argument.name">FrontEndServer2</stringProp>
-            <stringProp name="Argument.value">owd-push-qa-fe2.hi.inet</stringProp>
-            <stringProp name="Argument.desc">This is the front end that runs the POST to websocket node</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="BackEndServer1" elementType="Argument">
-            <stringProp name="Argument.name">BackEndServer1</stringProp>
-            <stringProp name="Argument.value">owd-push-qa-be1.hi.inet</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Master back end</stringProp>
-          </elementProp>
-          <elementProp name="BackEndServer2" elementType="Argument">
-            <stringProp name="Argument.name">BackEndServer2</stringProp>
-            <stringProp name="Argument.value">owd-push-qa-be2.hi.inet</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-            <stringProp name="Argument.desc">Slave back end</stringProp>
-          </elementProp>
           <elementProp name="TEST_hello&amp;reg_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_hello&amp;reg_threads</stringProp>
             <stringProp name="Argument.value">100</stringProp>
@@ -125,60 +106,6 @@
             <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
             <stringProp name="Argument.value">100</stringProp>
             <stringProp name="Argument.desc">Duration of the send notifications test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_channelup_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_channelup_threads</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
-            <stringProp name="Argument.desc">Number of virtual users for the channel update test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_channelup_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_channelup_duration</stringProp>
-            <stringProp name="Argument.value">5</stringProp>
-            <stringProp name="Argument.desc">Duration of the channel update test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_getTokens_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_getTokens_threads</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
-            <stringProp name="Argument.desc">Number of virtual users for the getTokens test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_getTokens_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_getTokens_duration</stringProp>
-            <stringProp name="Argument.value">30</stringProp>
-            <stringProp name="Argument.desc">Duration of the getTokens test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerUA_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerUA_threads</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
-            <stringProp name="Argument.desc">Number of virtual users for the registerUA test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerUA_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerUA_duration</stringProp>
-            <stringProp name="Argument.value">300</stringProp>
-            <stringProp name="Argument.desc">Duration of the registerUA test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerApp_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerApp_threads</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
-            <stringProp name="Argument.desc">Number of virtual users for the registerApp test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_registerApp_duration" elementType="Argument">
-            <stringProp name="Argument.name">TEST_registerApp_duration</stringProp>
-            <stringProp name="Argument.value">300</stringProp>
-            <stringProp name="Argument.desc">Duration of the registerApp test</stringProp>
-            <stringProp name="Argument.metadata">=</stringProp>
-          </elementProp>
-          <elementProp name="TEST_receiveNotification_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_receiveNotification_threads</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
-            <stringProp name="Argument.desc">Number of virtual users for the receiveNotification test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_floodingNotifications_duration" elementType="Argument">
@@ -239,7 +166,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -326,7 +253,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -389,7 +316,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </hashTree>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Send notifications" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Send notifications" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -426,7 +353,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontEndServer1}</stringProp>
+          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
           <stringProp name="HTTPSampler.port">${port}</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -443,7 +370,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Flood notifications" enabled="false">
+      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Flood notifications" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="Threads initial delay">0</stringProp>
@@ -461,15 +388,15 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
       <hashTree>
         <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="Flooding notifications" enabled="true">
           <stringProp name="TestPlan.comments">This ssh command executes a flooding script to verify how many simultaneous notifications can be handled by the whole system</stringProp>
-          <stringProp name="hostname">${FrontEndServer1}</stringProp>
+          <stringProp name="hostname">${FrontendServer1_uaws}</stringProp>
           <intProp name="port">22</intProp>
-          <stringProp name="username">owd</stringProp>
-          <stringProp name="password">owd</stringProp>
+          <stringProp name="username">cmartinez</stringProp>
+          <stringProp name="password">U7UtzfgJnXyK</stringProp>
           <stringProp name="command">nohup node ./flood-push-server.js ${FrontEndServer1} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ./flood_notification.out</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Monitoring flood notifications" enabled="false">
+      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Monitoring flood notifications" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="Threads initial delay">0</stringProp>
@@ -487,10 +414,10 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
       <hashTree>
         <org.apache.jmeter.protocol.ssh.sampler.SSHSampler guiclass="TestBeanGUI" testclass="org.apache.jmeter.protocol.ssh.sampler.SSHSampler" testname="netstat" enabled="true">
           <stringProp name="TestPlan.comments">Command to monitor the number of opened connections to manage notifications</stringProp>
-          <stringProp name="hostname">${FrontEndServer1}</stringProp>
+          <stringProp name="hostname">${FrontendServer1_uaws}</stringProp>
           <intProp name="port">22</intProp>
-          <stringProp name="username">owd</stringProp>
-          <stringProp name="password">owd</stringProp>
+          <stringProp name="username">cmartinez</stringProp>
+          <stringProp name="password">U7UtzfgJnXyK</stringProp>
           <stringProp name="command">./connections_and_date.sh</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree>
@@ -528,7 +455,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
       </hashTree>
       <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="true"/>
       <hashTree>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -759,25 +686,25 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="-1528828277">
+            <collectionProp name="869921247">
               <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="771886044">
+            <collectionProp name="-1124331728">
               <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1416488261">
+            <collectionProp name="982261263">
               <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-869294986">
+            <collectionProp name="1529454538">
               <stringProp name="1182480812">${BackEndServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
@@ -849,7 +776,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer1_nsuaudp" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer1_nsuaudp" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -912,7 +839,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer2_nsuaudp" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for FrontendServer2_nsuaudp" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -975,7 +902,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer1_db" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer1_db" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1038,7 +965,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer2_db" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer2_db" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1101,7 +1028,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer3_db" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer3_db" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1164,7 +1091,70 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer1_nsmq" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer4_db" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>true</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename">${ResultsPath}/${BackendServer4_db}_${__time(yyyyMMdd,)}.csv</stringProp>
+          <longProp name="interval_grouping">1000</longProp>
+          <boolProp name="graph_aggregated">false</boolProp>
+          <stringProp name="include_sample_labels"></stringProp>
+          <stringProp name="exclude_sample_labels"></stringProp>
+          <collectionProp name="metricConnections">
+            <collectionProp name="2101781859">
+              <stringProp name="968077780">${BackendServer4_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="-1993889503">Memory</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="107528884">
+              <stringProp name="968077780">${BackendServer4_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="66952">CPU</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="-2080845421">
+              <stringProp name="968077780">${BackendServer4_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="-274342153">Network I/O</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="-1533652146">
+              <stringProp name="968077780">${BackendServer4_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+          </collectionProp>
+        </kg.apc.jmeter.perfmon.PerfMonCollector>
+        <hashTree/>
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer1_nsmq" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1227,7 +1217,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer2_nsmq" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer2_nsmq" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1290,7 +1280,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer1_nsmon" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer1_nsmon" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
@@ -1353,7 +1343,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
-        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer2_nsmon" enabled="false">
+        <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for BackendServer2_nsmon" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
           <objProp>
             <name>saveConfig</name>
