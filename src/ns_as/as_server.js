@@ -103,7 +103,7 @@ server.prototype = {
       });
 
       // Check if we are alive
-      setTimeout(function() {
+      this.readyTimeout = setTimeout(function() {
         if (!self.ddbbready || !self.msgbrokerready)
           log.critical(log.messages.CRITICAL_NOTREADY);
       }, 30 * 1000); //Wait 30 seconds
@@ -117,6 +117,10 @@ server.prototype = {
       }, 10000);
       return;
     }
+
+    // For workers, clean timeouts or intervals
+    clearTimeout(this.readyTimeout);
+
     var self = this;
     this.server.close(function() {
       log.info('NS_AS::stop --> NS_AS closed correctly');

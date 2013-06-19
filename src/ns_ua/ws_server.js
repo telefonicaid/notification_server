@@ -177,7 +177,7 @@ server.prototype = {
       });
 
       //Check if we are alive
-      setTimeout(function() {
+      this.readyTimeout = setTimeout(function() {
         if (!self.ready)
           log.critical(log.messages.CRITICAL_NOTREADY);
       }, 30 * 1000); //Wait 30 seconds
@@ -751,6 +751,7 @@ server.prototype = {
       return;
     }
     log.info('WS::stop --> Closing WS server');
+    clearTimeout(this.readyTimeout);
     //Server not ready
     this.ready = false;
     //Closing connection with msgBroker
