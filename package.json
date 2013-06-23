@@ -30,7 +30,7 @@
         "websocket": "1.0.x",
         "mongodb": "1.x.x",
         "amqp": "0.1.x",
-        "forever-monitor": "1.1.x",
+        "forever-monitor": "1.2.x",
         "string" : "*",
         "range_check": "*"
     },
