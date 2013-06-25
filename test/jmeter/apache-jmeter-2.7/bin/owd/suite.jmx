@@ -515,6 +515,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
+            <collectionProp name="-456080275">
+              <stringProp name="-1204607085">localhost</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
@@ -554,34 +560,40 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="1041802919">
-              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+            <collectionProp name="328597518">
+              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1258911402">
-              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+            <collectionProp name="-1972116803">
+              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1146571386">
-              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+            <collectionProp name="-1859776787">
+              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-599378111">
-              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+            <collectionProp name="-1312583512">
+              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="630097849">
-              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+            <collectionProp name="-83107552">
+              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2112896831">Disks I/O</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="-1271791255">
+              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -623,28 +635,34 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="1146339538">
-              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
+            <collectionProp name="-1410365926">
+              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1154374783">
-              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
+            <collectionProp name="583887049">
+              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1042034767">
-              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
+            <collectionProp name="696227065">
+              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-494841492">
-              <stringProp name="1504416791">${FrontEndServer2}</stringProp>
+            <collectionProp name="1243420340">
+              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="-2108191271">
+              <stringProp name="1988084396">${FrondEndServer2_uaws}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -686,28 +704,34 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="869921247">
-              <stringProp name="1182480812">${BackEndServer1}</stringProp>
+            <collectionProp name="727298759">
+              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1124331728">
-              <stringProp name="1182480812">${BackEndServer1}</stringProp>
+            <collectionProp name="-1266954216">
+              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="982261263">
-              <stringProp name="1182480812">${BackEndServer1}</stringProp>
+            <collectionProp name="839638775">
+              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1529454538">
-              <stringProp name="1182480812">${BackEndServer1}</stringProp>
+            <collectionProp name="1386832050">
+              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="714418906">
+              <stringProp name="2115525356">${FrontendServer1_nsas}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -749,28 +773,34 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="974457866">
-              <stringProp name="1182480843">${BackEndServer2}</stringProp>
+            <collectionProp name="1357235438">
+              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-1019795109">
-              <stringProp name="1182480843">${BackEndServer2}</stringProp>
+            <collectionProp name="-637017537">
+              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1086797882">
-              <stringProp name="1182480843">${BackEndServer2}</stringProp>
+            <collectionProp name="1469575454">
+              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1633991157">
-              <stringProp name="1182480843">${BackEndServer2}</stringProp>
+            <collectionProp name="2016768729">
+              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="1344355585">
+              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -830,10 +860,16 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-730435318">
+            <collectionProp name="1624777435">
               <stringProp name="-178399897">${FrontendServer1_nsuaudp}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="-294955495">
+              <stringProp name="-178399897">${FrontendServer1_nsuaudp}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -899,6 +935,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
+            <collectionProp name="568901765">
+              <stringProp name="-374913402">${FrontendServer2_nsuaudp}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
@@ -956,10 +998,16 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="491887482">
+            <collectionProp name="1827851441">
               <stringProp name="965307217">${BackendServer1_db}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="-91881489">
+              <stringProp name="965307217">${BackendServer1_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -1019,10 +1067,16 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="729071753">
+            <collectionProp name="-724305520">
               <stringProp name="966230738">${BackendServer2_db}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="1650928846">
+              <stringProp name="966230738">${BackendServer2_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -1088,6 +1142,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
+            <collectionProp name="-1331736050">
+              <stringProp name="967154259">${BackendServer3_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
@@ -1149,6 +1209,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="968077780">${BackendServer4_db}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="827970347">
+              <stringProp name="968077780">${BackendServer4_db}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -1214,6 +1280,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
+            <collectionProp name="-1342606841">
+              <stringProp name="-42970490">${BackendServer1_nsmq}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
@@ -1275,6 +1347,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="844533191">${BackendServer2_nsmq}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="-374867810">
+              <stringProp name="844533191">${BackendServer2_nsmq}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
@@ -1340,6 +1418,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
+            <collectionProp name="-32274643">
+              <stringProp name="-1332087452">${BackendServer1_nsmon}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
           </collectionProp>
         </kg.apc.jmeter.perfmon.PerfMonCollector>
         <hashTree/>
@@ -1401,6 +1485,12 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="410722883">${BackendServer2_nsmon}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
+              <stringProp name="0"></stringProp>
+            </collectionProp>
+            <collectionProp name="1025412029">
+              <stringProp name="410722883">${BackendServer2_nsmon}</stringProp>
+              <stringProp name="1600768">4444</stringProp>
+              <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
           </collectionProp>
