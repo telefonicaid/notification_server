@@ -569,11 +569,6 @@ var DataStore = function() {
             });
             return;
           }
-          log.notify(log.messages.NOTIFY_MSGACKED, {
-            'uaid': uaid,
-            'channelID': channelID,
-            'version': version
-          });
         }
       );
     });
@@ -605,6 +600,49 @@ var DataStore = function() {
         var msg = data ? 'The operator has been recovered. ' : 'No operator found. ';
         log.debug('datastore::getOperator --> ' + msg + ' Calling callback');
         return callback(null, data);
+      });
+    });
+  },
+
+  this.getUDPClientsAndUnACKedMessages = function(callback) {
+    callback = helpers.checkCallback(callback);
+    this.db.collection('nodes', function(err, collection) {
+      if (err) {
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'getUDPClientsAndUnACKedMessages',
+          "error": err
+        });
+        callback(err);
+        return;
+      }
+      collection.find(
+        {
+          "dt.protocol": "udp",
+          "ch": {
+            $elemMatch: {
+              "new": 1
+            }
+          }
+        },
+        {
+          _id: true,
+          si: true,
+          dt: true
+        }
+      ).toArray(function(err, nodes) {
+        if (err) {
+          log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+            "method": 'getUDPClientsAndUnACKedMessages',
+            "error": err
+          });
+          callback(err);
+          return;
+        }
+        if(!nodes.length) {
+          callback(null, null);
+        }
+        log.debug('dataStore::getUDPClientsAndUnACKedMessages --> Data found.')
+        callback(null, nodes);
       });
     });
   },

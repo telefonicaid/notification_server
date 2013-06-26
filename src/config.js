@@ -148,7 +148,12 @@ exports.NS_AS = {
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: 'NS_Monitor.log'
+  logfile: 'NS_Monitor.log',
+
+  /**
+   * Milliseconds to retry to send the UDP packets to wakeup a device
+   */
+  retryTime: 30000
 };
 
 /********************* NS_UA_WS **************************************/

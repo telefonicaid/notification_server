@@ -8,9 +8,9 @@
  */
 
 var log = require('../common/logger.js'),
-    crypto = require('../common/cryptography.js'),
     msgBroker = require('../common/msgbroker.js'),
     dataStore = require('../common/datastore.js'),
+    config = require('../config.js').NS_Monitor,
     connectionstate = require('../common/constants.js').connectionstate;
 
 function monitor() {
@@ -54,13 +54,42 @@ monitor.prototype = {
     });
 
     // Check if we are alive
-    setTimeout(function() {
-      if (!self.ready)
+    this.readyTimeout = setTimeout(function() {
+      if (!self.ready) {
         log.critical(log.messages.CRITICAL_NOTREADY);
+      }
     }, 30 * 1000); //Wait 30 seconds
+
+    // Retry UDP messages for unACKed messages
+    this.readyUDPTimeout = setTimeout(function() {
+      self.retryUDPnotACKedInterval = setInterval(function retryUDPnotACKed() {
+        self.retryUDPnotACKed();
+      }, 31 * 1000); // Wait to be ready (31 seconds)
+    }, config.retryTime);
+  },
+
+  retryUDPnotACKed: function() {
+    log.debug('MSG_mon::retryUDPnotACKed --> Starting retry procedure')
+    dataStore.getUDPClientsAndUnACKedMessages(function(error, nodes) {
+      if (error) {
+        return;
+      }
+
+      if (!Array.isArray(nodes) || !nodes.length) {
+        log.debug('MSG_mon::retryUDPnotACKed --> No pending messages for UDP clients');
+        return;
+      }
+
+      nodes.forEach(function(node) {
+        onNodeData(node, {});
+      });
+    });
   },
 
   stop: function() {
+    clearInterval(this.retryUDPnotACKedInterval);
+    clearTimeout(this.readyTimeout);
+    clearTimeout(this.readyUDPTimeout);
     msgBroker.close();
     dataStore.close();
   }
@@ -111,9 +140,13 @@ function onNodeData(nodeData, json) {
   }
 
   log.debug('MSG_mon::onNodeData --> Node connected:', nodeData);
-  log.notify(log.messages.NOTIFY_MSGINSERTEDINTOQUEUE, {
-    serverId: nodeData.si,
-    messageId: json.messageId
+
+  log.notify(log.messages.NOTIFY_INCOMING_TO, {
+    uaid: nodeData._id,
+    appToken: json.app,
+    version: json.vs,
+    mcc: (nodeData.dt && nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) || 0,
+    mnc: (nodeData.dt && nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) || 0,
   });
   var body = {
     messageId: json.messageId,

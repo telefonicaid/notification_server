@@ -177,7 +177,7 @@ server.prototype = {
       });
 
       //Check if we are alive
-      setTimeout(function() {
+      this.readyTimeout = setTimeout(function() {
         if (!self.ready)
           log.critical(log.messages.CRITICAL_NOTREADY);
       }, 30 * 1000); //Wait 30 seconds
@@ -394,6 +394,13 @@ server.prototype = {
             log.debug('WS:onWSMessage --> Accepted uaid=' + query.uaid);
             connection.uaid = query.uaid;
 
+            //KPI: 0x2000
+            log.notify(log.messages.NOTIFY_HELLO, {
+              uaid: connection.uaid,
+              mcc: (query.mobilenetwork && query.mobilenetwork.mcc) || 0,
+              mnc: (query.mobilenetwork && query.mobilenetwork.mnc) || 0
+            });
+
             // New UA registration
             log.debug('WS::onWSMessage --> HELLO - UA registration message');
             //query parameters are validated while getting the connector in
@@ -470,6 +477,14 @@ server.prototype = {
             // Register and store in database
             log.debug('WS::onWSMessage::register uaid: ' + connection.uaid);
             var appToken = helpers.getAppToken(channelID, connection.uaid);
+
+            //KPI: 0x2001
+            log.notify(log.messages.NOTIFY_REGISTER, {
+              uaid: connection.uaid,
+              channelID: channelID,
+              appToken: appToken
+            });
+
             dataManager.registerApplication(appToken, channelID, connection.uaid, null, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
@@ -505,6 +520,7 @@ server.prototype = {
           case 'unregister':
             // Close the connection if the channelID is null
             channelID = query.channelID;
+
             log.debug('WS::onWSMessage::unregister --> Application un-registration message for ' + channelID);
             if (!channelID || typeof(channelID) !== 'string') {
               log.debug('WS::onWSMessage::unregister --> Null channelID');
@@ -520,6 +536,14 @@ server.prototype = {
             }
 
             appToken = helpers.getAppToken(query.channelID, connection.uaid);
+
+            //KPI: 0x2002
+            log.notify(log.messages.NOTIFY_UNREGISTER, {
+              uaid: connection.uaid,
+              channelID: channelID,
+              appToken: appToken
+            });
+
             dataManager.unregisterApplication(appToken, connection.uaid, function(error) {
               if (!error) {
                 var notifyURL = helpers.getNotificationURL(appToken);
@@ -576,6 +600,13 @@ server.prototype = {
                 });
                 return;
               }
+
+              log.notify(log.messages.NOTIFY_ACK, {
+                uaid: connection.uaid,
+                channelID: el.channelID,
+                appToken: helpers.getAppToken(el.channelID, connection.uaid),
+                version: el.version
+              });
 
               dataManager.ackMessage(connection.uaid, el.channelID, el.version);
             });
@@ -751,6 +782,7 @@ server.prototype = {
       return;
     }
     log.info('WS::stop --> Closing WS server');
+    clearTimeout(this.readyTimeout);
     //Server not ready
     this.ready = false;
     //Closing connection with msgBroker
