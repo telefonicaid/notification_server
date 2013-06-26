@@ -622,7 +622,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <intProp name="port">22</intProp>
           <stringProp name="username">cmartinez</stringProp>
           <stringProp name="password">U7UtzfgJnXyK</stringProp>
-          <stringProp name="command">nohup node ./flood-push-server.js ${FrontEndServer1} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ./flood_notification.out</stringProp>
+          <stringProp name="command">nohup node ./flood-push-server.js ${FrontendServer1} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ./flood_notification.out</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
@@ -791,37 +791,37 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
             <collectionProp name="328597518">
-              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
+              <stringProp name="1278699387">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="-1972116803">
-              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
+              <stringProp name="1278699387">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="-1859776787">
-              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
+              <stringProp name="1278699387">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="-1312583512">
-              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
+              <stringProp name="1278699387">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="-83107552">
-              <stringProp name="1278699387">${FrontEndServer1_uaws}</stringProp>
+              <stringProp name="1278699387">${FrontendServer1_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2112896831">Disks I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="-1271791255">
-              <stringProp name="1504416760">${FrontEndServer1}</stringProp>
+              <stringProp name="1504416760">${FrontendServer1}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
@@ -866,25 +866,25 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
             <collectionProp name="-1410365926">
-              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
+              <stringProp name="-2128764228">${FrontendServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="583887049">
-              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
+              <stringProp name="-2128764228">${FrontendServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="696227065">
-              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
+              <stringProp name="-2128764228">${FrontendServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
             <collectionProp name="1243420340">
-              <stringProp name="-2128764228">${FrontEndServer2_uaws}</stringProp>
+              <stringProp name="-2128764228">${FrontendServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
