@@ -66,8 +66,9 @@ var SimplePushAPI_v1 = function() {
 
     //Now, we are safe to start using the path and data
     log.notify(log.messages.NOTIFY_APPTOKEN_VERSION, {
-      'appToken': appToken,
-      'version': version
+      appToken: appToken,
+      version: version,
+      ip: request.connection.remoteAddress || null
     });
 
     // Send the OK response always, this free some server resources

@@ -111,9 +111,13 @@ function onNodeData(nodeData, json) {
   }
 
   log.debug('MSG_mon::onNodeData --> Node connected:', nodeData);
-  log.notify(log.messages.NOTIFY_MSGINSERTEDINTOQUEUE, {
-    serverId: nodeData.si,
-    messageId: json.messageId
+
+  log.notify(log.messages.NOTIFY_INCOMING_TO, {
+    uaid: nodeData._id,
+    appToken: json.app,
+    version: json.vs,
+    mcc: (nodeData.dt && nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) || 0,
+    mnc: (nodeData.dt && nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) || 0,
   });
   var body = {
     messageId: json.messageId,
