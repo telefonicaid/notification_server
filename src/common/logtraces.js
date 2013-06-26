@@ -16,22 +16,45 @@
 
 exports.logtraces = {
 
-  // NOTIFY TRACES
+  /**
+   * NEW Notify messages as per "OWD PNS KPIs v4"
+   */
+  NOTIFY_HELLO: {
+    id: 0x9000,
+    m: "Hello message -- uaid=::uaid -- mcc=::mcc -- mnc=::mnc"
+  },
+  NOTIFY_REGISTER: {
+    id: 0x9001,
+    m: "Register message -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken"
+  },
+  NOTIFY_UNREGISTER: {
+    id: 0x9002,
+    m: "Unregister message -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken"
+  },
+  NOTIFY_APPTOKEN_VERSION: {
+    id: 0x9003,
+    m: "New version -- appToken=::appToken -- version=::version -- ip=::ip",
+  },
+  NOTIFY_INCOMING_TO: {
+    id: 0x9004,
+    m: "New version for -- uaid=::uaid -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc::mnc",
+  },
+  NOTIFY_TO_WAKEUP: {
+    id: 0x9005,
+    m: "Notify to wakeup -- uaid=::uaid -- wakeup=::wakeupip:::wakeupport -- mcc=::mcc -- mnc=::mnc -- protocol=::protocol -- status=::response",
+  },
+  NOTIFY_ACK: {
+    id: 0x9006,
+    m: "ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version",
+  },
 
+  /**
+   * Old notify messages.
+   */
   NOTIFY_MSGREMOVEDDB: {
     id: 0x1001,
     m: "datastore::removeMessage --> Message removed from MongoDB ::messageId",
     doc: "Message correctly removed from the database"
-  },
-  NOTIFY_MSGACKED: {
-    id: 0x1002,
-    m: "datastore::ackMessage --> Message ACKed, for uaid= ::uaid, channelID = ::channelID and version = ::version",
-    doc: "Message correctly delivered and removed from Database"
-  },
-  NOTIFY_APPTOKEN_VERSION: {
-    id: 0x1101,
-    m: "appToken=::appToken -- version=::version",
-    doc: "Information about the application token and version"
   },
   NOTIFY_MSGSTORINGDB: {
     id: 0x1102,

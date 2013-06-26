@@ -64,16 +64,6 @@ function onNewMessage(message) {
     return log.error(log.messages.ERROR_UDPNODATA);
   }
 
-  // Notify the hanset with the associated Data
-  log.notify(log.messages.NOTIFY_NOTIFINGNODE, {
-    uaid: messageData.uaid,
-    wakeupip: messageData.dt.wakeup_hostport.ip,
-    wakeupport: messageData.dt.wakeup_hostport.port,
-    mcc: messageData.dt.mobilenetwork.mcc,
-    mnc: messageData.dt.mobilenetwork.mnc,
-    protocol: messageData.dt.protocol
-  });
-
   mn.getNetwork(messageData.dt.mobilenetwork.mcc, messageData.dt.mobilenetwork.mnc, function(error, op) {
     if (error) {
       log.error(log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
@@ -117,11 +107,25 @@ function onNewMessage(message) {
       '&port=' + messageData.dt.wakeup_hostport.port +
       '&proto=' + messageData.dt.protocol,
       function(res) {
-        res.on('data', function(d) {
-          log.debug('UDP:WakeUpConnection response: ' + d);
+        log.notify(log.messages.NOTIFY_TO_WAKEUP, {
+          uaid: messageData.uaid,
+          wakeupip: messageData.dt.wakeup_hostport.ip,
+          wakeupport: messageData.dt.wakeup_hostport.port,
+          mcc: messageData.dt.mobilenetwork.mcc,
+          mnc: messageData.dt.mobilenetwork.mnc,
+          protocol: messageData.dt.protocol,
+          response: res.statusCode
         });
       }).on('error', function(e) {
-        log.debug('UDP:WakeUpConnection error: ' + e);
+        log.notify(log.messages.NOTIFY_TO_WAKEUP, {
+          uaid: messageData.uaid,
+          wakeupip: messageData.dt.wakeup_hostport.ip,
+          wakeupport: messageData.dt.wakeup_hostport.port,
+          mcc: messageData.dt.mobilenetwork.mcc,
+          mnc: messageData.dt.mobilenetwork.mnc,
+          protocol: messageData.dt.protocol,
+          response: e.message
+        });
       });
   }.bind(this));
 }
