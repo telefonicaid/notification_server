@@ -114,7 +114,8 @@ server.prototype = {
         response.write(text);
         return response.end();
       } else {
-        return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+        response.statusCode = 405;
+        return response.end();
       }
     }
 
