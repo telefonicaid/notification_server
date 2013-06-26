@@ -546,7 +546,7 @@ var DataStore = function() {
       if (error) {
         log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
           "method": 'ackMessage',
-          "error": err
+          "error": error
         });
         return;
       }
