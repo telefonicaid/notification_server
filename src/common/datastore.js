@@ -604,6 +604,49 @@ var DataStore = function() {
     });
   },
 
+  this.getUDPClientsAndUnACKedMessages = function(callback) {
+    callback = helpers.checkCallback(callback);
+    this.db.collection('nodes', function(err, collection) {
+      if (err) {
+        log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+          "method": 'getUDPClientsAndUnACKedMessages',
+          "error": err
+        });
+        callback(err);
+        return;
+      }
+      collection.find(
+        {
+          "dt.protocol": "udp",
+          "ch": {
+            $elemMatch: {
+              "new": 1
+            }
+          }
+        },
+        {
+          _id: true,
+          si: true,
+          dt: true
+        }
+      ).toArray(function(err, nodes) {
+        if (err) {
+          log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+            "method": 'getUDPClientsAndUnACKedMessages',
+            "error": err
+          });
+          callback(err);
+          return;
+        }
+        if(!nodes.length) {
+          callback(null, null);
+        }
+        log.debug('dataStore::getUDPClientsAndUnACKedMessages --> Data found.')
+        callback(null, nodes);
+      });
+    });
+  },
+
   this.flushDb = function() {
     this.db.collection('apps', function(err, collection) {
       if (err) {

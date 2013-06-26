@@ -171,7 +171,7 @@ server.prototype = {
     });
 
     //Check if we are alive
-    setTimeout(function() {
+    this.readyTimeout = setTimeout(function() {
       if (!self.ready)
         log.critical(log.messages.CRITICAL_NOTREADY);
     }, 30 * 1000); //Wait 30 seconds
@@ -180,6 +180,7 @@ server.prototype = {
 
   stop: function() {
     this.ready = false;
+    clearTimeout(this.readyTimeout);
     log.info('NS_UDP:stop --> Closing UDP server');
 
     //Closing connection with msgBroker
