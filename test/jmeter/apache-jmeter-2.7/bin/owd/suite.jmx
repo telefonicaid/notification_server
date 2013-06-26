@@ -84,14 +84,14 @@
     <hashTree>
       <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
         <collectionProp name="Arguments.arguments">
-          <elementProp name="TEST_hello&amp;reg_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_hello&amp;reg_threads</stringProp>
+          <elementProp name="TEST_hello_reg_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_threads</stringProp>
             <stringProp name="Argument.value">100</stringProp>
             <stringProp name="Argument.desc">Number of virtual users for the Hello test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_hello&amp;reg_iterations" elementType="Argument">
-            <stringProp name="Argument.name">TEST_hello&amp;reg_iterations</stringProp>
+          <elementProp name="TEST_hello_reg_iterations" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_iterations</stringProp>
             <stringProp name="Argument.value">100</stringProp>
             <stringProp name="Argument.desc">Duration of the Hello test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
@@ -515,7 +515,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-456080275">
+            <collectionProp name="-1395881884">
               <stringProp name="-1204607085">localhost</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
@@ -860,13 +860,13 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1624777435">
+            <collectionProp name="-730435318">
               <stringProp name="-178399897">${FrontendServer1_nsuaudp}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-294955495">
+            <collectionProp name="-1402848462">
               <stringProp name="-178399897">${FrontendServer1_nsuaudp}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
@@ -998,13 +998,13 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1827851441">
+            <collectionProp name="491887482">
               <stringProp name="965307217">${BackendServer1_db}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-91881489">
+            <collectionProp name="-180525662">
               <stringProp name="965307217">${BackendServer1_db}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
@@ -1067,13 +1067,13 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-724305520">
+            <collectionProp name="729071753">
               <stringProp name="966230738">${BackendServer2_db}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1650928846">
+            <collectionProp name="56658609">
               <stringProp name="966230738">${BackendServer2_db}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
@@ -1487,7 +1487,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1025412029">
+            <collectionProp name="-1825165197">
               <stringProp name="410722883">${BackendServer2_nsmon}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
