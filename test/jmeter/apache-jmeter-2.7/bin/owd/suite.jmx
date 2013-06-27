@@ -218,7 +218,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write idTest to text file" enabled="true">
-              <stringProp name="filename">${ResultsPath}\id_Test.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/id_Test.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -306,7 +306,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write channelID to text file" enabled="true">
-              <stringProp name="filename">${ResultsPath}\channelID_URL.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/channelID_URL.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -394,7 +394,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write idTest to text file" enabled="true">
-              <stringProp name="filename">${ResultsPath}\id_Test.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/id_Test.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -482,7 +482,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write channelID to text file" enabled="true">
-              <stringProp name="filename">${ResultsPath}\channelID_URL.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/channelID_URL.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -508,7 +508,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
       </ThreadGroup>
       <hashTree>
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read Channel Id and URL" enabled="true">
-          <stringProp name="filename">results\channelID_URL.csv</stringProp>
+          <stringProp name="filename">results/channelID_URL.csv</stringProp>
           <stringProp name="fileEncoding"></stringProp>
           <stringProp name="variableNames">IP,port,URL,channelID</stringProp>
           <stringProp name="delimiter">,</stringProp>
@@ -562,7 +562,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
       </ThreadGroup>
       <hashTree>
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read Channel Id and URL" enabled="true">
-          <stringProp name="filename">results\channelID_URL.csv</stringProp>
+          <stringProp name="filename">results/channelID_URL.csv</stringProp>
           <stringProp name="fileEncoding"></stringProp>
           <stringProp name="variableNames">IP,port,URL,channelID</stringProp>
           <stringProp name="delimiter">,</stringProp>
@@ -622,11 +622,11 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <intProp name="port">22</intProp>
           <stringProp name="username">cmartinez</stringProp>
           <stringProp name="password">U7UtzfgJnXyK</stringProp>
-          <stringProp name="command">nohup node ./flood-push-server.js ${FrontendServer1_uaws} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ./flood_notification.out</stringProp>
+          <stringProp name="command">nohup node test/jmeter_auxtools/flood-push-server.js ${FrontendServer1_uaws} 8080 ${TEST_floodingNotifications_connections} 1000 100 1000 ${TEST_floodingNotifications_duration} &amp;&gt; ./flood_notification.out</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Monitoring flood notifications" enabled="true">
+      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Monitoring flood notifications" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="Threads initial delay">0</stringProp>
