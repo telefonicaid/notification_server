@@ -82,11 +82,11 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="false">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
         <collectionProp name="Arguments.arguments">
           <elementProp name="TEST_hello_reg_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_hello_reg_threads</stringProp>
-            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Number of virtual users for the Hello test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -895,8 +895,8 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-2108191271">
-              <stringProp name="1988084396">${FrondEndServer2_uaws}</stringProp>
+            <collectionProp name="1562646000">
+              <stringProp name="-1285988708">${FrontendServer2_uaws}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
@@ -1009,32 +1009,32 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <stringProp name="include_sample_labels"></stringProp>
           <stringProp name="exclude_sample_labels"></stringProp>
           <collectionProp name="metricConnections">
-            <collectionProp name="1357235438">
-              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
+            <collectionProp name="550778507">
+              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-1993889503">Memory</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="-637017537">
-              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
+            <collectionProp name="-1443474468">
+              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="66952">CPU</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1469575454">
-              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
+            <collectionProp name="663118523">
+              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="-274342153">Network I/O</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="2016768729">
-              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
+            <collectionProp name="1210311798">
+              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="2590131">Swap</stringProp>
               <stringProp name="0"></stringProp>
             </collectionProp>
-            <collectionProp name="1344355585">
-              <stringProp name="-1328042107">${FrontedServer2_nsas}</stringProp>
+            <collectionProp name="537898654">
+              <stringProp name="-1291938259">${FrontendServer2_nsas}</stringProp>
               <stringProp name="1600768">4444</stringProp>
               <stringProp name="82881">TCP</stringProp>
               <stringProp name="0"></stringProp>
