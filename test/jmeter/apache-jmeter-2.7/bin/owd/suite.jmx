@@ -126,6 +126,12 @@
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Number of queries of connections opened during the test, as checks lasts 10 seconds, it should be correlated with test duration</stringProp>
           </elementProp>
+          <elementProp name="TEST_floodingNotifications_start" elementType="Argument">
+            <stringProp name="Argument.name">TEST_floodingNotifications_start</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.desc">Indicates if flood notification test should start or not</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
             <stringProp name="Argument.value">owd/results</stringProp>
@@ -602,7 +608,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
       </hashTree>
       <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Flood notifications" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${TEST_floodingNotifications_start}</stringProp>
         <stringProp name="Threads initial delay">0</stringProp>
         <stringProp name="Start users count">0</stringProp>
         <stringProp name="Start users period">0</stringProp>
