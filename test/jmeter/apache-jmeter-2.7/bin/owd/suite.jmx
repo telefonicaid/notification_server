@@ -144,9 +144,9 @@
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${TEST_hello&amp;reg_iterations}</stringProp>
+          <stringProp name="LoopController.loops">${TEST_hello_reg_iterations}</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${TEST_hello&amp;reg_threads}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${TEST_hello_reg_threads}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">60</stringProp>
         <longProp name="ThreadGroup.start_time">1362561818000</longProp>
         <longProp name="ThreadGroup.end_time">1362561818000</longProp>
@@ -320,9 +320,9 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${TEST_hello&amp;reg_iterations}</stringProp>
+          <stringProp name="LoopController.loops">${TEST_hello_reg_iterations}</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${TEST_hello&amp;reg_threads}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${TEST_hello_reg_threads}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">60</stringProp>
         <longProp name="ThreadGroup.start_time">1362561818000</longProp>
         <longProp name="ThreadGroup.end_time">1362561818000</longProp>
