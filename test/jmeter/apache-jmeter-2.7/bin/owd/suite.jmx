@@ -98,43 +98,43 @@
           </elementProp>
           <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_threads</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Number of virtual users sending notifications</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
-            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Duration of the send notifications test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_floodingNotifications_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_floodingNotifications_duration</stringProp>
-            <stringProp name="Argument.value">300000</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Duration of the flood notifications test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_floodingNotifications_connections" elementType="Argument">
             <stringProp name="Argument.name">TEST_floodingNotifications_connections</stringProp>
-            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Number of connections opened</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_floodingNotifications_monitor" elementType="Argument">
             <stringProp name="Argument.name">TEST_floodingNotifications_monitor</stringProp>
-            <stringProp name="Argument.value">360</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Number of queries of connections opened during the test, as checks lasts 10 seconds, it should be correlated with test duration</stringProp>
           </elementProp>
           <elementProp name="TEST_floodingNotifications_start" elementType="Argument">
             <stringProp name="Argument.name">TEST_floodingNotifications_start</stringProp>
-            <stringProp name="Argument.value">1</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Indicates if flood notification test should start or not</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
-            <stringProp name="Argument.value">owd/results</stringProp>
+            <stringProp name="Argument.value">report</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
             <stringProp name="Argument.desc">Path to store the results relative to jmeter binary</stringProp>
           </elementProp>
