@@ -146,7 +146,7 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Hello &amp; Channel Registration Fe1" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Hello &amp; Channel Registration Fe1 and Fe2" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -161,7 +161,7 @@
         <stringProp name="ThreadGroup.delay"></stringProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Hello" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Hello Fe1" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -207,7 +207,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If register is ok" enabled="true">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If register is ok Fe1" enabled="true">
           <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
@@ -237,18 +237,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </ConstantTimer>
           <hashTree/>
         </hashTree>
-        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read idTest from file" enabled="false">
-          <stringProp name="filename">results\id_Test.csv</stringProp>
-          <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="variableNames">idTest_F</stringProp>
-          <stringProp name="delimiter">,</stringProp>
-          <boolProp name="quotedData">false</boolProp>
-          <boolProp name="recycle">true</boolProp>
-          <boolProp name="stopThread">false</boolProp>
-          <stringProp name="shareMode">Todos los hilos</stringProp>
-        </CSVDataSet>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Channel registration" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Channel registration Fe1" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -295,7 +284,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </RegexExtractor>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If channel is ok" enabled="true">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If channel is ok Fe1" enabled="true">
           <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
@@ -321,23 +310,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             <hashTree/>
           </hashTree>
         </hashTree>
-      </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Hello &amp; Channel Registration Fe2" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${TEST_hello_reg_iterations}</stringProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${TEST_hello_reg_threads}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">60</stringProp>
-        <longProp name="ThreadGroup.start_time">1362561818000</longProp>
-        <longProp name="ThreadGroup.end_time">1362561818000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-      </ThreadGroup>
-      <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Hello" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Hello Fe2" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -383,7 +356,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </ResponseAssertion>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If register is ok" enabled="true">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If register is ok Fe2" enabled="true">
           <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
@@ -413,18 +386,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </ConstantTimer>
           <hashTree/>
         </hashTree>
-        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read idTest from file" enabled="false">
-          <stringProp name="filename">results\id_Test.csv</stringProp>
-          <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="variableNames">idTest_F</stringProp>
-          <stringProp name="delimiter">,</stringProp>
-          <boolProp name="quotedData">false</boolProp>
-          <boolProp name="recycle">true</boolProp>
-          <boolProp name="stopThread">false</boolProp>
-          <stringProp name="shareMode">Todos los hilos</stringProp>
-        </CSVDataSet>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Channel registration" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Channel registration Fe2" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -471,7 +433,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </RegexExtractor>
           <hashTree/>
         </hashTree>
-        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If channel is ok" enabled="true">
+        <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If channel is ok Fe2" enabled="true">
           <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
           <boolProp name="IfController.evaluateAll">false</boolProp>
         </IfController>
@@ -498,7 +460,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </hashTree>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Send notifications Fe1" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Send notifications Fe1 and Fe2" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -536,60 +498,6 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             </collectionProp>
           </elementProp>
           <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
-          <stringProp name="HTTPSampler.port">${port}</stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-          <stringProp name="HTTPSampler.protocol">HTTPS</stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">${URL}</stringProp>
-          <stringProp name="HTTPSampler.method">PUT</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <boolProp name="HTTPSampler.monitor">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-      </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Send notifications Fe2" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${TEST_sendnotifications_duration}</stringProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${TEST_sendnotifications_threads}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <longProp name="ThreadGroup.start_time">1363014360000</longProp>
-        <longProp name="ThreadGroup.end_time">1363014360000</longProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-      </ThreadGroup>
-      <hashTree>
-        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read Channel Id and URL" enabled="true">
-          <stringProp name="filename">results/channelID_URL.csv</stringProp>
-          <stringProp name="fileEncoding"></stringProp>
-          <stringProp name="variableNames">IP,port,URL,channelID</stringProp>
-          <stringProp name="delimiter">,</stringProp>
-          <boolProp name="quotedData">false</boolProp>
-          <boolProp name="recycle">true</boolProp>
-          <boolProp name="stopThread">false</boolProp>
-          <stringProp name="shareMode">Todos los hilos</stringProp>
-        </CSVDataSet>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Notification" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">version=1</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer2_uaws}</stringProp>
           <stringProp name="HTTPSampler.port">${port}</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
