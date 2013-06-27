@@ -96,7 +96,7 @@ server.prototype = {
         try {
           var p = new pages();
           p.setTemplate('views/about.tmpl');
-          text = p.render(function(t) {
+          var text = p.render(function(t) {
             switch (t) {
               case '{{GIT_VERSION}}':
                 return require('fs').readFileSync('version.info');
@@ -114,7 +114,8 @@ server.prototype = {
         response.write(text);
         return response.end();
       } else {
-        return response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+        response.statusCode = 405;
+        return response.end();
       }
     }
 

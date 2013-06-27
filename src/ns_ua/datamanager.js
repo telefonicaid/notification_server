@@ -11,7 +11,7 @@ var dataStore = require('../common/datastore'),
     log = require('../common/logger.js'),
     helpers = require('../common/helpers.js'),
     Connectors = require('./connectors/connector.js').getConnector(),
-    ddbbsettings = require('../config.js').NS_AS.ddbbsettings,
+    errorcodesWS = require('../common/constants.js').errorcodes.UAWS,
     connectionstate = require('../common/constants.js').connectionstate;
 
 function datamanager() {
