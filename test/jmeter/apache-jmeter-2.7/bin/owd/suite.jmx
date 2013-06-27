@@ -476,7 +476,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
       </ThreadGroup>
       <hashTree>
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="Read Channel Id and URL" enabled="true">
-          <stringProp name="filename">results/channelID_URL.csv</stringProp>
+          <stringProp name="filename">${ResultsPath}/channelID_URL.csv</stringProp>
           <stringProp name="fileEncoding"></stringProp>
           <stringProp name="variableNames">IP,port,URL,channelID</stringProp>
           <stringProp name="delimiter">,</stringProp>
