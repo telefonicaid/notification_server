@@ -224,7 +224,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write idTest to text file" enabled="true">
-              <stringProp name="filename">../../../../../${ResultsPath}/id_Test.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/id_Test.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -301,7 +301,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write channelID to text file" enabled="true">
-              <stringProp name="filename">../../../../../${ResultsPath}/channelID_URL.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/channelID_URL.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -373,7 +373,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write idTest to text file" enabled="true">
-              <stringProp name="filename">../../../../../${ResultsPath}/id_Test.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/id_Test.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
@@ -450,7 +450,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           </kg.apc.jmeter.samplers.DummySampler>
           <hashTree>
             <kg.apc.jmeter.reporters.FlexibleFileWriter guiclass="kg.apc.jmeter.reporters.FlexibleFileWriterGui" testclass="kg.apc.jmeter.reporters.FlexibleFileWriter" testname="Write channelID to text file" enabled="true">
-              <stringProp name="filename">../../../../../${ResultsPath}/channelID_URL.csv</stringProp>
+              <stringProp name="filename">${ResultsPath}/channelID_URL.csv</stringProp>
               <stringProp name="columns">responseData|\r\n</stringProp>
               <boolProp name="overwrite">false</boolProp>
               <stringProp name="header"></stringProp>
