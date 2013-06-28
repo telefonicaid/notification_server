@@ -86,25 +86,25 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="TEST_hello_reg_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_hello_reg_threads</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Number of virtual users for the Hello test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_hello_reg_iterations" elementType="Argument">
             <stringProp name="Argument.name">TEST_hello_reg_iterations</stringProp>
-            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
             <stringProp name="Argument.desc">Duration of the Hello test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Number of virtual users sending notifications</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
             <stringProp name="Argument.desc">Duration of the send notifications test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
