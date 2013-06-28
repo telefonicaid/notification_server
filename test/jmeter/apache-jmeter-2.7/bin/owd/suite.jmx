@@ -98,13 +98,13 @@
           </elementProp>
           <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Number of virtual users sending notifications</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">100</stringProp>
             <stringProp name="Argument.desc">Duration of the send notifications test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -172,7 +172,7 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -248,7 +248,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
           <stringProp name="HTTPSampler.port">8888</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -321,8 +321,8 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer2_uaws}</stringProp>
-          <stringProp name="HTTPSampler.port">8888</stringProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8889</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
@@ -397,8 +397,8 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer2_uaws}</stringProp>
-          <stringProp name="HTTPSampler.port">8888</stringProp>
+          <stringProp name="HTTPSampler.domain">localhost</stringProp>
+          <stringProp name="HTTPSampler.port">8889</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
