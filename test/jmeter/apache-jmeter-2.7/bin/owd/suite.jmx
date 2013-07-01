@@ -98,13 +98,13 @@
           </elementProp>
           <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_threads</stringProp>
-            <stringProp name="Argument.value">10</stringProp>
+            <stringProp name="Argument.value">1</stringProp>
             <stringProp name="Argument.desc">Number of virtual users sending notifications</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
-            <stringProp name="Argument.value">100</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.desc">Duration of the send notifications test</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
@@ -278,7 +278,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             <stringProp name="RegexExtractor.useHeaders">false</stringProp>
             <stringProp name="RegexExtractor.refname">URL</stringProp>
             <stringProp name="RegexExtractor.regex">\{&quot;messageType&quot;:&quot;register&quot;,&quot;status&quot;:.+?,&quot;pushEndpoint&quot;:&quot;https:\/\/(.+?):(.+?)\/(.+?)&quot;,&quot;channelID&quot;:&quot;(.+?)&quot;\}</stringProp>
-            <stringProp name="RegexExtractor.template">$1$,$2$,$3$,$4$</stringProp>
+            <stringProp name="RegexExtractor.template">$1$,$2$,$3$,$4</stringProp>
             <stringProp name="RegexExtractor.default">failed</stringProp>
             <stringProp name="RegexExtractor.match_number">1</stringProp>
           </RegexExtractor>
@@ -427,7 +427,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             <stringProp name="RegexExtractor.useHeaders">false</stringProp>
             <stringProp name="RegexExtractor.refname">URL</stringProp>
             <stringProp name="RegexExtractor.regex">\{&quot;messageType&quot;:&quot;register&quot;,&quot;status&quot;:.+?,&quot;pushEndpoint&quot;:&quot;https:\/\/(.+?):(.+?)\/(.+?)&quot;,&quot;channelID&quot;:&quot;(.+?)&quot;\}</stringProp>
-            <stringProp name="RegexExtractor.template">$1$,$2$,$3$,$4$</stringProp>
+            <stringProp name="RegexExtractor.template">$1$,$2$,$3$,$4</stringProp>
             <stringProp name="RegexExtractor.default">failed</stringProp>
             <stringProp name="RegexExtractor.match_number">1</stringProp>
           </RegexExtractor>
@@ -497,7 +497,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">${FrontendServer1_uaws}</stringProp>
+          <stringProp name="HTTPSampler.domain">${IP}</stringProp>
           <stringProp name="HTTPSampler.port">${port}</stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
@@ -540,7 +540,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
         </org.apache.jmeter.protocol.ssh.sampler.SSHSampler>
         <hashTree/>
       </hashTree>
-      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Monitoring flood notifications" enabled="false">
+      <kg.apc.jmeter.threads.SteppingThreadGroup guiclass="kg.apc.jmeter.threads.SteppingThreadGroupGui" testclass="kg.apc.jmeter.threads.SteppingThreadGroup" testname="Monitoring flood notifications" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="Threads initial delay">0</stringProp>
@@ -597,7 +597,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <hashTree/>
         </hashTree>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="true"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="false"/>
       <hashTree>
         <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
