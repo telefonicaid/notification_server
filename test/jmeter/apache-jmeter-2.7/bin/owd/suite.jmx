@@ -9,97 +9,97 @@
         <collectionProp name="Arguments.arguments">
           <elementProp name="FrontendServer1_uaws" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_uaws</stringProp>
-            <stringProp name="Argument.value">172.17.0.193</stringProp>
+            <stringProp name="Argument.value">${__property(FrontendServer1_uaws)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_uaws" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_uaws</stringProp>
-            <stringProp name="Argument.value">172.17.0.194</stringProp>
+            <stringProp name="Argument.value">${__property(FrontendServer2_uaws)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer1_nsas" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_nsas</stringProp>
-            <stringProp name="Argument.value">172.17.0.195</stringProp>
+            <stringProp name="Argument.value">${__property(FrontendServer1_nsas)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_nsas" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_nsas</stringProp>
-            <stringProp name="Argument.value">172.17.0.196</stringProp>
+            <stringProp name="Argument.value">${__property(FrontendServer2_nsas)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer1_nsuaudp" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer1_nsuaudp</stringProp>
-            <stringProp name="Argument.value">172.19.0.198</stringProp>
+            <stringProp name="Argument.value">${__property(FrontendServer1_nsuaudp)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="FrontendServer2_nsuaudp" elementType="Argument">
             <stringProp name="Argument.name">FrontendServer2_nsuaudp</stringProp>
-            <stringProp name="Argument.value">172.19.0.199</stringProp>
+            <stringProp name="Argument.value">${__property(FrontendServer2_nsuaudp)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_db</stringProp>
-            <stringProp name="Argument.value">172.22.0.202</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer1_db)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_db</stringProp>
-            <stringProp name="Argument.value">172.22.0.203</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer2_db)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer3_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer3_db</stringProp>
-            <stringProp name="Argument.value">172.22.0.204</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer3_db)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer4_db" elementType="Argument">
             <stringProp name="Argument.name">BackendServer4_db</stringProp>
-            <stringProp name="Argument.value">172.22.0.205</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer4_db)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_nsmq" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_nsmq</stringProp>
-            <stringProp name="Argument.value">172.22.0.206</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer1_nsmq)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_nsmq" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_nsmq</stringProp>
-            <stringProp name="Argument.value">172.22.0.207</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer2_nsmq)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer1_nsmon" elementType="Argument">
             <stringProp name="Argument.name">BackendServer1_nsmon</stringProp>
-            <stringProp name="Argument.value">172.22.0.200</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer1_nsmon)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="BackendServer2_nsmon" elementType="Argument">
             <stringProp name="Argument.name">BackendServer2_nsmon</stringProp>
-            <stringProp name="Argument.value">172.22.0.201</stringProp>
+            <stringProp name="Argument.value">${__property(BackendServer2_nsmon)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_hello_reg_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_hello_reg_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_hello_reg_threads)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_hello_reg_iterations" elementType="Argument">
             <stringProp name="Argument.name">TEST_hello_reg_iterations</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_hello_reg_iterations)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_threads</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_sendnotifications_threads)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_duration" elementType="Argument">
             <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
-            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_sendnotifications_duration)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="ResultsPath" elementType="Argument">
             <stringProp name="Argument.name">ResultsPath</stringProp>
-            <stringProp name="Argument.value">report</stringProp>
+            <stringProp name="Argument.value">${__property(ResultsPath)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
