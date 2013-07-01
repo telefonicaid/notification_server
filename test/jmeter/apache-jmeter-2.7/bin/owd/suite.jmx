@@ -77,12 +77,37 @@
             <stringProp name="Argument.value">172.22.0.201</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
+          <elementProp name="TEST_hello_reg_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_threads</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_hello_reg_iterations" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_iterations</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
+            <stringProp name="Argument.name">TEST_sendnotifications_threads</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_sendnotifications_duration" elementType="Argument">
+            <stringProp name="Argument.name">TEST_sendnotifications_duration</stringProp>
+            <stringProp name="Argument.value">0</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="ResultsPath" elementType="Argument">
+            <stringProp name="Argument.name">ResultsPath</stringProp>
+            <stringProp name="Argument.value">report</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
         </collectionProp>
       </elementProp>
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="true">
+      <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables for jMeter" enabled="false">
         <collectionProp name="Arguments.arguments">
           <elementProp name="TEST_hello_reg_threads" elementType="Argument">
             <stringProp name="Argument.name">TEST_hello_reg_threads</stringProp>
@@ -597,7 +622,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <hashTree/>
         </hashTree>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="false"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="true"/>
       <hashTree>
         <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
@@ -1671,7 +1696,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             <threadCounts>true</threadCounts>
           </value>
         </objProp>
-        <stringProp name="filename">${ResultsPath}/Resultados_Escalabilidad_${__time(yyyyMMdd,)}.csv</stringProp>
+        <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
