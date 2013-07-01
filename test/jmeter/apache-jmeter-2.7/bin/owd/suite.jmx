@@ -1671,7 +1671,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             <threadCounts>true</threadCounts>
           </value>
         </objProp>
-        <stringProp name="filename">${ResultsPath}/errores.log</stringProp>
+        <stringProp name="filename">${ResultsPath}/Resultados_Escalabilidad_${__time(yyyyMMdd,)}.csv</stringProp>
       </ResultCollector>
       <hashTree/>
       <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
