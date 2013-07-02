@@ -622,7 +622,7 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
           <hashTree/>
         </hashTree>
       </hashTree>
-      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="true"/>
+      <TestFragmentController guiclass="TestFragmentControllerGui" testclass="TestFragmentController" testname="Monitoring" enabled="false"/>
       <hashTree>
         <kg.apc.jmeter.perfmon.PerfMonCollector guiclass="kg.apc.jmeter.vizualizers.PerfMonGui" testclass="kg.apc.jmeter.perfmon.PerfMonCollector" testname="Metrics for localhost" enabled="true">
           <boolProp name="ResultCollector.error_logging">false</boolProp>
