@@ -15,33 +15,30 @@ var amqp = require('amqp'),
 
 var gControlledClose = false;
 
+// Constants
+var QUEUE_DISCONNECTED = 0;
+var QUEUE_CREATED = 1;
+var QUEUE_ERROR = 2;
+var QUEUE_CONNECTED = 3;
+
 var MsgBroker = function() {
   events.EventEmitter.call(this);
   this.queues = [];
+  this.conns = [];
+  var self = this;
 
   this.init = function() {
     log.info('msgBroker::queue.init --> Connecting to the queue servers');
 
     //Create connection to the broker
-    if (!Array.isArray(queuesConf)) queuesConf = [queuesConf];
+    if (!Array.isArray(queuesConf)) {
+      queuesConf = [queuesConf];
+    };
+
     for (var i = queuesConf.length - 1; i >= 0; i--) {
-      process.nextTick(this.createConnection.bind(this, i));
+      self.createConnection(queuesConf[i]);
     }
   };
-
-  // Get some events love
-  this.on('queueconnected', (function() {
-    log.debug('msgBroker::queueconnected --> New queue connected, we have ' + this.queues.length + ' connections opened');
-    this.emit('brokerconnected');
-  }).bind(this));
-
-  this.on('queuedisconnected', (function() {
-    log.debug('msgBroker::queuedisconnected --> Queue disconnected, we have  ' + this.queues.length + ' connections opened');
-    if (!this.queues.length) {
-      if (!gControlledClose) this.emit('brokerdisconnected');
-      this.close();
-    }
-  }).bind(this));
 
   this.close = function(controlled) {
     gControlledClose = true;
@@ -83,47 +80,64 @@ var MsgBroker = function() {
     });
   };
 
-  this.createConnection = function(i) {
-    var conn = amqp.createConnection({
-      port: queuesConf[i].port,
-      host: queuesConf[i].host,
-      login: queuesConf[i].login,
-      password: queuesConf[i].password,
-      heartbeat: queuesConf[i].heartbeat
+  this.createConnection = function(queuesConf) {
+    var conn = new amqp.createConnection({
+      port: queuesConf.port,
+      host: queuesConf.host,
+      login: queuesConf.login,
+      password: queuesConf.password,
+      heartbeat: queuesConf.heartbeat
     });
-
+    conn.state = QUEUE_CREATED;
+    conn.id = Math.random();
+    this.conns.push(conn);
     // Events for this queue
     conn.on('ready', (function() {
+      conn.state = QUEUE_CONNECTED;
       log.info("msgbroker::queue.ready --> Connected to one Message Broker");
-      this.queues.push(conn);
-      this.emit('queueconnected');
-    }).bind(this));
+      self.queues.push(conn);
+      self.emit('brokerconnected');
+    }));
 
     conn.on('close', (function() {
-      var index = this.queues.indexOf(conn);
+
+      var index = self.queues.indexOf(conn);
       if (index >= 0) {
-        this.queues.splice(index, 1);
+        self.queues.splice(index, 1);
       }
-      if (!gControlledClose) {
-        this.emit('queuedisconnected', index);
-        log.info(log.messages.ERROR_MBERRORBROKERDISCONNECTED);
+      var length = self.queues.length;
+      var allDisconnected = self.conns.every(self.allDisconnected);
+      var pending = self.conns.some(self.pending);
+      if (length === 0 && allDisconnected && !pending) {
+        if (!gControlledClose) {
+          self.emit('brokerdisconnected');
+        }
+        self.close();
       }
-    }).bind(this));
+      if (conn.state === QUEUE_CONNECTED) {
+        conn.state === QUEUE_DISCONNECTED;
+      }
+    }));
 
     conn.on('error', (function(error) {
       log.error(log.messages.ERROR_MBCONNECTIONERROR, {
         "error": error
       });
-      var index = this.queues.indexOf(conn);
-      if (index >= 0) {
-        this.queues.splice(index, 1);
-      }
-    }).bind(this));
+      conn.state = QUEUE_ERROR;
+    }));
 
     conn.on('heartbeat', (function() {
       log.debug('msgbroker::heartbeat');
-    }).bind(this));
+    }));
   };
+
+  this.allDisconnected = function(element) {
+    return element.state !== QUEUE_DISCONNECTED;
+  };
+
+  this.pending = function(element) {
+    return element.state !== QUEUE_CREATED;
+  }
 };
 
 ///////////////////////////////////////////
