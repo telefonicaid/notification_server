@@ -115,7 +115,7 @@ var MsgBroker = function() {
         self.close();
       }
       if (conn.state === QUEUE_CONNECTED) {
-        conn.state === QUEUE_DISCONNECTED;
+        conn.state = QUEUE_DISCONNECTED;
       }
     }));
 
