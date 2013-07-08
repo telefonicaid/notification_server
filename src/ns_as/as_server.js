@@ -177,11 +177,16 @@ server.prototype = {
         body += data;
         // Max. payload: "version=9007199254740992" => lenght: 24
         if (body.length > 25) {
+          request.tooBig = true;
+          request.emit('end');
           log.debug('NS_AS::onHTTPMessage --> Message rejected, too long for this API');
           return response.res(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
         }
       });
       request.on('end', function() {
+        if (request.tooBig) {
+            return;
+        }
         simplepush.processRequest(request, body, response);
       });
       return;
