@@ -113,6 +113,7 @@ var DataStore = function() {
           $set: {
             si: serverId,
             dt: data,
+            ch: [],
             co: connectionstate.CONNECTED,
             lt: new Date()
           }
