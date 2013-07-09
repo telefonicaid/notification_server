@@ -96,6 +96,7 @@ var DataStore = function() {
   },
 
   this.registerNode = function(uaid, serverId, data, callback) {
+    var self = this;
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
@@ -106,32 +107,41 @@ var DataStore = function() {
         callback(err);
         return;
       }
-      collection.findAndModify(
-        { _id: uaid },
-        [],
-        {
-          $set: {
-            si: serverId,
-            dt: data,
-            ch: [],
-            co: connectionstate.CONNECTED,
-            lt: new Date()
-          }
-        },
-        { safe: true, upsert: true },
-        function(err, res) {
-          if (err) {
-            log.error(log.messages.ERROR_DSERRORINSERTINGNODEINDB, {
-              "error": err
-            });
-            callback(err);
-            return;
-          }
-          log.debug('dataStore::registerNode --> Node inserted/updated ', uaid);
-          callback(null, res, data);
+      //We could use a $setOnInsert (only available on MongoDB 2.4)
+      //http://docs.mongodb.org/manual/reference/operator/setOnInsert/#op._S_setOnInsert
+      self.getNodeData(uaid, function(error, d) {
+        if (error) {
+          callback(err);
           return;
         }
-      );
+        var ch = (d && d.ch) || [];
+        collection.findAndModify(
+          { _id: uaid },
+          [],
+          {
+            $set: {
+              si: serverId,
+              dt: data,
+              ch: ch,
+              co: connectionstate.CONNECTED,
+              lt: new Date()
+            }
+          },
+          { safe: true, upsert: true },
+          function(err, res) {
+            if (err) {
+              log.error(log.messages.ERROR_DSERRORINSERTINGNODEINDB, {
+                "error": err
+              });
+              callback(err);
+              return;
+            }
+            log.debug('dataStore::registerNode --> Node inserted/updated ', uaid);
+            callback(null, res, data);
+            return;
+          }
+        );
+      });
     });
   },
 
