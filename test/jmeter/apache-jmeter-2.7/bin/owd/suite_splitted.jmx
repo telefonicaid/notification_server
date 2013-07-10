@@ -77,14 +77,24 @@
             <stringProp name="Argument.value">${__property(BackendServer2_nsmon)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_hello_reg_threads" elementType="Argument">
-            <stringProp name="Argument.name">TEST_hello_reg_threads</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_hello_reg_threads)}</stringProp>
+          <elementProp name="TEST_hello_reg_threads_fe1" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_threads_fe1</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_hello_reg_threads_fe1)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TEST_hello_reg_iterations" elementType="Argument">
-            <stringProp name="Argument.name">TEST_hello_reg_iterations</stringProp>
-            <stringProp name="Argument.value">${__property(TEST_hello_reg_iterations)}</stringProp>
+          <elementProp name="TEST_hello_reg_iterations_fe1" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_iterations_fe1</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_hello_reg_iterations_fe1)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_hello_reg_threads_fe2" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_threads_fe2</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_hello_reg_threads_fe2)}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="TEST_hello_reg_iterations_fe2" elementType="Argument">
+            <stringProp name="Argument.name">TEST_hello_reg_iterations_fe2</stringProp>
+            <stringProp name="Argument.value">${__property(TEST_hello_reg_iterations_fe2)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="TEST_sendnotifications_threads" elementType="Argument">
@@ -171,13 +181,13 @@
         </collectionProp>
       </Arguments>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Hello &amp; Channel Registration Fe1 and Fe2" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Hello &amp; Channel Registration Fe1" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">${TEST_hello_reg_iterations}</stringProp>
+          <stringProp name="LoopController.loops">${TEST_hello_reg_iterations_fe1}</stringProp>
         </elementProp>
-        <stringProp name="ThreadGroup.num_threads">${TEST_hello_reg_threads}</stringProp>
+        <stringProp name="ThreadGroup.num_threads">${TEST_hello_reg_threads_fe1}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">60</stringProp>
         <longProp name="ThreadGroup.start_time">1362561818000</longProp>
         <longProp name="ThreadGroup.end_time">1362561818000</longProp>
@@ -335,6 +345,22 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             <hashTree/>
           </hashTree>
         </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Hello &amp; Channel Registration Fe2" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Controlador Bucle" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${TEST_hello_reg_iterations_fe2}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${TEST_hello_reg_threads_fe2}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">60</stringProp>
+        <longProp name="ThreadGroup.start_time">1362561818000</longProp>
+        <longProp name="ThreadGroup.end_time">1362561818000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Hello Fe2" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -1680,25 +1706,20 @@ vars.put(&quot;idTest&quot;,idTest);</stringProp>
             <message>true</message>
             <threadName>true</threadName>
             <dataType>true</dataType>
-            <encoding>true</encoding>
+            <encoding>false</encoding>
             <assertions>true</assertions>
             <subresults>true</subresults>
-            <responseData>true</responseData>
-            <samplerData>true</samplerData>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
             <xml>true</xml>
-            <fieldNames>true</fieldNames>
-            <responseHeaders>true</responseHeaders>
-            <requestHeaders>true</requestHeaders>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
             <responseDataOnError>false</responseDataOnError>
-            <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
             <assertionsResultsToSave>0</assertionsResultsToSave>
             <bytes>true</bytes>
-            <url>true</url>
-            <fileName>true</fileName>
-            <hostname>true</hostname>
             <threadCounts>true</threadCounts>
-            <sampleCount>true</sampleCount>
-            <idleTime>true</idleTime>
           </value>
         </objProp>
         <stringProp name="filename"></stringProp>
