@@ -178,7 +178,7 @@
           <stringProp name="LoopController.loops">${TEST_hello_reg_iterations}</stringProp>
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">${TEST_hello_reg_threads}</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">60</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">0</stringProp>
         <longProp name="ThreadGroup.start_time">1362561818000</longProp>
         <longProp name="ThreadGroup.end_time">1362561818000</longProp>
         <boolProp name="ThreadGroup.scheduler">false</boolProp>
