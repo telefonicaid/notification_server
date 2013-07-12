@@ -88,7 +88,7 @@ function websocket(idTest, text, callback) {
   } else {
     console.log('Ya teníamos cliente, lo enviamos por ahí');
     connectionCB[idTest] = callback;       // Update callback
-    if (!connection) {
+    if (!connection || !connection.connected) {
       connectionCB[idTest]('ERROR EN EL WEBSOCKET');
       return console.log('Error, no hay conexión websocket');
     }
