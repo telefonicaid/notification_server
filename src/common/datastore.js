@@ -473,14 +473,14 @@ var DataStore = function() {
     });
   },
 
-  this.getChannelIDForAppToken = function(apptoken, callback) {
+  this.getInfoForAppToken = function(apptoken, callback) {
     apptoken = apptoken.toString();
-    log.debug('datastore::getChannelIDForAppToken --> Going to find the channelID for the appToken ' + apptoken);
+    log.debug('datastore::getInfoForAppToken --> Going to find the info for the appToken ' + apptoken);
     this.db.collection('apps', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
         log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
-          "method": 'getChannelIDForAppToken',
+          "method": 'getInfoForAppToken',
           "error": err
         });
         callback(err);
@@ -489,18 +489,18 @@ var DataStore = function() {
       collection.findOne({ _id: apptoken }, function(err, data) {
         if (err) {
           log.error(log.messages.ERROR_DSERRORFINDINGCERTIFICATE, {
-            "method": 'getChannelIDForAppToken',
+            "method": 'getInfoForAppToken',
             "error": err
           });
           callback(err);
           return;
         }
         if (!data) {
-          log.debug('datastore::getChannelIDForAppToken --> There are no appToken=' + apptoken + ' in the DDBB');
+          log.debug('datastore::getInfoForAppToken --> There are no appToken=' + apptoken + ' in the DDBB');
           callback(null, null);
           return;
         }
-        callback(null, data.ch);
+        callback(null, data);
       });
     });
   },
@@ -509,7 +509,7 @@ var DataStore = function() {
    * Save a new message
    * @return New message as stored on DB.
    */
-  this.newVersion = function(appToken, channelID, version) {
+  this.newVersion = function(nodeId, appToken, channelID, version) {
     var msg = {};
     msg.app = appToken;
     msg.ch = channelID;
@@ -524,7 +524,10 @@ var DataStore = function() {
         return;
       }
       collection.findAndModify(
-        { "ch.app" : appToken },
+        {
+          _id: nodeId,
+          "ch.app" : appToken
+        },
         [],
         { $set:
           {

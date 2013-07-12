@@ -78,13 +78,14 @@ var SimplePushAPI_v1 = function() {
     response.end('{}');
 
     //And now we proccess the notification.
-    dataStore.getChannelIDForAppToken(appToken, function(error, channelID) {
-      if (!channelID) {
+    dataStore.getInfoForAppToken(appToken, function(error, appInfo) {
+      if (!appInfo || !appInfo.ch || !Array.isArray(appInfo.no)) {
         return;
       }
-      var msg = dataStore.newVersion(appToken, channelID, version);
-      msgBroker.push('newMessages', msg);
-      return;
+      (appInfo.no).forEach(function(nodeId) {
+        var msg = dataStore.newVersion(nodeId, appToken, appInfo.ch, version);
+        msgBroker.push('newMessages', msg);
+      });
     });
   };
 };
