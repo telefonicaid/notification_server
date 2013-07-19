@@ -1,0 +1,14 @@
+#/bin/bash
+
+# create push_server group
+if ! getent group push_server >/dev/null; then
+  addgroup --system push_server
+fi
+
+# create push_server user
+if ! getent passwd push_server >/dev/null; then
+  adduser --system --ingroup push_server --home /usr/lib/pns \
+    --no-create-home --gecos "Telefonica Push Notification Server" \
+    --disabled-login push_server
+fi
+

@@ -1,0 +1,10 @@
+Package: pns-ua
+Version: VERSION
+Section: main
+Priority: optional
+Architecture: all
+Depends: pns-common
+Recommends:
+Maintainer: Fernando Rodríguez Sela
+Description: PUSH Notification Server - User Agent frontend
+

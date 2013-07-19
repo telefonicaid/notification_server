@@ -11,3 +11,9 @@ version.info:
 
 tests:
 	@npm test
+
+debian:
+	@cd packaging/debian;./generate_packages.sh
+
+clean:
+	rm -rf output
