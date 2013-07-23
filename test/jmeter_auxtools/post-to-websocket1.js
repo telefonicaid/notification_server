@@ -82,9 +82,9 @@ function websocket(idTest, text, callback) {
         connectionTable[idTest].sendUTF(text);
       }
     });
-    process.nextTick(function() {
-		client.connect('wss://172.17.0.193:8080/', 'push-notification');
-	});
+    setTimeout(function() {
+        client.connect('ws://172.17.0.193:8080/', 'push-notification');
+    }, 1);
   } else {
     console.log('Ya teníamos cliente, lo enviamos por ahí');
     connectionCB[idTest] = callback;       // Update callback
