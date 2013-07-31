@@ -83,7 +83,7 @@ function websocket(idTest, text, callback) {
       }
     });
     setTimeout(function() {
-        client.connect('ws://172.17.0.193:8080/', 'push-notification');
+        client.connect('ws://172.17.0.197:8080/', 'push-notification');
     }, 1);
   } else {
     console.log('Ya teníamos cliente, lo enviamos por ahí');
