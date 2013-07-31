@@ -7,7 +7,7 @@
 . /etc/rc.d/init.d/functions
 
 
-NODE="/usr/bin/node"
+NODE="/usr/bin/node --nouse-idle-notification --max-new-space-size=2000000 --max-old-space-size=4000"
 PUSH_SERVER="/opt/pdi/owd/push_server/src/"
 CONFIGFILE="$PUSH_SERVER/config.js"
 OPTIONS=" start"
