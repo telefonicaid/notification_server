@@ -1,15 +1,30 @@
-/**
-* |||||||| Flooding time! |||||||||||
-* Let's create a lot of websockets connections
-* and try to flood the server.
-* Invocation:
-* $ node script.js <IP> <Port> <Number of conn> <Interval between starts> <Number of chars> <Interval> <Time to kill>
-* both intervals are in milliseconds
-*/
-
+/* jshint node: true */
 "use strict";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+var https = require('https');
+var url = require('url');
+
+var sendRegister = function(connection) {
+  connection.sendUTF('{"channelID":"1234","messageType":"register"}');
+};
+
+var sendNotification = function(where) {
+  var u = url.parse(where);
+  var options = {
+    hostname: u.hostname,
+    path: u.path,
+    method: 'PUT'
+  };
+
+  var req = https.request(options, function(res) {});
+
+  req.on('error', function(){});
+
+  req.write('version=3\n');
+  req.end();
+};
 
 var wsClient = require('websocket').client;
 
@@ -30,95 +45,93 @@ for (var i = 2; i<process.argv.length; i++) {
   ARGS.push(process.argv[i]);
 }
 
-//Yep, we are using security!
 var WSADRESS = 'wss://'+ARGS[0]+':'+ARGS[1]+'/',
     PROTOCOL = 'push-notification';
 
-var poolConnections = {};
-var poolConnectionsPong = {};
-var alive = 0;
+var poolConnections = [];
+var poolPong = [];
 var INTERVALS = [];
+var id = 0;
+var total = 0;
+var closed = [];
 
-var MESSAGE = makeRandom(ARGS[4]);
 
-var getConnection = function getConnection(id, callback) {
-  //console.log('Creando conexion' + id);
+var newConnection = function newConnection() {
   var conn = new wsClient();
   conn.on('connectFailed', function(error) {
     console.log('Connect Error: ' + error.toString());
   });
   conn.on('connect', function(connection) {
-    poolConnections[id] = connection;
-    callback(id, connection);
-  });
-  conn.connect(WSADRESS, PROTOCOL);
-};
+    var identifier = id++;
+    console.log('connected on' + identifier);
 
-var total = 0;
-var closed = [];
-var getter = setInterval(function() {
-  getConnection(total, function(id, conn) {
-    //console.log('Connection ' + id + ' established');
-    conn.sendUTF('{ "messageType": "hello", "uaid": null}');
+    poolConnections[identifier] = connection;
 
-    conn.on('error', function(error) {
-      console.log("Connection Error: " + error.toString());
+    connection.sendUTF('{ "messageType": "hello"}');
+
+    connection.on('error', function(error) {
+      closed[identifier] = true;
+      console.log("Connection Error on" + identifier + " -- " + error.toString());
     });
-    conn.on('close', function() {
-      closed[id] = true;
-      console.log('Connection ' + id + ' closed');
+    connection.on('close', function() {
+      closed[identifier] = true;
+      console.log('Connection ' + identifier + ' closed');
     });
-    conn.on('message', function(message) {
+    connection.on('message', function(message) {
       if (message.type === 'utf8') {
-        //console.log('---> Message received in conn ' + id +' -- ' + message.utf8Data);
+        var json = JSON.parse(message.utf8Data);
         if (message.utf8Data === '{}') {
-          //console.log('Pong received on id=' + id);
-          alive++;
+          poolPong[identifier] = true;
+        } else if (json.messageType === 'hello') {
+          sendRegister(connection);
+        } else if (json.messageType === 'register' && json.pushEndpoint) {
+          sendNotification(json.pushEndpoint);
         }
       }
     });
+
     var interval = setInterval(function() {
-      if (closed[id]) {
+      if (closed[identifier]) {
         clearInterval(interval);
+        poolConnections[identifier] = null;
         return;
       }
-      //console.log('Sending payload to conn' + id);
-      conn.sendUTF('{ "messageType": "hello" }');
+      connection.sendUTF('{ "messageType": "hello" }');
     }, ARGS[5]);
     INTERVALS.push(interval);
   });
+  conn.connect(WSADRESS, PROTOCOL);
   total++;
-  if (total == ARGS[2]) {
+};
+
+var getter = setInterval(function() {
+  newConnection();
+  if (total >= ARGS[2]) {
     clearInterval(getter);
   }
 }, ARGS[3]);
 
-/////////////// Helpers ///////////////////
-function makeRandom(length) {
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-    for( var i=0; i < length; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-
-    return text;
-}
+setTimeout(function stopInitial() {
+  console.log('Stopping getting new connections.');
+  console.log('We started ' + total + ', hoping to open ' + ARGS[2]);
+  clearInterval(getter);
+}, ARGS[6]-140000);
 
 setTimeout(function checkAliveConnections() {
-  clearInterval(getter);
   INTERVALS.forEach(function(elem) {
     clearInterval(elem);
   });
-  Object.keys(poolConnections).forEach(function(key) {
-    var conn = poolConnections[key];
-    if (conn.connected) {
-      //console.log('Sending ping package');
+
+  console.log('poolConnections.length=' + poolConnections.length);
+  poolConnections.forEach(function(conn) {
+    if (conn && conn.connected) {
       conn.sendUTF('{}');
     }
   });
-}, ARGS[6]-5000);
+}, ARGS[6]-120000);
 
 setTimeout(function killItWithFire() {
-  console.log('There are ' + alive +  ' connections alive, and we started ' + total);
+  console.log('There are ' + poolPong.length +  ' connections alive, and we started ' + total +
+    ', with ' + id + ' really opened');
   process.exit();
 }, ARGS[6]);
