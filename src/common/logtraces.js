@@ -37,7 +37,7 @@ exports.logtraces = {
   },
   NOTIFY_INCOMING_TO: {
     id: 0x9004,
-    m: "New version for -- uaid=::uaid -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc::mnc",
+    m: "New version for -- uaid=::uaid -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc=::mnc",
   },
   NOTIFY_TO_WAKEUP: {
     id: 0x9005,
