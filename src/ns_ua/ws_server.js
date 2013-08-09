@@ -412,7 +412,7 @@ server.prototype = {
                   extradata: { messageType: 'hello' }
                 });
                 log.debug('WS::onWSMessage --> Failing registering UA');
-                return;
+                return connection.close();
               }
               connection.res({
                 errorcode: errorcodes.NO_ERROR,
