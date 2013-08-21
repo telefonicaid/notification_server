@@ -435,10 +435,9 @@ var DataStore = function() {
    * Gets an application node list
    */
   this.getApplication = function(appToken, callback, json) {
-    // Get from MongoDB
     log.debug('datastore::getApplication --> Going to find application with appToken: ' + appToken);
-    this.db.collection('nodes', function(err, collection) {
-      callback = helpers.checkCallback(callback);
+    var self = this;
+    this.db.collection('apps', function(err, apps) {
       if (err) {
         log.error(log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
           "method": 'getApplication',
@@ -447,29 +446,60 @@ var DataStore = function() {
         callback(err);
         return;
       }
-      collection.find(
-        {
-          "ch.app": appToken
-        },
-        {
-          _id: true,
-          co: true,
-          si: true,
-          dt: true
-        }
-      ).toArray(function(err, data) {
-        if (err) {
-          log.error(log.messages.ERROR_DSERRORFINDINGAPP, {
-            "error": err
+      apps.findOne(
+        { _id: appToken },
+        { _id: false, no: true },
+        function(err, data) {
+          if (err) {
+            log.error(log.messages.ERROR_DSERRORFINDINGAPP, {
+              "error": err
+            });
+            callback(err);
+            return;
+          }
+          // Safe checks
+          // Also, we only care if the data.no is just one. We should not allow
+          // register more than one node for each appToken… but that's another
+          // story…
+          if (!data || !Array.isArray(data.no) || data.no.length !== 1 || !data.no[0]) {
+            log.error('Not enough data or invalid: ', data);
+            return;
+          }
+          self.db.collection('nodes', function(err, nodes) {
+            if (err) {
+              log.error(log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
+                "method": 'newVersion',
+                "error": err
+              });
+              callback(err);
+              return;
+            }
+            nodes.findOne(
+              { _id: data.no[0] },
+              {
+                _id: true,
+                co: true,
+                si: true,
+                dt: true
+              },
+              function(err, data) {
+                if (err) {
+                  log.error(log.messages.ERROR_DSERRORFINDINGNODE, {
+                    "error": err
+                  });
+                  callback(err);
+                  return;
+                }
+                log.debug('datastore::getApplication --> Application found');
+                var msg = data ? 'Application found, have callback, calling' : 'No app found, calling callback';
+                log.debug('datastore::getApplication --> ' + msg, data);
+                // Convert it to an Array.
+                callback(null, [data], json);
+              }
+            );
           });
-          callback(err);
-          return;
         }
-        log.debug('datastore::getApplication --> Application found');
-        var msg = data ? 'Application found, have callback, calling' : 'No app found, calling callback';
-        log.debug('datastore::getApplication --> ' + msg, data);
-        callback(null, data, json);
-      });
+      );
     });
   },
 
