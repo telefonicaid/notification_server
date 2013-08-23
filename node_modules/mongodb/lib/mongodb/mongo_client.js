@@ -78,6 +78,8 @@ MongoClient.prototype.connect = function(url, options, callback) {
 
   MongoClient.connect(url, options, function(err, db) {
     if(err) return callback(err, db);
+    // Store internal db instance reference
+    self._db = db;
     // Emit open and perform callback
     self.emit("open", err, db);
     callback(err, db);
@@ -97,7 +99,6 @@ MongoClient.prototype.open = function(callback) {
   // Open the db
   this._db.open(function(err, db) {
     if(err) return callback(err, null);
-
     // Emit open event
     self.emit("open", err, db);
     // Callback
@@ -150,7 +151,7 @@ MongoClient.connect = function(url, options, callback) {
   callback = typeof args[args.length - 1] == 'function' ? args.pop() : null;
   options = args.length ? args.shift() : null;
   options = options || {};
-  
+
   // Set default empty server options  
   var serverOptions = options.server || {};
   var mongosOptions = options.mongos || {};
@@ -158,7 +159,8 @@ MongoClient.connect = function(url, options, callback) {
   var dbOptions = options.db || {};
 
   // If callback is null throw an exception
-  if(callback == null) throw new Error("no callback function provided");
+  if(callback == null) 
+    throw new Error("no callback function provided");
 
   // Parse the string
   var object = parse(url, options);
@@ -251,8 +253,16 @@ MongoClient.connect = function(url, options, callback) {
 
         if(totalNumberOfServers == 0) {
           // If we have a mix of mongod and mongos, throw an error
-          if(totalNumberOfMongosServers > 0 && totalNumberOfMongodServers > 0)
-            return callback(new Error("cannot combine a list of replicaset seeds and mongos seeds"));
+          if(totalNumberOfMongosServers > 0 && totalNumberOfMongodServers > 0) {
+            return process.nextTick(function() {
+              try {
+                callback(new Error("cannot combine a list of replicaset seeds and mongos seeds"));
+              } catch (err) {
+                if(db) db.close();
+                throw err
+              }              
+            })
+          }
           
           if(totalNumberOfMongodServers == 0 && object.servers.length == 1) {
             var obj = object.servers[0];
@@ -277,7 +287,16 @@ MongoClient.connect = function(url, options, callback) {
             }
           }
 
-          if(serverConfig == null) return callback(new Error("Could not locate any valid servers in initial seed list"));
+          if(serverConfig == null) {
+            return process.nextTick(function() {
+              try {
+                callback(new Error("Could not locate any valid servers in initial seed list"));
+              } catch (err) {
+                if(db) db.close();
+                throw err
+              }
+            });
+          }
           // Ensure no firing off open event before we are ready
           serverConfig.emitOpen = false;
           // Set up all options etc and connect to the database
@@ -331,7 +350,16 @@ var _finishConnecting = function(serverConfig, object, options, callback) {
   var db = new Db(object.dbName, serverConfig, object.db_options);
   // Open the db
   db.open(function(err, db){
-    if(err) return callback(err, null);
+    if(err) {
+      return process.nextTick(function() {
+        try {
+          callback(err, null);
+        } catch (err) {
+          if(db) db.close();
+          throw err
+        }
+      });
+    }
 
     if(db.options !== null && !db.options.safe && !db.options.journal 
       && !db.options.w && !db.options.fsync && typeof db.options.w != 'number'
@@ -349,18 +377,40 @@ var _finishConnecting = function(serverConfig, object, options, callback) {
       // Build options object
       var options = {};
       if(object.db_options.authMechanism) options.authMechanism = object.db_options.authMechanism;
+      if(object.db_options.gssapiServiceName) options.gssapiServiceName = object.db_options.gssapiServiceName;
 
       // Authenticate
       authentication_db.authenticate(object.auth.user, object.auth.password, options, function(err, success){
         if(success){
-          callback(null, db);
+          process.nextTick(function() {
+            try {
+              callback(null, db);            
+            } catch (err) {
+              if(db) db.close();
+              throw err
+            }
+          });
         } else {
           if(db) db.close();
-          callback(err ? err : new Error('Could not authenticate user ' + auth[0]), null);
+          process.nextTick(function() {
+            try {
+              callback(err ? err : new Error('Could not authenticate user ' + auth[0]), null);
+            } catch (err) {
+              if(db) db.close();
+              throw err
+            }
+          });
         }
       });
     } else {
-      callback(err, db);
+      process.nextTick(function() {
+        try {
+          callback(err, db);            
+        } catch (err) {
+          if(db) db.close();
+          throw err
+        }
+      })
     }
   });
 }
