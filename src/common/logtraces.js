@@ -47,6 +47,10 @@ exports.logtraces = {
     id: 0x9006,
     m: "ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version",
   },
+  NOTIFY_MSGSENTTOUA: {
+    id: 0x9007,
+    m: "Delivering message -- with channelId ::channelId and version ::version sent to ::uaid"
+  },
 
   /**
    * Old notify messages.
@@ -64,10 +68,6 @@ exports.logtraces = {
   NOTIFY_MSGINSERTEDINTOQUEUE: {
     id: 0x1203,
     m: "MSG_mon::onNodeData --> Notify into the messages queue of node ::serverId # ::messageId"
-  },
-  NOTIFY_MSGSENTTOUA: {
-    id: 0x1301,
-    m: "Message with id ::messageId sent to ::uaid"
   },
   NOTIFY_NOTIFINGNODE: {
     id: 0x1401,

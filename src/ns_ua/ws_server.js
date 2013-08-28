@@ -98,65 +98,46 @@ server.prototype = {
             'x-ha-policy': 'all'
           }
         };
+        console.log('Going to subscribe to ' + process.serverId);
         msgBroker.subscribe(process.serverId, args, function onNewMessage(message) {
           log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
-          var json = {};
           try {
-            json = JSON.parse(message);
+            var json = JSON.parse(message);
           } catch (e) {
             log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
             return;
           }
           // If we don't have enough data, return
           if (!json.uaid ||
-              !json.payload) {
+              !json.payload ||
+              !json.payload.ch ||
+              !json.payload.vs) {
             return log.error(log.messages.ERROR_WSNODATA);
           }
           log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
           log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
-            messageId: json.messageId,
-            uaid: json.uaid
+            uaid: json.uaid,
+            channelId: json.payload.ch,
+            version: json.payload.vs
           });
           dataManager.getNodeConnector(json.uaid, function(nodeConnector) {
             if (nodeConnector) {
-              var notification = json.payload;
-
-              // Not send the appToken or other attributes
-              //TODO: Not insert the appToken into the MQ
               /**
                 {
                   messageType: “notification”,
                   updates: [{"channelID": "id", "version": "XXX"}, ...]
                 }
-
-                {
-                  messageType: "desktopNotification",
-                  updates: [{"channelID": "version", _internal_id: ..., "body": "body"}, ...]
-                }
               */
-              delete notification.appToken;
-              delete notification.app;
-              delete notification.new;
-              if (notification.ch) {
-                notification.channelID = notification.ch;
-                delete notification.ch;
+              var notification = {
+                version: json.payload.vs,
+                channelID: json.payload.ch
               }
-              if (notification.vs) {
-                notification.version = notification.vs;
-                delete notification.vs;
-              }
+
               log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
-              if (notification.body) {
-                nodeConnector.notify({
-                  messageType: "desktopNotification",
-                  updates: new Array(notification)
-                });
-              } else {
-                nodeConnector.notify({
-                  messageType: "notification",
-                  updates: new Array(notification)
-                });
-              }
+              nodeConnector.notify({
+                messageType: "notification",
+                updates: [notification]
+              });
             } else {
               log.debug('WS::Queue::onNewMessage --> No node found');
             }
