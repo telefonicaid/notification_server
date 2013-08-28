@@ -98,7 +98,6 @@ server.prototype = {
             'x-ha-policy': 'all'
           }
         };
-        console.log('Going to subscribe to ' + process.serverId);
         msgBroker.subscribe(process.serverId, args, function onNewMessage(message) {
           log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
           try {
