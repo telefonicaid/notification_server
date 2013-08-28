@@ -148,7 +148,7 @@ var DataStore = function() {
   /**
    * Unregister a node
    */
-   this.unregisterNode = function(uaid, fullyDisconnected, callback) {
+   this.unregisterNode = function(uaid, queue, fullyDisconnected, callback) {
     this.db.collection('nodes', function(err, collection) {
       callback = helpers.checkCallback(callback);
       if (err) {
@@ -160,7 +160,10 @@ var DataStore = function() {
         return;
       }
       collection.findAndModify(
-        { _id: uaid },
+        {
+          _id: uaid,
+          si: queue
+        },
         [],
         {
           $set: {
