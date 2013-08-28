@@ -69,6 +69,7 @@ datamanager.prototype = {
       }
       dataStore.unregisterNode(
         uaid,
+        connector.getServer(),
         fullyDisconnected,
         function(error) {
           if (!error) {
