@@ -1,0 +1,14 @@
+Package: pns-common
+Version: VERSION
+Section: main
+Priority: optional
+Architecture: all
+Depends: mongodb-10gen, rabbitmq-server
+Recommends:
+Maintainer: Fernando Rodríguez Sela
+Description: PUSH Notification Server - Common files
+ It is needed MongoDB, RabbitMQ and Node.js
+ .
+ deb http://downloads-distro.mongodb.org/repo/debian-sysvinit dist 10gen
+ deb http://www.rabbitmq.com/debian/ testing main
+

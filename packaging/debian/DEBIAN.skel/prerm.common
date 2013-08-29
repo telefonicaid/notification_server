@@ -1,0 +1,6 @@
+#/bin/bash
+
+# delete push_server user
+if getent passwd push_server >/dev/null; then
+  deluser push_server
+fi
