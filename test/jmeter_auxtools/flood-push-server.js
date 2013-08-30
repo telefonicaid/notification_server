@@ -6,11 +6,15 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 var https = require('https');
 var url = require('url');
 
+var debug = function(message) {
+  console.log((new Date().toLocaleString()) + ' - ' + message);
+}
+
 var sendRegister = function(connection) {
   connection.sendUTF('{"channelID":"1234","messageType":"register"}');
 };
 
-var sendNotification = function(where) {
+var sendNotification = function(where, version) {
   var u = url.parse(where);
   var options = {
     hostname: u.hostname,
@@ -18,11 +22,13 @@ var sendNotification = function(where) {
     method: 'PUT'
   };
 
-  var req = https.request(options, function(res) {});
+  var req = https.request(options, function(res) {
+    debug('notification sent to ' + where + ' version=' + version + ' - ' + res.statusCode);
+  });
 
   req.on('error', function(){});
 
-  req.write('version=3\n');
+  req.write('version=' + version);
   req.end();
 };
 
@@ -49,7 +55,8 @@ var WSADRESS = 'wss://'+ARGS[0]+':'+ARGS[1]+'/',
     PROTOCOL = 'push-notification';
 
 var poolConnections = [];
-var poolPong = [];
+var poolPong = {};
+var poolMessages = {};
 var INTERVALS = [];
 var id = 0;
 var total = 0;
@@ -59,33 +66,41 @@ var closed = [];
 var newConnection = function newConnection() {
   var conn = new wsClient();
   conn.on('connectFailed', function(error) {
-    console.log('Connect Error: ' + error.toString());
+    debug('Connect Error: ' + error.toString());
   });
   conn.on('connect', function(connection) {
+    var version = Math.floor(Math.random()*100000);
     var identifier = id++;
-    console.log('connected on' + identifier);
+    debug('connected on' + identifier);
 
     poolConnections[identifier] = connection;
+    connection.identifier = identifier;
 
     connection.sendUTF('{ "messageType": "hello"}');
 
     connection.on('error', function(error) {
       closed[identifier] = true;
-      console.log("Connection Error on" + identifier + " -- " + error.toString());
+      debug("Connection Error on" + identifier + " -- " + error.toString());
     });
     connection.on('close', function() {
       closed[identifier] = true;
-      console.log('Connection ' + identifier + ' closed');
+      debug('Connection ' + identifier + ' closed');
     });
     connection.on('message', function(message) {
       if (message.type === 'utf8') {
         var json = JSON.parse(message.utf8Data);
+        debug(message.utf8Data);
         if (message.utf8Data === '{}') {
           poolPong[identifier] = true;
         } else if (json.messageType === 'hello') {
           sendRegister(connection);
+          debug('received hello on conn=' + identifier);
         } else if (json.messageType === 'register' && json.pushEndpoint) {
-          sendNotification(json.pushEndpoint);
+          sendNotification(json.pushEndpoint, version);
+          debug('received register on conn=' + identifier);
+        } else if (json.messageType === 'notification') {
+          poolMessages[identifier] = true;
+          debug('received notification on conn=' + identifier);
         }
       }
     });
@@ -123,15 +138,17 @@ setTimeout(function checkAliveConnections() {
   });
 
   console.log('poolConnections.length=' + poolConnections.length);
+  console.log('poolMessages.keys.length=' + Object.keys(poolMessages).length);
   poolConnections.forEach(function(conn) {
     if (conn && conn.connected) {
+      debug('sending ping to ' + conn.identifier)
       conn.sendUTF('{}');
     }
   });
 }, ARGS[6]-120000);
 
 setTimeout(function killItWithFire() {
-  console.log('There are ' + poolPong.length +  ' connections alive, and we started ' + total +
+  console.log('There are ' + Object.keys(poolPong).length +  ' connections alive, and we started ' + total +
     ', with ' + id + ' really opened');
   process.exit();
 }, ARGS[6]);
