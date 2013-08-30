@@ -14,7 +14,7 @@ var assert = require('assert'),
 vows.describe('E2E test').addBatch({
 'End-to-end': {
 	topic: function() {
-		exec('node test/functional/E2E.js', this.callback);
+		exec('node test/functional/E2E.js \'wss://localhost:8080/\'', this.callback);
 	},
 	'Should end without Error': function(error, stdout, stderr) {
 		assert.isNull(error);

@@ -7,7 +7,7 @@
  *
  * and then run this test with:
  *
- * $ node E2Etest.js
+ * $ node E2E.js 'wss://ua.push.tefdigital.com:443/'
  *
  * It expects to run in localhost.
  *
@@ -17,12 +17,19 @@
  * will be debug information showing what failed.
  */
 
+(function checkArgvLength() {
+  if (process.argv.length < 3) {
+    console.log('You need to supply the WebSocket to connect to');
+    console.log('node E2E.js \'wss://ua.push.tefdigital.com:443/\'');
+    process.exit(1);
+  }
+})();
+
 var debug = require('./common').debug,
     fs = require('fs');
 
  var PushTest = {
   registerUA: function registerUA() {
-    var port = require('../../src/config.js').NS_UA_WS.interfaces[0].port;
     var WebSocketClient = require('websocket').client;
     var client = new WebSocketClient();
 
@@ -71,12 +78,12 @@ var debug = require('./common').debug,
       }
       sendRegisterUAMessage();
     });
-    client.connect('wss://' + PushTest.host + ':' + PushTest.port, 'push-notification');
+    client.connect(process.argv[2], 'push-notification');
   },
 
   registerWA: function registerWA() {
     var msg = '{"channelID": "testApp", "messageType":"register" }';
-    if (!connection || !connection.connected) {
+    if (!PushTest.connection || !PushTest.connection.connected) {
       console.log('registerWA() --> The WS is down. Check first steps');
       return;
     }
@@ -123,9 +130,9 @@ var debug = require('./common').debug,
     PushTest.host = '127.0.0.1';
     PushTest.NOTIFICATION = 'version=1';
 
-    setTimeout(this.registerUA, 1000);
-    setTimeout(this.registerWA, 2000);
-    setTimeout(this.sendNotification, 3000);
+    setTimeout(this.registerUA, 2000);
+    setTimeout(this.registerWA, 4000);
+    setTimeout(this.sendNotification, 6000);
   },
 
   check: function check() {
@@ -148,4 +155,4 @@ var debug = require('./common').debug,
 
 
 PushTest.init();
-setTimeout(PushTest.check, 5000);
+setTimeout(PushTest.check, 10000);
