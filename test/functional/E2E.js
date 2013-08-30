@@ -65,6 +65,8 @@ var debug = require('./common').debug,
           var msg = ('{"uaid": null, "messageType":"hello"}');
           connection.sendUTF(msg.toString());
           PushTest.registerUAOK = false;
+        } else {
+          console.log('sendRegisterUAMessage() --> The WS is down. Check first steps');
         }
       }
       sendRegisterUAMessage();
@@ -74,6 +76,10 @@ var debug = require('./common').debug,
 
   registerWA: function registerWA() {
     var msg = '{"channelID": "testApp", "messageType":"register" }';
+    if (!connection || !connection.connected) {
+      console.log('registerWA() --> The WS is down. Check first steps');
+      return;
+    }
     PushTest.connection.sendUTF(msg.toString());
   },
 
