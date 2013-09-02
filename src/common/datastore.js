@@ -111,7 +111,7 @@ var DataStore = function() {
       //http://docs.mongodb.org/manual/reference/operator/setOnInsert/#op._S_setOnInsert
       self.getNodeData(uaid, function(error, d) {
         if (error) {
-          callback(err);
+          callback(error);
           return;
         }
         var ch = (d && d.ch) || [];
