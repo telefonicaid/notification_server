@@ -19,7 +19,8 @@ var sendNotification = function(where, version) {
   var options = {
     hostname: u.hostname,
     path: u.path,
-    method: 'PUT'
+    method: 'PUT',
+    agent: false
   };
 
   var req = https.request(options, function(res) {
