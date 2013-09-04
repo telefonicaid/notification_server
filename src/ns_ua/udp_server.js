@@ -18,6 +18,24 @@ var log = require('../common/logger.js'),
 // Callback functions
 ////////////////////////////////////////////////////////////////////////////////
 
+function subscribeQueues(broker) {
+  //We want a durable queue, that do not autodeletes on last closed connection, and
+  // with HA activated (mirrored in each rabbit server)
+  var args = {
+    durable: true,
+    autoDelete: false,
+    arguments: {
+      'x-ha-policy': 'all'
+    }
+  };
+  msgBroker.subscribe(
+    'UDP',
+    args,
+    broker,
+    onNewMessage
+  );
+}
+
 function onNewMessage(message) {
   log.debug('UDP::Queue::onNewMessage: ' + message);
   var messageData = {};
@@ -145,17 +163,30 @@ server.prototype = {
     log.info('NS_UDP:init --> Starting UA-UDP server');
 
     var self = this;
+
     msgBroker.once('brokerconnected', function() {
       self.ready = true;
-      var args = {
-        durable: false,
-        autoDelete: true,
-        arguments: {
-          'x-ha-policy': 'all'
-        }
-      };
-      msgBroker.subscribe('UDP', args, function(msg) { onNewMessage(msg); });
     });
+
+    msgBroker.on('brokerconnected', subscribeQueues);
+
+    //Hack. Once we have a disconnected queue, we must subscribe again for each
+    //broker.
+    //This happens on RabbitMQ as follows:
+    // 1) We are connected to several brokers
+    // 2) We are subscribed to the same queue on those brokers
+    // 3) Master fails :(
+    // 4) RabbitMQ promotes the eldest slave to be the master
+    // 5) RabbitMQ disconnects all clients. Not a socket disconnection, but
+    //    unbinds the connection to the subscribed queue.
+    //
+    // Hacky solution: once we have a disconnected queue (a socket error), we
+    // subscribe again to the queue.
+    // It's not beautiful (we should really unsubscribe all queues first), but works.
+    // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
+    // (we might end up with gazillions (hundreds, really) callbacks on the same
+    // socket for handling messages)
+    msgBroker.on('queuedisconnected', subscribeQueues);
 
     msgBroker.once('brokerdisconnected', function() {
       self.ready = false;
