@@ -50,11 +50,14 @@ var MsgBroker = function() {
     log.info('msgbroker::close --> Closing connection to msgBroker');
   };
 
-  this.subscribe = function(queueName, args, callback) {
-    this.queues.forEach(function(connection) {
-      if (!connection) return;
-      var conn = connection;
-      conn.queue(queueName, args, function(q) {
+  this.subscribe = function(queueName, args, broker, callback) {
+    if (broker && !Array.isArray(broker)) {
+      broker = [broker];
+    } else {
+      broker = this.queues;
+    }
+    broker.forEach(function(broker) {
+      broker.queue(queueName, args, function(q) {
         log.info('msgbroker::subscribe --> Subscribed to queue: ' + queueName);
         q.bind('#');
         q.subscribe(function(message) {
@@ -81,32 +84,36 @@ var MsgBroker = function() {
   };
 
   this.createConnection = function(queuesConf) {
-    var conn = new amqp.createConnection({
+    var conn = amqp.createConnection({
       port: queuesConf.port,
       host: queuesConf.host,
       login: queuesConf.login,
       password: queuesConf.password,
       heartbeat: queuesConf.heartbeat
+    },
+    {
+      reconnect: true,
+      reconnectBackoffStrategy: 'exponential'
     });
     conn.state = QUEUE_CREATED;
     conn.id = Math.random();
     this.conns.push(conn);
+
     // Events for this queue
     conn.on('ready', (function() {
       conn.state = QUEUE_CONNECTED;
-      log.info("msgbroker::queue.ready --> Connected to one Message Broker");
+      log.info("msgbroker::queue.ready --> Connected to one Message Broker, id=" + conn.id);
       self.queues.push(conn);
-      self.emit('brokerconnected');
+      self.emit('brokerconnected', conn);
     }));
 
     conn.on('close', (function() {
-
       var index = self.queues.indexOf(conn);
       if (index >= 0) {
         self.queues.splice(index, 1);
       }
       var length = self.queues.length;
-      var allDisconnected = self.conns.every(self.allDisconnected);
+      var allDisconnected = self.conns.every(self.isDisconnected);
       var pending = self.conns.some(self.pending);
       if (length === 0 && allDisconnected && !pending) {
         if (!gControlledClose) {
@@ -124,6 +131,7 @@ var MsgBroker = function() {
         "error": error
       });
       conn.state = QUEUE_ERROR;
+      self.emit('queuedisconnected', conn);
     }));
 
     conn.on('heartbeat', (function() {
@@ -131,13 +139,13 @@ var MsgBroker = function() {
     }));
   };
 
-  this.allDisconnected = function(element) {
-    return element.state !== QUEUE_DISCONNECTED;
+  this.isDisconnected = function(element) {
+    return element.state === QUEUE_DISCONNECTED;
   };
 
   this.pending = function(element) {
-    return element.state !== QUEUE_CREATED;
-  }
+    return element.state === QUEUE_CREATED;
+  };
 };
 
 ///////////////////////////////////////////
