@@ -116,6 +116,8 @@ monitor.prototype = {
     clearInterval(this.retryUDPnotACKedInterval);
     clearTimeout(this.readyTimeout);
     clearTimeout(this.readyUDPTimeout);
+    msgBroker.removeAllListeners();
+    dataStore.removeAllListeners();
     msgBroker.close();
     dataStore.close();
   }
