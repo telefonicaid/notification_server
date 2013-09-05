@@ -27,6 +27,64 @@ var log = require('../common/logger.js'),
     https = require('https'),
     maintenance = require('../common/maintenance.js');
 
+function subscribeQueues(broker) {
+  var args = {
+    durable: false,
+    autoDelete: true,
+    arguments: {
+      'x-ha-policy': 'all'
+    }
+  };
+
+  msgBroker.subscribe(process.serverId, args, broker, onNewMessage);
+};
+
+function onNewMessage(message) {
+  log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
+  try {
+    var json = JSON.parse(message);
+  } catch (e) {
+    log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
+    return;
+  }
+  // If we don't have enough data, return
+  if (!json.uaid ||
+      !json.payload ||
+      !json.payload.ch ||
+      !json.payload.vs) {
+    return log.error(log.messages.ERROR_WSNODATA);
+  }
+  log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
+  log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
+    uaid: json.uaid,
+    channelId: json.payload.ch,
+    version: json.payload.vs
+  });
+  dataManager.getNodeConnector(json.uaid, function(nodeConnector) {
+    if (nodeConnector) {
+      /**
+        {
+          messageType: “notification”,
+          updates: [{"channelID": "id", "version": "XXX"}, ...]
+        }
+      */
+      var notification = {
+        version: json.payload.vs,
+        channelID: json.payload.ch
+      }
+
+      log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
+      nodeConnector.notify({
+        messageType: "notification",
+        updates: [notification]
+      });
+    } else {
+      log.debug('WS::Queue::onNewMessage --> No node found');
+    }
+  });
+}
+
+
 function server(ip, port, ssl) {
   this.ip = ip;
   this.port = port;
@@ -91,65 +149,33 @@ server.prototype = {
       // Subscribe to my own Queue
       var self = this;
       msgBroker.once('brokerconnected', function() {
-        var args = {
-          durable: false,
-          autoDelete: true,
-          arguments: {
-            'x-ha-policy': 'all'
-          }
-        };
-        msgBroker.subscribe(process.serverId, args, function onNewMessage(message) {
-          log.debug('WS::Queue::onNewMessage --> New message received: ' + message);
-          try {
-            var json = JSON.parse(message);
-          } catch (e) {
-            log.debug('WS::Queue::onNewMessage --> Not a valid JSON');
-            return;
-          }
-          // If we don't have enough data, return
-          if (!json.uaid ||
-              !json.payload ||
-              !json.payload.ch ||
-              !json.payload.vs) {
-            return log.error(log.messages.ERROR_WSNODATA);
-          }
-          log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
-          log.notify(log.messages.NOTIFY_MSGSENTTOUA, {
-            uaid: json.uaid,
-            channelId: json.payload.ch,
-            version: json.payload.vs
-          });
-          dataManager.getNodeConnector(json.uaid, function(nodeConnector) {
-            if (nodeConnector) {
-              /**
-                {
-                  messageType: “notification”,
-                  updates: [{"channelID": "id", "version": "XXX"}, ...]
-                }
-              */
-              var notification = {
-                version: json.payload.vs,
-                channelID: json.payload.ch
-              }
-
-              log.debug('WS::Queue::onNewMessage --> Sending messages:', notification);
-              nodeConnector.notify({
-                messageType: "notification",
-                updates: [notification]
-              });
-            } else {
-              log.debug('WS::Queue::onNewMessage --> No node found');
-            }
-          });
-        });
         self.ready = true;
-      });
+      })
+      msgBroker.on('brokerconnected', subscribeQueues);
       msgBroker.once('brokerdisconnected', function() {
         log.critical(log.messages.CRITICAL_MBDISCONNECTED, {
           "class": 'ns_ws',
           "method": 'init'
         });
       });
+
+      //Hack. Once we have a disconnected queue, we must subscribe again for each
+      //broker.
+      //This happens on RabbitMQ as follows:
+      // 1) We are connected to several brokers
+      // 2) We are subscribed to the same queue on those brokers
+      // 3) Master fails :(
+      // 4) RabbitMQ promotes the eldest slave to be the master
+      // 5) RabbitMQ disconnects all clients. Not a socket disconnection, but
+      //    unbinds the connection to the subscribed queue.
+      //
+      // Hacky solution: once we have a disconnected queue (a socket error), we
+      // subscribe again to the queue.
+      // It's not beautiful (we should really unsubscribe all queues first), but works.
+      // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
+      // (we might end up with gazillions (hundreds, really) callbacks on the same
+      // socket for handling messages)
+      msgBroker.on('queuedisconnected', subscribeQueues);
 
       //Connect to msgBroker
       process.nextTick(function() {
@@ -277,21 +303,6 @@ server.prototype = {
     // WS Callbacks
     ///////////////////////
     this.onWSMessage = function(message) {
-      connection.res = function responseWS(payload) {
-        log.debug('WS::responseWS:', payload);
-        var res = {};
-        if (payload && payload.extradata) {
-          res = payload.extradata;
-        }
-        if (payload && payload.errorcode[0] > 299) {    // Out of the 2xx series
-          if (!res.status) {
-            res.status = payload.errorcode[0];
-          }
-          res.reason = payload.errorcode[1];
-        }
-        connection.sendUTF(JSON.stringify(res));
-      };
-
       // Restart autoclosing timeout
       if (connection.uaid) {
         dataManager.getNodeConnector(connection.uaid, function(nodeConnector) {
@@ -647,6 +658,20 @@ server.prototype = {
       log.debug('WS::onWSRequest --> Connection accepted.');
       connection.on('message', this.onWSMessage);
       connection.on('close', this.onWSClose);
+      connection.res = function responseWS(payload) {
+        log.debug('WS::responseWS:', payload);
+        var res = {};
+        if (payload && payload.extradata) {
+          res = payload.extradata;
+        }
+        if (payload && payload.errorcode[0] > 299) {    // Out of the 2xx series
+          if (!res.status) {
+            res.status = payload.errorcode[0];
+          }
+          res.reason = payload.errorcode[1];
+        }
+        connection.sendUTF(JSON.stringify(res));
+      };
     } catch(e) {
       log.debug('WS::onWSRequest --> Connection from origin ' + request.origin + 'rejected. Bad WebSocket sub-protocol.');
       return request.reject();

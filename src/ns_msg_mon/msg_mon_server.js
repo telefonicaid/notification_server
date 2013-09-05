@@ -13,6 +13,26 @@ var log = require('../common/logger.js'),
     config = require('../config.js').NS_Monitor,
     connectionstate = require('../common/constants.js').connectionstate;
 
+
+function subscribeQueues(broker) {
+  //We want a durable queue, that do not autodeletes on last closed connection, and
+  // with HA activated (mirrored in each rabbit server)
+  var args = {
+    durable: true,
+    autoDelete: false,
+    arguments: {
+      'x-ha-policy': 'all'
+    }
+  };
+  msgBroker.subscribe(
+    'newMessages',
+    args,
+    broker,
+    onNewMessage
+  );
+}
+
+
 function monitor() {
   this.ready = false;
 }
@@ -20,25 +40,13 @@ function monitor() {
 monitor.prototype = {
   init: function() {
     var self = this;
+
     msgBroker.once('brokerconnected', function() {
       log.info('MSG_mon::init --> MSG monitor server running');
       self.ready = true;
-      //We want a durable queue, that do not autodeletes on last closed connection, and
-      // with HA activated (mirrored in each rabbit server)
-      var args = {
-        durable: true,
-        autoDelete: false,
-        arguments: {
-          'x-ha-policy': 'all'
-        }
-      };
-      msgBroker.subscribe('newMessages',
-                          args,
-                          function(msg) {
-                            onNewMessage(msg);
-                          }
-      );
     });
+
+    msgBroker.on('brokerconnected', subscribeQueues);
 
     msgBroker.once('brokerdisconnected', function() {
       self.ready = false;
@@ -47,6 +55,24 @@ monitor.prototype = {
         "method": 'init'
       });
     });
+
+    //Hack. Once we have a disconnected queue, we must subscribe again for each
+    //broker.
+    //This happens on RabbitMQ as follows:
+    // 1) We are connected to several brokers
+    // 2) We are subscribed to the same queue on those brokers
+    // 3) Master fails :(
+    // 4) RabbitMQ promotes the eldest slave to be the master
+    // 5) RabbitMQ disconnects all clients. Not a socket disconnection, but
+    //    unbinds the connection to the subscribed queue.
+    //
+    // Hacky solution: once we have a disconnected queue (a socket error), we
+    // subscribe again to the queue.
+    // It's not beautiful (we should really unsubscribe all queues first), but works.
+    // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
+    // (we might end up with gazillions (hundreds, really) callbacks on the same
+    // socket for handling messages)
+    msgBroker.on('queuedisconnected', subscribeQueues);
 
     // Connect to the message broker
     process.nextTick(function() {
