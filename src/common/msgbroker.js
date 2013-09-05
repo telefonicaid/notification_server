@@ -127,7 +127,7 @@ var MsgBroker = function() {
       if (conn.state === QUEUE_CONNECTED) {
         conn.state = QUEUE_DISCONNECTED;
       }
-      self.emit('queuedisconnected', conn);
+      self.emit('queuedisconnected');
     }));
 
     conn.on('error', (function(error) {
@@ -135,7 +135,7 @@ var MsgBroker = function() {
         "error": error
       });
       conn.state = QUEUE_ERROR;
-      self.emit('queuedisconnected', conn);
+      self.emit('queuedisconnected');
     }));
 
     conn.on('heartbeat', (function() {
