@@ -56,8 +56,11 @@ var MsgBroker = function() {
     } else {
       broker = this.queues;
     }
-    broker.forEach(function(broker) {
-      broker.queue(queueName, args, function(q) {
+    broker = broker.filter(function(conn) {
+      return conn.state === QUEUE_CONNECTED;
+    });
+    broker.forEach(function(br) {
+      br.queue(queueName, args, function(q) {
         log.info('msgbroker::subscribe --> Subscribed to queue: ' + queueName);
         q.bind('#');
         q.subscribe(function(message) {
@@ -84,7 +87,7 @@ var MsgBroker = function() {
   };
 
   this.createConnection = function(queuesConf) {
-    var conn = amqp.createConnection({
+    var conn = new amqp.createConnection({
       port: queuesConf.port,
       host: queuesConf.host,
       login: queuesConf.login,
@@ -124,6 +127,7 @@ var MsgBroker = function() {
       if (conn.state === QUEUE_CONNECTED) {
         conn.state = QUEUE_DISCONNECTED;
       }
+      self.emit('queuedisconnected');
     }));
 
     conn.on('error', (function(error) {
@@ -131,7 +135,7 @@ var MsgBroker = function() {
         "error": error
       });
       conn.state = QUEUE_ERROR;
-      self.emit('queuedisconnected', conn);
+      self.emit('queuedisconnected');
     }));
 
     conn.on('heartbeat', (function() {
