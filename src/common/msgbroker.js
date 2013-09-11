@@ -51,6 +51,9 @@ var MsgBroker = function() {
   };
 
   this.subscribe = function(queueName, args, broker, callback) {
+    if (gControlledClose) {
+      return;
+    }
     if (broker && !Array.isArray(broker)) {
       broker = [broker];
     } else {
