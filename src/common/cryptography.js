@@ -27,7 +27,7 @@ cryptography.prototype = {
 
   // Lets go with SHA-1 for now, can change it later on
   generateHMAC: function(data,key) {
-     return crypto.createHmac('sha1', key).update(data).digest('hex');
+    return crypto.createHmac('sha1', key).update(data).digest('hex');
   }
 
 };
