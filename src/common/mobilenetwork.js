@@ -48,7 +48,7 @@ MobileNetwork.prototype = {
   getNetwork: function(mcc, mnc, callback) {
     callback = helpers.checkCallback(callback);
 
-    var index = helpers.padNumber(mcc, 3) + '-' + helpers.padNumber(mnc, 2);
+    var index = helpers.padNumber(mcc, 3) + '-' + helpers.padNumber(mnc, 3);
     var value = {};
 
     log.debug('[MobileNetwork] looking for MCC-MNC: ' + index);
