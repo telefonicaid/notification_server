@@ -62,14 +62,16 @@ datamanager.prototype = {
       //Delete from DDBB
       connector = Connectors.getConnectorForUAID(uaid);
       var fullyDisconnected = connectionstate.DISCONNECTED;
+      var server = '';
       if (!connector) {
         log.debug('dataManager::unregisterNode --> No connector found for uaid=' + uaid);
       } else {
         fullyDisconnected = connector.canBeWakeup() ? connectionstate.WAKEUP : connectionstate.DISCONNECTED;
+        server = connector.getServer();
       }
       dataStore.unregisterNode(
         uaid,
-        connector.getServer(),
+        server,
         fullyDisconnected,
         function(error) {
           if (!error) {
