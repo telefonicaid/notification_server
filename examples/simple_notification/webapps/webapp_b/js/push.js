@@ -12,14 +12,72 @@ var Push = {
 
   init: function() {
     debug("Init");
-    this.waurl = "http://192.168.1.43:9999";
+
     this.endpoint = null;
     this.registered = false;
 
     this.status = document.getElementById('status');
     this.button = document.getElementById('button1');
     this.logArea = document.getElementById('logarea');
+    this.countryLabel = document.getElementById('country');
+    this.settings_view = document.getElementById('settings_view');
+    this.main_view = document.getElementById('main_view');
+    this.settings_selector = document.getElementById('url');
+    this.settings_button = document.getElementById('button_settings');
+    this.clear_button = document.getElementById('button_clear');
+
     this.button.onclick = this.processButtonClick.bind(this);
+    this.settings_button.onclick = this.processSettingsClick.bind(this);
+    this.clear_button.onclick = this.processClearClick.bind(this);
+
+    this.loadSettingsView();
+  },
+
+  loadSettingsView: function() {
+    var self = this;
+    asyncStorage.getItem("url", function(value) {
+      if (value === null) {
+        debug("no settings");
+
+        self.readSettingsFile(function onsuccess(data) {
+          self.settings_selector.options.length = 0;
+          for (var i = 0; i < data.length; i++) {
+            var d = data[i];
+            self.settings_selector.options.add(new Option(d.id, d.url));
+          }
+
+          self.settings_view.style.display = 'block';
+        }, function onerror(error) {
+          debug("Error reading settings");
+        });
+
+        return;
+      }
+
+      self.waurl = value;
+      asyncStorage.getItem("country", function(value) {
+        self.country = value;
+        self.loadMainView();
+      });
+    });
+  },
+
+  processSettingsClick: function() {
+    this.country = this.settings_selector.options[this.settings_selector.selectedIndex].text;
+    this.waurl = this.settings_selector.options[this.settings_selector.selectedIndex].value;
+
+    asyncStorage.setItem('country', this.country);
+    asyncStorage.setItem('url', this.waurl);
+
+    this.loadMainView();
+  },
+
+  loadMainView: function() {
+    this.settings_view.style.display = 'none';
+    this.main_view.style.display = 'block';
+
+    this.countryLabel.innerHTML = this.country;
+    this.status.innerHTML = "Registering";
 
     try {
       // Register for messaging
@@ -50,6 +108,36 @@ var Push = {
     }
 
     this.requestURL();
+  },
+
+  processClearClick: function() {
+    this.button.style.visibility = "hidden";
+    if (this.registered){
+      this.status.innerHTML = "Unregistering";
+      this.unregister();
+    }
+
+    asyncStorage.removeItem('url');
+    asyncStorage.removeItem('country');
+    this.loadSettingsView();
+  },
+
+  readSettingsFile: function readSettingsFile(onsuccess, onerror) {
+    var URI = '/settings/servers.json';
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', URI, true); // async
+    xhr.overrideMimeType('application/json');
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        if (onsuccess) onsuccess(xhr.response);
+      } else {
+        console.error('Failed to fetch servers configuration file. ' + xhr.statusText);
+        if (onerror) onerror();
+      }
+    };
+    xhr.send();
   },
 
   requestURL: function() {

@@ -8,22 +8,44 @@
     <link rel="stylesheet" type="text/css" href="shared/style/headers.css">
     <link rel="stylesheet" type="text/css" href="shared/style/buttons.css">
     <link rel="stylesheet" type="text/css" href="shared/style_unstable/lists.css">
+    <link rel="stylesheet" type="text/css" href="shared/style_unstable/value_selector.css">
 
     <!-- Specific code -->
     <link rel="stylesheet" type="text/css" href="style/push.css">
 
     <!-- Specific code -->
+    <script defer type="application/javascript" src="js/async_storage.js"></script>
     <script defer type="application/javascript" src="js/push.js"></script>
   </head>
 
   <body>
-    <!-- Main view -->
-    <section role="region" class="skin-organic">
+    <!-- Settings view -->
+    <section id="settings_view" role="region" class="skin-organic" style="display: none">
       <header class="fixed">
         <h1>Push test app A</h1>
       </header>
 
       <section class="scrollable">
+        <header><h2>Configure server:</h2></header>
+        <article class="view">
+          <select id="url" class="select"></select>
+          <button id="button_settings" class="button">Save</button>
+        </article>
+      </section>
+    </section>
+
+    <!-- Main view -->
+    <section id="main_view" role="region" class="skin-organic" style="display: none">
+      <header class="fixed">
+        <h1>Push test app A</h1>
+      </header>
+
+      <section class="scrollable">
+        <header><h2>Server: <span id="country"></span></h2></header>
+        <article class="view">
+          <button id="button_clear" class="button">Change server</button>
+        </article>
+
         <header><h2>Status: <span id="status">registering</span></h2></header>
         <article class="view">
           <button id="button1" class="button" style="visibility:hidden;">Unregister</button>
