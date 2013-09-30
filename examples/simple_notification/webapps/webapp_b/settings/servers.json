@@ -1,0 +1,26 @@
+[
+    {
+        "id": "Colombia",
+        "url": "http://openwebdevice.com:1863/co"
+    },
+    {
+        "id": "España",
+        "url": "http://openwebdevice.com:1863/es"
+    },
+    {
+        "id": "Venezuela",
+        "url": "http://openwebdevice.com:1863/ve"
+    },
+    {
+        "id": "Méjico",
+        "url": "http://openwebdevice.com:1863/mx"
+    },
+    {
+        "id": "Perú",
+        "url": "http://openwebdevice.com:1863/pe"
+    },
+    {
+        "id": "Brasil",
+        "url": "http://openwebdevice.com:1863/br"
+    }
+]
