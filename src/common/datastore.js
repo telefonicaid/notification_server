@@ -568,7 +568,6 @@ var DataStore = function() {
             "ch.$.new" : 1
           }
         },
-        { upsert: true },
         function(error, data) {
           if (err) {
             log.error(log.messages.ERROR_DSERRORSETTINGNEWVERSION, {
@@ -608,7 +607,6 @@ var DataStore = function() {
             'ch.$.new': 0
           }
         },
-        { upsert: true },
         function(err,d) {
           if (err) {
             log.error(log.messages.ERROR_DSERRORACKMSGINDB, {
