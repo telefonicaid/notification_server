@@ -6,7 +6,13 @@
 # Management consoles are in localhost:{55672,55673}
 RABBITMQ_NODE_PORT=5672 RABBITMQ_SERVER_START_ARGS="-rabbitmq_mochiweb listeners [{mgmt,[{port,55672}]}]" RABBITMQ_NODENAME=rabbit rabbitmq-server -detached
 RABBITMQ_NODE_PORT=5673 RABBITMQ_SERVER_START_ARGS="-rabbitmq_mochiweb listeners [{mgmt,[{port,55673}]}]" RABBITMQ_NODENAME=hare rabbitmq-server -detached
+RABBITMQ_NODE_PORT=5674 RABBITMQ_SERVER_START_ARGS="-rabbitmq_mochiweb listeners [{mgmt,[{port,55674}]}]" RABBITMQ_NODENAME=tiki rabbitmq-server -detached
 rabbitmqctl -n hare stop_app
 rabbitmqctl -n hare reset
 rabbitmqctl -n hare cluster rabbit@`hostname -s`
 rabbitmqctl -n hare start_app
+
+rabbitmqctl -n tiki stop_app
+rabbitmqctl -n tiki reset
+rabbitmqctl -n tiki cluster rabbit@`hostname -s`
+rabbitmqctl -n tiki start_app
