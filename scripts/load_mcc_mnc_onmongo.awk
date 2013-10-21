@@ -53,7 +53,7 @@ BEGIN {
     }
   }
   if($3 != "" && $3+0 == $3) {
-    mnc = $3
+    mnc = sprintf("%03d", $3)
     complete_line = 1
   }
 
