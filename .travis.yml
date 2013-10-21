@@ -10,9 +10,7 @@ services:
 
 branches:
   only:
-    - develop
-    - master
-    - v1-fix
+    - v1.1
 
 before_install:
   - npm rebuild
