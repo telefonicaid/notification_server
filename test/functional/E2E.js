@@ -17,6 +17,8 @@
  * will be debug information showing what failed.
  */
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 (function checkArgvLength() {
   if (process.argv.length < 3) {
     console.log('You need to supply the WebSocket to connect to');

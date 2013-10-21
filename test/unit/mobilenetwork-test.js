@@ -18,9 +18,9 @@ vows.describe('MobileNetwork tests').addBatch({
     'is ready': function(ready) {
       assert.isTrue(ready);
     },
-    'Searching for 214-07 (came from DDBB).': {
+    'Searching for 214-007 (came from DDBB).': {
       topic: function() {
-	mn.getNetwork("214","07", this.callback);
+	mn.getNetwork("214","007", this.callback);
       },
       'error is null': function(error, data, where) {
 	assert.isNull(error);
@@ -28,8 +28,8 @@ vows.describe('MobileNetwork tests').addBatch({
       'data received is an object': function(error, data, where) {
 	assert.isObject(data);
       },
-      'data._id is 214-07': function(error, data, where) {
-	assert.equal(data._id, "214-07");
+      'data._id is 214-007': function(error, data, where) {
+	assert.equal(data._id, "214-007");
       },
       'data.country is Spain': function(error, data, where) {
 	assert.equal(data.country, "Spain");
@@ -40,15 +40,15 @@ vows.describe('MobileNetwork tests').addBatch({
       'data.mcc is 214': function(error, data, where) {
 	assert.equal(data.mcc, "214");
       },
-      'data.mnc is 07': function(error, data, where) {
-	assert.equal(data.mnc, "07");
+      'data.mnc is 007': function(error, data, where) {
+	assert.equal(data.mnc, "007");
       },
       'where it comes is ddbb': function(error, data, where) {
 	assert.equal(where, "ddbb");
       },
       'Searching (came from cache).': {
 	topic: function() {
-	  mn.getNetwork("214","07", this.callback);
+	  mn.getNetwork("214","007", this.callback);
 	},
 	'error is null': function(error, data, where) {
 	assert.isNull(error);
@@ -56,8 +56,8 @@ vows.describe('MobileNetwork tests').addBatch({
 	'data received is an object': function(error, data, where) {
 	  assert.isObject(data);
 	},
-	'data._id is 214-07': function(error, data, where) {
-	  assert.equal(data._id, "214-07");
+	'data._id is 214-007': function(error, data, where) {
+	  assert.equal(data._id, "214-007");
 	},
 	'data.country is Spain': function(error, data, where) {
 	  assert.equal(data.country, "Spain");
@@ -68,8 +68,8 @@ vows.describe('MobileNetwork tests').addBatch({
 	'data.mcc is 214': function(error, data, where) {
 	  assert.equal(data.mcc, "214");
 	},
-	'data.mnc is 07': function(error, data, where) {
-	  assert.equal(data.mnc, "07");
+	'data.mnc is 007': function(error, data, where) {
+	  assert.equal(data.mnc, "007");
 	},
 	'where it comes is cache': function(error, data, where) {
 	  assert.equal(where, "cache");
@@ -80,7 +80,7 @@ vows.describe('MobileNetwork tests').addBatch({
 	  },
 	  'Searching again (from DDBB).': {
 	    topic: function() {
-	      mn.getNetwork("214","07", this.callback);
+	      mn.getNetwork("214","007", this.callback);
 	    },
 	    'error is null': function(error, data, where) {
 	      assert.isNull(error);
@@ -88,8 +88,8 @@ vows.describe('MobileNetwork tests').addBatch({
 	    'data received is an object': function(error, data, where) {
 	      assert.isObject(data);
 	    },
-	    'data._id is 214-07': function(error, data, where) {
-	      assert.equal(data._id, "214-07");
+	    'data._id is 214-007': function(error, data, where) {
+	      assert.equal(data._id, "214-007");
 	    },
 	    'data.country is Spain': function(error, data, where) {
 	      assert.equal(data.country, "Spain");
@@ -100,8 +100,8 @@ vows.describe('MobileNetwork tests').addBatch({
 	    'data.mcc is 214': function(error, data, where) {
 	      assert.equal(data.mcc, "214");
 	    },
-	    'data.mnc is 07': function(error, data, where) {
-	      assert.equal(data.mnc, "07");
+	    'data.mnc is 007': function(error, data, where) {
+	      assert.equal(data.mnc, "007");
 	    },
 	    'where it comes is ddbb': function(error, data, where) {
 	      assert.equal(where, "ddbb");
@@ -146,7 +146,7 @@ vows.describe('MobileNetwork tests').addBatch({
       topic: function() {
 	mn.resetCache(this.callback);
       },
-      'Recovering 214-07 (testing padding).': {
+      'Recovering 214-007 (testing padding).': {
 	topic: function() {
 	  mn.getNetwork(214, 7, this.callback);
 	},
@@ -156,8 +156,8 @@ vows.describe('MobileNetwork tests').addBatch({
 	'data received is an object': function(error, data, where) {
 	  assert.isObject(data);
 	},
-	'data._id is 214-07': function(error, data, where) {
-	  assert.equal(data._id, "214-07");
+	'data._id is 214-007': function(error, data, where) {
+	  assert.equal(data._id, "214-007");
 	},
 	'data.country is Spain': function(error, data, where) {
 	  assert.equal(data.country, "Spain");
@@ -168,8 +168,8 @@ vows.describe('MobileNetwork tests').addBatch({
 	'data.mcc is 214': function(error, data, where) {
 	  assert.equal(data.mcc, "214");
 	},
-	'data.mnc is 07': function(error, data, where) {
-	  assert.equal(data.mnc, "07");
+	'data.mnc is 007': function(error, data, where) {
+	  assert.equal(data.mnc, "007");
 	},
 	'where it comes is ddbb': function(error, data, where) {
 	  assert.equal(where, "ddbb");
