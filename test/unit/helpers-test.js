@@ -66,5 +66,37 @@ vows.describe('Helper tests').addBatch({
   },
   "getCaChannel": function() {
     assert.isArray(hp.getCaChannel());
+  },
+  'isIPInNetwork': {
+    '192.168.1.11 in 192.168.1.0/24': function() {
+      assert.isTrue(hp.isIPInNetwork('192.168.1.11', ['192.168.1.0/24']));
+    },
+    '10.4.5.6 in 10.0.0.0/8': function() {
+      assert.isTrue(hp.isIPInNetwork('10.4.5.6', ['10.0.0.0/8']));
+    },
+    'null in 192.168.1.0/8': function() {
+      assert.isFalse(hp.isIPInNetwork(null, ['192.168.1.0/8']));
+    },
+    '"" in 192.168.1.0/8': function() {
+      assert.isFalse(hp.isIPInNetwork("", ['192.168.1.0/8']));
+    },
+    'a in 192.168.1.0/8': function() {
+      assert.isFalse(hp.isIPInNetwork('a', ['192.168.1.0/8']));
+    },
+    '10.1.1.1 in 192.168.1.0/24 or 10.0.0.0/8': function() {
+      assert.isTrue(hp.isIPInNetwork('10.1.1.1', ['192.168.1.0/24', '10.0.0.0/8']));
+    },
+    '10.1.1.1 in []': function() {
+      assert.isTrue(hp.isIPInNetwork('10.1.1.1', []));
+    },
+    '10.1.1.1 in null': function() {
+      assert.isTrue(hp.isIPInNetwork('10.1.1.1', null));
+    },
+    '10.1.1.1 in NOT in 192.168.1.0/24': function() {
+      assert.isFalse(hp.isIPInNetwork('10.1.1.1', ['192.168.1.0/24']));
+    },
+    '10.1.1.1 in NOT in 192.168.1.0/24 or 11.0.0.0/8 but on 10.0.0.0/8': function() {
+      assert.isTrue(hp.isIPInNetwork('10.1.1.1', ['192.168.1.0/24', '11.0.0.0/8', '10.0.0.0/8']));
+    }
   }
 }).export(module);
