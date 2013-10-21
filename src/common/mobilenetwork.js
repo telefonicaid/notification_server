@@ -7,17 +7,24 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var datastore = require('./datastore.js'),
-    log = require('../common/logger.js'),
+var consts = require('../config.js').consts,
+    datastore = require('./datastore.js'),
+    log = require('./logger.js'),
     helpers = require('./helpers.js');
 
 function MobileNetwork() {
   this.cache = {};
   this.ready = false;
   this.callbacks = [];
+  this.isCacheEnabled = consts.MOBILENETWORK_CACHE;
 }
 
 MobileNetwork.prototype = {
+
+  getIndex: function(mcc, mnc) {
+    return helpers.padNumber(mcc, 3) + '-' + helpers.padNumber(mnc, 3);
+  },
+
   callbackReady: function(callback) {
     if (this.ready) {
       callback(true);
@@ -48,15 +55,15 @@ MobileNetwork.prototype = {
   getNetwork: function(mcc, mnc, callback) {
     callback = helpers.checkCallback(callback);
 
-    var index = helpers.padNumber(mcc, 3) + '-' + helpers.padNumber(mnc, 3);
+    var index = this.getIndex(mcc,mnc);
     var value = {};
 
     log.debug('[MobileNetwork] looking for MCC-MNC: ' + index);
     // Check if the network is in the cache
-    /*if (value = this.cache[index]) {
+    if (this.isCacheEnabled && (value = this.cache[index])) {
       log.debug('[MobileNetwork] found on cache:', value);
       return callback(null, value, 'cache');
-    }*/
+    }
 
     // Check if the network if it's in the database and update cache
     datastore.getOperator(mcc, mnc, function(error, d) {
@@ -76,7 +83,9 @@ MobileNetwork.prototype = {
       /*
         Save to the cache the found value.
        */
-      //this.cache[index] = d;
+      if (this.isCacheEnabled) {
+        this.cache[index] = d;
+      }
       return callback(null, d, 'ddbb');
     }.bind(this));
   }

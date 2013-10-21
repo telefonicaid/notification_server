@@ -28,6 +28,7 @@ exports.servers = {
 exports.consts = {
   MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
+  MOBILENETWORK_CACHE: false,
 
   /**
    * Default Maximum Time To Live
