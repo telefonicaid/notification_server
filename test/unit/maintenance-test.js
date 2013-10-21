@@ -10,7 +10,7 @@ var mn = require("../../src/common/maintenance.js"),
     assert = require('assert'),
     vows = require('vows');
 
-vows.describe('logtraces tests').addBatch({
+vows.describe('Maintenance tests').addBatch({
   "By default, maintenance should be disabled": function() {
     assert.isFalse(mn.getStatus());
   },
