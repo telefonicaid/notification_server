@@ -63,6 +63,7 @@ server.prototype = {
         log.error(log.messages.ERROR_MOBILENETWORKERROR, {
           'error': error
         });
+        return;
       }
       if (!d) {
         log.debug('[MobileNetwork] No local nodes found on database');
