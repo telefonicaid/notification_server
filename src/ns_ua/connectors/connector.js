@@ -54,7 +54,7 @@ Connector.prototype = {
         log.debug('Checking if IP=' + ip + ' is on networks=' + networks);
         var inNetwork = isIPInNetwork(ip, networks);
 
-        if (op.wakeup && inNetwork) {
+        if (op.wakeup && !op.offline && inNetwork) {
           log.debug('getConnector --> UDP WakeUp server for ' + op.operator +
                     ': ' + op.wakeup);
           return self.getUDPconnector(data, connection, callback);
