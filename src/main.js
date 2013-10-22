@@ -67,6 +67,13 @@ main.prototype = {
         this.server = new sel.NS_WakeUp_main();
         this.server.start();
         break;
+      case 'NS_WakeChecker':
+        log.init(config.NS_WakeUp.logfile, 'NS_WakeUp', 1);
+        log.info('Starting as NS_WakeChecker server');
+        sel = require('./ns_wakechecker/wakeupchecker_main.js');
+        this.server = new sel.NS_WAKEUP_CHECKER_main();
+        this.server.start();
+        break;
       default:
         log.init('/tmp/push.log', 'PUSH', 1);
         log.error(log.messages.ERROR_NOSERVERPROVIDED);

@@ -649,6 +649,80 @@ var DataStore = function() {
     });
   },
 
+  this.getOperatorsWithLocalNodes = function(callback) {
+    callback = helpers.checkCallback(callback);
+    log.debug('Looking for operators with a wakeup local node');
+    // Get from MongoDB
+    this.db.collection('operators', function(err, collection) {
+      if (err) {
+        log.error(log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
+          "method": 'getOperatorsWithLocalNodes',
+          "error": err
+        });
+        callback(err);
+        return;
+      }
+      collection.find({ 'wakeup': { $ne: null } }).toArray(function(err, data) {
+        if (err) {
+          log.debug('datastore::getOperatorsWithLocalNodes --> Error finding operators from MongoDB: ' + err);
+          callback(err);
+          return;
+        }
+        var msg = data ? 'The operators list has been recovered. ' : 'No operators found. ';
+        log.debug('datastore::getOperatorsWithLocalNodes --> ' + msg + ' Calling callback');
+        return callback(null, data);
+      });
+    });
+  },
+
+  this.changeLocalServerStatus = function(index, online) {
+    log.debug('Changing status of a wakeup local server: ', index);
+    // Get from MongoDB
+    this.db.collection('operators', function(err, collection) {
+      if (err) {
+        log.error(log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
+          "method": 'changeLocalServerStatus',
+          "error": err
+        });
+        callback(err);
+        return;
+      }
+      var op = null;
+      if (online) {
+        op = {
+          $set: {
+            offline: !online,
+            counter: 0
+          }
+        };
+      } else {
+        op = {
+          $set: {
+            offline: !online
+          },
+          $inc: {
+            counter: 1
+          }
+        };
+      }
+      collection.findAndModify(
+        { '_id': index },
+        [],
+        op,
+        { safe: true, upsert: true },
+        function(err, res) {
+          if (err) {
+            log.error(log.messages.ERROR_DSERRORINSERTINGNODEINDB, {
+              "error": err
+            });
+            callback(err);
+            return;
+          }
+          log.debug('dataStore::changeLocalServerStatus --> Local server updated ', res);
+        });
+    });
+  },
+
   this.getUDPClientsAndUnACKedMessages = function(callback) {
     callback = helpers.checkCallback(callback);
     this.db.collection('nodes', function(err, collection) {

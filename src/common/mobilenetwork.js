@@ -65,6 +65,8 @@ MobileNetwork.prototype = {
       return callback(null, value, 'cache');
     }
 
+    datastore.init();
+
     // Check if the network if it's in the database and update cache
     datastore.getOperator(mcc, mnc, function(error, d) {
       if (error) {
@@ -88,6 +90,11 @@ MobileNetwork.prototype = {
       }
       return callback(null, d, 'ddbb');
     }.bind(this));
+  },
+
+  changeNetworkStatus: function(mcc, mnc, online) {
+    var index = this.getIndex(mcc,mnc);
+    datastore.changeLocalServerStatus(index, online);
   }
 };
 
