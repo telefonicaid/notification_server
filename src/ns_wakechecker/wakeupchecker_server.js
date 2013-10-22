@@ -126,12 +126,18 @@ server.prototype = {
       log.debug('NS_WakeUpChecker:checkServer --> Non valid URL (invalid protocol)');
       return;
     }
-    protocolHandler.get(address.href + 'status',
+    var options = {
+      hostname: address.hostname,
+      port: address.port,
+      path: '/status',
+      agent: false
+    };
+    protocolHandler.get(options,
       function(res) {
         cb(null, res);
       }).on('error', function(e) {
         cb(e);
-      });
+      }).end();
   }
 
 };
