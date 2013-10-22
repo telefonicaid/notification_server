@@ -88,6 +88,11 @@ MobileNetwork.prototype = {
       }
       return callback(null, d, 'ddbb');
     }.bind(this));
+  },
+
+  changeNetworkStatus: function(mcc, mnc, online) {
+    var index = this.getIndex(mcc,mnc);
+    datastore.changeLocalServerStatus(index, online);
   }
 };
 
