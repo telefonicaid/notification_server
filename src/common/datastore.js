@@ -692,7 +692,7 @@ var DataStore = function() {
         op = {
           $set: {
             offline: !online,
-            counter: 0
+            offlinecounter: 0
           }
         };
       } else {
@@ -701,7 +701,7 @@ var DataStore = function() {
             offline: !online
           },
           $inc: {
-            counter: 1
+            offlinecounter: 1
           }
         };
       }
