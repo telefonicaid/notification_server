@@ -12,8 +12,8 @@ var log = require('../common/logger.js'),
     mn = require('../common/mobilenetwork.js'),
     http = require('http'),
     https = require('https'),
-    urlparser = require('url');
-
+    urlparser = require('url'),
+    checkPeriod = require('../config.js').NS_WakeUpChecker.checkPeriod;
 
 function server() {
   this.ddbbready = false;
@@ -96,7 +96,7 @@ server.prototype = {
       });
       setTimeout(function() {
         self.checkNodes();
-      }, 1000);
+      }, checkPeriod);
     });
   },
 

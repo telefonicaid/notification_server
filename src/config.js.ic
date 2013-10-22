@@ -17,7 +17,8 @@ exports.servers = {
   NS_MSG_monitor: true,
   NS_UA_WS: true,
   NS_UA_UDP: true,
-  NS_WakeUp: true
+  NS_WakeUp: true,
+  NS_WakeUpChecker: true
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -228,6 +229,13 @@ exports.NS_WakeUp = {
       ssl: false
     }
   ]
+};
+
+/********************* NS_WakeUpChecker ******************************/
+
+exports.NS_WakeUpChecker = {
+  logfile: 'NS_WakeUpChecker.log',
+  checkPeriod: 300000
 };
 
 /********************* NS start.js ***********************************/
