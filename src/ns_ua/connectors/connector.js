@@ -12,21 +12,8 @@ var mn = require('../../common/mobilenetwork.js'),
     net = require('net'),
     connector_ws = require('./connector_ws.js'),
     connector_udp = require('./connector_udp.js'),
-    range_check = require('range_check');
+    isIPInNetwork = require('../../common/helpers.js').isIPInNetwork;
 
-var isIPInNetwork = function ipIsInNetwork(ip, networks) {
-  //Adding private networks from https://tools.ietf.org/html/rfc1918
-  //If networks are empty, we add RFC private networks.
-  if (networks.length === 0) {
-    networks.push("10.0.0.0/8");
-    networks.push("172.16.0.0/12");
-    networks.push("192.168.0.0/16");
-  }
-  log.debug('Checking if IP=' + ip + ' is on networks=' + networks);
-  //If IP is in one of the network ranges, we think that you are in a
-  //private network and can be woken up.
-  return range_check.in_range(ip, networks);
-};
 
 function Connector() {
   this.nodesConnectors = {};
@@ -55,16 +42,19 @@ Connector.prototype = {
 
     if (ip && port && mcc && mnc) {
       log.debug('getConnector --> Valid ip, port, mcc and mnc to search for wakeup');
-      mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
-        if (error) {
+      mn.getNetwork(mcc, mnc, function(error, op) {
+        if (error || !op) {
           log.error(log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
             "error": error
           });
           return callback(error);
         }
         // This is the only moment we can give a UDP connector
-        if (op && op.wakeup &&
-            isIPInNetwork(data.wakeup_hostport.ip,(op.networks || []) )) {
+        var network = op.networks || [];
+        log.debug('Checking if IP=' + ip + ' is on networks=' + networks);
+        var inNetwork = isIPInNetwork(ip, networks);
+
+        if (op.wakeup && inNetwork) {
           log.debug('getConnector --> UDP WakeUp server for ' + op.operator +
                     ': ' + op.wakeup);
           return self.getUDPconnector(data, connection, callback);

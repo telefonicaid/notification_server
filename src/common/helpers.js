@@ -10,7 +10,8 @@
 var publicBaseURL = require('../config.js').consts.publicBaseURL,
     uuid = require('node-uuid'),
     crypto = require('../common/cryptography.js'),
-    exec = require('child_process').exec;
+    exec = require('child_process').exec,
+    net = require('net');
 
 /**
  * Gets the public notification URL for the given apptoken
@@ -94,3 +95,26 @@ function getCaChannel() {
 }
 exports.getCaChannel = getCaChannel;
 
+function isIPInNetwork(ip, networks) {
+  var range_check = require('range_check');
+
+  if (!net.isIP(ip)) {
+    return false;
+  }
+
+  if (!Array.isArray(networks)) {
+    networks = [];
+  }
+
+  //Adding private networks from https://tools.ietf.org/html/rfc1918
+  //If networks are empty, we add RFC private networks.
+  if (networks.length === 0) {
+    networks.push("10.0.0.0/8");
+    networks.push("172.16.0.0/12");
+    networks.push("192.168.0.0/16");
+  }
+  //If IP is in one of the network ranges, we think that you are in a
+  //private network and can be woken up.
+  return range_check.in_range(ip, networks);
+};
+exports.isIPInNetwork = isIPInNetwork;
