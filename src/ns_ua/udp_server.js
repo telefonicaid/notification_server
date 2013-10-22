@@ -120,10 +120,15 @@ function onNewMessage(message) {
       log.debug('UDP:queue:onNewMessage --> Non valid URL (invalid protocol)');
       return;
     }
-    var req = protocolHandler.get(address.href +
-      '/?ip=' + messageData.dt.wakeup_hostport.ip +
-      '&port=' + messageData.dt.wakeup_hostport.port +
-      '&proto=' + messageData.dt.protocol,
+    var options = {
+      hostname: address.hostname,
+      port: address.port,
+      path: '/?ip=' + messageData.dt.wakeup_hostport.ip +
+            '&port=' + messageData.dt.wakeup_hostport.port +
+            '&proto=' + messageData.dt.protocol,
+      agent: false
+    };
+    var req = protocolHandler.get(options,
       function(res) {
         log.notify(log.messages.NOTIFY_TO_WAKEUP, {
           uaid: messageData.uaid,

@@ -1,0 +1,10 @@
+{
+ "uaid": "12345678",
+ "dt": {
+  "wakeup_hostport": {"ip":"127.0.0.1","port":8090},
+  "mobilenetwork": {"mcc":"214", "mnc":"007"},
+  "protocol": "udp",
+  "canBeWakeup": true,
+  "payload": {"app":"","ch":"","vs":"1"}
+ }
+}
