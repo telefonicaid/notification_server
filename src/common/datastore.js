@@ -38,7 +38,9 @@ var DataStore = function() {
 
     var mongourl = (function() {
       var url = 'mongodb://';
-      var servers = (ddbbsettings.machines).map(function(e) { return e[0] + ':' + e[1]}).toString();
+      var servers = (ddbbsettings.machines).map(
+        function(e) { return e[0] + ':' + e[1]; }
+      ).toString();
       url += servers;
       var db = ddbbsettings.ddbbname || '';
       url += '/' + db;
@@ -79,6 +81,14 @@ var DataStore = function() {
       self.db = db;
       log.info('datastore::init --> Connected to MongoDB on ' + ddbbsettings.machines +
                '. Database Name: ' + ddbbsettings.ddbbname);
+
+      var events = ['close', 'error'];
+      events.forEach(function(e) {
+        db.on(e, function() {
+          self.emit('ddbbdisconnected')
+        });
+      });
+
       self.emit('ddbbconnected');
       self.ready = true;
       var callbacks = self.callbacks || [];
