@@ -82,14 +82,23 @@ server.prototype = {
     var self = this;
     this.recoverNetworks(function(wakeUpNodes){
       wakeUpNodes.forEach(function(node) {
-        log.debug('NS_WakeUpChecker:checkNodes: Checking node: ', node);
+        log.debug('Checking Local Proxy server', node);
         self.checkServer(node.wakeup, function(err,res) {
           if (err || res.statusCode != 200) {
-            log.debug('Disabling node ', node);
+            log.info(log.messages.NOTIFY_WAKEUPSERVER_KO, {
+              country: node.country,
+              mcc: node.mcc,
+              mnc: node.mnc,
+              retries: node.offlinecounter + 1
+            });
             mn.changeNetworkStatus(node.mcc, node.mnc, false);
           } else {
+            log.info(log.messages.NOTIFY_WAKEUPSERVER_OK, {
+              country: node.country,
+              mcc: node.mcc,
+              mnc: node.mnc
+            });
             if (node.offline) {
-              log.debug('Enabling node ', node);
               mn.changeNetworkStatus(node.mcc, node.mnc, true);
             }
           }
