@@ -32,7 +32,8 @@
     "amqp": "0.1.x",
     "string": "1.6.x",
     "range_check": "0.0.x",
-    "async": "0.2.x"
+    "async": "0.2.x",
+    "forever-monitor": "1.2.x"
   },
   "devDependencies": {
     "vows": "0.7.x",
