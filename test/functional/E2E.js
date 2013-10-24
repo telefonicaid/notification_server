@@ -107,7 +107,10 @@ var debug = require('./common').debug,
       host: urlData.hostname,
       port: urlData.port,
       path: urlData.pathname,
-      method: 'PUT'
+      method: 'PUT',
+      rejectUnauthorized: false,
+      requestCert: true,
+      agent: false
     };
     options.agent = new https.Agent(options);
 

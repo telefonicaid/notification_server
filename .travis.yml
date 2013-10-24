@@ -22,6 +22,7 @@ before_install:
 
 before_script:
   - cd src
+  - export NODE_TLS_REJECT_UNAUTHORIZED="0"
   - node start.js > out & # Start the server
   - PID=$! # Save the PID
   - cd .. && sleep 5 # Wait for everything to start correctly
