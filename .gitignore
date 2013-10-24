@@ -1,6 +1,4 @@
-node_modules/mongodb/node_modules/bson/build/
-node_modules/mongodb/node_modules/kerberos/build/
-node_modules/nodetime/node_modules/timekit/build/
+node_modules/*
 
 src/version.info
 twitter_server/config.js
