@@ -51,6 +51,14 @@ exports.logtraces = {
     id: 0x9007,
     m: "Delivering message -- with channelId ::channelId and version ::version sent to ::uaid"
   },
+  NOTIFY_WAKEUPSERVER_OK: {
+    id: 0x9008,
+    m: "::country ::mcc-::mnc Local Proxy server available, working on wake-up mode"
+  },
+  NOTIFY_WAKEUPSERVER_KO: {
+    id: 0x9009,
+    m: "::country ::mcc-::mnc Local Proxy server not available (::retries of attempts), working on websocket"
+  },
 
   /**
    * Old notify messages.
