@@ -8,23 +8,23 @@
 
 var assert = require('assert'),
     vows = require('vows'),
-    token = require('../../src/common/token');
+    Token = require('../../src/common/Token');
     common = require('../functional/common');
 
 //Internal vars
 var NUM_TOKENS = 50000;
 var tokens = [];
 //Get a lot of tokens
-(function getTokens() {
+(function gettokens() {
   for (var i = NUM_TOKENS; i > 0; i--) {
-    tokens.push(token.get());
+    tokens.push(Token.get());
   }
   return tokens;
 })();
 
-function verifyTokens() {
+function verifytokens() {
   tokens.forEach(function(element) {
-    token.verify(element);
+    Token.verify(element);
   });
 }
 
@@ -35,19 +35,19 @@ function setCharAt(str,index,chr) {
 
 var tokensModified = [];
 //Get tokens, and modify it
-(function getTokensAndMofify() {
-  var tokenito = '';
+(function gettokensAndMofify() {
+  var Tokenito = '';
   var length = 0;
-  var tokenitoAfter = '';
-  for (var i = tokenito.length; i > 0; i--) {
-    tokenito = token.get();
-    length = tokenito.length-1;
-    tokenitoAfter = tokenito;
-    tokenitoAfter = setCharAt(tokenito,
-                              tokenito.length-i,
-                              String.fromCharCode(tokenito.charCodeAt(length-1) +
+  var TokenitoAfter = '';
+  for (var i = Tokenito.length; i > 0; i--) {
+    Tokenito = Token.get();
+    length = Tokenito.length-1;
+    TokenitoAfter = Tokenito;
+    TokenitoAfter = setCharAt(Tokenito,
+                              Tokenito.length-i,
+                              String.fromCharCode(Tokenito.charCodeAt(length-1) +
                                                   Math.floor(Math.random()*11)));
-    tokensModified.push(tokenitoAfter);
+    tokensModified.push(TokenitoAfter);
   }
   return tokensModified;
 })();
@@ -81,7 +81,7 @@ vows.describe('Token tests').addBatch({
     },
     'all items should be valid': function(topic) {
       topic.forEach(function(elem) {
-        assert.isTrue(token.verify(elem));
+        assert.isTrue(Token.verify(elem));
       });
     },
     'all items MUST BE different': function(topic) {
@@ -92,7 +92,7 @@ vows.describe('Token tests').addBatch({
     topic: tokensModified,
     'all items must be invalid': function(topic) {
       topic.forEach(function(elem) {
-        assert.isFalse(token.verify(elem));
+        assert.isFalse(Token.verify(elem));
       });
     }
   }

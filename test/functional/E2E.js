@@ -131,7 +131,7 @@ var debug = require('./common').debug,
   },
 
   init: function init() {
-    PushTest.port =  require('../../src/config.js').NS_UA_WS.interfaces[0].port;
+    PushTest.port =  require('../../src/config.js').NS_UA_WS.interface.port;
     PushTest.host = '127.0.0.1';
     PushTest.NOTIFICATION = 'version=1';
 

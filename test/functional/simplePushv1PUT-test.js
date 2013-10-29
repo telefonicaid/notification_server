@@ -41,8 +41,8 @@ vows.describe('SimplePush v1 PUT tests').addBatch({
       topic: function() {
         sendNotification('https://localhost:8081/v1/foo/bar', 'version=1', this.callback);
       },
-      'response should be 404': function(error, header) {
-        assert.equal(header, 404);
+      'response should be 400': function(error, header) {
+        assert.equal(header, 400);
       }
     }
   },
@@ -51,24 +51,24 @@ vows.describe('SimplePush v1 PUT tests').addBatch({
       topic: function() {
         sendNotification('https://localhost:8081/v1/notify/bar', 'version={}', this.callback);
       },
-      'response should be 404': function(error, header) {
-        assert.equal(header, 404);
+      'response should be 400': function(error, header) {
+        assert.equal(header, 400);
       }
     },
     'Send a version=s0meT3xt':{
       topic: function() {
         sendNotification('https://localhost:8081/v1/notify/bar', 'version=s0meT3xt', this.callback);
       },
-      'response should be 404': function(error, header) {
-        assert.equal(header, 404);
+      'response should be 400': function(error, header) {
+        assert.equal(header, 400);
       }
     },
     'Send a version=-1':{
       topic: function() {
         sendNotification('https://localhost:8081/v1/notify/bar', 'version=-1', this.callback);
       },
-      'response should be 404': function(error, header) {
-        assert.equal(header, 404);
+      'response should be 400': function(error, header) {
+        assert.equal(header, 400);
       }
     },
     'Send a version=0':{
@@ -83,8 +83,8 @@ vows.describe('SimplePush v1 PUT tests').addBatch({
       topic: function() {
         sendNotification('https://localhost:8081/v1/notify/bar', 'version=NaN', this.callback);
       },
-      'response should be 404': function(error, header) {
-        assert.equal(header, 404);
+      'response should be 400': function(error, header) {
+        assert.equal(header, 400);
       }
     },
     'Send a version=3':{

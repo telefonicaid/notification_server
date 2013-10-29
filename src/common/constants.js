@@ -7,6 +7,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+'use strict';
+
+
 exports.loglevels = {
   // Log levels bitwise
   NONE: 0,

@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var hp = require("../../src/common/helpers.js"),
+var hp = require("../../src/common/Helpers.js"),
     assert = require('assert'),
     vows = require('vows'),
     baseURL = require('../../src/config.js').consts.publicBaseURL;
