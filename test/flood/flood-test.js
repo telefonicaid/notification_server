@@ -19,8 +19,13 @@ function sendNotification(vers) {
       host: "localhost",//owd-push-qa-fe1.hi.inet",
       port: 8081,
       path: "/v1/notify/"+process.argv[2],
-      method: 'PUT'
+      method: 'PUT',
+      rejectUnauthorized: false,
+      requestCert: true,
+      agent: false
     };
+    options.agent = new https.Agent(options);
+
 
     var req = https.request(options, function(res) {
       res.setEncoding('utf8');
