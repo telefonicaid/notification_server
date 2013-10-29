@@ -23,9 +23,12 @@ exports.sendSimplePushV1Notification = function(url, versionText, callback) {
     host: urlData.hostname,
     port: urlData.port,
     path: urlData.pathname,
-    method: 'PUT'
+    method: 'PUT',
+    rejectUnauthorized: false,
+    requestCert: true,
+    agent: false
   };
-  //options.agent = new https.Agent(options);
+  options.agent = new https.Agent(options);
 
   var req = https.request(options, function(res) {
     res.setEncoding('utf8');

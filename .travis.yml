@@ -13,7 +13,7 @@ branches:
     - v1.1
 
 before_install:
-  - npm rebuild
+  - npm install
   - sudo mkdir -p /var/log/push_server/ # To store log files
   - sudo chmod 777 /var/log/push_server/
   - cd scripts/
@@ -22,6 +22,7 @@ before_install:
 
 before_script:
   - cd src
+  - export NODE_TLS_REJECT_UNAUTHORIZED="0"
   - node start.js > out & # Start the server
   - PID=$! # Save the PID
   - cd .. && sleep 5 # Wait for everything to start correctly
