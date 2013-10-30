@@ -194,10 +194,10 @@ NS_AS.prototype = {
       clearTimeout(this.readyTimeout);
 
       //Closing connection with MsgBroker and DataStore
-      MsgBroker.stop();
-      MsgBroker.removeAllListeners();
-      DataStore.stop();
       DataStore.removeAllListeners();
+      MsgBroker.removeAllListeners();
+      MsgBroker.stop();
+      DataStore.stop();
 
       //Closing connections from the server
       this.server.close();
