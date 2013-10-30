@@ -36,32 +36,71 @@ function subscribeQueues(broker) {
 
 
 function NS_Monitor() {
-  this.ready = false;
+  this.closingCorrectly = false;
+  this.dataStoreReady = false;
+  this.msgBrokerReady = false;
+  this.readyTimeout = undefined;
+  this.readyUDPTimeout = undefined;
+  this.retryUDPnotACKedInterval = undefined;
 }
 
 NS_Monitor.prototype = {
+
+  checkReady: function() {
+    if (this.dataStoreReady && this.msgBrokerReady) {
+      Log.debug('NS_Monitor::checkReady --> We are ready. Clearing any readyTimeout');
+      clearTimeout(this.readyTimeout);
+    } else {
+      Log.debug('NS_Monitor::checkReady --> Not ready yet. dataStoreReady=' + this.dataStoreReady +
+        ', msgBrokerReady=' + this.msgBrokerReady);
+    }
+    return this.dataStoreReady && this.msgBrokerReady;
+  },
+
   start: function() {
-    Log.info('NS_MSG_MON server starting');
+    Log.info('NS_Monitor::start --> server starting');
     var self = this;
 
     MsgBroker.once('ready', function() {
-      Log.info('MSG_mon::init --> MSG monitor server running');
-      self.ready = true;
+      Log.info('NS_Monitor::start --> MsgBroker ready and connected');
+      self.msgBrokerReady = true;
+      self.checkReady();
     });
 
     MsgBroker.on('ready', subscribeQueues);
 
     MsgBroker.once('closed', function() {
-      self.ready = false;
+      self.msgBrokerReady = false;
+      if (self.closingCorrectly) {
+        Log.info('NS_AS::stop --> Closed MsgBroker');
+        return;
+      }
       Log.critical(Log.messages.CRITICAL_MBDISCONNECTED, {
-        "class": 'ns_msg_monitor',
-        "method": 'init'
+        "class": 'NS_Monitor',
+        "method": 'start'
       });
+      self.stop();
     });
 
     DataStore.on('ready', function() {
-      Log.info('MSG_Mon::init --> MSG Monitor server ready');
-    })
+      Log.info('NS_Monitor::start --> DataStore ready and connected');
+      self.dataStoreReady = true;
+      self.checkReady();
+    });
+
+    DataStore.on('closed', function() {
+      if (self.closingCorrectly) {
+        Log.info('NS_Monitor::start --> Closed DataStore');
+        return;
+      }
+      Log.critical(Log.messages.CRITICAL_DBDISCONNECTED, {
+        "class": 'NS_Monitor',
+        "method": 'start'
+      });
+      self.dataStoreReady = false;
+      self.stop();
+    });
+
 
     //Hack. Once we have a disconnected queue, we must subscribe again for each
     //broker.
@@ -87,9 +126,10 @@ NS_Monitor.prototype = {
       DataStore.start();
     });
 
-    // Check if we are alive
+    //Check if we are alive
     this.readyTimeout = setTimeout(function() {
-      if (!self.ready) {
+      Log.debug('readyTimeout fired');
+      if (!self.checkReady()) {
         Log.critical(Log.messages.CRITICAL_NOTREADY);
       }
     }, 30 * 1000); //Wait 30 seconds
@@ -100,6 +140,23 @@ NS_Monitor.prototype = {
         self.retryUDPnotACKed();
       }, 31 * 1000); // Wait to be ready (31 seconds)
     }, config.retryTime);
+  },
+
+  stop: function(correctly) {
+    this.closingCorrectly = correctly;
+    Log.info('NS_AS::stop --> Closing NS_Monitor server');
+    clearInterval(this.retryUDPnotACKedInterval);
+    clearTimeout(this.readyTimeout);
+    clearTimeout(this.readyUDPTimeout);
+
+    //Closing connection with MsgBroker and DataStore
+    MsgBroker.removeAllListeners();
+    DataStore.removeAllListeners();
+    MsgBroker.stop();
+    DataStore.stop();
+    setTimeout(function() {
+      process.exit(0)
+    }, 5000);
   },
 
   retryUDPnotACKed: function() {
@@ -118,16 +175,6 @@ NS_Monitor.prototype = {
         onNodeData(node, {});
       });
     });
-  },
-
-  stop: function() {
-    clearInterval(this.retryUDPnotACKedInterval);
-    clearTimeout(this.readyTimeout);
-    clearTimeout(this.readyUDPTimeout);
-    MsgBroker.removeAllListeners();
-    DataStore.removeAllListeners();
-    MsgBroker.stop();
-    DataStore.stop();
   }
 };
 
