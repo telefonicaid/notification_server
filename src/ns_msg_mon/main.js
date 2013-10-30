@@ -76,8 +76,8 @@ NS_Monitor.prototype = {
         return;
       }
       Log.critical(Log.messages.CRITICAL_MBDISCONNECTED, {
-        "class": 'NS_Monitor',
-        "method": 'start'
+        'class': 'NS_Monitor',
+        'method': 'start'
       });
       self.stop();
     });
@@ -94,8 +94,8 @@ NS_Monitor.prototype = {
         return;
       }
       Log.critical(Log.messages.CRITICAL_DBDISCONNECTED, {
-        "class": 'NS_Monitor',
-        "method": 'start'
+        'class': 'NS_Monitor',
+        'method': 'start'
       });
       self.dataStoreReady = false;
       self.stop();
@@ -128,7 +128,7 @@ NS_Monitor.prototype = {
 
     //Check if we are alive
     this.readyTimeout = setTimeout(function() {
-      Log.debug('readyTimeout fired');
+      Log.debug('NS_Monitor --> readyTimeout fired');
       if (!self.checkReady()) {
         Log.critical(Log.messages.CRITICAL_NOTREADY);
       }
@@ -144,7 +144,7 @@ NS_Monitor.prototype = {
 
   stop: function(correctly) {
     this.closingCorrectly = correctly;
-    Log.info('NS_AS::stop --> Closing NS_Monitor server');
+    Log.info('NS_Monitor::stop --> Closing NS_Monitor server');
     clearInterval(this.retryUDPnotACKedInterval);
     clearTimeout(this.readyTimeout);
     clearTimeout(this.readyUDPTimeout);
@@ -155,19 +155,19 @@ NS_Monitor.prototype = {
     MsgBroker.stop();
     DataStore.stop();
     setTimeout(function() {
-      process.exit(0)
+      process.exit(0);
     }, 5000);
   },
 
   retryUDPnotACKed: function() {
-    Log.debug('MSG_mon::retryUDPnotACKed --> Starting retry procedure');
+    Log.debug('NS_Monitor::retryUDPnotACKed --> Starting retry procedure');
     DataStore.getUDPClientsAndUnACKedMessages(function(error, nodes) {
       if (error) {
         return;
       }
 
       if (!Array.isArray(nodes) || !nodes.length) {
-        Log.debug('MSG_mon::retryUDPnotACKed --> No pending messages for UDP clients');
+        Log.debug('NS_Monitor::retryUDPnotACKed --> No pending messages for UDP clients');
         return;
       }
 
@@ -194,9 +194,9 @@ function onApplicationData(error, appData, json) {
     return;
   }
 
-  Log.debug('MSG_mon::onApplicationData --> Application data recovered:', appData);
+  Log.debug('NS_Monitor::onApplicationData --> Application data recovered:', appData);
   appData.forEach(function(nodeData, i) {
-    Log.debug('MSG_mon::onApplicationData --> Notifying node: ' + i + ':', nodeData);
+    Log.debug('NS_Monitor::onApplicationData --> Notifying node: ' + i + ':', nodeData);
     onNodeData(nodeData, json);
   });
 }
@@ -204,20 +204,20 @@ function onApplicationData(error, appData, json) {
 function onNodeData(nodeData, json) {
   if (!nodeData || !nodeData.si || !nodeData._id) {
     Log.error(Log.messages.ERROR_BACKENDERROR, {
-      "class": 'MSG_mon',
-      "method": 'onNodeData',
-      "extra": 'No enough info'
+      'class': 'NS_Monitor',
+      'method': 'onNodeData',
+      'extra': 'No enough info'
     });
     return;
   }
 
   // Is the node connected? AKA: is websocket?
   if (nodeData.co === connectionstate.DISCONNECTED) {
-    Log.debug('MSG_mon::onNodeData --> Node recovered but not connected, just delaying');
+    Log.debug('NS_Monitor::onNodeData --> Node recovered but not connected, just delaying');
     return;
   }
 
-  Log.debug('MSG_mon::onNodeData --> Node connected:', nodeData);
+  Log.debug('NS_Monitor::onNodeData --> Node connected:', nodeData);
 
   Log.notify(Log.messages.NOTIFY_INCOMING_TO, {
     uaid: nodeData._id,

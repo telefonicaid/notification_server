@@ -58,7 +58,7 @@ NS_AS.prototype = {
     this.ssl = conf.ssl;
 
     if (!net.isIP(this.ip) || isNaN(this.port)) {
-      Log.critical('NS_AS::init() --> Bad params, closing');
+      Log.critical('NS_AS::start() --> Bad params, closing');
       this.stop();
       return;
     }
@@ -75,9 +75,9 @@ NS_AS.prototype = {
       cluster.on('exit', function(worker, code) {
         if (code !== 0) {
           Log.error(Log.messages.ERROR_WORKERERROR, {
-            "id": worker.id,
-            "pid": worker.process.pid,
-            "code": code
+            'id': worker.id,
+            'pid': worker.process.pid,
+            'code': code
           });
           Log.info('NS_AS::start -- Spawning a new worker…');
           cluster.fork();
@@ -88,10 +88,10 @@ NS_AS.prototype = {
         ++closed;
         if (closed === config.NS_AS.numProcesses) {
           if (errored) {
-            Log.error('NS_AS::stop() -- Closing INCORRECTLY. Check errors for a worker');
+            Log.error('NS_AS::start() -- Closing INCORRECTLY. Check errors for a worker');
             process.exit(1);
           } else {
-            Log.info('NS_AS::stop() -- Closing. That\'s all folks!');
+            Log.info('NS_AS::start() -- Closing. That\'s all folks!');
             process.exit(0);
           }
         }
@@ -113,23 +113,23 @@ NS_AS.prototype = {
         this.server = require('http').createServer(this.onHTTPMessage.bind(this));
       }
       this.server.listen(this.port, this.ip);
-      Log.info('NS_AS::init --> HTTP' + (this.ssl ? 'S' : '') +
+      Log.info('NS_AS::start --> HTTP' + (this.ssl ? 'S' : '') +
                ' push AS server starting on ' + this.ip + ':' + this.port);
 
       // Events from MsgBroker
       MsgBroker.once('ready', function() {
-        Log.info('NS_AS::init --> MsgBroker ready and connected');
+        Log.info('NS_AS::start --> MsgBroker ready and connected');
         self.msgBrokerReady = true;
         self.checkReady();
       });
       MsgBroker.on('closed', function() {
         if (self.closingCorrectly) {
-          Log.info('NS_AS::stop --> Closed MsgBroker');
+          Log.info('NS_AS::start --> Closed MsgBroker');
           return;
         }
         Log.critical(Log.messages.CRITICAL_MBDISCONNECTED, {
-          "class": 'NS_AS',
-          "method": 'init'
+          'class': 'NS_AS',
+          'method': 'start'
         });
         self.msgBrokerReady = false;
         self.stop();
@@ -137,18 +137,18 @@ NS_AS.prototype = {
 
       //Events from DataStore
       DataStore.once('ready', function() {
-        Log.info('NS_AS::init --> DataStore ready and connected');
+        Log.info('NS_AS::start --> DataStore ready and connected');
         self.dataStoreReady = true;
         self.checkReady();
       });
       DataStore.on('closed', function() {
         if (self.closingCorrectly) {
-          Log.info('NS_AS::stop --> Closed DataStore');
+          Log.info('NS_AS::start --> Closed DataStore');
           return;
         }
         Log.critical(Log.messages.CRITICAL_DBDISCONNECTED, {
-          "class": 'NS_AS',
-          "method": 'init'
+          'class': 'NS_AS',
+          'method': 'start'
         });
         self.dataStoreReady = false;
         self.stop();
@@ -162,7 +162,7 @@ NS_AS.prototype = {
 
       //Check if we are alive
       this.readyTimeout = setTimeout(function() {
-        Log.debug('readyTimeout fired');
+        Log.debug('NS_AS::start --> readyTimeout fired');
         if (!self.checkReady()) {
           Log.critical(Log.messages.CRITICAL_NOTREADY);
         }
@@ -185,7 +185,7 @@ NS_AS.prototype = {
         });
       });
       setTimeout(function() {
-        process.exit(1)
+        process.exit(1);
       }, 10000);
 
     } else {
@@ -204,7 +204,7 @@ NS_AS.prototype = {
 
       setTimeout(function() {
         Log.info('Suiciding worker with id=' + cluster.worker.id + '. Bye!');
-        cluster.worker.destroy()
+        cluster.worker.destroy();
       }, 3000);
     }
   },
@@ -227,7 +227,7 @@ NS_AS.prototype = {
       this.end();
     };
 
-    if (!this.ddbbready || !this.msgbrokerready) {
+    if (!self.checkReady()) {
       Log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
       response.res(errorcodes.NOT_READY);
       return;
@@ -262,60 +262,60 @@ NS_AS.prototype = {
       });
       request.on('end', function() {
         if (request.tooBig) {
-            return;
+          return;
         }
         self.simplepushRequest(request, body, response);
       });
 
     } else if (request.method === 'GET') {
       switch (path[1]) {
-        case 'about':
-          if (consts.PREPRODUCTION_MODE) {
-            var text = '';
-            try {
-              var p = new Pages();
-              p.setTemplate('views/about.tmpl');
-              text = p.render(function(t) {
-                switch (t) {
-                  case '{{GIT_VERSION}}':
-                    return require('fs').readFileSync('version.info');
-                  case '{{MODULE_NAME}}':
-                    return 'Application Server Frontend';
-                  default:
-                    return '';
-                }
-              });
-            } catch(e) {
-              text = "No version.info file";
-            }
-            response.setHeader('Content-Type', 'text/html');
-            response.statusCode = 200;
-            response.write(text);
-            response.end();
-            return;
-          } else {
-            response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
-            return;
+      case 'about':
+        if (consts.PREPRODUCTION_MODE) {
+          var text = '';
+          try {
+            var p = new Pages();
+            p.setTemplate('views/about.tmpl');
+            text = p.render(function(t) {
+              switch (t) {
+              case '{{GIT_VERSION}}':
+                return require('fs').readFileSync('version.info');
+              case '{{MODULE_NAME}}':
+                return 'Application Server Frontend';
+              default:
+                return '';
+              }
+            });
+          } catch(e) {
+            text = 'No version.info file';
           }
-          break;
-
-        case 'status':
-          // Return status mode to be used by load-balancers
           response.setHeader('Content-Type', 'text/html');
-          if (Maintenance.getStatus()) {
-            response.statusCode = 503;
-            response.write('Under Maintenance');
-          } else {
-            response.statusCode = 200;
-            response.write('OK');
-          }
+          response.statusCode = 200;
+          response.write(text);
           response.end();
-          break;
-
-        default:
-          Log.debug("NS_AS::onHTTPMessage --> messageType '" + path[1] + "' not recognized");
-          response.res(errorcodesAS.BAD_URL);
           return;
+        } else {
+          response.res(errorcodes.NOT_ALLOWED_ON_PRODUCTION_SYSTEM);
+          return;
+        }
+        break;
+
+      case 'status':
+        // Return status mode to be used by load-balancers
+        response.setHeader('Content-Type', 'text/html');
+        if (Maintenance.getStatus()) {
+          response.statusCode = 503;
+          response.write('Under Maintenance');
+        } else {
+          response.statusCode = 200;
+          response.write('OK');
+        }
+        response.end();
+        break;
+
+      default:
+        Log.debug('NS_AS::onHTTPMessage --> messageType "' + path[1] + '" not recognized');
+        response.res(errorcodesAS.BAD_URL);
+        return;
       }
 
     } else {
