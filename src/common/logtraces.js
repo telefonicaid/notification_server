@@ -220,7 +220,7 @@ exports.logtraces = {
   },
   ERROR_WORKERERROR: {
     id: 0x201B,
-    m: "worker ::pid closed unexpectedly with code ::code"
+    m: "NS_AS::start -- wrk::id with PID ::pid closed unexpectedly with code ::code"
   },
   ERROR_ULIMITERROR: {
     id: 0x201C,

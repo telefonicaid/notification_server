@@ -13,6 +13,7 @@
 
 
 var fs = require('fs'),
+    cluster = require('cluster'),
     logparams = require('../config.js').logger,
     loglevel = require('./constants.js').loglevels,
     logtraces = require('./logtraces.js').logtraces;
@@ -102,7 +103,18 @@ Logger.prototype = {
     }
 
     // Print trace
-    var logmsg = '[' + this.appname + ' # ' + level + '] - {' + (new Date()) + ' (' + Date.now() + ')} - ' + message;
+
+    var workerID = 0;
+    if (cluster.worker) {
+      workerID = cluster.worker.id;
+    }
+    var logmsg = '[' + this.appname + ' # ' + level + '] - {' + (new Date()) + ' (' + Date.now() + ')} - ';
+    if (workerID !== 0) {
+      logmsg = logmsg + ' (wrk' + workerID +') ';
+    } else {
+      logmsg = logmsg + ' (mst) ';
+    }
+    logmsg = logmsg + message;
     if (object) {
       logmsg += ' ' + this.color_PURPLE + JSON.stringify(object);
     }
@@ -129,6 +141,9 @@ Logger.prototype = {
       this.log('CRITICAL', message, true, this.color_RED, object);
     }
     this.log('CRITICAL', 'WE HAVE A CRITICAL ERROR, WE ARE CLOSING!!!', false, this.color_red);
+    setTimeout(function() {
+      process.exit(1);
+    }, 2000);
   },
 
   debug: function(message, object) {

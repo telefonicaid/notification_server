@@ -87,9 +87,9 @@ Main.prototype = {
     }
   },
 
-  stop: function() {
+  stop: function(correctly) {
     Log.info('Closing the server correctly');
-    this.server.stop();
+    this.server.stop(correctly);
   }
 };
 
@@ -108,7 +108,7 @@ function onClose() {
   }
   m.closing = true;
   Log.info('Received interruption (2) signal');
-  m.stop();
+  m.stop(true);
 }
 
 function onKill() {
@@ -117,7 +117,7 @@ function onKill() {
   }
   m.closing = true;
   Log.error(Log.messages.ERROR_RECVKILLSIGNAL);
-  m.stop();
+  m.stop(true);
 }
 
 process.on('SIGINT', onClose);    // 2

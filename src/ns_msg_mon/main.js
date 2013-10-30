@@ -59,6 +59,10 @@ NS_Monitor.prototype = {
       });
     });
 
+    DataStore.on('ready', function() {
+      Log.info('MSG_Mon::init --> MSG Monitor server ready');
+    })
+
     //Hack. Once we have a disconnected queue, we must subscribe again for each
     //broker.
     //This happens on RabbitMQ as follows:

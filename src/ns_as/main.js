@@ -31,12 +31,25 @@ function NS_AS() {
   this.kSimplePushASFrontendVersionv1 = 'v1';
   this.server = null;
   this.closing = false;
+  this.closingCorrectly = false;
+  this.dataStoreReady = false;
+  this.msgBrokerReady = false;
+  this.readyTimeout = undefined;
 }
 
 NS_AS.prototype = {
-  //////////////////////////////////////////////
-  // Constructor
-  //////////////////////////////////////////////
+
+  checkReady: function() {
+    if (this.dataStoreReady && this.msgBrokerReady) {
+      Log.debug('NS_AS::checkReady --> We are ready. Clearing any readyTimeout');
+      clearTimeout(this.readyTimeout);
+    } else {
+      Log.debug('NS_AS::checkReady --> Not ready yet. dataStoreReady=' + this.dataStoreReady +
+        ', msgBrokerReady=' + this.msgBrokerReady);
+    }
+    return this.dataStoreReady && this.msgBrokerReady;
+  },
+
   start: function() {
     Log.info('NS_AS::start()');
     var conf = config.NS_AS.interface;
@@ -62,34 +75,30 @@ NS_AS.prototype = {
       cluster.on('exit', function(worker, code) {
         if (code !== 0) {
           Log.error(Log.messages.ERROR_WORKERERROR, {
+            "id": worker.id,
             "pid": worker.process.pid,
             "code": code
           });
+          Log.info('NS_AS::start -- Spawning a new worker…');
+          cluster.fork();
           errored = true;
         } else {
-          Log.info('Worker ' + worker.process.pid + ' exited correctly');
+          Log.info('NS_AS::start -- wrk' + worker.id + ' with PID ' + worker.process.pid + ' exited correctly');
         }
-        closed++;
+        ++closed;
         if (closed === config.NS_AS.numProcesses) {
           if (errored) {
+            Log.error('NS_AS::stop() -- Closing INCORRECTLY. Check errors for a worker');
             process.exit(1);
           } else {
+            Log.info('NS_AS::stop() -- Closing. That\'s all folks!');
             process.exit(0);
           }
         }
       });
+
     } else {
       var self = this;
-      process.on('message', function(msg) {
-        if(msg === 'shutdown') {
-          self.closing = true;
-          // For workers, clean timeouts or intervals
-          clearTimeout(self.readyTimeout);
-          self.server.close();
-          MsgBroker.stop();
-          DataStore.stop();
-        }
-      });
       // Create a new HTTP(S) Server
       if (this.ssl) {
         var options = {
@@ -110,10 +119,11 @@ NS_AS.prototype = {
       // Events from MsgBroker
       MsgBroker.once('ready', function() {
         Log.info('NS_AS::init --> MsgBroker ready and connected');
-        self.msgbrokerready = true;
+        self.msgBrokerReady = true;
+        self.checkReady();
       });
       MsgBroker.on('closed', function() {
-        if (self.closing) {
+        if (self.closingCorrectly) {
           Log.info('NS_AS::stop --> Closed MsgBroker');
           return;
         }
@@ -121,16 +131,18 @@ NS_AS.prototype = {
           "class": 'NS_AS',
           "method": 'init'
         });
-        self.msgbrokerready = false;
+        self.msgBrokerReady = false;
+        self.stop();
       });
 
       //Events from DataStore
       DataStore.once('ready', function() {
         Log.info('NS_AS::init --> DataStore ready and connected');
-        self.ddbbready = true;
+        self.dataStoreReady = true;
+        self.checkReady();
       });
       DataStore.on('closed', function() {
-        if (self.closing) {
+        if (self.closingCorrectly) {
           Log.info('NS_AS::stop --> Closed DataStore');
           return;
         }
@@ -138,7 +150,7 @@ NS_AS.prototype = {
           "class": 'NS_AS',
           "method": 'init'
         });
-        self.ddbbready = false;
+        self.dataStoreReady = false;
         self.stop();
       });
 
@@ -148,35 +160,55 @@ NS_AS.prototype = {
         DataStore.start();
       });
 
-      // Check if we are alive
+      //Check if we are alive
       this.readyTimeout = setTimeout(function() {
-        if (!self.ddbbready || !self.msgbrokerready) {
-            Log.critical(Log.messages.CRITICAL_NOTREADY);
+        Log.debug('readyTimeout fired');
+        if (!self.checkReady()) {
+          Log.critical(Log.messages.CRITICAL_NOTREADY);
         }
       }, 30 * 1000); //Wait 30 seconds
     }
   },
 
-  stop: function() {
+  stop: function(correctly) {
+    Log.info('NS_AS::stop() called with correctly=' + correctly);
     if (cluster.isMaster) {
       var timeouts = [];
       Object.keys(cluster.workers).forEach(function(id) {
-        cluster.workers[id].send('shutdown');
         timeouts[id] = setTimeout(function() {
           Log.info('NS_AS::stop --> Killing worker ' + id);
-          cluster.workers[id].kill();
-        }, 2000);
+          cluster.workers[id].destroy();
+        }, 4000);
         cluster.workers[id].on('disconnect', function() {
           Log.info('NS_AS::stop --> Worker ' + id + ' disconnected');
           clearTimeout(timeouts[id]);
         });
       });
+      setTimeout(function() {
+        process.exit(1)
+      }, 10000);
+
+    } else {
+      this.closingCorrectly = correctly;
+      Log.info('NS_AS::stop --> Closing NS_AS server');
+      clearTimeout(this.readyTimeout);
+
+      //Closing connection with MsgBroker and DataStore
+      MsgBroker.stop();
+      MsgBroker.removeAllListeners();
+      DataStore.stop();
+      DataStore.removeAllListeners();
+
+      //Closing connections from the server
+      this.server.close();
+
+      setTimeout(function() {
+        Log.info('Suiciding worker with id=' + cluster.worker.id + '. Bye!');
+        cluster.worker.destroy()
+      }, 3000);
     }
   },
 
-  //////////////////////////////////////////////
-  // HTTP callbacks
-  //////////////////////////////////////////////
   onHTTPMessage: function(request, response) {
     var self = this;
 
