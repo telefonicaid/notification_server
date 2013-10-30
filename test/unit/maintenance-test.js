@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var mn = require("../../src/common/maintenance.js"),
+var mn = require("../../src/common/Maintenance.js"),
     assert = require('assert'),
     vows = require('vows');
 
@@ -16,12 +16,12 @@ vows.describe('Maintenance tests').addBatch({
   },
 
   "Active maintenance mode": function() {
-    mn.active();
+    mn.set();
     assert.isTrue(mn.getStatus());
   },
 
   "Disable maintenance mode": function() {
-    mn.inactive();
+    mn.unset();
     assert.isFalse(mn.getStatus());
   }
 }).export(module);

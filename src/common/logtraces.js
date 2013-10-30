@@ -1,4 +1,3 @@
-/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2013 - All rights reserved
@@ -6,6 +5,9 @@
  * Fernando Rodríguez Sela <frsela@tid.es>
  * Guillermo Lopez Leal <gll@tid.es>
  */
+
+'use strict';
+
 
 /**
  * Log traces IDs format (per digit):
@@ -33,19 +35,19 @@ exports.logtraces = {
   },
   NOTIFY_APPTOKEN_VERSION: {
     id: 0x9003,
-    m: "New version -- appToken=::appToken -- version=::version -- ip=::ip",
+    m: "New version -- appToken=::appToken -- version=::version -- ip=::ip"
   },
   NOTIFY_INCOMING_TO: {
     id: 0x9004,
-    m: "New version for -- uaid=::uaid -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc=::mnc",
+    m: "New version for -- uaid=::uaid -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc=::mnc"
   },
   NOTIFY_TO_WAKEUP: {
     id: 0x9005,
-    m: "Notify to wakeup -- uaid=::uaid -- wakeup=::wakeupip:::wakeupport -- mcc=::mcc -- mnc=::mnc -- protocol=::protocol -- status=::response",
+    m: "Notify to wakeup -- uaid=::uaid -- wakeup=::wakeupip:::wakeupport -- mcc=::mcc -- mnc=::mnc -- protocol=::protocol -- status=::response"
   },
   NOTIFY_ACK: {
     id: 0x9006,
-    m: "ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version",
+    m: "ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version"
   },
   NOTIFY_MSGSENTTOUA: {
     id: 0x9007,

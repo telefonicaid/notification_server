@@ -7,19 +7,22 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+'use strict';
+
+
 var forever = require('forever-monitor'),
     fs = require('fs'),
     starts = require('./config.js').servers,
     config = require('./config.js'),
-    log = require('./common/logger.js');
+    Log = require('./common/Logger.js');
 
 
-log.init(config.NS.logfile, 'NS', 1);
+Log.init(config.NS.Logfile, 'NS', 1);
 
 // Show license
 console.log(
 '    PUSH Notification Server \n' +
-'    Copyright (C) 2012  Telefonica PDI \n\n' +
+'    Copyright (C) 2012-2013  Telefonica PDI \n\n' +
 '   This program is free software: you can redistribute it and/or modify \n' +
 '    it under the terms of the GNU Affero General Public License as published by \n' +
 '    the Free Software Foundation, either version 3 of the License, or \n' +
@@ -44,7 +47,9 @@ try {
 var childs = [];
 (function fillChilds() {
   for (var i in starts) {
-    if (starts[i]) childs.push(i);
+    if (starts[i]) {
+      childs.push(i);
+    }
   }
 })();
 starts = childs;
@@ -59,7 +64,7 @@ starts.forEach(function(child) {
   });
   started[child].start();
   started[child].on('exit', function() {
-    log.info((child + ' has closed!'));
+    Log.info((child + ' has closed!'));
   });
 });
 
@@ -67,15 +72,15 @@ var closing = false;
 function closeChilds() {
   closing = true;
   if (closing) {
-    log.debug('NS::closeChilds --> We were closing, abort this signal');
+    Log.debug('NS::closeChilds --> We were closing, abort this signal');
     return;
   }
-  log.debug('NS::closeChilds --> Kill signal on start.js, killing childs');
+  Log.debug('NS::closeChilds --> Kill signal on start.js, killing childs');
   started.forEach(function(child) {
     //Send the exit signal to childs (SIGINT)
     child.exit();
   });
-  log.info('NS::closeChilds --> Monitor has sent kill signals to every child, let\'s wait 10 seconds to say we are closed');
+  Log.info('NS::closeChilds --> Monitor has sent kill signals to every child, let\'s wait 10 seconds to say we are closed');
 
   //Wait for a safe time to close this parent.
   //This should be enough to every child to close correctly

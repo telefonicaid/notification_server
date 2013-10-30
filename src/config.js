@@ -14,11 +14,11 @@ var numCPUs = require('os').cpus().length;
  */
 exports.servers = {
   NS_AS: true,
-  NS_MSG_monitor: true,
+  NS_Monitor: true,
   NS_UA_WS: true,
   NS_UA_UDP: true,
   NS_WakeUp: true,
-  NS_WakeUpChecker: true
+  NS_WakeUp_Checker: true
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -27,15 +27,9 @@ exports.servers = {
 
 /********************* Constants********************************************/
 exports.consts = {
-  MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
   MOBILENETWORK_CACHE: false,
 
-  /**
-   * Default Maximum Time To Live
-   * If no provided by AS this TTL will be assigned to the message
-   */
-  MAX_TTL: 2592000, // 30 days, in seconds (60*60*24*30)
 
   /**
    * This is the Key and the Certificate of the server. Should be shared
@@ -132,20 +126,13 @@ exports.NS_AS = {
   numProcesses: numCPUs,
 
   /**
-   * Maximum payload for a HTTP message (20 KiB)
+   * Binding interface to listen to
    */
-  MAX_PAYLOAD_SIZE: 20480,
-
-  /**
-   * Binding interfaces and ports to listen to. You can have multiple processes.
-   */
-  interfaces: [
-    {
-      ip: '0.0.0.0',
-      port: 8081,
-      ssl: true        // Enable SSL
-    }
-  ]
+  interface: {
+    ip: '0.0.0.0',
+    port: 8081,
+    ssl: true
+  }
 };
 
 /********************* NS_MSG_monitor ********************************/
@@ -178,14 +165,11 @@ exports.NS_UA_WS = {
    * Binding interfaces and ports
    * [ iface, port, ssl ]
    */
-  interfaces: [
-    // Internal network
-    {
-      ip: '0.0.0.0',
-      port: 8080,
-      ssl: true        // Enable SSL
-    }
-  ],
+  interface: {
+    ip: '0.0.0.0',
+    port: 8080,
+    ssl: true
+  },
 
   /**
    * Websocket configuration
@@ -198,9 +182,6 @@ exports.NS_UA_WS = {
    */
   websocket_params: {
     keepalive: false    // By default, currently the KA messages will be managed by the client side
-    /*keepaliveInterval: 40000,
-    dropConnectionOnKeepaliveTimeout: true,
-    keepaliveGracePeriod: 30000*/
   }
 };
 
@@ -224,20 +205,17 @@ exports.NS_WakeUp = {
    * Binding interfaces and ports
    * [ iface, port, ssl ]
    */
-  interfaces: [
-    // Internal network
-    {
-      ip: '0.0.0.0',
-      port: 8090,
-      ssl: false        // Disable SSL
-    }
-  ]
+  interface: {
+    ip: '0.0.0.0',
+    port: 8090,
+    ssl: false        // Disable SSL
+  }
 };
 
 /********************* NS_WakeUpChecker ******************************/
 
-exports.NS_WakeUpChecker = {
-  logfile: 'NS_WakeUpChecker.log',
+exports.NS_WakeUp_Checker = {
+  logfile: 'NS_WakeUp_Checker.log',
   checkPeriod: 300000
 };
 

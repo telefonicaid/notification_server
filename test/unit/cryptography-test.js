@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var cr = require("../../src/common/cryptography.js"),
+var cr = require("../../src/common/Cryptography.js"),
     assert = require('assert'),
     vows = require('vows');
 

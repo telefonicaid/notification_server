@@ -3,7 +3,7 @@
  */
 
 exports.serverData = {
-  port: require('../../src/config.js').NS_UA_WS.interfaces[0].port,
+  port: require('../../src/config.js').NS_UA_WS.interface.port,
   host: '127.0.0.1'
 };
 
@@ -86,7 +86,9 @@ exports.allDifferents = function allDifferents(l) {
   }
   var obj = {};
   for (var i = 0, item; item = l[i]; i++) {
-    if (obj[item]) return false;
+    if (obj[item]) {
+      return false;
+    }
     obj[item] = 1;
   }
   return true;

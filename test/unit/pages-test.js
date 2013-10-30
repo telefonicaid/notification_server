@@ -6,15 +6,14 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var pages = require("../../src/common/pages.js"),
+var Pages = require("../../src/common/Pages.js"),
     assert = require('assert'),
     vows = require('vows'),
-    fs = require('fs'),
-    baseURL = require('../../src/config.js').consts.publicBaseURL;
+    fs = require('fs');
 
 vows.describe('Pages tests').addBatch({
   "No template should return an error page": function() {
-    var pg = new pages();
+    var pg = new Pages();
     pg.setTemplate('/this/file/doesnot/exist.tmpl');
     var renderedPage = pg.render(function(token) {});
     assert.isString(renderedPage);
@@ -26,7 +25,7 @@ vows.describe('Pages tests').addBatch({
     var auxFilename = '/tmp/auxPagesTest' + Date.now() + '.tmpl';
     fs.writeFileSync(auxFilename,
       'T1={{Token1}} T2={{Token2}} T3={{Token3}} T1bis={{Token1}}');
-    var pg = new pages();
+    var pg = new Pages();
     pg.setTemplate(auxFilename);
     var renderedPage = pg.render(function(token) {
       switch (token) {
