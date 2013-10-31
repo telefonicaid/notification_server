@@ -18,7 +18,7 @@ var Log = require('../common/Logger.js'),
     checkPeriod = require('../config.js').NS_WakeUp_Checker.checkPeriod;
 
 function NS_WakeUp_Checker() {
-  this.ddbbready = false;
+  this.dataStoreReady = false;
 }
 
 NS_WakeUp_Checker.prototype = {
@@ -33,15 +33,20 @@ NS_WakeUp_Checker.prototype = {
     var self = this;
     DataStore.once('ready', function() {
       Log.info('NS_WakeUpChecker::init --> DataStore ready and connected');
-      self.ddbbready = true;
+      self.dataStoreReady = true;
       self.checkNodes();
     });
-    DataStore.on('closed', function() {
+    DataStore.once('closed', function() {
+      if (self.closingCorrectly) {
+        Log.info('NS_WakeUpChecker::start --> Closed DataStore');
+        return;
+      }
       Log.critical(Log.messages.CRITICAL_DBDISCONNECTED, {
-        "class": 'NS_WakeUpChecker',
-        "method": 'init'
+        'class': 'NS_WakeUpChecker',
+        'method': 'init'
       });
-      self.ddbbready = false;
+      self.dataStoreReady = false;
+      this.stop();
     });
     process.nextTick(function() {
       DataStore.start();
@@ -49,14 +54,20 @@ NS_WakeUp_Checker.prototype = {
 
     // Check if we are alive
     this.readyTimeout = setTimeout(function() {
-      if (!self.ddbbready) {
+      if (!self.dataStoreReady) {
         Log.critical(Log.messages.CRITICAL_NOTREADY);
       }
     }, 30 * 1000); //Wait 30 seconds
   },
 
-  stop: function() {
+  stop: function(correctly) {
+    this.closingCorrectly = correctly;
     Log.info('NS_WakeUpChecker:stop --> Closing WakeUp local nodes checker server');
+    DataStore.removeAllListeners();
+    DataStore.stop();
+    setTimeout(function() {
+      process.exit(0);
+    }, 5000);
   },
 
   recoverNetworks: function(cb) {
@@ -118,21 +129,21 @@ NS_WakeUp_Checker.prototype = {
 
     if (!address.href) {
       Log.error(Log.messages.ERROR_UDPBADADDRESS, {
-        "address": address
+        'address': address
       });
       return;
     }
 
     var protocolHandler = null;
     switch (address.protocol) {
-      case 'http:':
-        protocolHandler = http;
-        break;
-      case 'https:':
-        protocolHandler = https;
-        break;
-      default:
-        protocolHandler = null;
+    case 'http:':
+      protocolHandler = http;
+      break;
+    case 'https:':
+      protocolHandler = https;
+      break;
+    default:
+      protocolHandler = null;
     }
     if (!protocolHandler) {
       Log.debug('NS_WakeUpChecker:checkServer --> Non valid URL (invalid protocol)');

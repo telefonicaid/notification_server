@@ -11,6 +11,7 @@ var assert = require('assert'),
     dataStore = require('../../src/common/DataStore'),
     common = require('../functional/common');
 
+dataStore.start();
 
 var queries = {
   getNode: function(callback) {

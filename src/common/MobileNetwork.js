@@ -35,7 +35,7 @@ MobileNetwork.prototype = {
     this.callbacks.push(Helpers.checkCallback(callback));
   },
 
-  init: function() {
+  start: function() {
     this.resetCache();
     DataStore.once('ready', (function() {
       Log.debug('[MobileNetwork] library loaded');
@@ -45,6 +45,9 @@ MobileNetwork.prototype = {
         elem(true);
       });
     }).bind(this));
+    process.nextTick(function() {
+      DataStore.start();
+    })
   },
 
   resetCache: function(callback) {
@@ -105,7 +108,7 @@ MobileNetwork.prototype = {
 // Singleton
 ///////////////////////////////////////////
 var _mn = new MobileNetwork();
-_mn.init();
+_mn.start();
 function getMobileNetwork() {
   return _mn;
 }

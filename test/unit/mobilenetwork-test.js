@@ -10,6 +10,7 @@ var mn = require('../../src/common/MobileNetwork.js'),
     assert = require('assert'),
     vows = require('vows');
 
+
 vows.describe('MobileNetwork tests').addBatch({
   'Ready.': {
     topic: function() {
