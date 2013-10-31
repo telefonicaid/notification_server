@@ -99,6 +99,9 @@ NS_UA_UDP.prototype = {
     //Closing connection with MsgBroker
     MsgBroker.removeAllListeners();
     MsgBroker.stop();
+    setTimeout(function() {
+      process.exit(0);
+    }, 5000);
   },
 
   subscribeQueues: function(broker) {
