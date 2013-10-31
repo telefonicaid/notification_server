@@ -1,57 +1,30 @@
 #!/bin/bash
-
+#chkconfig: 3 99 85 
 # pushserverd - Startup script for pushserver
-
 # processname: pushserverd
-
 . /etc/rc.d/init.d/functions
-
-
 NODE="/usr/bin/node --nouse-idle-notification --max-new-space-size=2000000 --max-old-space-size=4000"
 PUSH_SERVER="/opt/pdi/owd/push_server/src/"
 CONFIGFILE="$PUSH_SERVER/config.js"
-OPTIONS=" start"
+OPTIONS=" start.js"
 PUSHSERVER_USER=push_server
 PUSHSERVER_GROUP=push_server
 
-
-
 start()
 {
-
-
-  echo -n $"Starting push_server. "
-  #daemon --user "$PUSHSERVER_USER" $node $CONFIGFILE
-  cd $PUSH_SERVER
-  case "$1" in
-  NS_AS)
-    nohup $NODE main.js NS_AS >  /dev/null 2>&1 &
-    ;;
-  NS_Monitor)
-    nohup $NODE main.js NS_Monitor >  /dev/null 2>&1 &
-    ;;
-  NS_UA_WS)
-    nohup $NODE main.js NS_UA_WS >  /dev/null 2>&1 &
-    ;;
-  NS_UA_UDP)
-    nohup $NODE main.js NS_UA_UDP >  /dev/null 2>&1 &
-    ;;
-  NS_WakeUp)
-    nohup $NODE main.js NS_WakeUp >  /dev/null 2>&1 &
-    ;;
-  NS_WakeUp_Checker)
-    nohup $NODE main.js NS_WakeUp_Checker >  /dev/null 2>&1 &
-    ;;
-  POST_TO_WEBSOCKET)
-    cd $PUSH_SERVER/../other
-    nohup $NODE post-to-websocket.js >  /dev/null 2>&1 & 
-    ;;
-  *)
-    nohup $NODE $OPTIONS >  /dev/null 2>&1 &
-  esac
-  RETVAL=$?
+  echo -n $"Starting push_server..."
   echo
+  cd $PUSH_SERVER
+  nohup $NODE $OPTIONS >  /dev/null 2>&1 &
+  RETVAL=$?
   [ $RETVAL -eq 0 ] && touch /var/lock/subsys/pushserverd
+  sleep 2
+  if [ -e /var/push.socket ]; then 
+	chmod 777 /var/push.socket
+  	sleep 1
+  	[ `stat  /var/push.socket -c %a` -eq 777 ] && success || failure
+  fi 
+echo 
 }
 
 stop()
@@ -60,8 +33,9 @@ stop()
   #killproc -p "$PIDFILE" -d 300 /usr/bin/mongod
   ps h -o pid -C node | tr '\n' ' ' | xargs sudo kill -9
   RETVAL=$?
-  echo
-  [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/pushserverd
+  [ -e /var/push.socket ] && rm -f /var/push.socket
+  [ $RETVAL -eq 0 ] && { rm -f /var/lock/subsys/pushserverd;success "OK"; }
+echo
 }
 
 restart () {
@@ -72,25 +46,24 @@ restart () {
 
 
 
-ulimit -n 12000
+ulimit -n 160000
 RETVAL=0
-
 case "$1" in
   start)
-    start $2
+    start
     ;;
   stop)
-    stop $2
+    stop
     ;;
   restart|reload|force-reload)
-    restart $2
+    restart
     ;;
   status)
     status node
     RETVAL=$?
     ;;
   *)
-    echo "Usage: $0 {start|stop|status|restart|reload|force-reload} {NS_AS|NS_Monitor|NS_UA_WS|NS_UA_UDP|NS_WakeUp|NS_WakeUp_Checker|POST_TO_WEBSOCKET}"
+    echo "Usage: $0 {start|stop|status|restart|reload|force-reload} "
     RETVAL=1
 esac
 

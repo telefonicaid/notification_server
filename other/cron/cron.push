@@ -1,0 +1,3 @@
+10 * * * * /usr/local/bin/rotate_mongo_logs.sh
+*/1 * * * * /usr/local/bin/get_system_kpis.sh
+*/30 * * * * /usr/sbin/logrotate -f /etc/logrotate-push.conf
