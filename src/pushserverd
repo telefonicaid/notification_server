@@ -27,11 +27,20 @@ start()
   NS_AS)
     nohup $NODE main.js NS_AS >  /dev/null 2>&1 &
     ;;
-  NS_MSG_monitor)
-    nohup $NODE main.js NS_MSG_monitor >  /dev/null 2>&1 &
+  NS_Monitor)
+    nohup $NODE main.js NS_Monitor >  /dev/null 2>&1 &
     ;;
   NS_UA_WS)
     nohup $NODE main.js NS_UA_WS >  /dev/null 2>&1 &
+    ;;
+  NS_UA_UDP)
+    nohup $NODE main.js NS_UA_UDP >  /dev/null 2>&1 &
+    ;;
+  NS_WakeUp)
+    nohup $NODE main.js NS_WakeUp >  /dev/null 2>&1 &
+    ;;
+  NS_WakeUp_Checker)
+    nohup $NODE main.js NS_WakeUp_Checker >  /dev/null 2>&1 &
     ;;
   POST_TO_WEBSOCKET)
     cd $PUSH_SERVER/../other
@@ -81,7 +90,7 @@ case "$1" in
     RETVAL=$?
     ;;
   *)
-    echo "Usage: $0 {start|stop|status|restart|reload|force-reload} {NS_AS|NS_MSG_monitor|NS_UA_WS|POST_TO_WEBSOCKET}"
+    echo "Usage: $0 {start|stop|status|restart|reload|force-reload} {NS_AS|NS_Monitor|NS_UA_WS|NS_UA_UDP|NS_WakeUp|NS_WakeUp_Checker|POST_TO_WEBSOCKET}"
     RETVAL=1
 esac
 
