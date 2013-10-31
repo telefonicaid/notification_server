@@ -58,7 +58,7 @@ Main.prototype = {
       break;
 
     case 'NS_Monitor':
-      Log.init(config.NS_Monitor.logfile, 'NS_MSG_monitor', 1);
+      Log.init(config.NS_Monitor.logfile, 'NS_Monitor', 1);
       Log.info('Starting NS_MSG_monitor server');
       sel = require('./ns_msg_mon/main.js');
       this.server = new sel.NS_Monitor();
@@ -74,8 +74,8 @@ Main.prototype = {
       break;
 
     case 'NS_WakeUp_Checker':
-      Log.init(config.NS_WakeUp_Checker.logfile, 'NS_WakeUpChecker', 1);
-      Log.info('Starting as NS_WakeChecker server');
+      Log.init(config.NS_WakeUp_Checker.logfile, 'NS_WakeUp_Checker', 1);
+      Log.info('Starting as NS_WakeUp_Checker server');
       sel = require('./ns_wakeupchecker/main.js');
       this.server = new sel.NS_WakeUp_Checker();
       this.server.start();

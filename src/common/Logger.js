@@ -1,4 +1,4 @@
-/**
+NS_WakeUp_Checker/**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
  * License: GNU Affero V3 (see LICENSE file)
@@ -110,9 +110,9 @@ Logger.prototype = {
     }
     var logmsg = '[' + this.appname + ' # ' + level + '] - {' + (new Date()) + ' (' + Date.now() + ')} - ';
     if (workerID !== 0) {
-      logmsg = logmsg + ' (wrk' + workerID +') ';
+      logmsg = logmsg + '(wrk' + workerID +') - ';
     } else {
-      logmsg = logmsg + ' (mst) ';
+      logmsg = logmsg + '(mst) - ';
     }
     logmsg = logmsg + message;
     if (object) {
