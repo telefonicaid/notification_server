@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
- var numCPUs = require('os').cpus().length;
+var numCPUs = require('os').cpus().length;
 
 /******************* Servers to run on this machine ********************/
 /**
@@ -14,11 +14,11 @@
  */
 exports.servers = {
   NS_AS: true,
-  NS_MSG_monitor: true,
+  NS_Monitor: true,
   NS_UA_WS: true,
   NS_UA_UDP: true,
   NS_WakeUp: true,
-  NS_WakeUpChecker: true
+  NS_WakeUp_Checker: true
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -27,15 +27,8 @@ exports.servers = {
 
 /********************* Constants********************************************/
 exports.consts = {
-  MAX_ID_SIZE: 32,
   PREPRODUCTION_MODE: true,
   MOBILENETWORK_CACHE: false,
-
-  /**
-   * Default Maximum Time To Live
-   * If no provided by AS this TTL will be assigned to the message
-   */
-  MAX_TTL: 2592000, // 30 days, in seconds (60*60*24*30)
 
   /**
    * This is the Key and the Certificate of the server. Should be shared
@@ -51,14 +44,15 @@ exports.consts = {
    * Public base URL to receive notifications. This will be the base to
    * append the /notify/12345abcdef… URL
    */
-  publicBaseURL: "https://localhost:8081/v1",
+  publicBaseURL: 'https://localhost:8081/v1',
 
   /**
    * This must be shared between all your NS_UA_WS frontends.
    * This is used to verify if the token to register a UA comes from
    * this server
+   * THIS MUST BE CHANGED ON PRODUCTION
    */
-  cryptokey: "12345678901234567890"
+  cryptokey: '12345678901234567890'
 };
 
 /********************* Logger parameters ***********************************/
@@ -76,9 +70,9 @@ exports.logger = {
    * # NOTIFY: General notifications, ie. New connections
    * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
    */
-  LOGLEVEL: loglevel.CRITICAL | loglevel.NOTIFY | loglevel.ALARM,
+  LOGLEVEL: loglevel.DEBUG | loglevel.INFO | loglevel.ERROR | loglevel.CRITICAL | loglevel.ALERT | loglevel.NOTIFY | loglevel.ALARM,
   CONSOLEOUTPUT: 1,
-  BASE_PATH: "/var/log/push_server/",
+  BASE_PATH: '/var/log/push_server/',
   ALARM: '/var/log/push_server/alarms.log'
 
 };
@@ -89,27 +83,12 @@ exports.logger = {
  * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
-    host: '127.0.0.1',
+    host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
     password: 'guest',
     heartbeat: 1200
-  },
-  {
-    host: '127.0.0.1',
-    port: 5672, //AMQP default port
-    login: 'guest',
-    password: 'guest',
-    heartbeat: 1200
-  },
-  {
-    host: '127.0.0.1',
-    port: 5672, //AMQP default port
-    login: 'guest',
-    password: 'guest',
-    heartbeat: 1200
-  }
-];
+  }];
 
 /********************* Database configuration *************************/
 exports.ddbbsettings = {
@@ -125,7 +104,7 @@ exports.ddbbsettings = {
 
 /********************* NS_AS *****************************************/
 exports.NS_AS = {
-  logfile: "NS_AS.log",
+  logfile: 'NS_AS.log',
 
   /**
    * Number of processes which shall run in parallel
@@ -133,32 +112,30 @@ exports.NS_AS = {
   numProcesses: numCPUs,
 
   /**
-   * Maximum size for a HTTP message (20 KiB)
+   * Binding interface to listen to
    */
-  MAX_MESSAGE_SIZE: 20480,
-
-  /**
-   * Binding interfaces and ports to listen to. You can have multiple processes.
-   */
-  interfaces: [
-    {
-      ip: "0.0.0.0",
-      port: 8081,
-      ssl: true
-    }
-  ]
+  interface: {
+    ip: '0.0.0.0',
+    port: 8081,
+    ssl: true
+  }
 };
 
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: "NS_Monitor.log"
+  logfile: 'NS_Monitor.log',
+
+  /**
+   * Milliseconds to retry to send the UDP packets to wakeup a device
+   */
+  retryTime: 30000
 };
 
 /********************* NS_UA_WS **************************************/
 
 exports.NS_UA_WS = {
-  logfile: "NS_UA_WS.log",
+  logfile: 'NS_UA_WS.log',
 
   /**
    * Number of processes which shall run in parallel
@@ -172,16 +149,13 @@ exports.NS_UA_WS = {
 
   /**
    * Binding interfaces and ports
-   * [ iface, port ]
+   * [ iface, port, ssl ]
    */
-  interfaces: [
-    // Internal network
-    {
-      ip: "0.0.0.0",
-      port: 8080,
-      ssl: true
-    }
-  ],
+  interface: {
+    ip: '0.0.0.0',
+    port: 8080,
+    ssl: true
+  },
 
   /**
    * Websocket configuration
@@ -193,24 +167,20 @@ exports.NS_UA_WS = {
    * with a client. It's the client who needs to keep track of it (with a PING message)
    */
   websocket_params: {
-    // By default, currently the KA messages will be managed by the client side
-    keepalive: false
-    /*keepaliveInterval: 40000,
-    dropConnectionOnKeepaliveTimeout: true,
-    keepaliveGracePeriod: 30000*/
+    keepalive: false // By default, currently the KA messages will be managed by the client side
   }
 };
 
 /********************* NS_UA_UDP *************************************/
 
 exports.NS_UA_UDP = {
-  logfile: "NS_UA_UDP.log"
+  logfile: 'NS_UA_UDP.log'
 };
 
 /********************* NS_WakeUp *************************************/
 
 exports.NS_WakeUp = {
-  logfile: "NS_WakeUp.log",
+  logfile: 'NS_WakeUp.log',
 
   /**
    * Number of processes which shall run in parallel
@@ -219,27 +189,24 @@ exports.NS_WakeUp = {
 
   /**
    * Binding interfaces and ports
-   * [ iface, port ]
+   * [ iface, port, ssl ]
    */
-  interfaces: [
-    // Internal network
-    {
-      ip: "0.0.0.0",
-      port: 8090,
-      ssl: false
-    }
-  ]
+  interface: {
+    ip: '0.0.0.0',
+    port: 8090,
+    ssl: false        // Disable SSL
+  }
 };
 
 /********************* NS_WakeUpChecker ******************************/
 
-exports.NS_WakeUpChecker = {
-  logfile: 'NS_WakeUpChecker.log',
+exports.NS_WakeUp_Checker = {
+  logfile: 'NS_WakeUp_Checker.log',
   checkPeriod: 300000
 };
 
 /********************* NS start.js ***********************************/
 
 exports.NS = {
-  logfile: "NS.log"
+  logfile: 'NS.log'
 };

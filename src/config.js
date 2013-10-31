@@ -51,6 +51,7 @@ exports.consts = {
    * This must be shared between all your NS_UA_WS frontends.
    * This is used to verify if the token to register a UA comes from
    * this server
+   * THIS MUST BE CHANGED ON PRODUCTION
    */
   cryptokey: '12345678901234567890'
 };
