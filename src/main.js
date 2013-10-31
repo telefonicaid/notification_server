@@ -33,57 +33,57 @@ Main.prototype = {
     // Look for what server type we are running
     // and start what is needed
     switch (process.argv[2]) {
-      case 'NS_UA_WS':
-        Log.init(config.NS_UA_WS.logfile, 'NS_UA_WS', 1);
-        Log.info('Starting as NS_UA_WS server');
-        sel = require('./ns_ua/WS_main.js');
-        this.server = new sel.NS_UA_WS();
-        this.server.start();
-        break;
+    case 'NS_UA_WS':
+      Log.init(config.NS_UA_WS.logfile, 'NS_UA_WS', 1);
+      Log.info('Starting as NS_UA_WS server');
+      sel = require('./ns_ua/WS_main.js');
+      this.server = new sel.NS_UA_WS();
+      this.server.start();
+      break;
 
-      case 'NS_UA_UDP':
-        Log.init(config.NS_UA_UDP.logfile, 'NS_UA_UDP', 1);
-        Log.info('Starting as NS_UA_UDP server');
-        sel = require('./ns_ua/UDP_main.js');
-        this.server = new sel.NS_UA_UDP();
-        this.server.start();
-        break;
+    case 'NS_UA_UDP':
+      Log.init(config.NS_UA_UDP.logfile, 'NS_UA_UDP', 1);
+      Log.info('Starting as NS_UA_UDP server');
+      sel = require('./ns_ua/UDP_main.js');
+      this.server = new sel.NS_UA_UDP();
+      this.server.start();
+      break;
 
-      case 'NS_AS':
-        Log.init(config.NS_AS.logfile, 'NS_AS', 1);
-        Log.info('Starting NS_AS server');
-        sel = require('./ns_as/main.js');
-        this.server = new sel.NS_AS();
-        this.server.start();
-        break;
+    case 'NS_AS':
+      Log.init(config.NS_AS.logfile, 'NS_AS', 1);
+      Log.info('Starting NS_AS server');
+      sel = require('./ns_as/main.js');
+      this.server = new sel.NS_AS();
+      this.server.start();
+      break;
 
-      case 'NS_Monitor':
-        Log.init(config.NS_Monitor.logfile, 'NS_MSG_monitor', 1);
-        Log.info('Starting NS_MSG_monitor server');
-        sel = require('./ns_msg_mon/main.js');
-        this.server = new sel.NS_Monitor();
-        this.server.start();
-        break;
+    case 'NS_Monitor':
+      Log.init(config.NS_Monitor.logfile, 'NS_MSG_monitor', 1);
+      Log.info('Starting NS_MSG_monitor server');
+      sel = require('./ns_msg_mon/main.js');
+      this.server = new sel.NS_Monitor();
+      this.server.start();
+      break;
 
-      case 'NS_WakeUp':
-        Log.init(config.NS_WakeUp.logfile, 'NS_WakeUp', 1);
-        Log.info('Starting as NS_WakeUp server');
-        sel = require('./ns_wakeup/main.js');
-        this.server = new sel.NS_WakeUp();
-        this.server.start();
-        break;
+    case 'NS_WakeUp':
+      Log.init(config.NS_WakeUp.logfile, 'NS_WakeUp', 1);
+      Log.info('Starting as NS_WakeUp server');
+      sel = require('./ns_wakeup/main.js');
+      this.server = new sel.NS_WakeUp();
+      this.server.start();
+      break;
 
-      case 'NS_WakeUp_Checker':
-        Log.init(config.NS_WakeUp_Checker.logfile, 'NS_WakeUpChecker', 1);
-        Log.info('Starting as NS_WakeChecker server');
-        sel = require('./ns_wakeupchecker/main.js');
-        this.server = new sel.NS_WakeUp_Checker();
-        this.server.start();
-        break;
-      
-      default:
-        Log.init('/tmp/push.log', 'PUSH', 1);
-        Log.error(Log.messages.ERROR_NOSERVERPROVIDED);
+    case 'NS_WakeUp_Checker':
+      Log.init(config.NS_WakeUp_Checker.logfile, 'NS_WakeUpChecker', 1);
+      Log.info('Starting as NS_WakeChecker server');
+      sel = require('./ns_wakeupchecker/main.js');
+      this.server = new sel.NS_WakeUp_Checker();
+      this.server.start();
+      break;
+
+    default:
+      Log.init('/tmp/push.log', 'PUSH', 1);
+      Log.error(Log.messages.ERROR_NOSERVERPROVIDED);
     }
   },
 

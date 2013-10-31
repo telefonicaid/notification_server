@@ -103,7 +103,7 @@ function DataManager() {
           Log.debug('dataManager::unregisterNode --> Unregistered');
         } else {
           Log.error(Log.messages.ERROR_DMERRORUNREGISTERUA, {
-            "uaid": uaid
+            'uaid': uaid
           });
         }
       }
@@ -118,7 +118,7 @@ function DataManager() {
    * Gets a node connector (from memory)
    */
   this.getNodeConnector = function (uaid) {
-    Log.debug("dataManager::getNodeConnector --> getting node from memory: " + uaid);
+    Log.debug('dataManager::getNodeConnector --> getting node from memory: ' + uaid);
     return Connectors.getConnectorForUAID(uaid);
   },
 
@@ -158,7 +158,7 @@ function DataManager() {
   this.ackMessage = function(uaid, channelID, version) {
     DataStore.ackMessage(uaid, channelID, version);
   }
-};
+}
 
 ///////////////////////////////////////////
 // Singleton

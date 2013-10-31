@@ -6,7 +6,7 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var numCPUs = require('os').cpus().length;
+var numCPUs = 1; //require('os').cpus().length;
 
 /******************* Servers to run on this machine ********************/
 /**
@@ -17,8 +17,8 @@ exports.servers = {
   NS_Monitor: true,
   NS_UA_WS: true,
   NS_UA_UDP: true,
-  NS_WakeUp: true,
-  NS_WakeUp_Checker: true
+  NS_WakeUp: false,
+  NS_WakeUp_Checker: false
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -83,20 +83,6 @@ exports.logger = {
  * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
-    host: 'localhost',
-    port: 5672, //AMQP default port
-    login: 'guest',
-    password: 'guest',
-    heartbeat: 1200
-  },
-  {
-    host: 'localhost',
-    port: 5672, //AMQP default port
-    login: 'guest',
-    password: 'guest',
-    heartbeat: 1200
-  },
-  {
     host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',

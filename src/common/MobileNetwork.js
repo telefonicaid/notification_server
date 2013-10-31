@@ -28,7 +28,7 @@ MobileNetwork.prototype = {
   },
 
   callbackReady: function(callback) {
-   if (this.ready) {
+    if (this.ready) {
       callback(true);
       return;
     }
@@ -104,7 +104,8 @@ MobileNetwork.prototype = {
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
-var _mn = new MobileNetwork(); _mn.init();
+var _mn = new MobileNetwork();
+_mn.init();
 function getMobileNetwork() {
   return _mn;
 }

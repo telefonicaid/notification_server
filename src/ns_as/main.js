@@ -65,11 +65,13 @@ NS_AS.prototype = {
 
     var closed = 0;
     var errored = false;
+    var forked = 0;
 
     if (cluster.isMaster) {
       // Fork workers.
       for (var i = 0; i < config.NS_AS.numProcesses; i++) {
         cluster.fork();
+        forked++;
       }
 
       cluster.on('exit', function(worker, code) {
@@ -79,9 +81,15 @@ NS_AS.prototype = {
             'pid': worker.process.pid,
             'code': code
           });
-          Log.info('NS_AS::start -- Spawning a new worker…');
-          cluster.fork();
-          errored = true;
+          if (forked > 20) {
+            Log.critical('Please, check logs, there has been too much re-spawns');
+          } else {
+            Log.info('NS_AS::start -- Spawning a new worker…');
+            cluster.fork();
+            forked++;
+            --closed;
+            errored = true;
+          }
         } else {
           Log.info('NS_AS::start -- wrk' + worker.id + ' with PID ' + worker.process.pid + ' exited correctly');
         }
@@ -374,7 +382,6 @@ NS_AS.prototype = {
       }
       (appInfo.no).forEach(function(nodeId) {
         var msg = DataStore.newVersion(nodeId, appToken, appInfo.ch, version);
-        console.log(typeof msg);
         MsgBroker.push('newMessages', msg);
       });
     });

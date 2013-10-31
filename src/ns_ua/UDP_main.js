@@ -17,21 +17,31 @@ var Log = require('../common/Logger.js'),
     urlparser = require('url');
 
 function NS_UA_UDP() {
-  this.ready = false;
+  this.closingCorrectly = false;
+  this.msgBrokerReady = false;
+  this.readyTimeout = undefined;
 }
 
 NS_UA_UDP.prototype = {
-  //////////////////////////////////////////////
-  // Constructor
-  //////////////////////////////////////////////
+
+  checkReady: function() {
+    if (this.msgBrokerReady) {
+      Log.debug('NS_UDP::checkReady --> We are ready. Clearing any readyTimeout');
+      clearTimeout(this.readyTimeout);
+    } else {
+      Log.debug('NS_UDP::checkReady --> Not ready yet. msgBrokerReady=' + this.msgBrokerReady);
+    }
+    return this.msgBrokerReady;
+  },
 
   start: function() {
-    Log.info('NS_UDP:init --> Starting UA-UDP server');
-
+    Log.info('NS_UDP:start --> Starting UA-UDP server');
     var self = this;
 
     MsgBroker.once('ready', function() {
-      self.ready = true;
+      Log.info('NS_UDP::start --> MsgBroker ready and connected');
+      self.msgBrokerReady = true;
+      self.checkReady();
     });
 
     MsgBroker.on('ready', self.subscribeQueues);
@@ -55,11 +65,16 @@ NS_UA_UDP.prototype = {
     MsgBroker.on('queuedisconnected', self.subscribeQueues);
 
     MsgBroker.once('closed', function() {
-      self.ready = false;
+      self.msgBrokerReady = false;
+      if (self.closingCorrectly) {
+        Log.info('NS_UDP::stop --> Closed MsgBroker');
+        return;
+      }
       Log.critical(Log.messages.CRITICAL_MBDISCONNECTED, {
-        "class": 'ns_udp',
-        "method": 'init'
+        'class': 'NS_UDP',
+        'method': 'start'
       });
+      self.stop();
     });
 
     // Subscribe to the UDP common Queue
@@ -76,12 +91,13 @@ NS_UA_UDP.prototype = {
 
   },
 
-  stop: function() {
-    this.ready = false;
+  stop: function(correctly) {
+    this.closingCorrectly = correctly;
     clearTimeout(this.readyTimeout);
     Log.info('NS_UDP:stop --> Closing UDP server');
 
     //Closing connection with MsgBroker
+    MsgBroker.removeAllListeners();
     MsgBroker.stop();
   },
 
@@ -145,7 +161,7 @@ NS_UA_UDP.prototype = {
     MobileNetwork.getNetwork(message.dt.mobilenetwork.mcc, message.dt.mobilenetwork.mnc, function(error, op) {
       if (error) {
         Log.error(Log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
-          "error": error
+          'error': error
         });
         return;
       }
@@ -160,21 +176,21 @@ NS_UA_UDP.prototype = {
 
       if (!address.href) {
         Log.error(Log.messages.ERROR_UDPBADADDRESS, {
-          "address": address
+          'address': address
         });
         return;
       }
 
       var protocolHandler = null;
       switch (address.protocol) {
-        case 'http:':
-          protocolHandler = http;
-          break;
-        case 'https:':
-          protocolHandler = https;
-          break;
-        default:
-          protocolHandler = null;
+      case 'http:':
+        protocolHandler = http;
+        break;
+      case 'https:':
+        protocolHandler = https;
+        break;
+      default:
+        protocolHandler = null;
       }
       if (!protocolHandler) {
         Log.debug('UDP:queue:onNewMessage --> Non valid URL (invalid protocol)');

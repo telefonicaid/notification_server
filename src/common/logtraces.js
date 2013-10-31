@@ -19,47 +19,47 @@
 exports.logtraces = {
 
   /**
-   * NEW Notify messages as per "OWD PNS KPIs v4"
+   * NEW Notify messages as per 'OWD PNS KPIs v4'
    */
   NOTIFY_HELLO: {
     id: 0x9000,
-    m: "Hello message -- uaid=::uaid -- mcc=::mcc -- mnc=::mnc"
+    m: 'Hello message -- uaid=::uaid -- mcc=::mcc -- mnc=::mnc'
   },
   NOTIFY_REGISTER: {
     id: 0x9001,
-    m: "Register message -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken"
+    m: 'Register message -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken'
   },
   NOTIFY_UNREGISTER: {
     id: 0x9002,
-    m: "Unregister message -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken"
+    m: 'Unregister message -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken'
   },
   NOTIFY_APPTOKEN_VERSION: {
     id: 0x9003,
-    m: "New version -- appToken=::appToken -- version=::version -- ip=::ip"
+    m: 'New version -- appToken=::appToken -- version=::version -- ip=::ip'
   },
   NOTIFY_INCOMING_TO: {
     id: 0x9004,
-    m: "New version for -- uaid=::uaid -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc=::mnc"
+    m: 'New version for -- uaid=::uaid -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc=::mnc'
   },
   NOTIFY_TO_WAKEUP: {
     id: 0x9005,
-    m: "Notify to wakeup -- uaid=::uaid -- wakeup=::wakeupip:::wakeupport -- mcc=::mcc -- mnc=::mnc -- protocol=::protocol -- status=::response"
+    m: 'Notify to wakeup -- uaid=::uaid -- wakeup=::wakeupip:::wakeupport -- mcc=::mcc -- mnc=::mnc -- protocol=::protocol -- status=::response'
   },
   NOTIFY_ACK: {
     id: 0x9006,
-    m: "ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version"
+    m: 'ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version'
   },
   NOTIFY_MSGSENTTOUA: {
     id: 0x9007,
-    m: "Delivering message -- with channelId ::channelId and version ::version sent to ::uaid"
+    m: 'Delivering message -- with channelId ::channelId and version ::version sent to ::uaid'
   },
   NOTIFY_WAKEUPSERVER_OK: {
     id: 0x9008,
-    m: "::country ::mcc-::mnc Local Proxy server available, working on wake-up mode"
+    m: '::country ::mcc-::mnc Local Proxy server available, working on wake-up mode'
   },
   NOTIFY_WAKEUPSERVER_KO: {
     id: 0x9009,
-    m: "::country ::mcc-::mnc Local Proxy server not available (::retries of attempts), working on websocket"
+    m: '::country ::mcc-::mnc Local Proxy server not available (::retries of attempts), working on websocket'
   },
 
   /**
@@ -67,268 +67,268 @@ exports.logtraces = {
    */
   NOTIFY_MSGREMOVEDDB: {
     id: 0x1001,
-    m: "datastore::removeMessage --> Message removed from MongoDB ::messageId",
-    doc: "Message correctly removed from the database"
+    m: 'datastore::removeMessage --> Message removed from MongoDB ::messageId',
+    doc: 'Message correctly removed from the database'
   },
   NOTIFY_MSGSTORINGDB: {
     id: 0x1102,
-    m: "Storing message for the '::apptoken' apptoken. Internal Id: ::id",
-    doc: "Storing message on database"
+    m: 'Storing message for the ::apptoken apptoken. Internal Id: ::id',
+    doc: 'Storing message on database'
   },
   NOTIFY_MSGINSERTEDINTOQUEUE: {
     id: 0x1203,
-    m: "MSG_mon::onNodeData --> Notify into the messages queue of node ::serverId # ::messageId"
+    m: 'MSG_mon::onNodeData --> Notify into the messages queue of node ::serverId # ::messageId'
   },
   NOTIFY_NOTIFINGNODE: {
     id: 0x1401,
-    m: "Notifying node: ::uaid to ::wakeupip:::wakeupport on network ::mcc-::mnc and using protocol ::protocol",
-    doc: "Sending a wakeup package to the wakeup specified host"
+    m: 'Notifying node: ::uaid to ::wakeupip:::wakeupport on network ::mcc-::mnc and using protocol ::protocol',
+    doc: 'Sending a wakeup package to the wakeup specified host'
   },
   NOTIFY_RECEIVEDREQUESTFORURL: {
     id: 0x1501,
-    m: "NS_WakeUp::onHTTPMessage --> Received request for ::url"
+    m: 'NS_WakeUp::onHTTPMessage --> Received request for ::url'
   },
   NOTIFY_WAKEUPPACKAGEFAILED: {
     id: 0x1502,
-    m: "WakeUp TCP packet to ::ip:::port - FAILED"
+    m: 'WakeUp TCP packet to ::ip:::port - FAILED'
   },
   NOTIFY_WAKEUPPACKAGEOK: {
     id: 0x1503,
-    m: "WakeUp TCP packet succesfully sent to ::ip:::port"
+    m: 'WakeUp TCP packet succesfully sent to ::ip:::port'
   },
   NOTIFY_WAKEUPPACKAGEUDPDGRAMSENT: {
     id: 0x1504,
-    m: "WakeUp Datagram sent to ::ip:::port"
+    m: 'WakeUp Datagram sent to ::ip:::port'
   },
 
   // ERROR TRACES
 
   ERROR_BACKENDERROR: {
     id: 0x2000,
-    m: "::class::::method --> ::extra, FIX YOUR BACKEND"
+    m: '::class::::method --> ::extra, FIX YOUR BACKEND'
   },
 
   ERROR_DSERROROPENINGNODESCOLLECTION: {
     id: 0x2001,
-    m: "datastore::::method --> There was a problem opening the nodes collection --> ::error"
+    m: 'datastore::::method --> There was a problem opening the nodes collection --> ::error'
   },
   ERROR_DSERROROPENINGAPPSCOLLECTION: {
     id: 0x2002,
-    m: "datastore::::method --> there was a problem opening the apps collection --> ::error"
+    m: 'datastore::::method --> there was a problem opening the apps collection --> ::error'
   },
   ERROR_DSERROROPENINGOPERATORSCOLLECTION: {
     id: 0x2003,
-    m: "datastore::::method --> There was a problem opening the operators collection --> ::error"
+    m: 'datastore::::method --> There was a problem opening the operators collection --> ::error'
   },
   ERROR_DSERROROPENINGMESSAGESCOLLECTION: {
     id: 0x2004,
-    m: "datastore::::method --> There was a problem opening the messages collection --> ::error"
+    m: 'datastore::::method --> There was a problem opening the messages collection --> ::error'
   },
 
 
   ERROR_DSERRORINSERTINGNODEINDB: {
     id: 0x2005,
-    m: "datastore::registerNode --> Error inserting/updating node into MongoDB -- ::error"
+    m: 'datastore::registerNode --> Error inserting/updating node into MongoDB -- ::error'
   },
   ERROR_DSERRORINSERTINGAPPINDB: {
     id: 0x2006,
-    m: "datastore::registerApplication --> Error inserting application into MongoDB: ::error"
+    m: 'datastore::registerApplication --> Error inserting application into MongoDB: ::error'
   },
   ERROR_DSERRORINSERTINGMSGTONODE: {
     id: 0x2007,
-    m: "dataStore::::method --> Error inserting message to node: ::error"
+    m: 'dataStore::::method --> Error inserting message to node: ::error'
   },
 
   ERROR_DSERRORREMOVINGNODE: {
     id: 0x2008,
-    m: "dataStore::unregisterNode --> There was a problem removing the node: ::error"
+    m: 'dataStore::unregisterNode --> There was a problem removing the node: ::error'
   },
   ERROR_DSERRORREMOVINGXXXCOLLECTION: {
     id: 0x2009,
-    m: "datastore::flushDb --> There was a problem removing the ::collection collection: ::error"
+    m: 'datastore::flushDb --> There was a problem removing the ::collection collection: ::error'
   },
   ERROR_DSERRORREMOVINGMESSAGE: {
     id: 0x200A,
-    m: "dataStore::removeMessage --> Error removing message: ::error"
+    m: 'dataStore::removeMessage --> Error removing message: ::error'
   },
 
   ERROR_DSERRORFINDINGCERTIFICATE: {
     id: 0x200B,
-    m: "datastore::::method --> There was a problem finding the certificate - ::error"
+    m: 'datastore::::method --> There was a problem finding the certificate - ::error'
   },
   ERROR_DSERRORFINDINGNODE: {
     id: 0x200C,
-    m: "datastore::getNodeData --> Error finding node into MongoDB: ::error"
+    m: 'datastore::getNodeData --> Error finding node into MongoDB: ::error'
   },
   ERROR_DSERRORFINDINGAPPS: {
     id: 0x200D,
-    m: "datastore::getApplicationsForUA --> Error finding applications from MongoDB: ::error"
+    m: 'datastore::getApplicationsForUA --> Error finding applications from MongoDB: ::error'
   },
   ERROR_DSERRORFINDINGAPP: {
     id: 0x200E,
-    m: "datastore::getApplication --> Error finding application from MongoDB: ::error"
+    m: 'datastore::getApplication --> Error finding application from MongoDB: ::error'
   },
   ERROR_DSERRORFINDINGMSG: {
     id: 0x200F,
-    m: "datastore::getAllMessagesForUA --> There was a problem finding the message: ::error"
+    m: 'datastore::getAllMessagesForUA --> There was a problem finding the message: ::error'
   },
   ERROR_DSERRORLOCATINGCHANNEL4APPTOKEN: {
     id: 0x2010,
-    m: "dataStore::::method --> Error locating channel for appToken: ::apptoken"
+    m: 'dataStore::::method --> Error locating channel for appToken: ::apptoken'
   },
 
   ERROR_DSNOTENOUGHNODESINFO: {
     id: 0x2011,
-    m: "dataStore::unregisterApplication --> Not enough nodes info to pull from nodes collection :("
+    m: 'dataStore::unregisterApplication --> Not enough nodes info to pull from nodes collection :('
   },
 
   ERROR_DSERRORREMOVINGOLDVERSION: {
     id: 0x2012,
-    m: "dataStore::newVersion --> Error removing old version for appToken: ::apptoken"
+    m: 'dataStore::newVersion --> Error removing old version for appToken: ::apptoken'
   },
   ERROR_DSERRORSETTINGNEWVERSION: {
     id: 0x2013,
-    m: "dataStore::newVersion --> Error setting new version for appToken: ::apptoken"
+    m: 'dataStore::newVersion --> Error setting new version for appToken: ::apptoken'
   },
 
   ERROR_DSERRORACKMSGINDB: {
     id: 0x2014,
-    m: "dataStore::ackMessage --> Error ACK\'ing message into MongoDB: ::error"
+    m: 'dataStore::ackMessage --> Error ACK\'ing message into MongoDB: ::error'
   },
 
   ERROR_DSUNDETERMINEDERROR: {
     id: 0x2016,
-    m: "dataStore::::method --> Some error occured --> ::error"
+    m: 'dataStore::::method --> Some error occured --> ::error'
   },
 
   ERROR_MBERRORBROKERDISCONNECTED: {
     id: 0x2017,
-    m: "msgbroker::queue --> one message broker disconnected!!!"
+    m: 'msgbroker::queue --> one message broker disconnected!!!'
   },
   ERROR_MBCONNECTIONERROR: {
     id: 0x2018,
-    m: "msgbroker::queue.onerror --> There was an error in one of the connections: ::error"
+    m: 'msgbroker::queue.onerror --> There was an error in one of the connections: ::error'
   },
 
   ERROR_NOSERVERPROVIDED: {
     id: 0x2019,
-    m: "No server provided"
+    m: 'No server provided'
   },
   ERROR_ERROR_RECVKILLSIGNAL: {
     id: 0x201A,
-    m: "Received kill (9 or 15) signal"
+    m: 'Received kill (9 or 15) signal'
   },
   ERROR_WORKERERROR: {
     id: 0x201B,
-    m: "NS_AS::start -- wrk::id with PID ::pid closed unexpectedly with code ::code"
+    m: 'NS_AS::start -- wrk::id with PID ::pid closed unexpectedly with code ::code'
   },
   ERROR_ULIMITERROR: {
     id: 0x201C,
-    m: "ulimit error: ::error"
+    m: 'ulimit error: ::error'
   },
 
   ERROR_MOBILENETWORKERROR: {
     id: 0x201D,
-    m: "[MobileNetwork] --> error!! ::error"
+    m: '[MobileNetwork] --> error!! ::error'
   },
 
   ERROR_MONBADJSON: {
     id: 0x2201,
-    m: "MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check"
+    m: 'MSG_mon::onNewMessage --> newMessages queue recieved a bad JSON. Check'
   },
   ERROR_MONBADMSGTYPE: {
     id: 0x2202,
-    m: "MSG_mon::onNewMessage --> Bad msgType: ::json"
+    m: 'MSG_mon::onNewMessage --> Bad msgType: ::json'
   },
   ERROR_MONERROR: {
     id: 0x2203,
-    m: "MSG_mon::onApplicationData --> There was an error"
+    m: 'MSG_mon::onApplicationData --> There was an error'
   },
 
   ERROR_CONNECTORERRORGETTINGOPERATOR: {
     id: 0x2301,
-    m: "getConnector --> Error getting the operator from the DB: ::error"
+    m: 'getConnector --> Error getting the operator from the DB: ::error'
   },
 
   ERROR_DMERRORGETTINGCONNECTION: {
     id: 0x2302,
-    m: "dataManager::registerNode --> Error getting connection object"
+    m: 'dataManager::registerNode --> Error getting connection object'
   },
   ERROR_DMERRORUNREGISTERUA: {
     id: 0x2303,
-    m: "dataManager::unregisterNode --> There was a problem unregistering the uaid ::uaid"
+    m: 'dataManager::unregisterNode --> There was a problem unregistering the uaid ::uaid'
   },
   ERROR_WSNODATA: {
     id: 0x2305,
-    m: "WS::queue::onNewMessage --> Not enough data!"
+    m: 'WS::queue::onNewMessage --> Not enough data!'
   },
   ERROR_WSERRORGETTINGNODE: {
     id: 0x2307,
-    m: "WS::onWSMessage::getPendingMessages --> There was an error getting the node"
+    m: 'WS::onWSMessage::getPendingMessages --> There was an error getting the node'
   },
   ERROR_WSNOCHANNELS: {
     id: 0x2308,
-    m: "WS::onWSMessage::getPendingMessages --> No channels for this node."
+    m: 'WS::onWSMessage::getPendingMessages --> No channels for this node.'
   },
   CRITICAL_WSERRORULIMIT: {
     id: 0x2309,
-    m: "WS:init --> Ulimit too low, please, raise the value"
+    m: 'WS:init --> Ulimit too low, please, raise the value'
   },
 
   ERROR_CONNECTORERRORNOTVALID: {
     id: 0x2401,
-    m: "Connector UDP: Notify to ::wakeupip not valid with this connector"
+    m: 'Connector UDP: Notify to ::wakeupip not valid with this connector'
   },
 
   ERROR_UDPNODATA: {
     id: 0x2402,
-    m: "UDP::queue::onNewMessage --> Not enough data to find server"
+    m: 'UDP::queue::onNewMessage --> Not enough data to find server'
   },
   ERROR_UDPERRORGETTINGOPERATOR: {
     id: 0x2403,
-    m: "UDP::queue::onNewMessage --> Error getting the operator from the DB: ::error"
+    m: 'UDP::queue::onNewMessage --> Error getting the operator from the DB: ::error'
   },
   ERROR_UDPBADADDRESS: {
     id: 0x2404,
-    m: "UDP:queue:onNewMessage --> Bad address to notify ::address"
+    m: 'UDP:queue:onNewMessage --> Bad address to notify ::address'
   },
 
   ERROR_WAKEUPPROTOCOLNOTSUPPORTED: {
     id: 0x2501,
-    m: "Protocol not supported !"
+    m: 'Protocol not supported !'
   },
 
   ERROR_CASDIRECTORYUNDEFINED: {
     id: 0x2502,
-    m: "CAs directory undefined! - check config.js"
+    m: 'CAs directory undefined! - check config.js'
   },
 
   ERROR_NOCADEFINED: {
     id: 0x2503,
-    m: "CAs directory ::path is empty or doesn't exists.",
-    doc: "This directory shall contain all intermediate CAs certificates"
+    m: 'CAs directory ::path is empty or does not exists.',
+    doc: 'This directory shall contain all intermediate CAs certificates'
   },
 
   // CRITICAL TRACES
 
   CRITICAL_DBCONNECTIONERROR: {
     id: 0X3001,
-    m: "::class::::method --> Error connecting to MongoDB ! - ::error"
+    m: '::class::::method --> Error connecting to MongoDB ! - ::error'
   },
   CRITICAL_MBDISCONNECTED: {
     id: 0X3002,
-    m: "::class::::method --> MsgBroker DISCONNECTED!!'"
+    m: '::class::::method --> MsgBroker DISCONNECTED!!'
   },
   CRITICAL_DBDISCONNECTED: {
     id: 0X3003,
-    m: "::class::::method --> DataStore DISCONNECTED!!'"
+    m: '::class::::method --> DataStore DISCONNECTED!!'
   },
   CRITICAL_NOTREADY: {
     id: 0X3004,
-    m: "30 seconds has passed and we are not ready, closing'"
+    m: '30 seconds has passed and we are not ready, closing'
   },
   CRITICAL_WSINTERFACESNOTCONFIGURED: {
     id: 0X3301,
-    m: "NS_UA_WS interfaces not configured'"
+    m: 'NS_UA_WS interfaces not configured'
   }
 };

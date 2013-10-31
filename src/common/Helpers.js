@@ -32,7 +32,7 @@ exports.getAppToken = getAppToken;
 function padNumber(number,len) {
   var str = '' + number;
   while (str.length < len) {
-      str = '0' + str;
+    str = '0' + str;
   }
   return str;
 }
@@ -58,7 +58,7 @@ exports.getMaxFileDescriptors = getMaxFileDescriptors;
 
 function isVersion(n) {
     return !isNaN(parseInt(n, 10)) && isFinite(n) &&
-        (n < 9007199254740992) && (n >= 0) && (n % 1 === 0);
+      (n < 9007199254740992) && (n >= 0) && (n % 1 === 0);
 }
 exports.isVersion = isVersion;
 
@@ -82,7 +82,7 @@ function getCaChannel() {
     var len = files.length;
     if (len === 0) {
       log.error(log.messages.ERROR_NOCADEFINED, {
-        "path": caDir
+        'path': caDir
       });
       return cas;
     }
@@ -92,7 +92,7 @@ function getCaChannel() {
     }
   } catch (e) {
     log.error(log.messages.ERROR_NOCADEFINED, {
-        "path": caDir
+        'path': caDir
     });
   }
 
@@ -114,9 +114,9 @@ function isIPInNetwork(ip, networks) {
   //Adding private networks from https://tools.ietf.org/html/rfc1918
   //If networks are empty, we add RFC private networks.
   if (networks.length === 0) {
-    networks.push("10.0.0.0/8");
-    networks.push("172.16.0.0/12");
-    networks.push("192.168.0.0/16");
+    networks.push('10.0.0.0/8');
+    networks.push('172.16.0.0/12');
+    networks.push('192.168.0.0/16');
   }
   //If IP is in one of the network ranges, we think that you are in a
   //private network and can be woken up.

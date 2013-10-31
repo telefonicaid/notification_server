@@ -17,12 +17,12 @@ function Maintenance() {
 
 Maintenance.prototype = {
   set: function() {
-    log.debug("Setting under Maintenance");
+    log.debug('Setting under Maintenance');
     this.enabled = true;
   },
 
   unset: function() {
-    log.debug("Removing under Maintenance");
+    log.debug('Removing under Maintenance');
     this.enabled = false;
   },
 

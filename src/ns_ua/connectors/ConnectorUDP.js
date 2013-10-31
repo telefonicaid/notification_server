@@ -45,7 +45,7 @@ ConnectorUDP.prototype = {
       clearTimeout(this.autocloseTimeout);
     }
     this.autocloseTimeout = setTimeout(function() {
-      con.drop(4774, "UDP Wakeup");
+      con.drop(4774, 'UDP Wakeup');
     }, 10000);
   },
 
