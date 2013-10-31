@@ -1,4 +1,4 @@
-NS_WakeUp_Checker/**
+/**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
  * License: GNU Affero V3 (see LICENSE file)
