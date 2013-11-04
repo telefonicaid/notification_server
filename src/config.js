@@ -17,8 +17,8 @@ exports.servers = {
   NS_Monitor: true,
   NS_UA_WS: true,
   NS_UA_UDP: true,
-  NS_WakeUp: false,
-  NS_WakeUp_Checker: false
+  NS_WakeUp: true,
+  NS_WakeUp_Checker: true
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -195,7 +195,7 @@ exports.NS_WakeUp = {
   interface: {
     ip: '0.0.0.0',
     port: 8090,
-    ssl: false        // Disable SSL
+    ssl: true        // Disable SSL
   }
 };
 

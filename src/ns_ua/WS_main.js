@@ -90,7 +90,7 @@ NS_UA_WS.prototype.start = function() {
           Log.info('NS_UA_WS::start -- Spawning a new worker…');
           --closed;
           cluster.fork();
-          forked++
+          forked++;
           errored = true;
         }
       } else {
@@ -279,7 +279,7 @@ NS_UA_WS.prototype.onNewMessage = function(json) {
     version: json.payload.vs
   });
 
-  var nodeConnector = DataManager.getNodeConnector(json.uaid)
+  var nodeConnector = DataManager.getNodeConnector(json.uaid);
   if (nodeConnector) {
     /**
      {
@@ -300,7 +300,7 @@ NS_UA_WS.prototype.onNewMessage = function(json) {
   } else {
     Log.debug('WS::Queue::onNewMessage --> No node found');
   }
-}
+};
 
 NS_UA_WS.prototype.subscribeQueues = function(broker) {
   var args = {

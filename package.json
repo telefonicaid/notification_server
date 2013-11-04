@@ -34,7 +34,8 @@
     "string": "1.6.x",
     "range_check": "0.0.x",
     "async": "0.2.x",
-    "forever-monitor": "1.2.x"
+    "forever-monitor": "1.2.x",
+    "request": "2.x.x"
   },
   "devDependencies": {
     "vows": "0.7.x",
