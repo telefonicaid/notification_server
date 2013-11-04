@@ -116,9 +116,9 @@ NS_UA_WS.prototype.start = function() {
         key: fs.readFileSync(consts.key),
         cert: fs.readFileSync(consts.cert)
       };
-      this.server = require('https').createServer(options, this.onHTTPMessage);
+      this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
     } else {
-      this.server = require('http').createServer(this.onHTTPMessage);
+      this.server = require('http').createServer(this.onHTTPMessage.bind(this));
     }
     this.server.listen(this.port, this.ip);
     Log.info('NS_UA_WS::server::init --> HTTP' + (this.ssl ? 'S' : '') +
@@ -144,7 +144,7 @@ NS_UA_WS.prototype.start = function() {
       self.checkReady();
     });
 
-    MsgBroker.on('ready', this.subscribeQueues);
+    MsgBroker.on('ready', this.subscribeQueues.bind(this));
 
     MsgBroker.on('closed', function() {
       if (self.closingCorrectly) {
@@ -194,7 +194,7 @@ NS_UA_WS.prototype.start = function() {
     // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
     // (we might end up with gazillions (hundreds, really) callbacks on the same
     // socket for handling messages)
-    MsgBroker.on('queuedisconnected', this.subscribeQueues);
+    MsgBroker.on('queuedisconnected', this.subscribeQueues.bind(this));
 
     //Connect to MsgBroker
     process.nextTick(function() {
@@ -311,7 +311,7 @@ NS_UA_WS.prototype.subscribeQueues = function(broker) {
     }
   };
 
-  MsgBroker.subscribe(process.serverId, args, broker, NS_UA_WS.prototype.onNewMessage);
+  MsgBroker.subscribe(process.serverId, args, broker, this.onNewMessage);
 };
 
 //////////////////////////////////////////////
@@ -339,14 +339,14 @@ NS_UA_WS.prototype.onHTTPMessage = function(request, response) {
   };
 
   var text = null;
-  if (!self.checkReady()) {
+  if (!this.checkReady()) {
     Log.info('WS:onHTTPMessage --> Request received but not ready yet');
     response.res(errorcodes.NOT_READY);
     return;
   }
 
   Log.debug('WS::onHTTPMessage --> Received request for ' + request.url);
-  var url = self.parseURL(request.url);
+  var url = this.parseURL(request.url);
 
   Log.debug('WS::onHTTPMessage --> Parsed URL:', url);
   switch (url.messageType) {
