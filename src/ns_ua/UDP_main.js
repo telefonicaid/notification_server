@@ -35,6 +35,7 @@ NS_UA_UDP.prototype = {
   },
 
   start: function() {
+
     Log.info('NS_UDP:start --> Starting UA-UDP server');
     var self = this;
 
@@ -150,13 +151,13 @@ NS_UA_UDP.prototype = {
       // If message does not follow the above standard, return.
     Log.debug('UDP::queue::onNewMessage --> messageData =', message);
     if (!message.uaid ||
-      !message.dt ||
-      !message.dt.wakeup_hostport ||
-      !message.dt.wakeup_hostport.ip ||
-      !message.dt.wakeup_hostport.port ||
-      !message.dt.mobilenetwork ||
-      !message.dt.mobilenetwork.mcc ||
-      !message.dt.mobilenetwork.mnc) {
+        !message.dt ||
+        !message.dt.wakeup_hostport ||
+        !message.dt.wakeup_hostport.ip ||
+        !message.dt.wakeup_hostport.port ||
+        !message.dt.mobilenetwork ||
+        !message.dt.mobilenetwork.mcc ||
+        !message.dt.mobilenetwork.mnc) {
       Log.error(Log.messages.ERROR_UDPNODATA);
       return;
     }

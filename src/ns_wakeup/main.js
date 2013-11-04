@@ -37,6 +37,11 @@ NS_WakeUp.prototype = {
 
   start: function() {
 
+    if (!config.interface) {
+      Log.critical(Log.messages.CRITICAL_WSINTERFACESNOTCONFIGURED);
+      return;
+    }
+
     this.ip = config.interface.ip;
     this.port = config.interface.port;
     this.ssl = config.interface.ssl;
