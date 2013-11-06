@@ -38,7 +38,7 @@ MobileNetwork.prototype = {
   start: function() {
     this.resetCache();
     DataStore.once('ready', (function() {
-      Log.debug('[MobileNetwork] library loaded');
+      Log.debug('MobileNetwork::start --> library loaded');
       this.ready = true;
       var callbacks = this.callbacks || [];
       callbacks.forEach(function(elem) {
@@ -54,19 +54,19 @@ MobileNetwork.prototype = {
     this.cache = {};
     callback = Helpers.checkCallback(callback);
     callback();
-    Log.debug('[MobileNetwork] cache cleaned');
+    Log.debug('MobileNetwork::resetCache --> cache cleaned');
   },
 
   getNetwork: function(mcc, mnc, callback) {
     callback = Helpers.checkCallback(callback);
 
-    var index = this.getIndex(mcc,mnc);
+    var index = this.getIndex(mcc, mnc);
     var value;
 
-    Log.debug('[MobileNetwork] looking for MCC-MNC: ' + index);
+    Log.debug('MobileNetwork::getNetwork --> looking for MCC-MNC: ' + index);
     // Check if the network is in the cache
     if (this.isCacheEnabled && (value = this.cache[index])) {
-      Log.debug('[MobileNetwork] found on cache:', value);
+      Log.debug('MobileNetwork::getNetwork --> found on cache:', value);
       callback(null, value, 'cache');
       return;
     }
@@ -82,11 +82,11 @@ MobileNetwork.prototype = {
         return;
       }
       if (!d) {
-        Log.debug('[MobileNetwork] Not found on database');
+        Log.debug('MobileNetwork::getNetwork --> Not found on database');
         callback(null, null, 'ddbb');
         return;
       }
-      Log.debug('[MobileNetwork] found on database:', d);
+      Log.debug('MobileNetwork::getNetwork --> found on database:', d);
       /*
         Save to the cache the found value.
        */
@@ -99,6 +99,7 @@ MobileNetwork.prototype = {
 
   changeNetworkStatus: function(mcc, mnc, online) {
     var index = this.getIndex(mcc,mnc);
+    Log.debug('MobileNetwork::changeNetworkStatus --> ' + index + ' is ' + online);
     DataStore.changeLocalServerStatus(index, online);
   }
 };

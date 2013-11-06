@@ -83,7 +83,7 @@ var DataStore = function () {
 
         var events = ['close', 'error'];
         events.forEach(function (e) {
-          db.on(e, function (rrr) {
+          db.on(e, function () {
             self.emit('closed');
           });
         });
@@ -628,7 +628,7 @@ var DataStore = function () {
    */
     this.getOperator = function (mcc, mnc, callback) {
       var id = Helpers.padNumber(mcc, 3) + '-' + Helpers.padNumber(mnc, 3);
-      Log.debug('Looking for operator ' + id);
+      Log.debug('datastore::getOperator --> Looking for operator ' + id);
       // Get from MongoDB
       this.db.collection('operators', function (err, collection) {
         callback = Helpers.checkCallback(callback);
@@ -655,7 +655,7 @@ var DataStore = function () {
 
     this.getOperatorsWithLocalNodes = function (callback) {
       callback = Helpers.checkCallback(callback);
-      Log.debug('Looking for operators with a wakeup local node');
+      Log.debug('datastore::getOperatorsWithLocalNodes --> Looking for operators with a wakeup local node');
       // Get from MongoDB
       this.db.collection('operators', function (err, collection) {
         if (err) {
@@ -681,7 +681,7 @@ var DataStore = function () {
 
     this.changeLocalServerStatus = function (index, online, callback) {
       callback = Helpers.checkCallback(callback);
-      Log.debug('Changing status of a wakeup local server: ', index);
+      Log.debug('datastore::changeLocalServerStatus --> Changing status of a wakeup local server: ', index);
       // Get from MongoDB
       this.db.collection('operators', function (err, collection) {
         if (err) {
