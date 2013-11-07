@@ -107,9 +107,6 @@ var DataStore = function () {
     },
 
     this.registerNode = function (uaid, serverId, data, callback) {
-      if (!this.db) {
-        Log.error('Baaaaaaaaaad ', this.db);
-      }
       this.db.collection('nodes', function (err, collection) {
         callback = Helpers.checkCallback(callback);
         if (err) {
@@ -277,6 +274,9 @@ var DataStore = function () {
                 ch: channelID,
                 app: appToken
               }
+            },
+            $set : {
+              lt: new Date()
             }
           },
           { safe: true, upsert: true },
@@ -355,6 +355,9 @@ var DataStore = function () {
               'ch': {
                 'app': appToken
               }
+            },
+            $set: {
+              lt: new Date()
             }
           },
           {},
@@ -608,7 +611,8 @@ var DataStore = function () {
           [],
           {
             $set: {
-              'ch.$.new': 0
+              'ch.$.new': 0,
+               lt: new Date()
             }
           },
           {},
