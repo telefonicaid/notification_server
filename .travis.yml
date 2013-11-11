@@ -19,6 +19,7 @@ before_install:
   - cd scripts/
   - awk -f load_mcc_mnc_onmongo.awk mcc_mnc_list.txt
   - cd ..
+  - make version.info
 
 before_script:
   - cd src
