@@ -82,9 +82,9 @@ NS_AS.prototype = {
             'code': code
           });
           if (forked > 20) {
-            Log.critical('Please, check logs, there has been too much re-spawns');
+            Log.critical('NS_AS::start --> Please, check logs, there has been too much re-spawns');
           } else {
-            Log.info('NS_AS::start -- Spawning a new worker…');
+            Log.info('NS_AS::start --> Spawning a new worker…');
             cluster.fork();
             forked++;
             --closed;

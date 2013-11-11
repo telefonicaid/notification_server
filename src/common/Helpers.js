@@ -57,8 +57,11 @@ exports.getMaxFileDescriptors = getMaxFileDescriptors;
 
 
 function isVersion(n) {
-    return !isNaN(parseInt(n, 10)) && isFinite(n) &&
-      (n < 9007199254740992) && (n >= 0) && (n % 1 === 0);
+    return (!isNaN(parseInt(n, 10)) &&
+            isFinite(n) &&
+            n < 9007199254740992 &&
+            n >= 0 &&
+            n % 1 === 0);
 }
 exports.isVersion = isVersion;
 
@@ -92,7 +95,7 @@ function getCaChannel() {
     }
   } catch (e) {
     log.error(log.messages.ERROR_NOCADEFINED, {
-        'path': caDir
+      'path': caDir
     });
   }
 

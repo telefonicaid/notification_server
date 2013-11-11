@@ -46,7 +46,7 @@ NS_Monitor.prototype.start = function() {
     self.checkReady();
   });
 
-  MsgBroker.on('ready', this.subscribeQueues);
+  MsgBroker.on('ready', this.subscribeQueues.bind(this));
 
   MsgBroker.once('closed', function() {
     self.msgBrokerReady = false;
@@ -97,7 +97,7 @@ NS_Monitor.prototype.start = function() {
   // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
   // (we might end up with gazillions (hundreds, really) callbacks on the same
   // socket for handling messages)
-  MsgBroker.on('queuedisconnected', this.subscribeQueues);
+  MsgBroker.on('queuedisconnected', this.subscribeQueues.bind(this));
 
   // Connect to the message broker
   process.nextTick(function() {
@@ -197,12 +197,11 @@ NS_Monitor.prototype.onApplicationData = function(error, appData, json) {
     return;
   }
 
-  var self = this;
   Log.debug('NS_Monitor::onApplicationData --> Application data recovered:', appData);
   appData.forEach(function(nodeData, i) {
     Log.debug('NS_Monitor::onApplicationData --> Notifying node: ' + i + ':', nodeData);
-    NS_Monitor.prototype.onNodeData(nodeData, json);
-  });
+    this.onNodeData(nodeData, json);
+  }.bind(this));
 };
 
 NS_Monitor.prototype.subscribeQueues = function(broker) {
@@ -219,7 +218,7 @@ NS_Monitor.prototype.subscribeQueues = function(broker) {
     'newMessages',
     args,
     broker,
-    NS_Monitor.prototype.newMessage
+    this.newMessage.bind(this)
   );
 };
 
@@ -231,7 +230,7 @@ NS_Monitor.prototype.newMessage = function(msg) {
     return;
   }
 
-  DataStore.getApplication(msg.app, NS_Monitor.prototype.onApplicationData, msg);
+  DataStore.getApplication(msg.app, this.onApplicationData.bind(this), msg);
 };
 
 exports.NS_Monitor = NS_Monitor;

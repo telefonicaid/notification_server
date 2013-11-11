@@ -47,7 +47,7 @@ Connector.prototype = {
       mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
         if (error) {
           Log.error(Log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
-            "error": error
+            'error': error
           });
           callback(error);
           return;

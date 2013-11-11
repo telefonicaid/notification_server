@@ -157,7 +157,7 @@ function DataManager() {
    */
   this.ackMessage = function(uaid, channelID, version) {
     DataStore.ackMessage(uaid, channelID, version);
-  }
+  };
 }
 
 ///////////////////////////////////////////

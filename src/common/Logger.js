@@ -89,7 +89,7 @@ Logger.prototype = {
 
     // Check if using standarized logtraces or not
     if (typeof(message) === 'object') {
-      message = "ID: 0x" + message.id.toString(16) + " - " + message.m;
+      message = 'ID: 0x' + message.id.toString(16) + ' - ' + message.m;
       if (object) {
         Object.keys(object).forEach(function(k) {
           if (typeof(object[k]) === 'object') {

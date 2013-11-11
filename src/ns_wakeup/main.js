@@ -45,7 +45,7 @@ NS_WakeUp.prototype = {
     this.ip = config.interface.ip;
     this.port = config.interface.port;
     this.ssl = config.interface.ssl;
-    Log.info('NS_WakeUp server starting');
+    Log.info('NS_WakeUp::start --> server starting');
 
     if (cluster.isMaster) {
       // Fork workers.
@@ -56,15 +56,15 @@ NS_WakeUp.prototype = {
       cluster.on('exit', function(worker, code) {
         if (code !== 0) {
           Log.error(Log.messages.ERROR_WORKERERROR, {
-            "pid": worker.process.pid,
-            "code": code
+            'pid': worker.process.pid,
+            'code': code
           });
         } else {
-          Log.info('worker ' + worker.process.pid + ' exit');
+          Log.info('NS_WakeUp::start --> worker ' + worker.process.pid + ' exit');
         }
       });
     } else {
-      Log.info('Starting WakeUp server');
+      Log.info('NS_WakeUp::start --> Starting WakeUp server');
 
       // Create a new HTTP(S) Server
       if (this.ssl) {
@@ -78,7 +78,7 @@ NS_WakeUp.prototype = {
         this.server = require('http').createServer(this.onHTTPMessage.bind(this));
       }
       this.server.listen(this.port, this.ip);
-      Log.info('NS_WakeUp::init --> HTTP' + (this.ssl ? 'S' : '') +
+      Log.info('NS_WakeUp::start --> HTTP' + (this.ssl ? 'S' : '') +
         ' push WakeUp server starting on ' + this.ip + ':' + this.port);
     }
   },
@@ -104,7 +104,7 @@ NS_WakeUp.prototype = {
       url: request.url
     });
 
-    if (request.url === "/about") {
+    if (request.url === '/about') {
       if (consts.PREPRODUCTION_MODE) {
         var text = '';
         try {
@@ -112,18 +112,18 @@ NS_WakeUp.prototype = {
           p.setTemplate('views/about.tmpl');
           text = p.render(function(t) {
             switch (t) {
-              case '{{GIT_VERSION}}':
-                return require('fs').readFileSync('version.info');
-              case '{{MODULE_NAME}}':
-                return 'WakeUp UDP/TCP Server';
-              default:
-                return "";
+            case '{{GIT_VERSION}}':
+              return require('fs').readFileSync('version.info');
+            case '{{MODULE_NAME}}':
+              return 'WakeUp UDP/TCP Server';
+            default:
+              return '';
             }
           });
         } catch(e) {
-          text = "No version.info file";
+          text = 'No version.info file';
         }
-        response.setHeader("Content-Type", "text/html");
+        response.setHeader('Content-Type', 'text/html');
         response.statusCode = 200;
         response.write(text);
       } else {
@@ -131,7 +131,7 @@ NS_WakeUp.prototype = {
       }
       response.end();
       return;
-    } else if (request.url === "/status") {
+    } else if (request.url === '/status') {
       // Return status mode to be used by load-balancers
       response.setHeader('Content-Type', 'text/html');
       if (Maintenance.getStatus()) {
@@ -179,74 +179,74 @@ NS_WakeUp.prototype = {
     Log.debug('NS_WakeUp::onHTTPMessage --> WakeUp IP = ' + WakeUpHost.ip + ':' + WakeUpHost.port + ' (protocol=' + protocol + ')');
     var message = new Buffer('NOTIFY ' + JSON.stringify(WakeUpHost));
     switch (protocol) {
-      case this.PROTOCOL_TCPv4:
-        // TCP Notification Message
-        var tcp4Client = net.createConnection({host: WakeUpHost.ip, port: WakeUpHost.port},
-          function() { //'connect' listener
-            Log.debug('TCP Client connected');
-            tcp4Client.write(message);
-            tcp4Client.end();
-          }
-        );
-        tcp4Client.on('data', function(data) {
-          Log.debug('TCP Data received: ' + data.toString());
+    case this.PROTOCOL_TCPv4:
+      // TCP Notification Message
+      var tcp4Client = net.createConnection({host: WakeUpHost.ip, port: WakeUpHost.port},
+        function() { //'connect' listener
+          Log.debug('TCP Client connected');
+          tcp4Client.write(message);
+          tcp4Client.end();
+        }
+      );
+      tcp4Client.on('data', function(data) {
+        Log.debug('TCP Data received: ' + data.toString());
+      });
+      tcp4Client.on('error', function(e) {
+        Log.debug('TCP Client error ' + JSON.stringify(e));
+        Log.notify(Log.messages.NOTIFY_WAKEUPPACKAGEFAILED, {
+          ip: WakeUpHost.ip,
+          port: WakeUpHost.port
         });
-        tcp4Client.on('error', function(e) {
-          Log.debug('TCP Client error ' + JSON.stringify(e));
-          Log.notify(Log.messages.NOTIFY_WAKEUPPACKAGEFAILED, {
-            ip: WakeUpHost.ip,
-            port: WakeUpHost.port
-          });
 
-          response.statusCode = 404;
-          response.setHeader('Content-Type', 'text/plain');
-          response.write('{"status": "ERROR", "reason": "TCP Connection error"}');
-          response.end();
+        response.statusCode = 404;
+        response.setHeader('Content-Type', 'text/plain');
+        response.write('{"status": "ERROR", "reason": "TCP Connection error"}');
+        response.end();
+      });
+      tcp4Client.on('end', function() {
+        Log.debug('TCP Client disconected');
+        Log.notify(Log.messages.NOTIFY_WAKEUPPACKAGEOK, {
+          ip: WakeUpHost.ip,
+          port: WakeUpHost.port
         });
-        tcp4Client.on('end', function() {
-          Log.debug('TCP Client disconected');
-          Log.notify(Log.messages.NOTIFY_WAKEUPPACKAGEOK, {
-            ip: WakeUpHost.ip,
-            port: WakeUpHost.port
-          });
-
-          response.statusCode = 200;
-          response.setHeader('Content-Type', 'text/plain');
-          response.write('{"status": "OK"}');
-          response.end();
-        });
-        break;
-      case this.PROTOCOL_UDPv4:
-        // UDP Notification Message
-        var udp4Client = dgram.createSocket('udp4');
-        udp4Client.send(
-          message, 0, message.length,
-          WakeUpHost.port, WakeUpHost.ip,
-          function(err) {
-            if (err) {
-              Log.info('Error sending UDP Datagram to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
-            }
-            else {
-              Log.notify(Log.messages.NOTIFY_WAKEUPPACKAGEUDPDGRAMSENT, {
-                ip: WakeUpHost.ip,
-                port: WakeUpHost.port
-              });
-              udp4Client.close();
-            }
-          });
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'text/plain');
         response.write('{"status": "OK"}');
         response.end();
-        break;
+      });
+      break;
+    case this.PROTOCOL_UDPv4:
+      // UDP Notification Message
+      var udp4Client = dgram.createSocket('udp4');
+      udp4Client.send(
+        message, 0, message.length,
+        WakeUpHost.port, WakeUpHost.ip,
+        function(err) {
+          if (err) {
+            Log.info('Error sending UDP Datagram to ' + WakeUpHost.ip + ':' + WakeUpHost.port);
+          }
+          else {
+            Log.notify(Log.messages.NOTIFY_WAKEUPPACKAGEUDPDGRAMSENT, {
+              ip: WakeUpHost.ip,
+              port: WakeUpHost.port
+            });
+            udp4Client.close();
+          }
+        });
 
-      default:
-        Log.error(Log.messages.ERROR_WAKEUPPROTOCOLNOTSUPPORTED);
-        response.statusCode = 404;
-        response.setHeader('Content-Type', 'text/plain');
-        response.write('{"status": "ERROR", "reason": "Protocol not supported"}');
-        response.end();
+      response.statusCode = 200;
+      response.setHeader('Content-Type', 'text/plain');
+      response.write('{"status": "OK"}');
+      response.end();
+      break;
+
+    default:
+      Log.error(Log.messages.ERROR_WAKEUPPROTOCOLNOTSUPPORTED);
+      response.statusCode = 404;
+      response.setHeader('Content-Type', 'text/plain');
+      response.write('{"status": "ERROR", "reason": "Protocol not supported"}');
+      response.end();
     }
   },
 

@@ -47,7 +47,7 @@ MobileNetwork.prototype = {
     }).bind(this));
     process.nextTick(function() {
       DataStore.start();
-    })
+    });
   },
 
   resetCache: function(callback) {
