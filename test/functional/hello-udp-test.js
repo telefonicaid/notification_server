@@ -15,10 +15,10 @@ var exec = require('child_process').exec,
  *
  */
 
-exec(path.resolve('../../scripts/add_wakeupserver_ip.sh 214 007 http:/\/localhost:8090/'),
+exec(path.resolve('./scripts/add_wakeupserver_ip.sh 214 007 http:/\/localhost:8090/'),
   function(error, stdout, stderr) {
     if (error) {
-      debug('Wakeup Server insertion ERRORED');
+      console.log('Wakeup Server insertion ERRORED' + error);
       process.exit(1);
     } else {
       debug('Wakeup Server correctly added');
@@ -84,12 +84,12 @@ var PushTest = {
 };
 
 vows.describe('UDP hello test').addBatch({
-  'Hello message': {
+  'Is called with': {
     topic: function() {
       PushTest.init(this.callback);
       setTimeout(this.callback, 20000);
     },
-    'Should end without Error': function(error, statusCode) {
+    ' a 201 statusCode and no error': function(error, statusCode) {
       assert.isNull(error);
       assert.equal(statusCode, 201);
     }
