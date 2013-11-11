@@ -62,7 +62,7 @@ NS_WakeUp_Checker.prototype = {
 
   stop: function(correctly) {
     this.closingCorrectly = correctly;
-    Log.info('NS_WakeUpChecker:stop --> Closing WakeUp local nodes checker server');
+    Log.info('NS_WakeUpChecker::stop --> Closing WakeUp local nodes checker server');
     DataStore.removeAllListeners();
     DataStore.stop();
     setTimeout(function() {
@@ -79,10 +79,10 @@ NS_WakeUp_Checker.prototype = {
         return;
       }
       if (!d) {
-        Log.debug('[MobileNetwork] No local nodes found on database');
+        Log.debug('NS_WakeUpChecker:recoverNetworks --> No local nodes found on database');
         return;
       }
-      Log.debug('[MobileNetwork] Data found: ', d);
+      Log.debug('NS_WakeUpChecker:recoverNetworks --> Local nodes found: ', d);
       cb(d);
     });
   },
@@ -95,7 +95,7 @@ NS_WakeUp_Checker.prototype = {
     var self = this;
     this.recoverNetworks(function(wakeUpNodes){
       wakeUpNodes.forEach(function(node) {
-        Log.debug('Checking Local Proxy server', node);
+        Log.debug('NS_WakeUpChecker:checkNodes --> Checking Local Proxy server', node);
         self.checkServer(node.wakeup, function(err,res) {
           if (err || res.statusCode !== 200) {
             Log.info(Log.messages.NOTIFY_WAKEUPSERVER_KO, {
@@ -146,7 +146,7 @@ NS_WakeUp_Checker.prototype = {
       protocolHandler = null;
     }
     if (!protocolHandler) {
-      Log.debug('NS_WakeUpChecker:checkServer --> Non valid URL (invalid protocol)');
+      Log.debug('NS_WakeUpChecker::checkServer --> Non valid URL (invalid protocol)');
       return;
     }
     var options = {
