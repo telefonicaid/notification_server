@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/OWD/IncomingNotifications"/>
+	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="New Dataset 1" uuid="eda2c39d-4358-4979-9d9f-f3387f27db91">
+		<queryString>
+			<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
+COUNT(*) AS Totales
+FROM kpisdb.notificaciones_entrantes
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( apptoken <> "34db1d0b59ff062243923052bc9bcdafb33883c8f7825e0ddd0592693a500daa"
+	AND apptoken <> "1484da7dc281246da320c404966d8617d17c1d6340e17170b9102a2d6ea42ef5")
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600))]]>
+		</queryString>
+		<field name="Date" class="java.sql.Timestamp"/>
+		<field name="Totales" class="java.lang.Long"/>
+	</subDataset>
+	<subDataset name="New Dataset 2" uuid="2b2f63fd-80da-43d0-8a30-cd7cb1c9657c">
+		<queryString language="SQL">
+			<![CDATA[SELECT (DATE_SUB(CURDATE(), INTERVAL 1 DAY))as RDay, SUM(temp.Totales) AS TotalDay
+FROM(
+SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
+COUNT(*) AS Totales
+FROM kpisdb.notificaciones_entrantes
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( apptoken <> "34db1d0b59ff062243923052bc9bcdafb33883c8f7825e0ddd0592693a500daa"
+	AND apptoken <> "1484da7dc281246da320c404966d8617d17c1d6340e17170b9102a2d6ea42ef5")
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600))
+)AS temp]]>
+		</queryString>
+		<field name="RDay" class="java.sql.Date"/>
+		<field name="TotalDay" class="java.math.BigDecimal"/>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
+CONCAT(CAST(mcc AS CHAR(3)),' : ', CAST(mnc AS CHAR(2))) AS Code,
+mcc, mnc,
+COUNT(*) as Totales,
+COUNT(DISTINCT peticiones_registros.uaid) as Totales_UAID
+FROM kpisdb.peticiones_registros
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
+   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
+	</queryString>
+	<field name="Date" class="java.sql.Timestamp"/>
+	<field name="Code" class="java.lang.String"/>
+	<field name="mcc" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="mnc" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Totales" class="java.lang.Long"/>
+	<field name="Totales_UAID" class="java.lang.Long"/>
+	<background>
+		<band height="704" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="0" y="-100" width="351" height="48"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[OWD PUSH NOTIFICATION SERVER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="23" y="-52" width="193" height="30"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<text><![CDATA[Incoming Notifications]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="428" y="-25" width="100" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date() - 1)]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="cb835308-ab45-481c-b83e-ea24318cef52" x="361" y="-94" width="194" height="75"/>
+				<imageExpression><![CDATA["repo:tid_ffos.gif"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<summary>
+		<band height="704">
+			<barChart>
+				<chart>
+					<reportElement uuid="869d6269-e057-4868-b98e-f9d200aa3eaf" x="23" y="26" width="483" height="243"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="New Dataset 1" uuid="79bdca1b-2e5b-45ac-a58c-f62cb7fa9297"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["Incoming Notifications"]]></seriesExpression>
+						<categoryExpression><![CDATA[new SimpleDateFormat("HH").format($F{Date})]]></categoryExpression>
+						<valueExpression><![CDATA[$F{Totales}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot labelRotation="0.0"/>
+					<itemLabel/>
+					<categoryAxisFormat labelRotation="0.0">
+						<axisFormat>
+							<labelFont>
+								<font size="5"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="5"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<componentElement>
+				<reportElement uuid="2bb30246-8a2c-4367-8f53-7ea69a387b56" key="table 3" style="table 3" x="64" y="315" width="171" height="80"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="New Dataset 1" uuid="29019890-77c8-440b-9a06-4d4103758447">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="114" uuid="2c0421fc-e20b-4bdf-9ba5-c1a3b62ff4f9">
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement uuid="5d1e49c0-b0d9-4dab-8f30-16b3e1d6419e" x="0" y="0" width="114" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Hour]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="f5b70979-f550-4a29-8eb2-558f7f9c9562" x="0" y="0" width="114" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[new SimpleDateFormat("HH:mm:ss").format($F{Date})]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="1a13ce68-1598-415e-9a55-b17ce413028b">
+						<jr:columnHeader style="table 3_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement uuid="45ad7942-7722-4522-a5ac-d64fd5c3d84f" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 3_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 3_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="ecef2fab-6c04-42ee-ba61-9189a4e2058f" x="0" y="0" width="90" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{Totales}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<componentElement>
+				<reportElement uuid="dad66199-d359-4571-8ca1-c47376c3ceb5" key="table 4" style="table 4" x="285" y="315" width="182" height="80"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="New Dataset 2" uuid="c23b9ead-7222-4ce1-ba04-232ceda324a1">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="128" uuid="4f7f7bce-edad-42bd-bc71-09557f67e0d1">
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement uuid="4d38d344-7e16-4f93-9e9c-60b200503160" x="0" y="0" width="128" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Date]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="5f50d0e2-277a-497d-94ef-5670bbdf65c3" x="0" y="0" width="128" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{RDay})]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="641df7cf-101b-4ccb-9c62-eabc52ed876c">
+						<jr:columnHeader style="table 4_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement uuid="9b841570-bb04-417c-be86-ec2c3a2ce1f2" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table 4_CH" height="30" rowSpan="1"/>
+						<jr:detailCell style="table 4_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="098c4e63-8ee7-49b9-940a-d962765596dc" x="0" y="0" width="90" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{TotalDay}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+		</band>
+	</summary>
+</jasperReport>

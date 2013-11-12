@@ -1,0 +1,487 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
+	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/OWD/IncomingNotificationsIP_1"/>
+	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TH" mode="Opaque" backcolor="#4169E1">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_CH" mode="Opaque" backcolor="#BFCFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_TH" mode="Opaque" backcolor="#4169E1">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_CH" mode="Opaque" backcolor="#BFCFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="New Dataset 1" uuid="eda2c39d-4358-4979-9d9f-f3387f27db91">
+		<queryString>
+			<![CDATA[SELECT (FROM_UNIXTIME(inc.fecha - MOD(inc.fecha,3600))) as Date,
+COUNT(*) AS Totales, inc.ip
+FROM kpisdb.notificaciones_entrantes AS inc
+LEFT outer JOIN (
+
+SELECT (DATE_SUB(CURDATE(), INTERVAL 1 DAY)) as Date,
+count(*) as Totales, ip
+FROM kpisdb.notificaciones_entrantes
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND ( apptoken <> "34db1d0b59ff062243923052bc9bcdafb33883c8f7825e0ddd0592693a500daa"
+	AND apptoken <> "1484da7dc281246da320c404966d8617d17c1d6340e17170b9102a2d6ea42ef5")
+GROUP BY ip
+ORDER BY Totales DESC
+LIMIT 5
+) AS T5
+
+ON T5.ip = inc.ip
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND ( apptoken <> "34db1d0b59ff062243923052bc9bcdafb33883c8f7825e0ddd0592693a500daa"
+	AND apptoken <> "1484da7dc281246da320c404966d8617d17c1d6340e17170b9102a2d6ea42ef5")
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
+		</queryString>
+		<field name="Date" class="java.sql.Timestamp"/>
+		<field name="Totales" class="java.lang.Long"/>
+		<field name="ip" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="New Dataset 2" uuid="b172348e-6753-4afd-bf44-b36e95bae0c4">
+		<queryString>
+			<![CDATA[SELECT (DATE_SUB(CURDATE(), INTERVAL 1 DAY)) as Date,
+count(*) as Totales, ip
+FROM kpisdb.notificaciones_entrantes
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND ( apptoken <> "34db1d0b59ff062243923052bc9bcdafb33883c8f7825e0ddd0592693a500daa"
+	AND apptoken <> "1484da7dc281246da320c404966d8617d17c1d6340e17170b9102a2d6ea42ef5")
+GROUP BY ip
+ORDER BY Totales DESC
+LIMIT 5]]>
+		</queryString>
+		<field name="Date" class="java.sql.Date"/>
+		<field name="Totales" class="java.lang.Long"/>
+		<field name="ip" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="New Dataset 3" uuid="64e26e15-8f4e-4e59-97ec-adf39099e1e5">
+		<queryString>
+			<![CDATA[SELECT (FROM_UNIXTIME(fecha )) as Date,
+ip, HOUR(FROM_UNIXTIME(fecha)) as Hora
+FROM kpisdb.notificaciones_entrantes
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND ( apptoken <> "34db1d0b59ff062243923052bc9bcdafb33883c8f7825e0ddd0592693a500daa"
+	AND apptoken <> "1484da7dc281246da320c404966d8617d17c1d6340e17170b9102a2d6ea42ef5")]]>
+		</queryString>
+		<field name="Date" class="java.sql.Timestamp"/>
+		<field name="ip" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="Hora" class="java.lang.Long"/>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
+count(*) as Totales, ip
+FROM kpisdb.notificaciones_entrantes
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND ( apptoken <> "34db1d0b59ff062243923052bc9bcdafb33883c8f7825e0ddd0592693a500daa"
+	AND apptoken <> "1484da7dc281246da320c404966d8617d17c1d6340e17170b9102a2d6ea42ef5")
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
+	</queryString>
+	<field name="Date" class="java.sql.Timestamp"/>
+	<field name="Totales" class="java.lang.Long"/>
+	<field name="ip" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<background>
+		<band height="457" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="49" y="-92" width="394" height="48"/>
+				<textElement verticalAlignment="Middle">
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[OWD PUSH NOTIFICATION SERVER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="68" y="-48" width="219" height="30"/>
+				<textElement>
+					<font size="15"/>
+				</textElement>
+				<text><![CDATA[Incoming Notifications per IP]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="287" y="-48" width="120" height="23"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date() - 1)]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement uuid="7155a085-0794-4254-a889-1cc9376ff3b7" x="478" y="-92" width="324" height="81"/>
+				<imageExpression><![CDATA["repo:tid_ffos.gif"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<summary>
+		<band height="457">
+			<crosstab>
+				<reportElement uuid="104e39f8-0f1e-4a94-bd23-24409f58e78a" x="49" y="292" width="738" height="165"/>
+				<crosstabDataset>
+					<dataset>
+						<datasetRun subDataset="New Dataset 3" uuid="9fa2d5c2-e8fb-4986-b8fd-ec5d91f80090">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+					</dataset>
+				</crosstabDataset>
+				<rowGroup name="ip" width="74" totalPosition="End">
+					<bucket class="java.lang.String">
+						<bucketExpression><![CDATA[$F{ip}]]></bucketExpression>
+					</bucket>
+					<crosstabRowHeader>
+						<cellContents backcolor="#FF7F50" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="8ffbd2a0-e05d-45ae-91ac-23909a91780a" style="Crosstab Data Text" x="0" y="0" width="74" height="25"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{ip}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabRowHeader>
+					<crosstabTotalRowHeader>
+						<cellContents backcolor="#FFD0BF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="afd74ea3-ffce-461f-b21e-e223cc851b77" x="0" y="0" width="74" height="25"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalRowHeader>
+				</rowGroup>
+				<columnGroup name="Hora" height="30" totalPosition="End">
+					<bucket class="java.lang.Long">
+						<bucketExpression><![CDATA[$F{Hora}]]></bucketExpression>
+					</bucket>
+					<crosstabColumnHeader>
+						<cellContents backcolor="#FF7F50" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="1b319dc5-2a6b-43f0-96ca-993cb579b493" style="Crosstab Data Text" x="0" y="0" width="24" height="30"/>
+								<textElement verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$V{Hora}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabColumnHeader>
+					<crosstabTotalColumnHeader>
+						<cellContents backcolor="#FFD0BF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<staticText>
+								<reportElement uuid="207c807f-a5f6-4a79-bcc7-c191cef4eec8" x="0" y="0" width="56" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabTotalColumnHeader>
+				</columnGroup>
+				<measure name="ipMeasure" class="java.lang.Integer" calculation="Count">
+					<measureExpression><![CDATA[$F{ip}]]></measureExpression>
+				</measure>
+				<crosstabCell width="24" height="25">
+					<cellContents>
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="189d65ec-8442-4efe-8d87-ab187a3c55a6" style="Crosstab Data Text" x="0" y="0" width="24" height="25"/>
+							<textElement verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$V{ipMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="24" height="25" rowTotalGroup="ip">
+					<cellContents backcolor="#FFD0BF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="665ff5da-3345-44f3-b657-9a3eaf4c0f6c" style="Crosstab Data Text" x="0" y="0" width="24" height="25"/>
+							<textElement verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$V{ipMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="56" columnTotalGroup="Hora">
+					<cellContents backcolor="#FFD0BF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="0560cfd7-0d8b-4dea-8b13-de9f316dbaf3" style="Crosstab Data Text" x="0" y="0" width="56" height="25"/>
+							<textElement verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$V{ipMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+				<crosstabCell width="56" rowTotalGroup="ip" columnTotalGroup="Hora">
+					<cellContents backcolor="#FFD0BF" mode="Opaque">
+						<box>
+							<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+						</box>
+						<textField>
+							<reportElement uuid="b25e5427-115d-41ac-9837-e13b6889f108" style="Crosstab Data Text" x="0" y="0" width="56" height="25"/>
+							<textElement verticalAlignment="Middle"/>
+							<textFieldExpression><![CDATA[$V{ipMeasure}]]></textFieldExpression>
+						</textField>
+					</cellContents>
+				</crosstabCell>
+			</crosstab>
+			<componentElement>
+				<reportElement uuid="ac9b1a1c-0d45-4db7-b8ac-4dc33cde6822" key="table 6" style="table 6" x="548" y="43" width="224" height="150"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="New Dataset 2" uuid="01cd0af1-32e4-4fb3-95d1-df47e2c4b66e">
+						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					</datasetRun>
+					<jr:column width="81" uuid="b1ccbc3d-e260-46a6-bd46-5a4960a5d57d">
+						<jr:columnHeader style="table 6_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement uuid="14ba0721-46b5-4d61-8cd5-e683dfe29e87" x="0" y="0" width="80" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Date]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="f8b024f4-4df5-48d2-b801-3ab6fdf12e33" x="0" y="0" width="80" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format($F{Date})]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="90" uuid="a861fa5d-2ea8-4337-a0b4-3f41adf6fe46">
+						<jr:columnHeader style="table 6_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement uuid="14eeb15e-5e77-4a88-8ba5-9fd0fea3db27" x="0" y="0" width="90" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[IP]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="1d6126c0-64a6-43fd-b8ba-d33d68b89dad" x="0" y="0" width="90" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{ip}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="44" uuid="bde9f595-bc0b-4ec1-b5ad-819aea00c64a">
+						<jr:columnHeader style="table 6_CH" height="30" rowSpan="1">
+							<staticText>
+								<reportElement uuid="7795f38d-9145-467f-ab77-86e9bacc87c6" x="0" y="0" width="44" height="30"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Totals]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
+							<textField>
+								<reportElement uuid="a7815252-2f94-41b8-8f2b-7429d38f1bfd" x="0" y="0" width="44" height="20"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<textFieldExpression><![CDATA[$F{Totales}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement uuid="cf700756-bb03-4c36-bfb2-f65c3dd0945b" x="552" y="14" width="139" height="20"/>
+				<textElement/>
+				<text><![CDATA[Top 5 Notifications IPs]]></text>
+			</staticText>
+			<stackedBarChart>
+				<chart>
+					<reportElement uuid="9f687183-f95b-42f5-986e-d4c69b794c25" x="25" y="5" width="512" height="275"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="New Dataset 1" uuid="33079718-561e-4aef-96fe-81f44eb31a34"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{ip}]]></seriesExpression>
+						<categoryExpression><![CDATA[new SimpleDateFormat("HH").format($F{Date})]]></categoryExpression>
+						<valueExpression><![CDATA[$F{Totales}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot>
+					<plot/>
+					<itemLabel/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</stackedBarChart>
+		</band>
+	</summary>
+</jasperReport>
