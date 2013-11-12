@@ -81,7 +81,10 @@ var DataStore = function () {
       Log.info('datastore::init --> Connected to MongoDB on ' + ddbbsettings.machines +
         '. Database Name: ' + ddbbsettings.ddbbname);
 
-      var events = ['close', 'error'];
+      /**
+       * FIXME: Check https://jirapdi.tid.es/browse/OWD-30308 for more info
+       */
+      var events = ['close']; //, 'error'];
       events.forEach(function (e) {
         db.on(e, function () {
           self.emit('closed');

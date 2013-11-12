@@ -1,5 +1,6 @@
 GIT  ?= git
 NODE ?= node
+CLOC ?= cloc
 
 .PHONY = all
 
@@ -11,3 +12,10 @@ version.info:
 
 tests:
 	@npm test
+
+cloc:
+	@echo "Counting lines of code ..."
+	@echo "Sources:"
+	@$(CLOC) src/
+	@echo "Tests:"
+	@$(CLOC) --exclude-dir=test/jmeter test/
