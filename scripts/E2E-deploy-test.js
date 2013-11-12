@@ -20,13 +20,13 @@
  * will be console.log information showing what failed.
  */
 
-(function checkArgvLength() {
+function checkArgvLength() {
   if (process.argv.length < 3) {
     console.log('You need to supply the WebSocket to connect to');
     console.log('node E2E.js \'wss://ua.push.tefdigital.com:443/\'');
     process.exit(2);
   }
-})();
+};
 
 // Change here what you should replace
 var ACTUAL = 'https://push-nv.srv.openwebdevice.com:443/';
