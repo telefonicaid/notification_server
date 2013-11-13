@@ -151,7 +151,7 @@
 			<![CDATA[SELECT (FROM_UNIXTIME(inc.fecha - MOD(inc.fecha,3600))) as Date,
 COUNT(*) AS Totales, inc.ip
 FROM kpisdb.notificaciones_entrantes AS inc
-LEFT outer JOIN (
+INNER JOIN (
 
 SELECT (DATE_SUB(CURDATE(), INTERVAL 1 DAY)) as Date,
 count(*) as Totales, ip
@@ -236,28 +236,28 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 	<background>
 		<band height="457" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="49" y="-92" width="394" height="48"/>
+				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="49" y="-92" width="394" height="26"/>
 				<textElement verticalAlignment="Middle">
-					<font size="20"/>
+					<font size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[OWD PUSH NOTIFICATION SERVER]]></text>
+				<text><![CDATA[Incoming Notifications Per IP]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="68" y="-48" width="219" height="30"/>
-				<textElement>
+				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="49" y="-43" width="219" height="20"/>
+				<textElement verticalAlignment="Bottom">
 					<font size="15"/>
 				</textElement>
-				<text><![CDATA[Incoming Notifications per IP]]></text>
+				<text><![CDATA[OWD Push Notification server ]]></text>
 			</staticText>
 			<textField pattern="EEEEE dd MMMMM yyyy">
-				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="287" y="-48" width="120" height="23"/>
+				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="49" y="-66" width="120" height="23"/>
 				<textElement textAlignment="Left" verticalAlignment="Middle">
-					<font size="14"/>
+					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date() - 1)]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement uuid="7155a085-0794-4254-a889-1cc9376ff3b7" x="478" y="-92" width="324" height="81"/>
+			<image vAlign="Middle">
+				<reportElement uuid="7155a085-0794-4254-a889-1cc9376ff3b7" x="655" y="-92" width="147" height="71"/>
 				<imageExpression><![CDATA["repo:tid_ffos.gif"]]></imageExpression>
 			</image>
 		</band>
@@ -265,7 +265,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 	<summary>
 		<band height="457">
 			<crosstab>
-				<reportElement uuid="104e39f8-0f1e-4a94-bd23-24409f58e78a" x="49" y="292" width="738" height="165"/>
+				<reportElement uuid="104e39f8-0f1e-4a94-bd23-24409f58e78a" x="49" y="331" width="738" height="125"/>
 				<crosstabDataset>
 					<dataset>
 						<datasetRun subDataset="New Dataset 3" uuid="9fa2d5c2-e8fb-4986-b8fd-ec5d91f80090">
@@ -273,9 +273,10 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 						</datasetRun>
 					</dataset>
 				</crosstabDataset>
-				<rowGroup name="ip" width="74" totalPosition="End">
-					<bucket class="java.lang.String">
+				<rowGroup name="ip" width="88" totalPosition="End">
+					<bucket order="Descending" class="java.lang.String">
 						<bucketExpression><![CDATA[$F{ip}]]></bucketExpression>
+						<orderByExpression><![CDATA[$V{ipMeasure}]]></orderByExpression>
 					</bucket>
 					<crosstabRowHeader>
 						<cellContents backcolor="#FF7F50" mode="Opaque">
@@ -283,7 +284,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<textField>
-								<reportElement uuid="8ffbd2a0-e05d-45ae-91ac-23909a91780a" style="Crosstab Data Text" x="0" y="0" width="74" height="25"/>
+								<reportElement uuid="8ffbd2a0-e05d-45ae-91ac-23909a91780a" style="Crosstab Data Text" x="0" y="0" width="88" height="25"/>
 								<textElement verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$V{ip}]]></textFieldExpression>
 							</textField>
@@ -295,7 +296,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
 							</box>
 							<staticText>
-								<reportElement uuid="afd74ea3-ffce-461f-b21e-e223cc851b77" x="0" y="0" width="74" height="25"/>
+								<reportElement uuid="afd74ea3-ffce-461f-b21e-e223cc851b77" x="0" y="0" width="88" height="25"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font isBold="true"/>
 								</textElement>
@@ -388,7 +389,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 				</crosstabCell>
 			</crosstab>
 			<componentElement>
-				<reportElement uuid="ac9b1a1c-0d45-4db7-b8ac-4dc33cde6822" key="table 6" style="table 6" x="548" y="43" width="224" height="150"/>
+				<reportElement uuid="ac9b1a1c-0d45-4db7-b8ac-4dc33cde6822" key="table 6" style="table 6" x="548" y="25" width="224" height="150"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="New Dataset 2" uuid="01cd0af1-32e4-4fb3-95d1-df47e2c4b66e">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
@@ -450,13 +451,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 				</jr:table>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="cf700756-bb03-4c36-bfb2-f65c3dd0945b" x="552" y="14" width="139" height="20"/>
+				<reportElement uuid="cf700756-bb03-4c36-bfb2-f65c3dd0945b" x="603" y="255" width="139" height="20"/>
 				<textElement/>
 				<text><![CDATA[Top 5 Notifications IPs]]></text>
 			</staticText>
 			<stackedBarChart>
 				<chart>
-					<reportElement uuid="9f687183-f95b-42f5-986e-d4c69b794c25" x="25" y="5" width="512" height="275"/>
+					<reportElement uuid="9f687183-f95b-42f5-986e-d4c69b794c25" x="21" y="25" width="512" height="275"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>

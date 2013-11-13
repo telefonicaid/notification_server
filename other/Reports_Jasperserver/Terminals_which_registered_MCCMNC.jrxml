@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="418"/>
+	<property name="ireport.y" value="796"/>
 	<property name="ireport.jasperserver.reportUnit" value="/OWD/RegisterRequestMCCMNCUAID"/>
 	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
 	<style name="table">
@@ -91,7 +91,7 @@
 COUNT(*) as Total,
 CONCAT(CAST(temp1.mcc AS CHAR(3)),' : ', CAST(temp1.mnc AS CHAR(2))) AS Code,
 temp1.mcc AS mcc, temp1.mnc as mnc,
-CONCAT(temp2.country,' ',temp2.ob) AS country
+CONCAT('(',temp2.country,')',' ',temp2.ob,' ') AS country
 FROM(
 SELECT min(FROM_UNIXTIME(fecha)) as Date, fecha, uaid, mcc, mnc
 FROM peticiones_registros
@@ -125,7 +125,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 		<queryString>
 			<![CDATA[SELECT COUNT(*) as totales,
 CONCAT(CAST(temp1.mcc AS CHAR(3)),' : ', CAST(temp1.mnc AS CHAR(2))) AS Code,
-CONCAT(temp2.country,' ',temp2.ob) AS country
+CONCAT('(',temp2.country,')',' ',temp2.ob,' ') AS country
 FROM(
 SELECT FROM_UNIXTIME(fecha) as Date, uaid, mcc, mnc
 FROM peticiones_registros
@@ -173,28 +173,28 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 	<background>
 		<band height="704" splitType="Stretch">
 			<staticText>
-				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="20" y="-101" width="367" height="48"/>
+				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="20" y="-91" width="367" height="25"/>
 				<textElement verticalAlignment="Middle">
-					<font size="20"/>
+					<font size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[OWD PUSH NOTIFICATION SERVER]]></text>
+				<text><![CDATA[Terminals Which Registered By MCC: MNC]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="22" y="-52" width="348" height="30"/>
-				<textElement>
+				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="20" y="-46" width="230" height="20"/>
+				<textElement verticalAlignment="Bottom">
 					<font size="15"/>
 				</textElement>
-				<text><![CDATA[ Terminals which registered by MCC : MNC]]></text>
+				<text><![CDATA[OWD Push Notification Server]]></text>
 			</staticText>
 			<textField pattern="EEEEE dd MMMMM yyyy">
-				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="416" y="-21" width="100" height="20"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="12"/>
+				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="20" y="-66" width="100" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date() - 1)]]></textFieldExpression>
 			</textField>
-			<image>
-				<reportElement uuid="d0b8d9f0-a861-46bc-8db5-e05d4324c00c" x="387" y="-101" width="166" height="70"/>
+			<image vAlign="Middle">
+				<reportElement uuid="d0b8d9f0-a861-46bc-8db5-e05d4324c00c" x="412" y="-101" width="143" height="70"/>
 				<imageExpression><![CDATA["repo:tid_ffos.gif"]]></imageExpression>
 			</image>
 		</band>
@@ -210,14 +210,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 					<jr:column width="113" uuid="ee37a30e-fddf-4cf1-8861-806b6b964c7c">
 						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="f4211418-3048-4d9d-bcec-d88cab0e1693" x="0" y="0" width="113" height="30"/>
+								<reportElement uuid="f4211418-3048-4d9d-bcec-d88cab0e1693" style="table 2_TH" x="0" y="0" width="113" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Hour]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement uuid="666244ff-1afc-49e4-8b4b-28a394cfa15e" x="0" y="0" width="113" height="20"/>
@@ -229,14 +228,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 					<jr:column width="53" uuid="602604f9-0a81-4957-a7f6-afd4edf276ae">
 						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="3afabca5-bea5-45bf-a5d7-a24ff8ed95f4" x="0" y="0" width="53" height="30"/>
+								<reportElement uuid="3afabca5-bea5-45bf-a5d7-a24ff8ed95f4" style="table 2_TH" x="0" y="0" width="53" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[MCC	]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement uuid="47cfe064-b876-4c9f-b174-fff91d6bffeb" x="0" y="0" width="53" height="20"/>
@@ -248,14 +246,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 					<jr:column width="56" uuid="a84c3726-09b5-4fb6-b406-7b1f00f21260">
 						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="587328cf-198d-4a4c-8520-bec2298a13ec" x="0" y="0" width="54" height="30"/>
+								<reportElement uuid="587328cf-198d-4a4c-8520-bec2298a13ec" style="table 2_TH" x="0" y="0" width="54" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[MNC]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement uuid="cea39a6b-7eaa-48e2-b31a-535f571071de" x="0" y="0" width="54" height="20"/>
@@ -267,14 +264,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 					<jr:column width="90" uuid="fbfb28f1-9ede-4fcc-aaef-790c005001e6">
 						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="b362580d-02a0-4d23-baa6-7bc8eab6e695" x="0" y="0" width="90" height="30"/>
+								<reportElement uuid="b362580d-02a0-4d23-baa6-7bc8eab6e695" style="table 2_TH" x="0" y="0" width="90" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Total]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:columnFooter style="table 2_CH" height="30" rowSpan="1"/>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
 								<reportElement uuid="34e7ee07-36a7-4cf4-8ba0-b16440380733" x="0" y="0" width="90" height="20"/>
@@ -286,19 +282,20 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 				</jr:table>
 			</componentElement>
 			<componentElement>
-				<reportElement uuid="8947a63d-2db1-4de2-91ba-19e71a07f437" key="table 3" style="table 3" x="78" y="334" width="451" height="110"/>
+				<reportElement uuid="8947a63d-2db1-4de2-91ba-19e71a07f437" key="table 3" style="table 3_TD" x="78" y="334" width="451" height="110"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="New Dataset 2" uuid="76c5781f-7e16-4503-8480-568db7fe52e2">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
 					<jr:column width="234" uuid="451fc773-2ff5-4865-b047-f33623b88481">
-						<jr:columnHeader style="table 3_CH" height="23" rowSpan="1">
+						<jr:columnHeader style="table 2_TH" height="25" rowSpan="1">
 							<staticText>
-								<reportElement uuid="f58f6603-9993-4392-a79f-6dddde4f9da9" x="0" y="0" width="234" height="23"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true"/>
+								<reportElement uuid="f58f6603-9993-4392-a79f-6dddde4f9da9" style="table 2_TH" mode="Opaque" x="0" y="0" width="234" height="25" forecolor="#000000" backcolor="#FF7F50"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+									<font fontName="SansSerif" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+									<paragraph lineSpacing="Single"/>
 								</textElement>
-								<text><![CDATA[Country]]></text>
+								<text><![CDATA[(Country) Network Operator]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell height="24" rowSpan="1">
@@ -316,11 +313,11 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="90" uuid="9d8a1875-5ae6-4a66-ac81-44c31e4d52ea">
-						<jr:columnHeader style="table 3_CH" height="23" rowSpan="1">
+						<jr:columnHeader style="table 2_TH" height="25" rowSpan="1">
 							<staticText>
-								<reportElement uuid="edfdcc56-d52e-46d0-9dbb-7e3e418f805b" x="0" y="0" width="90" height="23"/>
+								<reportElement uuid="edfdcc56-d52e-46d0-9dbb-7e3e418f805b" style="table 2_TH" mode="Opaque" x="0" y="0" width="90" height="25"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font isBold="true"/>
+									<font size="12" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Code]]></text>
 							</staticText>
@@ -334,13 +331,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 						</jr:detailCell>
 					</jr:column>
 					<jr:column width="91" uuid="ba96969b-4b54-47a4-b2ce-f655d9b135e9">
-						<jr:columnHeader style="table 3_CH" height="23" rowSpan="1">
+						<jr:columnHeader style="table 2_TH" height="25" rowSpan="1">
 							<staticText>
-								<reportElement uuid="62dd7d10-abda-4257-b208-ab5cf7747b9e" x="0" y="0" width="91" height="23"/>
+								<reportElement uuid="62dd7d10-abda-4257-b208-ab5cf7747b9e" style="table 2_TH" mode="Opaque" x="0" y="0" width="91" height="25"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[totales]]></text>
+								<text><![CDATA[Total]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 3_TD" height="24" rowSpan="1">
