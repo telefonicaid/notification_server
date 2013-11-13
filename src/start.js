@@ -57,11 +57,16 @@ starts = childs;
 //Start servers and keep a reference for each of them
 var started = new Array(childs.length);
 starts.forEach(function(child) {
-  started[child] = new (forever.Monitor)(['node', 'main.js', child], {
-    max: 1,
-    killTree: true,
-    silent: false
-  });
+  started[child] = new (forever.Monitor)(
+    ['node', 'main.js',
+    '--nouse-idle-notification', '--max-new-space-size=2000000', '--max-old-space-size=4000',
+    child],
+    {
+      max: 1,
+      killTree: true,
+      silent: false
+    }
+  );
   started[child].start();
   started[child].on('exit', function() {
     Log.info((child + ' has closed!'));
