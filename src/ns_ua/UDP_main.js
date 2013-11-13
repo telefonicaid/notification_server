@@ -45,7 +45,7 @@ NS_UA_UDP.prototype = {
       self.checkReady();
     });
 
-    MsgBroker.on('ready', self.subscribeQueues);
+    MsgBroker.on('ready', this.subscribeQueues.bind(this));
 
     //Hack. Once we have a disconnected queue, we must subscribe again for each
     //broker.
@@ -63,7 +63,7 @@ NS_UA_UDP.prototype = {
     // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
     // (we might end up with gazillions (hundreds, really) callbacks on the same
     // socket for handling messages)
-    MsgBroker.on('queuedisconnected', self.subscribeQueues);
+    MsgBroker.on('queuedisconnected', this.subscribeQueues.bind(this));
 
     MsgBroker.once('closed', function() {
       self.msgBrokerReady = false;
@@ -106,7 +106,6 @@ NS_UA_UDP.prototype = {
   },
 
   subscribeQueues: function(broker) {
-    var self = this;
     //We want a durable queue, that do not autodeletes on last closed connection, and
     // with HA activated (mirrored in each rabbit server)
     var args = {
@@ -120,7 +119,7 @@ NS_UA_UDP.prototype = {
       'UDP',
       args,
       broker,
-      self.onNewMessage
+      this.onNewMessage
     );
   },
 
@@ -217,7 +216,7 @@ NS_UA_UDP.prototype = {
           wakeupip: message.dt.wakeup_hostport.ip,
           wakeupport: message.dt.wakeup_hostport.port,
           mcc: message.dt.mobilenetwork.mcc,
-          MobileNetworkc: message.dt.mobilenetwork.mnc,
+          mnc: message.dt.mobilenetwork.mnc,
           protocol: message.dt.protocol,
           response: res.statusCode
         });
@@ -227,7 +226,7 @@ NS_UA_UDP.prototype = {
             wakeupip: message.dt.wakeup_hostport.ip,
             wakeupport: message.dt.wakeup_hostport.port,
             mcc: message.dt.mobilenetwork.mcc,
-            MobileNetworkc: message.dt.mobilenetwork.mnc,
+            mnc: message.dt.mobilenetwork.mnc,
             protocol: message.dt.protocol,
             response: e.message
           });

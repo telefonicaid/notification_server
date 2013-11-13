@@ -88,7 +88,7 @@ NS_WakeUp_Checker.prototype = {
   },
 
   checkNodes: function() {
-    if (!this.ddbbready) {
+    if (!this.dataStoreReady) {
       return;
     }
     Log.debug('NS_WakeUpChecker:checkNodes -> Checking nodes');
