@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
-	<property name="ireport.zoom" value="0.75"/>
+	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="578"/>
 	<property name="ireport.jasperserver.reportUnit" value="/OWD/IncomingNotificationsIP_1"/>
 	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
 	<style name="table">
@@ -240,14 +240,14 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 				<textElement verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Incoming Notifications Per IP]]></text>
+				<text><![CDATA[Incoming Notifications per IP]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="49" y="-43" width="219" height="20"/>
 				<textElement verticalAlignment="Bottom">
 					<font size="15"/>
 				</textElement>
-				<text><![CDATA[OWD Push Notification server ]]></text>
+				<text><![CDATA[OWD Push Notification Server ]]></text>
 			</staticText>
 			<textField pattern="EEEEE dd MMMMM yyyy">
 				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="49" y="-66" width="120" height="23"/>
@@ -389,7 +389,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 				</crosstabCell>
 			</crosstab>
 			<componentElement>
-				<reportElement uuid="ac9b1a1c-0d45-4db7-b8ac-4dc33cde6822" key="table 6" style="table 6" x="548" y="25" width="224" height="150"/>
+				<reportElement uuid="ac9b1a1c-0d45-4db7-b8ac-4dc33cde6822" key="table 6" style="table 6" x="548" y="33" width="224" height="150"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="New Dataset 2" uuid="01cd0af1-32e4-4fb3-95d1-df47e2c4b66e">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
@@ -437,7 +437,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font isBold="true"/>
 								</textElement>
-								<text><![CDATA[Totals]]></text>
+								<text><![CDATA[Total]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
@@ -451,13 +451,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 				</jr:table>
 			</componentElement>
 			<staticText>
-				<reportElement uuid="cf700756-bb03-4c36-bfb2-f65c3dd0945b" x="603" y="255" width="139" height="20"/>
+				<reportElement uuid="cf700756-bb03-4c36-bfb2-f65c3dd0945b" x="55" y="6" width="139" height="20"/>
 				<textElement/>
-				<text><![CDATA[Top 5 Notifications IPs]]></text>
+				<text><![CDATA[Top 5 IPs]]></text>
 			</staticText>
 			<stackedBarChart>
 				<chart>
-					<reportElement uuid="9f687183-f95b-42f5-986e-d4c69b794c25" x="21" y="25" width="512" height="275"/>
+					<reportElement uuid="9f687183-f95b-42f5-986e-d4c69b794c25" x="21" y="33" width="512" height="275"/>
 					<chartTitle/>
 					<chartSubtitle/>
 					<chartLegend/>
@@ -483,6 +483,11 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), ip]]>
 					</valueAxisFormat>
 				</barPlot>
 			</stackedBarChart>
+			<staticText>
+				<reportElement uuid="e5db01aa-b82e-4d53-b0e5-13863b2a4e27" x="0" y="309" width="126" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[All IPs]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>

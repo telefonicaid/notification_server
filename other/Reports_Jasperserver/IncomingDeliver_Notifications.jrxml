@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="672"/>
+	<property name="ireport.y" value="692"/>
 	<property name="ireport.jasperserver.reportUnit" value="/OWD/DeliveredNotifications_1"/>
 	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
 	<style name="table">
@@ -306,7 +306,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600))) AS del
 				<text><![CDATA[Incoming and Delivered Notifications]]></text>
 			</staticText>
 			<staticText>
-				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="17" y="-45" width="212" height="20"/>
+				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="17" y="-45" width="238" height="20"/>
 				<textElement verticalAlignment="Bottom">
 					<font size="15"/>
 				</textElement>
@@ -351,19 +351,19 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600))) AS del
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="7bd74fb6-ef07-486f-ae29-5ffc42e97cd1">
+					<jr:column width="112" uuid="7bd74fb6-ef07-486f-ae29-5ffc42e97cd1">
 						<jr:columnHeader style="table 5_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="9e55f997-7c2a-4035-9c73-3cf88bfc0108" x="0" y="0" width="90" height="30"/>
+								<reportElement uuid="9e55f997-7c2a-4035-9c73-3cf88bfc0108" x="0" y="0" width="112" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Deliver Totals]]></text>
+								<text><![CDATA[Delivered Total]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement uuid="3b1885a4-eeaf-4087-b25c-a8f68d2b4dae" x="0" y="0" width="90" height="20"/>
+								<reportElement uuid="3b1885a4-eeaf-4087-b25c-a8f68d2b4dae" x="0" y="0" width="112" height="20"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{TotalDay}]]></textFieldExpression>
 							</textField>
@@ -395,10 +395,10 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600))) AS del
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="87785dc9-0f10-4eb5-b593-b18f84bf306e">
+					<jr:column width="110" uuid="87785dc9-0f10-4eb5-b593-b18f84bf306e">
 						<jr:columnHeader style="table 6_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="6b41a402-245a-4028-98c4-d7329d293617" x="0" y="0" width="90" height="30"/>
+								<reportElement uuid="6b41a402-245a-4028-98c4-d7329d293617" x="0" y="0" width="110" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
@@ -407,7 +407,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600))) AS del
 						</jr:columnHeader>
 						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement uuid="53dd3e4f-fa2d-4e17-8d1c-6ba231c6f879" x="0" y="0" width="90" height="20"/>
+								<reportElement uuid="53dd3e4f-fa2d-4e17-8d1c-6ba231c6f879" x="0" y="0" width="110" height="20"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{TotalDay}]]></textFieldExpression>
 							</textField>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="811" leftMargin="20" rightMargin="11" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="644"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="863"/>
 	<property name="ireport.jasperserver.reportUnit" value="/OWD/RegisterReq_1"/>
 	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
@@ -170,7 +170,7 @@ LIMIT 10]]>
 			<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
 HOUR(FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Hora,
 CONCAT(CAST(preg.mcc AS CHAR(3)),' : ', CAST(preg.mnc AS CHAR(2))) AS Code,
-CONCAT('(',country,')',' ',ob,' ') AS country
+CONCAT('(',country,')',' ',ob,' ',' ') AS country
 FROM kpisdb.peticiones_registros as preg
 LEFT JOIN network_country_codes AS ncc
 ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
@@ -220,7 +220,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 				<textElement verticalAlignment="Middle">
 					<font size="16" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[ Terminal Registration Requests By MCC : MNC]]></text>
+				<text><![CDATA[Terminal Registration Requests By MCC:MNC]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="20" y="-36" width="223" height="20"/>
@@ -307,7 +307,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 							<staticText>
 								<reportElement uuid="24805542-9027-41ad-a2b4-b8113eecf154" x="0" y="0" width="184" height="25"/>
 								<textElement textAlignment="Right" verticalAlignment="Middle"/>
-								<text><![CDATA[Total]]></text>
+								<text><![CDATA[Total  ]]></text>
 							</staticText>
 						</cellContents>
 					</crosstabTotalRowHeader>

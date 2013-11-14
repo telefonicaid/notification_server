@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
-	<property name="ireport.zoom" value="2.0"/>
-	<property name="ireport.x" value="259"/>
-	<property name="ireport.y" value="1776"/>
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
 	<property name="ireport.jasperserver.reportUnit" value="/OWD/RegisteredActiveTerminals"/>
 	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
 	<style name="table">
@@ -327,12 +327,12 @@ GROUP BY FROM_UNIXTIME(fecha-MOD(fecha,3600))]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Registered Variation]]></text>
+								<text><![CDATA[Registered variation]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement uuid="fe98d772-d5e5-40fc-85ba-d791bfb3e67d" x="0" y="0" width="107" height="20"/>
+								<reportElement uuid="fe98d772-d5e5-40fc-85ba-d791bfb3e67d" x="0" y="0" width="140" height="20"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{TermDiff}]]></textFieldExpression>
 							</textField>
@@ -345,7 +345,7 @@ GROUP BY FROM_UNIXTIME(fecha-MOD(fecha,3600))]]>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Active Variation]]></text>
+								<text><![CDATA[Active variation]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">

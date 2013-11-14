@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="796"/>
+	<property name="ireport.y" value="192"/>
 	<property name="ireport.jasperserver.reportUnit" value="/OWD/RegisterRequestMCCMNCUAID"/>
 	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
 	<style name="table">
@@ -177,7 +177,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 				<textElement verticalAlignment="Middle">
 					<font size="16" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Terminals Which Registered By MCC: MNC]]></text>
+				<text><![CDATA[Terminals which Registered by MCC:MNC]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="20" y="-46" width="230" height="20"/>
@@ -225,39 +225,21 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="53" uuid="602604f9-0a81-4957-a7f6-afd4edf276ae">
+					<jr:column width="71" uuid="602604f9-0a81-4957-a7f6-afd4edf276ae">
 						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="3afabca5-bea5-45bf-a5d7-a24ff8ed95f4" style="table 2_TH" x="0" y="0" width="53" height="30"/>
+								<reportElement uuid="3afabca5-bea5-45bf-a5d7-a24ff8ed95f4" style="table 2_TH" x="0" y="0" width="71" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="true"/>
 								</textElement>
-								<text><![CDATA[MCC	]]></text>
+								<text><![CDATA[Code]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement uuid="47cfe064-b876-4c9f-b174-fff91d6bffeb" x="0" y="0" width="53" height="20"/>
+								<reportElement uuid="47cfe064-b876-4c9f-b174-fff91d6bffeb" x="0" y="0" width="71" height="20"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{mcc}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="56" uuid="a84c3726-09b5-4fb6-b406-7b1f00f21260">
-						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
-							<staticText>
-								<reportElement uuid="587328cf-198d-4a4c-8520-bec2298a13ec" style="table 2_TH" x="0" y="0" width="54" height="30"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[MNC]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
-							<textField>
-								<reportElement uuid="cea39a6b-7eaa-48e2-b31a-535f571071de" x="0" y="0" width="54" height="20"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{mnc}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{Code}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
