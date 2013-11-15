@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="192"/>
+	<property name="ireport.y" value="417"/>
 	<property name="ireport.jasperserver.reportUnit" value="/OWD/RegisterRequestMCCMNCUAID"/>
 	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
 	<style name="table">
@@ -202,7 +202,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 	<summary>
 		<band height="704">
 			<componentElement>
-				<reportElement uuid="8ad10204-88fb-4da5-b314-cc1864f2c370" key="table 2" style="table 2" x="122" y="476" width="360" height="80"/>
+				<reportElement uuid="8ad10204-88fb-4da5-b314-cc1864f2c370" key="table 2" style="table 2" x="116" y="509" width="266" height="80"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="New Dataset 1" uuid="fab49a4a-d03e-469d-9313-105b0d03a5b9">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
@@ -264,7 +264,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 				</jr:table>
 			</componentElement>
 			<componentElement>
-				<reportElement uuid="8947a63d-2db1-4de2-91ba-19e71a07f437" key="table 3" style="table 3_TD" x="78" y="334" width="451" height="110"/>
+				<reportElement uuid="8947a63d-2db1-4de2-91ba-19e71a07f437" key="table 3" style="table 3_TD" x="65" y="387" width="451" height="110"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
 					<datasetRun subDataset="New Dataset 2" uuid="76c5781f-7e16-4503-8480-568db7fe52e2">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
@@ -359,6 +359,11 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 					</valueAxisFormat>
 				</timeSeriesPlot>
 			</timeSeriesChart>
+			<staticText>
+				<reportElement uuid="c7c574f2-b0ff-4944-a724-700366a21026" x="34" y="338" width="495" height="34"/>
+				<textElement/>
+				<text><![CDATA[This report shows the estimated number of terminals which issued at least one registration request in the period]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>
