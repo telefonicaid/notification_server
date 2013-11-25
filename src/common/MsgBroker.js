@@ -82,16 +82,14 @@ MsgBroker.prototype.subscribe = function (queueName, args, broker, callback) {
  */
 MsgBroker.prototype.push = function (queueName, obj) {
   Log.debug('msgbroker::push --> Sending to the queue ' + queueName + ' the package:', obj);
-  //Send to one of the connections that is connected to a queue
-  //TODO: send randomly , not to the first open connection (which is the easiest 'algorithm')
-  var sent = false;
-  this.queues.forEach(function (connection) {
-    var exchange = connection.exchange(queueName + '-fanout', {type: 'fanout'});
-    if (connection && !sent) {
-      exchange.publish(queueName, obj, { contentType: 'application/json', deliveryMode: 1 });
-      sent = true;
+  var i = this.queues.length;
+  while(!this.exchange && i > 0) {
+    if (this.queues[i-1]) {
+      this.exchange = this.queues[i-1].exchange(queueName + '-fanout', {type: 'fanout'});
     }
-  });
+    i--;
+  }
+  this.exchange.publish(queueName, obj, { contentType: 'application/json', deliveryMode: 1 });
 };
 
 MsgBroker.prototype.createConnection = function (queuesConf) {
@@ -147,6 +145,7 @@ MsgBroker.prototype.createConnection = function (queuesConf) {
     });
     conn.state = QUEUE_ERROR;
     self.emit('queuedisconnected');
+    self.exchange = undefined;
   }));
 
   conn.on('heartbeat', (function () {
