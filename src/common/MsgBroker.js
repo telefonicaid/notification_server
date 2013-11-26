@@ -25,6 +25,7 @@ function MsgBroker() {
   events.EventEmitter.call(this);
   this.queues = [];
   this.conns = [];
+  this.exchangeNames = {};
   this.controlledClose = false;
 }
 
@@ -83,13 +84,19 @@ MsgBroker.prototype.subscribe = function (queueName, args, broker, callback) {
 MsgBroker.prototype.push = function (queueName, obj) {
   Log.debug('msgbroker::push --> Sending to the queue ' + queueName + ' the package:', obj);
   var i = this.queues.length;
-  while(!this.exchange && i > 0) {
+  var exchangeName = queueName + '-fanout';
+  /**
+   * We need to create an exchange for each of the queues where we need
+   * to push. Remember that a SINGLE exchange is not possible since we can push
+   * to two different queues (UDP and WS1, for example)
+   */
+  while(!this.exchangeNames[exchangeName] && i > 0) {
     if (this.queues[i-1]) {
-      this.exchange = this.queues[i-1].exchange(queueName + '-fanout', {type: 'fanout'});
+      this.exchangeNames[exchangeName] = this.queues[i-1].exchange(queueName + '-fanout', {type: 'fanout'});
     }
     i--;
   }
-  this.exchange.publish(queueName, obj, { contentType: 'application/json', deliveryMode: 1 });
+  this.exchangeNames[exchangeName].publish(queueName, obj, { contentType: 'application/json', deliveryMode: 1 });
 };
 
 MsgBroker.prototype.createConnection = function (queuesConf) {
