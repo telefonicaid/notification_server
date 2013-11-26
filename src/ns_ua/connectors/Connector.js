@@ -53,11 +53,11 @@ Connector.prototype = {
           return;
         }
         // This is the only moment we can give a UDP connector
-        var network = op.networks || [];
+        var network = (op && op.networks) || [];
         Log.debug('Checking if IP=' + data.wakeup_hostport.ip + ' is on networks=' + network);
         var inNetwork = isIPInNetwork(data.wakeup_hostport.ip, network);
 
-        if (op.wakeup && !op.offline && inNetwork) {
+        if (op && op.wakeup && !op.offline && inNetwork) {
           Log.debug('getConnector --> UDP WakeUp server for ' + op.operator +
                     ': ' + op.wakeup);
           self.getUDPconnector(data, connection, callback);
