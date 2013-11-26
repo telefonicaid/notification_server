@@ -14,10 +14,10 @@ var assert = require('assert'),
     exec = require('child_process').exec,
     common = require('../functional/common');
 
-vows.describe('E2E test').addBatch({
+vows.describe('E2E WS test').addBatch({
 'End-to-end': {
 	topic: function() {
-		exec('node test/functional/E2E.js \'wss://localhost:8080/\'', this.callback);
+		exec('node test/functional/E2E-ws.js \'wss://localhost:8080/\'', this.callback);
 	},
 	'Should end without Error': function(error, stdout, stderr) {
 		assert.isNull(error);

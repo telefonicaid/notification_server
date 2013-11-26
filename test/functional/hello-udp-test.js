@@ -15,7 +15,7 @@ var exec = require('child_process').exec,
  *
  */
 
-exec(path.resolve('./scripts/add_wakeupserver_ip.sh 214 007 http:/\/localhost:8090/'),
+exec(path.resolve('./scripts/add_wakeupserver_ip.sh') + ' 214 007 http://localhost:8090/',
   function(error, stdout, stderr) {
     if (error) {
       console.log('Wakeup Server insertion ERRORED' + error);
