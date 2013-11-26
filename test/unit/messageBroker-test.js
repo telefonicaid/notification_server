@@ -21,7 +21,7 @@ vows.describe('MessageBroker tests').addBatch({
     'OK': function(ready) {
       assert.isTrue(ready);
     },
-    'Pub-sub': {
+    'Pub-sub1': {
       topic: function() {
         // XXX: Copy me below
         var q = 'tests';
@@ -34,6 +34,46 @@ vows.describe('MessageBroker tests').addBatch({
       'Message Received with OK parameters': function(msg, headers, deliveryInfo) {
         var q = 'tests';
         assert.equal(msg.hola, "qué tal");
+        assert.equal(deliveryInfo.contentType, "application/json");
+        assert.equal(deliveryInfo.deliveryMode, 1);
+        assert.equal(deliveryInfo.queue, q);
+        assert.equal(deliveryInfo.exchange, q + '-fanout');
+        assert.equal(deliveryInfo.routingKey, q);
+      }
+    },
+    'Pub-sub2': {
+      topic: function() {
+        // XXX: Copy me below
+        var q = 'tests2';
+        msgBroker.subscribe(q, {}, undefined, this.callback);
+        setTimeout(function() {
+          msgBroker.push(q, '{"adios" : "hasta mañana"}');
+        }, 2000);
+        setTimeout(this.callback, 4000);
+      },
+      'Message Received with OK parameters': function(msg, headers, deliveryInfo) {
+        var q = 'tests2';
+        assert.equal(msg.adios, "hasta mañana");
+        assert.equal(deliveryInfo.contentType, "application/json");
+        assert.equal(deliveryInfo.deliveryMode, 1);
+        assert.equal(deliveryInfo.queue, q);
+        assert.equal(deliveryInfo.exchange, q + '-fanout');
+        assert.equal(deliveryInfo.routingKey, q);
+      }
+    },
+    'Pub-sub3': {
+      topic: function() {
+        // XXX: Copy me below
+        var q = 'tests3';
+        msgBroker.subscribe(q, {}, undefined, this.callback);
+        setTimeout(function() {
+          msgBroker.push(q, '{"hey!" : "ho! let\'s go!"}');
+        }, 2000);
+        setTimeout(this.callback, 4000);
+      },
+      'Message Received with OK parameters': function(msg, headers, deliveryInfo) {
+        var q = 'tests3';
+        assert.equal(msg["hey!"], "ho! let's go!");
         assert.equal(deliveryInfo.contentType, "application/json");
         assert.equal(deliveryInfo.deliveryMode, 1);
         assert.equal(deliveryInfo.queue, q);
