@@ -2,6 +2,8 @@ var assert = require('assert'),
     vows = require('vows'),
     debug = require('./common').debug;
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 var newWebsocket = function newWebsocket(message, callback) {
   var WebSocketClient = require('websocket').client;
   var client = new WebSocketClient();

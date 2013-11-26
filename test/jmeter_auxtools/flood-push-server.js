@@ -18,16 +18,21 @@ var sendNotification = function(where, version) {
   var u = url.parse(where);
   var options = {
     hostname: u.hostname,
+    port: u.port,
     path: u.path,
     method: 'PUT',
-    agent: false
+    agent: new https.Agent(false)
   };
 
   var req = https.request(options, function(res) {
     debug('notification sent to ' + where + ' version=' + version + ' - ' + res.statusCode);
   });
 
-  req.on('error', function(){});
+  req.on('error', function(e){
+	debug('error sending!!' +  e);
+});
+
+
 
   req.write('version=' + version);
   req.end();

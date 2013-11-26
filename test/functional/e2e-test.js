@@ -6,6 +6,9 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
+ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+
 var assert = require('assert'),
     vows = require('vows'),
     exec = require('child_process').exec,
