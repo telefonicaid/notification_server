@@ -14,7 +14,6 @@ var exec = require('child_process').exec,
  * which is 214-07. We are going to use the script on $root/scripts/add_wakeup_server_ip.sh.
  *
  */
-
 exec(path.resolve('./scripts/add_wakeupserver_ip.sh') + ' 214 007 http://localhost:8090/',
   function(error, stdout, stderr) {
     if (error) {
@@ -22,6 +21,16 @@ exec(path.resolve('./scripts/add_wakeupserver_ip.sh') + ' 214 007 http://localho
       process.exit(1);
     } else {
       debug('Wakeup Server correctly added');
+    }
+  }
+);
+exec(path.resolve('./scripts/add_wakeupserver_networks.sh') + ' 214 007 0.0.0.0/1',
+  function(error, stdout, stderr) {
+    if (error) {
+      console.log('IP networks insertion ERRORED' + error);
+      process.exit(1);
+    } else {
+      debug('IP networks correctly added');
     }
   }
 );
