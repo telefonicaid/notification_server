@@ -175,7 +175,7 @@ setTimeout(function checkAliveConnections() {
       conn.sendUTF('{}');
     }
   });
-}, ARGS[6]-40000);
+}, ARGS[6]-140000);
 
 setTimeout(function killItWithFire() {
   console.log('------------------ Summary ------------------');
