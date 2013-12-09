@@ -8,8 +8,9 @@ DATABASE="kpisdb"
 LOG_WS="/var/log/push_server/NS_UA_WS.log.1"
 LOG_AS="/var/log/push_server/NS_AS.log.1"
 LOG_UDP="/var/log/push_server/NS_UA_UDP.log.1"
+#LOG_UDP="./udp-pedrete"
 LOG_MON="/var/log/push_server/NS_Monitor.log.1"
-NO_PROCESADO="/root/kpis-no-procesados"
+NO_PROCESADO="/home/operaciones/kpis-no-procesados"
 
  log() {
   echo "[`date +%Y%m%d-%H:%M:%S`] $1"
@@ -37,6 +38,8 @@ else
 	#copiamos el fichero a $NO_POCESADO
 	fich="no-procesado-$RANDOM-`date +%s`.txt"
 	cp $file_inserts $NO_PROCESADO/$fich
+    chown operaciones.operaciones /home/operaciones/ -R
+
 
 fi
 }
@@ -124,14 +127,12 @@ sed "s/.*{.*(\([^)]\+\)...)}.*$cadena.*uaid=\([^ ]\+\).*appToken=\([^ ]\+\).*ver
 
 kpi_notificaciones_udp(){
         cadena="Notify to wakeup"
-        cadena="New version for"
         log "Buscamos la cadena $cadena....."
         lineas=$1
         HOST="$2"
         TABLA="notificaciones_udp"
-        sed "s/.*{.*(\([^)]\+\)...)}.*$cadena.*uaid=\([^ ]\+\).*appToken=\([^ ]\+\).*version=\([^ ]\+\).*mcc=\([^ ]\+\).*mnc=\([^ ]\+\).*/insert into $TABLA values('$HOST',\1,'\2','\3','\4','\5','\6') ;/;tx;d;:x" $lineas>>$OUTPUT_FILE
-
-
+ #       sed "s/.*{.*(\([^)]\+\)...)}.*$cadena.*uaid=\([^ ]\+\).*appToken=\([^ ]\+\).*version=\([^ ]\+\).*mcc=\([^ ]\+\).*mnc=\([^ ]\+\).*/insert into $TABLA values('$HOST',\1,'\2','\3','\4','\5','\6') ;/;tx;d;:x" $lineas>>$OUTPUT_FILE
+sed "s/.*{.*(\([^)]\+\)...)}.*$cadena.*uaid=\([^ ]\+\).*wakeup=\([^ ]\+\).*mcc=\([^ ]\+\).*mnc=\([^ ]\+\).*/insert into $TABLA values('$HOST',\1,'\2','\4','\5','\3') ;/;tx;d;:x" $lineas>>$OUTPUT_FILE
         dump_data_to_mysql $OUTPUT_FILE
 
 
@@ -143,7 +144,9 @@ kpi_notificaciones_udp(){
 mkdir -p $NO_PROCESADO
 rm $OUTPUT_FILE 2>&1 >/dev/null
 
-TIPO="`ps -ef|grep "main.js"|grep -v grep|head -1|awk '{print $13}'`"
+TIPO="`ps -ef|grep " main.js"|grep -v grep|grep -v NS_WakeUp_Checker|head -1|awk -F'main.js' '{print $2}'|tr -d ' '`"
+echo $TIPO
+
 case $TIPO in
 	NS_UA_WS)
 		log $TIPO
@@ -169,7 +172,7 @@ case $TIPO in
 	NS_UA_UDP)
 		log $TIPO
         rm $OUTPUT_FILE
-        kpi_notificaciones_udp "$LOG_MON" `hostname`
+        kpi_notificaciones_udp "$LOG_UDP" `hostname`
 		;;
 		
 esac

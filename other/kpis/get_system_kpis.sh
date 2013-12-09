@@ -10,7 +10,7 @@ TAM_RABBIT=0
 TAM_MONGO=0
 MEM=0
 CPU=0
-NO_PROCESADO="/root/kpis-no-procesados"
+NO_PROCESADO="/home/operaciones/kpis-no-procesados"
 MYSQL_USER="kpis"
 MYSQL_PASS="push"
 DATABASE="kpisdb"
@@ -34,9 +34,10 @@ if [ "$mysql_OK" -eq 0 ]; then
                     log "no hay datos que insertar"
             fi
 else
-                                                                                    #copiamos el fichero a $NO_POCESADO
-                                                                                    fich="no-procesado-$RANDOM-`date +%s`.txt"
+    #copiamos el fichero a $NO_POCESADO
+    fich="no-procesado-$RANDOM-`date +%s`.txt"
     cp $file_inserts $NO_PROCESADO/$fich
+    chown -R operaciones.operaciones /home/operaciones
 
 fi
 

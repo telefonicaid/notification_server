@@ -12,7 +12,7 @@ LOG_MON="/var/log/push_server/NS_UA_WS.log"
 MONGO_BIN="/usr/bin/mongo --quiet"
 MONGO_HOST="localhost"
 PORT=30000
-NO_PROCESADO="/root/kpis-no-procesados"
+NO_PROCESADO="/home/operaciones/kpis-no-procesados"
 MYSQL_USER="kpis"
 MYSQL_PASS="push"
 DATABASE="kpisdb"
@@ -48,6 +48,7 @@ else
         #copiamos el fichero a $NO_POCESADO
         fich="no-procesado-$RANDOM-`date +%s`.txt"
         cp $file_inserts $NO_PROCESADO/$fich
+        chown -R operaciones.operaciones /home/operaciones/ 
 
 fi
 }
