@@ -10,7 +10,6 @@
 
 var amqp = require('amqp'),
     Log = require('./Logger.js'),
-    Helpers = require('./Helpers.js'),
     queuesConf = require('../config.js').queue,
     events = require('events'),
     util = require('util');
@@ -26,7 +25,6 @@ function MsgBroker() {
   events.EventEmitter.call(this);
   this.queues = [];
   this.conns = [];
-  this.ready = false;
   this.exchangeNames = {};
   this.controlledClose = false;
 }
@@ -44,24 +42,6 @@ MsgBroker.prototype.start = function () {
   for (var i = queuesConf.length - 1; i >= 0; i--) {
     this.createConnection(queuesConf[i]);
   }
-  this.on('ready', function() {
-    this.ready = true;
-    var callbacks = this.callbacks || [];
-    callbacks.forEach(function (elem) {
-      elem(true);
-    });
-  }.bind(this));
-};
-
-MsgBroker.prototype.callbackReady = function(callback) {
-  if (this.ready) {
-    callback(true);
-    return;
-  }
-  if (!this.callbacks) {
-    this.callbacks = [];
-  }
-  this.callbacks.push(Helpers.checkCallback(callback));
 };
 
 MsgBroker.prototype.stop = function () {

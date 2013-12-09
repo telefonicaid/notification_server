@@ -33,6 +33,7 @@ vows.describe('MessageBroker tests').addBatch({
       },
       'Message Received with OK parameters': function(msg, headers, deliveryInfo) {
         var q = 'tests';
+        console.log(Array.prototype.slice.call(arguments, 0));
         assert.equal(msg.hola, "qué tal");
         assert.equal(deliveryInfo.contentType, "application/json");
         assert.equal(deliveryInfo.deliveryMode, 1);
