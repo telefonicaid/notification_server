@@ -10,7 +10,7 @@ function s4() {
   return Math.floor((1 + Math.random()) * 0x10000)
              .toString(16)
              .substring(1);
-};
+}
 
 function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
@@ -24,6 +24,7 @@ var INTERVALS = [];
 var id = 0;
 var total = 0;
 var closed = [];
+var finishing = false;
 
 var HELLOS_RECEIVED = 0;
 var REGISTER_RECEIVED = 0;
@@ -40,7 +41,7 @@ var sendRegister = function(connection) {
 };
 
 var sendNotification = function(where, version) {
-  if (!where || !version) return;
+  if (!where || !version || finishing) return;
   NOTIFICATIONS_SENT++;
   var u = url.parse(where);
   var options = {
@@ -132,6 +133,10 @@ var newConnection = function newConnection() {
           poolMessages[identifier]++;
           debug('received notification on conn=' + identifier);
           NOTIFICATIONS_RECEIVED++;
+          json.updates.forEach(function onEachUpdate(update) {
+            var send = '{"messageType": "ack", "updates":[' + JSON.stringify(update) + ']}';
+            connection.sendUTF(send);
+          });
         }
       }
     });
@@ -158,6 +163,7 @@ var getter = setInterval(function() {
 }, ARGS[3]);
 
 setTimeout(function checkAliveConnections() {
+  finishing = true;
   console.log('Stopping getting new connections.');
   console.log('We started ' + total + ', hoping to open ' + ARGS[2]);
   clearInterval(getter);
