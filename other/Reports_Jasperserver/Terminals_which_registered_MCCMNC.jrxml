@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
-	<property name="ireport.zoom" value="1.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
+	<property name="ireport.zoom" value="0.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="417"/>
-	<property name="ireport.jasperserver.reportUnit" value="/OWD/RegisterRequestMCCMNCUAID"/>
-	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
+	<property name="ireport.y" value="74"/>
+	<property name="ireport.jasperserver.reportUnit" value="/OWD/OWDMCCMNC_2"/>
+	<property name="ireport.jasperserver.url" value="http://10.26.204.184:8080/jasperserver-pro/services/repository"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -85,13 +85,75 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TH" mode="Opaque" backcolor="#FF4500">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_CH" mode="Opaque" backcolor="#FFD1BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="New Dataset 1" uuid="eda2c39d-4358-4979-9d9f-f3387f27db91">
 		<queryString>
 			<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
 COUNT(*) as Total,
-CONCAT(CAST(temp1.mcc AS CHAR(3)),' : ', CAST(temp1.mnc AS CHAR(2))) AS Code,
-temp1.mcc AS mcc, temp1.mnc as mnc,
-CONCAT('(',temp2.country,')',' ',temp2.ob,' ') AS country
+/*CONCAT(CAST(temp1.mcc AS CHAR(3)),' : ', CAST(temp1.mnc AS CHAR(2))) AS Code,*/
+temp1.mcc AS mcc, /*temp1.mnc as mnc,*/
+/*CONCAT('(',temp2.country,')',' ',temp2.ob,' ') AS country*/
+CONCAT(' ',temp2.country,' ') AS country
 FROM(
 SELECT min(FROM_UNIXTIME(fecha)) as Date, fecha, uaid, mcc, mnc
 FROM peticiones_registros
@@ -106,15 +168,11 @@ ORDER BY fecha
 ) AS temp1
 LEFT JOIN network_country_codes AS temp2
 ON temp1.mcc=temp2.mcc AND temp1.mnc=temp2.mnc
-GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc /*, mnc*/]]>
 		</queryString>
 		<field name="Date" class="java.sql.Timestamp"/>
 		<field name="Total" class="java.lang.Long"/>
-		<field name="Code" class="java.lang.String"/>
 		<field name="mcc" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
-		</field>
-		<field name="mnc" class="java.lang.Integer">
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
 		<field name="country" class="java.lang.String">
@@ -123,12 +181,13 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 	</subDataset>
 	<subDataset name="New Dataset 2" uuid="52d32621-48e7-4c4f-b24e-d892ee61cb20">
 		<queryString>
-			<![CDATA[SELECT COUNT(*) as totales,
-CONCAT(CAST(temp1.mcc AS CHAR(3)),' : ', CAST(temp1.mnc AS CHAR(2))) AS Code,
-CONCAT('(',temp2.country,')',' ',temp2.ob,' ') AS country
-FROM(
-SELECT FROM_UNIXTIME(fecha) as Date, uaid, mcc, mnc
-FROM peticiones_registros
+			<![CDATA[SELECT min(FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
+HOUR(FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Hora,
+preg.uaid, preg.mcc,
+CONCAT(' ',country,' ') AS country
+FROM peticiones_registros as preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
 WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
    BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
    AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
@@ -136,15 +195,91 @@ WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
    ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
    AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
 GROUP BY uaid
-ORDER BY fecha
-) AS temp1
-LEFT JOIN network_country_codes AS temp2
-ON temp1.mcc=temp2.mcc AND temp1.mnc=temp2.mnc
-GROUP BY temp1.mcc, temp1.mnc
-ORDER BY totales DESC]]>
+ORDER BY fecha]]>
 		</queryString>
-		<field name="totales" class="java.lang.Long"/>
+		<field name="Date" class="java.sql.Timestamp"/>
+		<field name="Hora" class="java.lang.Integer"/>
+		<field name="uaid" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="mcc" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="country" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="New Dataset 3" uuid="c8366cbf-292d-44c0-b1b4-58650b351725">
+		<queryString>
+			<![CDATA[SELECT min(FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
+HOUR(FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Hora,
+preg.uaid,
+CONCAT(CAST(preg.mcc AS CHAR(3)),' : ', CAST(preg.mnc AS CHAR(3))) AS Code,
+CONCAT('(',country,')',' ',ob,' ',' ') AS Ob
+FROM peticiones_registros as preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
+   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
+GROUP BY uaid
+ORDER BY fecha]]>
+		</queryString>
+		<field name="Date" class="java.sql.Timestamp"/>
+		<field name="Hora" class="java.lang.Integer"/>
+		<field name="uaid" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
 		<field name="Code" class="java.lang.String"/>
+		<field name="Ob" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="tot_uniq_uaid_country_grph" uuid="3644e0aa-4062-4475-a712-1ff792e1a9ad">
+		<queryString>
+			<![CDATA[SELECT COUNT(DISTINCT uaid) as Tot_uaid,
+CONCAT(' ',country,' ') AS country, preg.mcc
+FROM peticiones_registros as preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
+   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
+GROUP BY preg.mcc
+ORDER BY Tot_uaid DESC]]>
+		</queryString>
+		<field name="Tot_uaid" class="java.lang.Long"/>
+		<field name="country" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="mcc" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="tot_uniq_uaid_OB_graph" uuid="5766833f-9950-4311-80f2-097c6bb1b820">
+		<queryString language="SQL">
+			<![CDATA[SELECT COUNT(DISTINCT uaid) as Tot_uaid, preg.mcc, preg.mnc,
+/*CONCAT(' ',country,' ') AS country, preg.mcc*/
+CONCAT('(',country,')',' ',ob,' ',' ') AS country
+FROM peticiones_registros as preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
+   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
+GROUP BY preg.mcc, preg.mnc
+ORDER BY Tot_uaid DESC]]>
+		</queryString>
+		<field name="Tot_uaid" class="java.lang.Long"/>
 		<field name="country" class="java.lang.String">
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
@@ -170,8 +305,149 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 	<field name="Date" class="java.sql.Timestamp"/>
 	<field name="Total" class="java.lang.Long"/>
 	<field name="Code" class="java.lang.String"/>
+	<group name="Crosstab_country">
+		<groupHeader>
+			<band height="457">
+				<barChart>
+					<chart isShowLegend="false">
+						<reportElement uuid="96568d5b-e54f-4d64-9d25-e28ad2aaf561" x="18" y="50" width="764" height="374"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="tot_uniq_uaid_country_grph" uuid="5643c291-066d-4d87-896c-090754b4f528"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{country}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{Tot_uaid}]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<barPlot isShowLabels="true">
+						<plot labelRotation="0.0"/>
+						<itemLabel/>
+						<categoryAxisFormat labelRotation="0.0">
+							<axisFormat>
+								<tickLabelFont>
+									<font size="10"/>
+								</tickLabelFont>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</barPlot>
+				</barChart>
+				<staticText>
+					<reportElement uuid="c229e9cb-32e0-461a-9c1b-126454cf7469" x="18" y="19" width="221" height="20"/>
+					<textElement/>
+					<text><![CDATA[Terminals which registered by Country]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="Crosstab_OB">
+		<groupHeader>
+			<band height="457">
+				<barChart>
+					<chart isShowLegend="false">
+						<reportElement uuid="61745f7a-c71a-4d15-83f1-58458b803151" x="18" y="48" width="764" height="374"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="tot_uniq_uaid_OB_graph" uuid="99d61ace-e67b-4411-847d-7fd0ccd06c97"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{country}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{Tot_uaid}]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<barPlot isShowLabels="true">
+						<plot labelRotation="-45.0"/>
+						<itemLabel/>
+						<categoryAxisFormat labelRotation="-45.0">
+							<axisFormat>
+								<tickLabelFont>
+									<font size="10"/>
+								</tickLabelFont>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</barPlot>
+				</barChart>
+				<staticText>
+					<reportElement uuid="2b6dc62a-7ba3-4de6-938d-f4b67c84af83" x="18" y="16" width="221" height="20"/>
+					<textElement/>
+					<text><![CDATA[Terminals which registered by MNO]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="graph_tot_uniq_OB">
+		<groupHeader>
+			<band height="457">
+				<staticText>
+					<reportElement uuid="923004fa-7f7b-45d0-9911-a5a6ae4826b6" x="292" y="10" width="221" height="20"/>
+					<textElement/>
+					<text><![CDATA[Terminals which registered by Country]]></text>
+				</staticText>
+				<componentElement>
+					<reportElement uuid="19314c3e-dea0-4ddb-85bf-1b09443f5963" key="table 5" style="table 5" x="292" y="38" width="165" height="50"/>
+					<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+						<datasetRun subDataset="tot_uniq_uaid_country_grph" uuid="6d9c3765-c1bf-419a-83a4-e4ec0e897ba1">
+							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+						</datasetRun>
+						<jr:column width="74" uuid="72b88dac-95c6-4ac0-90bf-0c7d50fc2591">
+							<jr:columnHeader style="table 5_CH" height="30" rowSpan="1">
+								<staticText>
+									<reportElement uuid="23028ddb-acbd-4e70-84b2-8509518daf80" style="table 3_TH" x="0" y="0" width="74" height="30"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font size="11" isBold="true"/>
+									</textElement>
+									<text><![CDATA[Country]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField>
+									<reportElement uuid="8cc4cc0a-4faf-4625-8f73-1ae391a677ab" x="0" y="0" width="74" height="20"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle"/>
+									<textFieldExpression><![CDATA[$F{country}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+						<jr:column width="90" uuid="f87c5dcb-7a66-4ff9-a72a-5fd501d1ddf6">
+							<jr:columnHeader style="table 5_CH" height="30" rowSpan="1">
+								<staticText>
+									<reportElement uuid="0298f116-75e2-4c48-ac25-1d7aa1699e1a" style="table 3_TH" x="0" y="0" width="90" height="30"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font size="11" isBold="true"/>
+									</textElement>
+									<text><![CDATA[Total]]></text>
+								</staticText>
+							</jr:columnHeader>
+							<jr:detailCell style="table 5_TD" height="20" rowSpan="1">
+								<textField>
+									<reportElement uuid="fd9cd8ef-8fa3-4c2b-9706-96d4e390353a" x="0" y="0" width="90" height="20"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle"/>
+									<textFieldExpression><![CDATA[$F{Tot_uaid}]]></textFieldExpression>
+								</textField>
+							</jr:detailCell>
+						</jr:column>
+					</jr:table>
+				</componentElement>
+			</band>
+		</groupHeader>
+	</group>
 	<background>
-		<band height="704" splitType="Stretch">
+		<band height="457" splitType="Stretch">
 			<staticText>
 				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="20" y="-91" width="367" height="25"/>
 				<textElement verticalAlignment="Middle">
@@ -194,176 +470,62 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date() - 1)]]></textFieldExpression>
 			</textField>
 			<image vAlign="Middle">
-				<reportElement uuid="d0b8d9f0-a861-46bc-8db5-e05d4324c00c" x="412" y="-101" width="143" height="70"/>
+				<reportElement uuid="d0b8d9f0-a861-46bc-8db5-e05d4324c00c" x="612" y="-91" width="143" height="70"/>
 				<imageExpression><![CDATA["repo:tid_ffos.gif"]]></imageExpression>
 			</image>
 		</band>
 	</background>
 	<summary>
-		<band height="704">
+		<band height="457">
+			<staticText>
+				<reportElement uuid="2da3c7cb-8da1-4a16-942f-44f7a02107ff" x="250" y="17" width="221" height="20"/>
+				<textElement/>
+				<text><![CDATA[Terminals which registered by MNO]]></text>
+			</staticText>
 			<componentElement>
-				<reportElement uuid="8ad10204-88fb-4da5-b314-cc1864f2c370" key="table 2" style="table 2" x="116" y="509" width="266" height="80"/>
+				<reportElement uuid="54ed13fb-b464-4690-a1bd-0064b68eb098" key="table 6" style="table 6" x="250" y="45" width="280" height="50"/>
 				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="New Dataset 1" uuid="fab49a4a-d03e-469d-9313-105b0d03a5b9">
+					<datasetRun subDataset="tot_uniq_uaid_OB_graph" uuid="24c6f3d2-b4ef-455a-a6da-33defaf74ef4">
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="113" uuid="ee37a30e-fddf-4cf1-8861-806b6b964c7c">
-						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
+					<jr:column width="184" uuid="2b03cfad-1c5c-4808-abc4-293e21e7e9a5">
+						<jr:columnHeader style="table 3_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="f4211418-3048-4d9d-bcec-d88cab0e1693" style="table 2_TH" x="0" y="0" width="113" height="30"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+								<reportElement uuid="1123b73e-161e-496d-a814-51f3e18ed57d" style="table 3_TH" mode="Transparent" x="0" y="0" width="184" height="30"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="11" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Hour]]></text>
+								<text><![CDATA[MNO]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
+						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement uuid="666244ff-1afc-49e4-8b4b-28a394cfa15e" x="0" y="0" width="113" height="20"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[new SimpleDateFormat("HH:mm:ss").format($F{Date})]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="71" uuid="602604f9-0a81-4957-a7f6-afd4edf276ae">
-						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
-							<staticText>
-								<reportElement uuid="3afabca5-bea5-45bf-a5d7-a24ff8ed95f4" style="table 2_TH" x="0" y="0" width="71" height="30"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Code]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
-							<textField>
-								<reportElement uuid="47cfe064-b876-4c9f-b174-fff91d6bffeb" x="0" y="0" width="71" height="20"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{Code}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="90" uuid="fbfb28f1-9ede-4fcc-aaef-790c005001e6">
-						<jr:columnHeader style="table 2_CH" height="30" rowSpan="1">
-							<staticText>
-								<reportElement uuid="b362580d-02a0-4d23-baa6-7bc8eab6e695" style="table 2_TH" x="0" y="0" width="90" height="30"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Total]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="table 2_TD" height="20" rowSpan="1">
-							<textField>
-								<reportElement uuid="34e7ee07-36a7-4cf4-8ba0-b16440380733" x="0" y="0" width="90" height="20"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{Total}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-				</jr:table>
-			</componentElement>
-			<componentElement>
-				<reportElement uuid="8947a63d-2db1-4de2-91ba-19e71a07f437" key="table 3" style="table 3_TD" x="65" y="387" width="451" height="110"/>
-				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
-					<datasetRun subDataset="New Dataset 2" uuid="76c5781f-7e16-4503-8480-568db7fe52e2">
-						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-					</datasetRun>
-					<jr:column width="234" uuid="451fc773-2ff5-4865-b047-f33623b88481">
-						<jr:columnHeader style="table 2_TH" height="25" rowSpan="1">
-							<staticText>
-								<reportElement uuid="f58f6603-9993-4392-a79f-6dddde4f9da9" style="table 2_TH" mode="Opaque" x="0" y="0" width="234" height="25" forecolor="#000000" backcolor="#FF7F50"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
-									<font fontName="SansSerif" size="12" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-									<paragraph lineSpacing="Single"/>
-								</textElement>
-								<text><![CDATA[(Country) Network Operator]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell height="24" rowSpan="1">
-							<box>
-								<topPen lineWidth="0.5"/>
-								<leftPen lineWidth="0.5"/>
-								<bottomPen lineWidth="0.5"/>
-								<rightPen lineWidth="0.5"/>
-							</box>
-							<textField>
-								<reportElement uuid="71b03f1b-6d4c-4271-ad46-8f248f513593" x="0" y="0" width="234" height="24"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
+								<reportElement uuid="b9747b7a-8adb-45a6-9837-61c0ccb60dbd" x="0" y="0" width="184" height="20"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle"/>
 								<textFieldExpression><![CDATA[$F{country}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="90" uuid="9d8a1875-5ae6-4a66-ac81-44c31e4d52ea">
-						<jr:columnHeader style="table 2_TH" height="25" rowSpan="1">
+					<jr:column width="90" uuid="5c5d9655-2695-42f9-bd2d-0cc42c22f7e8">
+						<jr:columnHeader style="table 3_TH" height="30" rowSpan="1">
 							<staticText>
-								<reportElement uuid="edfdcc56-d52e-46d0-9dbb-7e3e418f805b" style="table 2_TH" mode="Opaque" x="0" y="0" width="90" height="25"/>
+								<reportElement uuid="940ee253-518a-4b75-a4f8-e9e9afc415bb" style="table 3_TH" mode="Transparent" x="0" y="0" width="90" height="30"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Code]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="table 3_TD" height="24" rowSpan="1">
-							<textField>
-								<reportElement uuid="5150bb2d-6159-4084-9f38-4092992857e7" x="0" y="0" width="90" height="24"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{Code}]]></textFieldExpression>
-							</textField>
-						</jr:detailCell>
-					</jr:column>
-					<jr:column width="91" uuid="ba96969b-4b54-47a4-b2ce-f655d9b135e9">
-						<jr:columnHeader style="table 2_TH" height="25" rowSpan="1">
-							<staticText>
-								<reportElement uuid="62dd7d10-abda-4257-b208-ab5cf7747b9e" style="table 2_TH" mode="Opaque" x="0" y="0" width="91" height="25"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="12" isBold="true"/>
+									<font size="11" isBold="true"/>
 								</textElement>
 								<text><![CDATA[Total]]></text>
 							</staticText>
 						</jr:columnHeader>
-						<jr:detailCell style="table 3_TD" height="24" rowSpan="1">
+						<jr:detailCell style="table 6_TD" height="20" rowSpan="1">
 							<textField>
-								<reportElement uuid="966358f7-946a-4d24-8126-08f24e193be6" x="0" y="0" width="91" height="24"/>
+								<reportElement uuid="3a3764bd-89a7-404d-b245-871a99e10b61" x="0" y="0" width="90" height="20"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle"/>
-								<textFieldExpression><![CDATA[$F{totales}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{Tot_uaid}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
 				</jr:table>
 			</componentElement>
-			<timeSeriesChart>
-				<chart>
-					<reportElement uuid="1d97095d-488c-4424-b370-0c3a810188c2" x="12" y="32" width="517" height="289"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<timeSeriesDataset timePeriod="Hour">
-					<dataset>
-						<datasetRun subDataset="New Dataset 1" uuid="643bf388-24b5-4f6b-ab90-6ee6951898aa"/>
-					</dataset>
-					<timeSeries>
-						<seriesExpression><![CDATA[$F{country}]]></seriesExpression>
-						<timePeriodExpression><![CDATA[$F{Date}]]></timePeriodExpression>
-						<valueExpression><![CDATA[$F{Total}]]></valueExpression>
-					</timeSeries>
-				</timeSeriesDataset>
-				<timeSeriesPlot>
-					<plot/>
-					<timeAxisFormat>
-						<axisFormat/>
-					</timeAxisFormat>
-					<valueAxisFormat>
-						<axisFormat/>
-					</valueAxisFormat>
-				</timeSeriesPlot>
-			</timeSeriesChart>
-			<staticText>
-				<reportElement uuid="c7c574f2-b0ff-4944-a724-700366a21026" x="34" y="338" width="495" height="34"/>
-				<textElement/>
-				<text><![CDATA[This report shows the estimated number of terminals which issued at least one registration request in the period]]></text>
-			</staticText>
 		</band>
 	</summary>
 </jasperReport>

@@ -2,6 +2,7 @@
 -- Host:                         localhost
 -- Versión del servidor:         5.1.69 - Source distribution
 -- SO del servidor:              redhat-linux-gnu
+-- HeidiSQL Versión:             8.1.0.4545
 -- --------------------------------------------------------
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -18,7 +19,8 @@ CREATE TABLE IF NOT EXISTS `network_country_codes` (
   PRIMARY KEY (`mcc`,`mnc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_spanish_ci;
 
--- Volcando datos para la tabla kpisdb.network_country_codes: 1.476 rows
+-- Volcando datos para la tabla kpisdb.network_country_codes: 1.478 rows
+DELETE FROM `network_country_codes`;
 /*!40000 ALTER TABLE `network_country_codes` DISABLE KEYS */;
 INSERT INTO `network_country_codes` (`mcc`, `mnc`, `country`, `ob`) VALUES
 	('412', '1', 'AF', 'AWCC'),
@@ -1496,7 +1498,9 @@ INSERT INTO `network_country_codes` (`mcc`, `mnc`, `country`, `ob`) VALUES
 	('648', '1', 'ZW', 'Net One'),
 	('648', '3', 'ZW', 'Telecel'),
 	('648', '4', 'ZW', 'Econet'),
-	('0', '0', 'OTT', 'Wi-Fi');
+	('0', '0', 'OTT', 'Wi-Fi'),
+	('716', '6', 'PE', 'Telefónica Móviles Perú'),
+	('334', '30', 'MX', 'Movistar México (Movistar INTERNET)');
 /*!40000 ALTER TABLE `network_country_codes` ENABLE KEYS */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

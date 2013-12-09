@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="811" leftMargin="20" rightMargin="11" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
-	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.zoom" value="0.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="864"/>
-	<property name="ireport.jasperserver.reportUnit" value="/OWD/RegisterReq_1"/>
-	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
+	<property name="ireport.y" value="240"/>
+	<property name="ireport.jasperserver.reportUnit" value="/OWD/OWDMCCMNC"/>
+	<property name="ireport.jasperserver.url" value="http://10.26.204.184:8080/jasperserver-pro/services/repository"/>
 	<style name="table">
 		<box>
 			<pen lineWidth="1.0" lineColor="#000000"/>
@@ -106,14 +106,32 @@
 			<pen lineWidth="0.5" lineColor="#000000"/>
 		</box>
 	</style>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
 	<subDataset name="New Dataset 1" uuid="eda2c39d-4358-4979-9d9f-f3387f27db91">
 		<queryString>
 			<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
 HOUR(FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Hora,
-CONCAT(CAST(preg.mcc AS CHAR(3)),' : ', CAST(preg.mnc AS CHAR(2))) AS Code,
-preg.mcc, preg.mnc,CONCAT('(',country,')',' ',ob,' ') AS country,
-COUNT(*) as Totales,
-COUNT(DISTINCT preg.uaid) as Totales_UAID
+preg.mcc, CONCAT(' ',country,' ') AS country,
+COUNT(*) as Totales
 FROM kpisdb.peticiones_registros AS preg
 LEFT JOIN network_country_codes AS ncc
 ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
@@ -123,47 +141,43 @@ WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
    AND
    ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
    AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
-GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), preg.mcc, preg.mnc]]>
+   AND ncc.country IS NOT NULL
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), preg.mcc]]>
 		</queryString>
 		<field name="Date" class="java.sql.Timestamp"/>
 		<field name="Hora" class="java.lang.Integer"/>
-		<field name="Code" class="java.lang.String"/>
 		<field name="mcc" class="java.lang.Integer">
-			<fieldDescription><![CDATA[]]></fieldDescription>
-		</field>
-		<field name="mnc" class="java.lang.Integer">
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
 		<field name="country" class="java.lang.String">
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
 		<field name="Totales" class="java.lang.Long"/>
-		<field name="Totales_UAID" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="New Dataset 2" uuid="c4b78c2b-78c2-49c6-bbda-354503cb1023">
 		<queryString>
-			<![CDATA[SELECT CONCAT(CAST(mcc AS CHAR(3)),' : ', CAST(mnc AS CHAR(3))) AS Code,
-mcc, mnc,
-COUNT(*) AS totales
-FROM kpisdb.peticiones_registros
+			<![CDATA[SELECT HOUR(FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Hora, uaid,
+preg.mcc, CONCAT(' ',ncc.country,' ') AS country
+FROM kpisdb.peticiones_registros AS preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
 WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
    BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
    AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
    AND
    ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
-   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
-GROUP BY mcc, mnc
-ORDER BY totales DESC
-LIMIT 10]]>
+   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")]]>
 		</queryString>
-		<field name="Code" class="java.lang.String"/>
+		<field name="Hora" class="java.lang.Long"/>
+		<field name="uaid" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
 		<field name="mcc" class="java.lang.Integer">
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
-		<field name="mnc" class="java.lang.Integer">
+		<field name="country" class="java.lang.String">
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
-		<field name="totales" class="java.lang.Long"/>
 	</subDataset>
 	<subDataset name="New Dataset 3" uuid="7996e9d0-1c81-4be4-89af-5904ce49d229">
 		<queryString>
@@ -188,31 +202,222 @@ WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
 			<fieldDescription><![CDATA[]]></fieldDescription>
 		</field>
 	</subDataset>
-	<queryString>
-		<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
-CONCAT(CAST(mcc AS CHAR(3)),' : ', CAST(mnc AS CHAR(2))) AS Code,
-mcc, mnc,
-COUNT(*) as Totales,
-COUNT(DISTINCT peticiones_registros.uaid) as Totales_UAID
-FROM kpisdb.peticiones_registros
+	<subDataset name="unknown_mcc_mnc" uuid="a894da22-d1bf-4aa6-9ec1-b5ab968082cd">
+		<queryString>
+			<![CDATA[SELECT (FROM_UNIXTIME(fecha - MOD(fecha,3600))) as Date,
+preg.mcc, preg.mnc, "UNKNOWN" AS country,
+COUNT(*) as Totales
+FROM kpisdb.peticiones_registros AS preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
 WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
    BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
    AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
    AND
    ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
    AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
-GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
+   AND ncc.country IS NULL
+GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), preg.mcc]]>
+		</queryString>
+		<field name="Date" class="java.sql.Timestamp"/>
+		<field name="mcc" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="mnc" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="country" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="Totales" class="java.lang.Long"/>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT fecha
+FROM peticiones_registros
+LIMIT 100]]>
 	</queryString>
-	<field name="Date" class="java.sql.Timestamp"/>
-	<field name="Code" class="java.lang.String"/>
-	<field name="mcc" class="java.lang.Integer">
+	<field name="fecha" class="java.lang.Long">
 		<fieldDescription><![CDATA[]]></fieldDescription>
 	</field>
-	<field name="mnc" class="java.lang.Integer">
-		<fieldDescription><![CDATA[]]></fieldDescription>
-	</field>
-	<field name="Totales" class="java.lang.Long"/>
-	<field name="Totales_UAID" class="java.lang.Long"/>
+	<group name="Graph" isStartNewPage="true">
+		<groupHeader>
+			<band height="457">
+				<lineChart>
+					<chart>
+						<reportElement uuid="c852b17f-2b3a-40d0-96bb-873fe5263172" x="0" y="0" width="811" height="457"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="New Dataset 1" uuid="9bd6a2bb-c6a1-4590-ac01-e8a6776e89df"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA[$F{country}]]></seriesExpression>
+							<categoryExpression><![CDATA[new SimpleDateFormat("HH").format($F{Date})]]></categoryExpression>
+							<valueExpression><![CDATA[$F{Totales}]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<linePlot>
+						<plot/>
+						<categoryAxisFormat>
+							<axisFormat/>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</linePlot>
+				</lineChart>
+			</band>
+			<band height="457">
+				<crosstab>
+					<reportElement uuid="68b9d15c-123b-49a9-9157-77c23696d5f8" x="0" y="0" width="811" height="457"/>
+					<crosstabDataset>
+						<dataset>
+							<datasetRun subDataset="New Dataset 2" uuid="3a47a2a5-b8a0-4e87-b4dc-6bee5e0ad009">
+								<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+							</datasetRun>
+						</dataset>
+					</crosstabDataset>
+					<crosstabHeaderCell>
+						<cellContents>
+							<staticText>
+								<reportElement uuid="ae6ebd4a-0241-4ba3-9049-168def30d596" style="Crosstab Data Text" x="0" y="0" width="40" height="30"/>
+								<textElement verticalAlignment="Middle">
+									<font size="7" isBold="true"/>
+								</textElement>
+								<text><![CDATA[OB / Hour]]></text>
+							</staticText>
+						</cellContents>
+					</crosstabHeaderCell>
+					<rowGroup name="country" width="40" totalPosition="End">
+						<bucket order="Descending" class="java.lang.String">
+							<bucketExpression><![CDATA[$F{country}]]></bucketExpression>
+							<orderByExpression><![CDATA[$V{uaidMeasure}]]></orderByExpression>
+						</bucket>
+						<crosstabRowHeader>
+							<cellContents backcolor="#FF7F50" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement uuid="05a8a03b-0d2c-4fc9-905b-3ee82b847630" style="Crosstab Data Text" x="0" y="0" width="40" height="20"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle"/>
+									<textFieldExpression><![CDATA[$V{country}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabRowHeader>
+						<crosstabTotalRowHeader>
+							<cellContents backcolor="#FFD0BF" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<staticText>
+									<reportElement uuid="0d721511-5d1e-4bb3-b797-9b41c6cbf533" x="0" y="0" width="40" height="25"/>
+									<textElement textAlignment="Right" verticalAlignment="Middle"/>
+									<text><![CDATA[Total   ]]></text>
+								</staticText>
+							</cellContents>
+						</crosstabTotalRowHeader>
+					</rowGroup>
+					<columnGroup name="Hora" height="30" totalPosition="End">
+						<bucket class="java.lang.Long">
+							<bucketExpression><![CDATA[$F{Hora}]]></bucketExpression>
+						</bucket>
+						<crosstabColumnHeader>
+							<cellContents backcolor="#FF7F50" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<textField>
+									<reportElement uuid="f956fd7b-8d97-4f37-b17e-2218a195c4d6" style="Crosstab Data Text" x="0" y="0" width="29" height="30"/>
+									<textElement verticalAlignment="Middle">
+										<font isBold="true"/>
+									</textElement>
+									<textFieldExpression><![CDATA[$V{Hora}]]></textFieldExpression>
+								</textField>
+							</cellContents>
+						</crosstabColumnHeader>
+						<crosstabTotalColumnHeader>
+							<cellContents backcolor="#FFD0BF" mode="Opaque">
+								<box>
+									<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+								</box>
+								<staticText>
+									<reportElement uuid="ba9b37f3-75d6-4e62-a18d-fb0e1e8e48bb" x="0" y="0" width="39" height="30"/>
+									<textElement textAlignment="Center" verticalAlignment="Middle">
+										<font isBold="true"/>
+									</textElement>
+									<text><![CDATA[Total]]></text>
+								</staticText>
+							</cellContents>
+						</crosstabTotalColumnHeader>
+					</columnGroup>
+					<measure name="uaidMeasure" class="java.lang.Integer" calculation="Count">
+						<measureExpression><![CDATA[$F{uaid}]]></measureExpression>
+					</measure>
+					<crosstabCell width="29" height="20">
+						<cellContents>
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="9182ea61-66cb-4ebd-9735-ad309212e604" style="Crosstab Data Text" x="0" y="0" width="29" height="20"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{uaidMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="29" height="25" rowTotalGroup="country">
+						<cellContents backcolor="#FFD0BF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="e70f25c9-b2a8-46de-86c0-cd02f18589ca" style="Crosstab Data Text" x="0" y="0" width="29" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{uaidMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="39" height="20" columnTotalGroup="Hora">
+						<cellContents backcolor="#FFD0BF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="9ea8e679-631f-4d9e-825b-b9a3a772cbfa" style="Crosstab Data Text" x="0" y="0" width="39" height="20"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{uaidMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+					<crosstabCell width="39" rowTotalGroup="country" columnTotalGroup="Hora">
+						<cellContents backcolor="#FFD0BF" mode="Opaque">
+							<box>
+								<pen lineWidth="0.5" lineStyle="Solid" lineColor="#000000"/>
+							</box>
+							<textField>
+								<reportElement uuid="da213b80-4285-45ab-b825-7c22985ae35c" style="Crosstab Data Text" x="0" y="0" width="39" height="25"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{uaidMeasure}]]></textFieldExpression>
+							</textField>
+						</cellContents>
+					</crosstabCell>
+				</crosstab>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="unknown"/>
 	<background>
 		<band height="457" splitType="Stretch">
 			<staticText>
@@ -220,7 +425,7 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 				<textElement verticalAlignment="Middle">
 					<font size="16" isBold="true" isItalic="false"/>
 				</textElement>
-				<text><![CDATA[Terminal Registration Requests By MCC:MNC]]></text>
+				<text><![CDATA[Terminal Registration Requests by MCC:MNC]]></text>
 			</staticText>
 			<staticText>
 				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="20" y="-36" width="223" height="20"/>
@@ -244,37 +449,8 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 	</background>
 	<summary>
 		<band height="457">
-			<timeSeriesChart>
-				<chart>
-					<reportElement uuid="adfd207d-30e2-4fd0-850e-862967596eee" x="22" y="31" width="516" height="289"/>
-					<chartTitle/>
-					<chartSubtitle/>
-					<chartLegend/>
-				</chart>
-				<timeSeriesDataset timePeriod="Hour">
-					<dataset>
-						<datasetRun subDataset="New Dataset 1" uuid="ce4f17a6-2aa2-4802-bfcc-edcc9a8de701">
-							<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-						</datasetRun>
-					</dataset>
-					<timeSeries>
-						<seriesExpression><![CDATA[$F{country}]]></seriesExpression>
-						<timePeriodExpression><![CDATA[$F{Date}]]></timePeriodExpression>
-						<valueExpression><![CDATA[$F{Totales}]]></valueExpression>
-					</timeSeries>
-				</timeSeriesDataset>
-				<timeSeriesPlot>
-					<plot/>
-					<timeAxisFormat>
-						<axisFormat/>
-					</timeAxisFormat>
-					<valueAxisFormat>
-						<axisFormat/>
-					</valueAxisFormat>
-				</timeSeriesPlot>
-			</timeSeriesChart>
 			<crosstab>
-				<reportElement uuid="99302508-2102-4e09-9c3a-adcc4a1c841f" x="0" y="340" width="802" height="117"/>
+				<reportElement uuid="99302508-2102-4e09-9c3a-adcc4a1c841f" x="0" y="24" width="802" height="401"/>
 				<crosstabDataset>
 					<dataset>
 						<datasetRun subDataset="New Dataset 3" uuid="df56510e-d51e-4cbc-af32-983268093859">
@@ -282,6 +458,17 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 						</datasetRun>
 					</dataset>
 				</crosstabDataset>
+				<crosstabHeaderCell>
+					<cellContents>
+						<staticText>
+							<reportElement uuid="4b478cd7-27de-42c9-91cf-9e241741f476" style="Crosstab Data Text" x="0" y="0" width="184" height="25"/>
+							<textElement verticalAlignment="Middle">
+								<font isBold="true"/>
+							</textElement>
+							<text><![CDATA[MNO / Hour]]></text>
+						</staticText>
+					</cellContents>
+				</crosstabHeaderCell>
 				<rowGroup name="country" width="184" totalPosition="End">
 					<bucket order="Descending" class="java.lang.String">
 						<bucketExpression><![CDATA[$F{country}]]></bucketExpression>
@@ -351,7 +538,9 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 						</box>
 						<textField>
 							<reportElement uuid="ef5cb7fd-5cad-4fd6-8b33-75dcfff068a9" style="Crosstab Data Text" x="0" y="0" width="24" height="16"/>
-							<textElement verticalAlignment="Middle"/>
+							<textElement verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
 							<textFieldExpression><![CDATA[$V{countryMeasure}]]></textFieldExpression>
 						</textField>
 					</cellContents>
@@ -363,7 +552,9 @@ GROUP BY FROM_UNIXTIME(fecha - MOD(fecha,3600)), mcc, mnc]]>
 						</box>
 						<textField>
 							<reportElement uuid="5c88df2d-7d94-4c22-9422-ce2244696f3d" style="Crosstab Data Text" x="0" y="0" width="24" height="25"/>
-							<textElement verticalAlignment="Middle"/>
+							<textElement verticalAlignment="Middle">
+								<font size="8"/>
+							</textElement>
 							<textFieldExpression><![CDATA[$V{countryMeasure}]]></textFieldExpression>
 						</textField>
 					</cellContents>

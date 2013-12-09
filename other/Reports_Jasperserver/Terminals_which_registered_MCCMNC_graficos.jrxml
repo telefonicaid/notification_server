@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="824"/>
+	<property name="ireport.jasperserver.reportUnit" value="/OWD/OWDMCCMNC_2"/>
+	<property name="ireport.jasperserver.url" value="http://10.26.204.184:8080/jasperserver-pro/services/repository"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="Crosstab Data Text" hAlign="Center"/>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TH" mode="Opaque" backcolor="#FF4500">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_CH" mode="Opaque" backcolor="#FFD1BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 5_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 6_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="tot_uniq_uaid_country_grph" uuid="3644e0aa-4062-4475-a712-1ff792e1a9ad">
+		<queryString>
+			<![CDATA[SELECT COUNT(DISTINCT uaid) as Tot_uaid,
+CONCAT(' ',country,' ') AS country, preg.mcc
+FROM peticiones_registros as preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
+   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
+   AND ncc.country IS NOT NULL
+GROUP BY preg.mcc
+ORDER BY Tot_uaid DESC]]>
+		</queryString>
+		<field name="Tot_uaid" class="java.lang.Long"/>
+		<field name="country" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="mcc" class="java.lang.Integer">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="tot_uniq_uaid_OB_graph" uuid="5766833f-9950-4311-80f2-097c6bb1b820">
+		<queryString>
+			<![CDATA[SELECT COUNT(DISTINCT uaid) as Tot_uaid, preg.mcc, preg.mnc,
+/*CONCAT(' ',country,' ') AS country, preg.mcc*/
+CONCAT('(',country,')',' ',ob,' ',' ') AS country
+FROM peticiones_registros as preg
+LEFT JOIN network_country_codes AS ncc
+ON preg.mcc=ncc.mcc AND preg.mnc=ncc.mnc
+WHERE (STR_TO_DATE( FROM_UNIXTIME(fecha),'%Y-%m-%d %H:%i:%s')
+   BETWEEN DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 DAY),'%Y-%m-%d %H:%i:%s')
+   AND DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 SECOND),'%Y-%m-%d %H:%i:%s'))
+   AND
+   ( uaid <> "05c70dbf-9163-4d88-9f8d-36403137dfa9@98251e644522470948b1ae1807a29b010cf52438"
+   AND uaid <> "adeb277b-98f2-49c6-8b24-9bf8cf4da46c@c4d5f7bd4f09569c4655e42c2ba5019063eaa4e7")
+   AND ncc.country IS NOT NULL
+GROUP BY preg.mcc, preg.mnc
+ORDER BY Tot_uaid DESC]]>
+		</queryString>
+		<field name="Tot_uaid" class="java.lang.Long"/>
+		<field name="country" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT fecha
+FROM peticiones_registros
+LIMIT 5]]>
+	</queryString>
+	<field name="fecha" class="java.lang.Long">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="Crosstab_OB">
+		<groupHeader>
+			<band height="457">
+				<barChart>
+					<chart isShowLegend="false">
+						<reportElement uuid="96568d5b-e54f-4d64-9d25-e28ad2aaf561" x="20" y="61" width="764" height="374"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="tot_uniq_uaid_country_grph" uuid="5643c291-066d-4d87-896c-090754b4f528"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
+							<categoryExpression><![CDATA[$F{country}]]></categoryExpression>
+							<valueExpression><![CDATA[$F{Tot_uaid}]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<barPlot isShowLabels="true">
+						<plot labelRotation="0.0"/>
+						<itemLabel/>
+						<categoryAxisFormat labelRotation="0.0">
+							<axisFormat>
+								<tickLabelFont>
+									<font size="10"/>
+								</tickLabelFont>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</barPlot>
+				</barChart>
+				<staticText>
+					<reportElement uuid="c229e9cb-32e0-461a-9c1b-126454cf7469" x="20" y="16" width="247" height="20"/>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+					<text><![CDATA[Terminals which registered by country]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band height="457" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="20" y="-91" width="466" height="25"/>
+				<textElement verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Terminals which Registered by country and network ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="20" y="-46" width="230" height="20"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="15"/>
+				</textElement>
+				<text><![CDATA[OWD Push Notification Server]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="100" y="-66" width="100" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date() - 1)]]></textFieldExpression>
+			</textField>
+			<image vAlign="Middle">
+				<reportElement uuid="d0b8d9f0-a861-46bc-8db5-e05d4324c00c" x="612" y="-91" width="143" height="70"/>
+				<imageExpression><![CDATA["repo:tid_ffos.gif"]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="f5e537dd-9b42-469e-b597-c7d679171b62" x="20" y="-66" width="80" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Daily view: ]]></text>
+			</staticText>
+		</band>
+	</background>
+	<summary>
+		<band height="457">
+			<barChart>
+				<chart isShowLegend="false">
+					<reportElement uuid="61745f7a-c71a-4d15-83f1-58458b803151" x="18" y="52" width="764" height="389"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="tot_uniq_uaid_OB_graph" uuid="99d61ace-e67b-4411-847d-7fd0ccd06c97"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA["Dummy Series"]]></seriesExpression>
+						<categoryExpression><![CDATA[$F{country}]]></categoryExpression>
+						<valueExpression><![CDATA[$F{Tot_uaid}]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<barPlot isShowLabels="true">
+					<plot labelRotation="-45.0"/>
+					<itemLabel/>
+					<categoryAxisFormat labelRotation="-45.0">
+						<axisFormat>
+							<tickLabelFont>
+								<font size="10"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</barPlot>
+			</barChart>
+			<staticText>
+				<reportElement uuid="2b6dc62a-7ba3-4de6-938d-f4b67c84af83" x="18" y="12" width="249" height="20"/>
+				<textElement>
+					<font size="12"/>
+				</textElement>
+				<text><![CDATA[Terminals which registered by network]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
