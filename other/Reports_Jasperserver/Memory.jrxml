@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report2" language="groovy" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="118" bottomMargin="20" uuid="5ec0ce05-08d3-4e0d-90bb-a9b2a5df8bd5">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.jasperserver.reportUnit" value="/OWD/Memory"/>
+	<property name="ireport.jasperserver.url" value="http://10.26.236.184:8080/jasperserver-prepro/services/repository"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 1_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 2_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 3_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TH" mode="Opaque" backcolor="#FF7F50">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_CH" mode="Opaque" backcolor="#FFD0BF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table 4_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="MEM_ALL" uuid="ac5de2a7-cc52-4706-a637-569fa7db41bb">
+		<queryString language="SQL">
+			<![CDATA[SELECT fecha, host, tipo, valor
+FROM sistema
+WHERE fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+	AND DATE_SUB(CURDATE(), INTERVAL 1 SECOND)
+	AND tipo = "MEM"]]>
+		</queryString>
+		<field name="fecha" class="java.sql.Timestamp">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="host" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="tipo" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="valor" class="java.lang.Float">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="MEM_32" uuid="2f7ceec6-6338-41e7-8434-56d6d7f18bea">
+		<queryString>
+			<![CDATA[SELECT fecha, host, tipo, valor
+FROM sistema
+WHERE DATE(fecha) BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+	AND DATE_SUB(CURDATE(), INTERVAL 1 SECOND)
+	AND tipo = "MEM"
+	AND
+	(host LIKE "%FE01%" OR host LIKE "%FE02%")
+ORDER BY fecha ASC]]>
+		</queryString>
+		<field name="fecha" class="java.sql.Timestamp">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="host" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="tipo" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="valor" class="java.math.BigInteger">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="MEM_16" uuid="147835bb-4bd9-40e5-b955-091ea3638901">
+		<queryString>
+			<![CDATA[SELECT fecha, host, tipo, valor
+FROM sistema
+WHERE DATE(fecha) BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+	AND DATE_SUB(CURDATE(), INTERVAL 1 SECOND)
+	AND tipo = "MEM"
+	AND
+	(host LIKE "%MN01%" OR host LIKE "%MN02%" OR host LIKE "%MN03%"
+	OR host LIKE "%MN04%" OR host LIKE "%BE03%" OR host LIKE "%BE04%" )
+ORDER BY fecha ASC]]>
+		</queryString>
+		<field name="fecha" class="java.sql.Timestamp">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="host" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="tipo" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="valor" class="java.math.BigInteger">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="MEM_8" uuid="88a1837b-8916-41a5-b1e8-d012c34a7140">
+		<queryString>
+			<![CDATA[SELECT fecha, host, tipo, valor
+FROM sistema
+WHERE DATE(fecha) BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+	AND DATE_SUB(CURDATE(), INTERVAL 1 SECOND)
+	AND tipo = "MEM"
+	AND
+	(host LIKE "%BE01%" OR host LIKE "%BE02%" )
+ORDER BY fecha ASC]]>
+		</queryString>
+		<field name="fecha" class="java.sql.Timestamp">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="host" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="tipo" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="valor" class="java.math.BigInteger">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<subDataset name="MEM_4" uuid="abbfbcf3-f371-428a-bed7-a4e1230dbb01">
+		<queryString>
+			<![CDATA[SELECT fecha, host, tipo, valor
+FROM sistema
+WHERE DATE(fecha) BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 DAY)
+	AND DATE_SUB(CURDATE(), INTERVAL 1 SECOND)
+	AND tipo = "MEM"
+	AND
+	(host LIKE "%FE03%" OR host LIKE "%FE04%" OR host LIKE "%AS01%"
+	OR host LIKE "%AS02%" )
+ORDER BY fecha ASC]]>
+		</queryString>
+		<field name="fecha" class="java.sql.Timestamp">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="host" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="tipo" class="java.lang.String">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+		<field name="valor" class="java.math.BigInteger">
+			<fieldDescription><![CDATA[]]></fieldDescription>
+		</field>
+	</subDataset>
+	<queryString>
+		<![CDATA[SELECT *
+FROM sistema
+LIMIT 5]]>
+	</queryString>
+	<field name="Date" class="java.sql.Timestamp"/>
+	<field name="Code" class="java.lang.String"/>
+	<field name="mcc" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="mnc" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="Totales" class="java.lang.Long"/>
+	<field name="Totales_UAID" class="java.lang.Long"/>
+	<group name="MEM32">
+		<groupHeader>
+			<band height="457">
+				<lineChart>
+					<chart>
+						<reportElement uuid="aedbab39-e0ee-44a1-8758-acf5b489634b" x="11" y="74" width="779" height="327"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="MEM_32" uuid="e5a9fbe6-2b32-44e8-a80d-a6f1ef21a068"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA[$F{host}]]></seriesExpression>
+							<categoryExpression><![CDATA[new SimpleDateFormat("HH").format($F{fecha})]]></categoryExpression>
+							<valueExpression><![CDATA[$F{valor}/1000]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<linePlot>
+						<plot/>
+						<categoryAxisFormat>
+							<axisFormat/>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</linePlot>
+				</lineChart>
+				<staticText>
+					<reportElement uuid="6db7348e-3a93-4725-a036-768af876c4fd" x="11" y="28" width="216" height="21"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[32GB Nodes free RAM memory]]></text>
+				</staticText>
+				<staticText>
+					<reportElement uuid="711bb035-7037-40f4-ac1e-3dc403fe7a29" x="31" y="417" width="227" height="20"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Free memory in MB]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="MEM16">
+		<groupHeader>
+			<band height="457">
+				<staticText>
+					<reportElement uuid="a3759b31-1e15-4213-8943-261b62952661" x="11" y="27" width="216" height="21"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[16GB Nodes free RAM memory]]></text>
+				</staticText>
+				<lineChart>
+					<chart>
+						<reportElement uuid="9836cfc9-17c6-4e1b-ada7-a634f066d938" x="11" y="73" width="779" height="327"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="MEM_16" uuid="ff81870e-c132-475b-b283-6634b03bf1a6"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA[$F{host}]]></seriesExpression>
+							<categoryExpression><![CDATA[new SimpleDateFormat("HH").format($F{fecha})]]></categoryExpression>
+							<valueExpression><![CDATA[$F{valor}/1000]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<linePlot>
+						<plot/>
+						<categoryAxisFormat>
+							<axisFormat/>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</linePlot>
+				</lineChart>
+				<staticText>
+					<reportElement uuid="5ae51734-c8e3-4714-94bb-08b6857ea63d" x="31" y="418" width="227" height="20"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Free memory in MB]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="MEM8">
+		<groupHeader>
+			<band height="457">
+				<staticText>
+					<reportElement uuid="5876d54c-45a2-416d-8dea-15bd3e1c34f7" x="33" y="28" width="216" height="21"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="13" isBold="true"/>
+					</textElement>
+					<text><![CDATA[8GB Nodes free RAM memory]]></text>
+				</staticText>
+				<lineChart>
+					<chart>
+						<reportElement uuid="47ed17ff-ba88-4910-bc7b-cd932e1d93fd" x="30" y="73" width="779" height="327"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend/>
+					</chart>
+					<categoryDataset>
+						<dataset>
+							<datasetRun subDataset="MEM_8" uuid="6eeb780a-2ef3-485e-b3ae-f78556a2339a"/>
+						</dataset>
+						<categorySeries>
+							<seriesExpression><![CDATA[$F{host}]]></seriesExpression>
+							<categoryExpression><![CDATA[new SimpleDateFormat("HH").format($F{fecha})]]></categoryExpression>
+							<valueExpression><![CDATA[$F{valor}/1000]]></valueExpression>
+						</categorySeries>
+					</categoryDataset>
+					<linePlot>
+						<plot/>
+						<categoryAxisFormat>
+							<axisFormat/>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat/>
+						</valueAxisFormat>
+					</linePlot>
+				</lineChart>
+				<staticText>
+					<reportElement uuid="59a55871-ca25-475b-a157-3a3e12990e65" x="31" y="418" width="227" height="20"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font size="11"/>
+					</textElement>
+					<text><![CDATA[Free memory in MB]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band height="457" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="bd5f9ed9-0a48-46c2-9391-5b0ae26c8e73" x="11" y="-100" width="351" height="33"/>
+				<textElement verticalAlignment="Middle">
+					<font size="16" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Free RAM memory stats]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ea08a940-5656-435e-9bbb-46209142b228" x="11" y="-47" width="235" height="20"/>
+				<textElement verticalAlignment="Bottom">
+					<font size="15"/>
+				</textElement>
+				<text><![CDATA[OWD Push Notification Server]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement uuid="dcc8ec3a-6b03-44b1-ae78-6d056d15afdd" x="11" y="-67" width="100" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd-MM-yyyy").format(new java.util.Date() - 1)]]></textFieldExpression>
+			</textField>
+			<image vAlign="Middle">
+				<reportElement uuid="cb835308-ab45-481c-b83e-ea24318cef52" x="622" y="-91" width="145" height="72"/>
+				<imageExpression><![CDATA["repo:tid_ffos.gif"]]></imageExpression>
+			</image>
+		</band>
+	</background>
+	<summary>
+		<band height="457">
+			<staticText>
+				<reportElement uuid="f4007f07-8312-4add-82c4-337d4791c318" x="31" y="27" width="216" height="21"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[4GB Nodes free RAM memory]]></text>
+			</staticText>
+			<lineChart>
+				<chart>
+					<reportElement uuid="c24435f5-1d6e-4176-ab15-761e938f144d" x="32" y="72" width="779" height="327"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend/>
+				</chart>
+				<categoryDataset>
+					<dataset>
+						<datasetRun subDataset="MEM_4" uuid="b84857d6-e502-46f7-a712-6fa00e022966"/>
+					</dataset>
+					<categorySeries>
+						<seriesExpression><![CDATA[$F{host}]]></seriesExpression>
+						<categoryExpression><![CDATA[new SimpleDateFormat("HH").format($F{fecha})]]></categoryExpression>
+						<valueExpression><![CDATA[$F{valor}/1000]]></valueExpression>
+					</categorySeries>
+				</categoryDataset>
+				<linePlot>
+					<plot/>
+					<categoryAxisFormat>
+						<axisFormat/>
+					</categoryAxisFormat>
+					<valueAxisFormat>
+						<axisFormat/>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+			<staticText>
+				<reportElement uuid="28ae4dcc-d89f-4045-ac4c-ca510e8b65a7" x="31" y="426" width="227" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="11"/>
+				</textElement>
+				<text><![CDATA[Free memory in MB]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>
