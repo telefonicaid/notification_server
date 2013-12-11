@@ -40,7 +40,7 @@ var sendRegister = function(connection) {
   connection.sendUTF('{"channelID":"' + guid() + '","messageType":"register"}');
 };
 
-var sendNotification = function(where, version) {
+var sendNotification = function(idcon, where, version) {
   if (!where || !version || finishing) return;
   NOTIFICATIONS_SENT++;
   var u = url.parse(where);
@@ -53,7 +53,7 @@ var sendNotification = function(where, version) {
   };
 
   var req = https.request(options, function(res) {
-    debug('notification sent to ' + where + ' version=' + version + ' - ' + res.statusCode);
+    debug('(conn ' + idcon + ') notification sent to url=' + where + ' version=' + version + ' - ' + res.statusCode);
   });
 
   req.on('error', function(e){
@@ -71,7 +71,7 @@ var wsClient = require('websocket').client;
 var ARGS = [];
 if (process.argv.length < 9) {
   console.error('You must use 7 parameters, like this');
-  console.error('node script.js <IP> <Port> <Number of conn> <Interval between starts> <Number of chars> <Interval> <Time to kill>');
+  console.error('node script.js <IP> <Port> <Number of conn> <Interval between start connections> <ACK delay> <Notification interval> <Time to kill>');
   console.error('all intervals are in milliseconds');
   process.exit(1);
 }
@@ -95,7 +95,7 @@ var newConnection = function newConnection() {
   });
   conn.on('connect', function(connection) {
     var identifier = id++;
-    debug('connected on' + identifier);
+    debug('(conn ' + identifier + ') connected');
 
     poolConnections[identifier] = connection;
     connection.identifier = identifier;
@@ -104,16 +104,16 @@ var newConnection = function newConnection() {
 
     connection.on('error', function(error) {
       closed[identifier] = true;
-      debug("Connection Error on" + identifier + " -- " + error.toString());
+      debug('(conn ' + identifier + ') error ' + error.toString());
     });
     connection.on('close', function() {
       closed[identifier] = true;
-      debug('Connection ' + identifier + ' closed');
+      debug('(conn ' + identifier + ') closed');
     });
     connection.on('message', function(message) {
       if (message.type === 'utf8') {
         var json = JSON.parse(message.utf8Data);
-        debug(message.utf8Data);
+        //debug(message.utf8Data);
         if (poolMessages[identifier] == null) {
           poolMessages[identifier] = 0;
         }
@@ -123,20 +123,25 @@ var newConnection = function newConnection() {
           HELLOS_RECEIVED++;
           connection.uaid = json.uaid;
           sendRegister(connection);
-          debug('received hello on conn=' + identifier);
+          debug('(conn ' + identifier + ') received hello');
         } else if (json.messageType === 'register' && json.pushEndpoint) {
           REGISTER_RECEIVED++;
           connection.pushEndpoint = json.pushEndpoint;
-          sendNotification(json.pushEndpoint, Math.floor(Math.random()*100000));
-          debug('received register on conn=' + identifier);
+          sendNotification(identifier, json.pushEndpoint, Math.floor(Math.random()*100000));
+          debug('(conn ' + identifier + ') received register');
         } else if (json.messageType === 'notification') {
           poolMessages[identifier]++;
-          debug('received notification on conn=' + identifier);
-          NOTIFICATIONS_RECEIVED++;
-          json.updates.forEach(function onEachUpdate(update) {
-            var send = '{"messageType": "ack", "updates":[' + JSON.stringify(update) + ']}';
-            connection.sendUTF(send);
+          
+          json.updates.forEach(function(e) {
+            debug('(conn ' + identifier + ') received notification version=' + e.version);
           });
+          NOTIFICATIONS_RECEIVED++;
+          setTimeout(function() {
+            json.updates.forEach(function onEachUpdate(update) {
+              var send = '{"messageType": "ack", "updates":[' + JSON.stringify(update) + ']}';
+              connection.sendUTF(send);
+            });
+          }, ARGS[4]);
         }
       }
     });
@@ -147,7 +152,7 @@ var newConnection = function newConnection() {
         poolConnections[identifier] = null;
         return;
       }
-      sendNotification(connection.pushEndpoint, Math.floor(Math.random()*100000));
+      sendNotification(identifier, connection.pushEndpoint, Math.floor(Math.random()*100000));
     }, ARGS[5]);
     INTERVALS.push(interval);
   });
