@@ -71,6 +71,12 @@ vows.describe('Helper tests').addBatch({
     '192.168.1.11 in 192.168.1.0/24': function() {
       assert.isTrue(hp.isIPInNetwork('192.168.1.11', ['192.168.1.0/24']));
     },
+    '192.168.1.1 is private': function() {
+      assert.isTrue(hp.isIPInNetwork('192.168.1.1'));
+    },
+    '127.0.0.1 in 0.0.0.0/1': function() {
+      assert.isTrue(hp.isIPInNetwork('127.0.0.1', ['0.0.0.0/1']));
+    },
     '10.4.5.6 in 10.0.0.0/8': function() {
       assert.isTrue(hp.isIPInNetwork('10.4.5.6', ['10.0.0.0/8']));
     },
