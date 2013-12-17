@@ -20,7 +20,7 @@
 
 'use strict';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 (function checkArgvLength() {
   if (process.argv.length < 3) {
