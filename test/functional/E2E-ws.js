@@ -1,4 +1,4 @@
-/**
+/** jshint node:true */
 /**
  * E2E test for Push Notifications.
  * This is not a unit test. Just first run the server with the default
@@ -18,9 +18,11 @@
  * will be debug information showing what failed.
  */
 
- process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+'use strict';
 
- (function checkArgvLength() {
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '1';
+
+(function checkArgvLength() {
   if (process.argv.length < 3) {
     console.log('You need to supply the WebSocket to connect to');
     console.log('node E2E.js \'wss://ua.push.tefdigital.com:443/\'');
@@ -31,9 +33,8 @@
 var common = require('./common'),
     debug = common.debug,
     async = require('async'),
-    request = require('request'),
-    fs = require('fs');
-
+    request = require('request');
+    
 var WS = process.argv[2];
 
 var registerUA = function (callback) {
@@ -73,12 +74,12 @@ var registerUA = function (callback) {
         callback = function() {};
         return;
       }
-      debug("Received: '" + message.utf8Data + "'");
+      debug('Received: "' + message.utf8Data + '"');
 
       var msg = JSON.parse(message.utf8Data);
       debug(msg);
-      if (msg.status === 200 && msg.messageType == "hello") {
-        debug("UA registered");
+      if (msg.status === 200 && msg.messageType == 'hello') {
+        debug('UA registered');
         callback(null, connection);
         callback = function() {};
       } else {
@@ -101,13 +102,13 @@ var registerWA = function (connection, callback) {
   connection.sendUTF(msg.toString());
   
   connection.on('error', function(error) {
-    console.log("Connection Error: " + error.toString());
+    console.log('Connection Error: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
 
   });
   connection.on('close', function(error) {
-    console.log("Connection closed: " + error.toString());
+    console.log('Connection closed: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
 
@@ -119,13 +120,13 @@ var registerWA = function (connection, callback) {
 
       return;
     }
-    debug("Received: '" + message.utf8Data + "'");
+    debug('Received: "' + message.utf8Data + '"');
 
     var msg = JSON.parse(message.utf8Data);
     debug(msg);
 
-    if (msg.status === 200 && msg.messageType === "register" && msg.pushEndpoint) {
-      debug("UA registered");
+    if (msg.status === 200 && msg.messageType === 'register' && msg.pushEndpoint) {
+      debug('WA registered');
       callback(null, connection, msg.pushEndpoint);
       callback = function() {};
 
@@ -137,35 +138,9 @@ var registerWA = function (connection, callback) {
   });
 };
 
-var disconnectedForUDP = function(connection, pushEndpoint, callback) {
-  var timeout = setTimeout(function() {
-    callback('disconnectedForUDP --> Not closed correctly');
-    callback = function() {};
-  }, 12000);
-
-  connection.on('error', function(error) {
-    console.log("Connection Error: " + error.toString());
-    callback('disconnectedForUDP -->' + error.toString());
-    callback = function() {};
-
-  });
-  connection.on('close', function(error) {
-    console.log("Connection closed: " + error.toString());
-    if (error.code === 4774) {
-      callback(null, pushEndpoint);
-      callback = function() {};
-      clearTimeout(timeout);
-    } else {
-      callback('disconnectedForUDP --> No correct close code=' + error.code);
-      callback = function() {};
-
-    }
-  });
-};
-
 var sendNotification = function(connection, pushEndpoint, callback) {
   var body = 'version=' + (new Date()).getTime();
-  request.put(pushEndpoint, { body: body }, function (error, response, body) {
+  request.put(pushEndpoint, { body: body }, function (error, response /*, body*/) {
     if (error) {
       callback('sendNotification --> ' + error.toString());
       callback = function() {};
@@ -176,7 +151,7 @@ var sendNotification = function(connection, pushEndpoint, callback) {
       callback = function() {};
       return;
     }
-    callback(null);
+    callback(null, connection);
     callback = function() {};
 
   });
@@ -184,13 +159,13 @@ var sendNotification = function(connection, pushEndpoint, callback) {
 
 var notificationReceived = function(connection, callback) {
   connection.on('error', function(error) {
-    console.log("Connection Error: " + error.toString());
+    console.log('Connection Error: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
 
   });
   connection.on('close', function(error) {
-    console.log("Connection closed: " + error.toString());
+    console.log('Connection closed: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
 
@@ -201,23 +176,22 @@ var notificationReceived = function(connection, callback) {
       callback = function() {};
       return;
     }
-    debug("Received: '" + message.utf8Data + "'");
+    debug('Received: "' + message.utf8Data + '"');
 
     var msg = JSON.parse(message.utf8Data);
     debug(msg);
 
-    if (!Array.isArray(msg)) {
+    if (!Array.isArray(msg.updates)) {
       callback('notificationReceived --> notifications are not an array');
       callback = function() {};
       return;
     }
 
-    if (msg[0].status === 200 && msg[1].messageType === "notification") {
-      callback(null, version, pushEndpoint);
+    if (msg.messageType === 'notification') {
+      callback(null, msg.updates[0].version, msg.updates[0].pushEndpoint);
       callback = function() {};
-
     } else {
-      callback('notificationReceived --> Status is=' + msg[0].status + ' and messageType=' + msg[0].messageType);
+      callback('notificationReceived --> messageType=' + msg.messageType);
       callback = function() {};
 
     }
@@ -230,8 +204,9 @@ var notificationReceived = function(connection, callback) {
 async.waterfall([
   registerUA,
   registerWA,
-  sendNotification
-  ], function(error, results) {
+  sendNotification,
+  notificationReceived
+  ], function(error/*, results*/) {
     if (error) {
       console.log(error);
       process.exit(1);
