@@ -54,6 +54,8 @@ var registerUA = function (callback) {
     } else {
       callback('registerUA --> Not connected');
       callback = function() {};
+      client.removeAllListeners();
+      connection.removeAllListeners();
       return;
     }
 
@@ -62,29 +64,38 @@ var registerUA = function (callback) {
       console.log('registerUA --> Connection Error: ' + error.toString());
       callback(error.toString());
       callback = function() {};
+      client.removeAllListeners();
+      connection.removeAllListeners();
     });
     connection.on('close', function(error) {
       console.log('registerUA --> Connection closed: ' + error.toString());
       callback('registerUA --> ' + error.toString());
       callback = function() {};
+      client.removeAllListeners();
+      connection.removeAllListeners();
     });
     connection.on('message', function(message) {
       if (message.type !== 'utf8') {
         callback('registerUA --> Message not UTF8');
         callback = function() {};
+        client.removeAllListeners();
+        connection.removeAllListeners();
         return;
       }
-      debug('Received: "' + message.utf8Data + '"');
+      debug('registerUA --> Received: "' + message.utf8Data + '"');
 
       var msg = JSON.parse(message.utf8Data);
-      debug(msg);
       if (msg.status === 200 && msg.messageType == 'hello') {
         debug('UA registered');
         callback(null, connection);
         callback = function() {};
+        client.removeAllListeners();
+        connection.removeAllListeners();
       } else {
         callback('registerUA --> Status is=' + msg.status + ' and messageType=' + msg.messageType);
         callback = function() {};
+        client.removeAllListeners();
+        connection.removeAllListeners();
       }
     });
   });
@@ -105,35 +116,35 @@ var registerWA = function (connection, callback) {
     console.log('Connection Error: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
-
+    connection.removeAllListeners();
   });
   connection.on('close', function(error) {
     console.log('Connection closed: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
+    connection.removeAllListeners();
 
   });
   connection.on('message', function(message) {
     if (message.type !== 'utf8') {
       callback('registerWA --> Message is not UTF8');
       callback = function() {};
-
+      connection.removeAllListeners();
       return;
     }
-    debug('Received: "' + message.utf8Data + '"');
+    debug('registerWA --> Received: "' + message.utf8Data + '"');
 
     var msg = JSON.parse(message.utf8Data);
-    debug(msg);
 
     if (msg.status === 200 && msg.messageType === 'register' && msg.pushEndpoint) {
       debug('WA registered');
       callback(null, connection, msg.pushEndpoint);
       callback = function() {};
-
+      connection.removeAllListeners();
     } else {
       callback('registerWA --> Status is=' + msg.status + ' and messageType=' + msg.messageType);
       callback = function() {};
-
+      connection.removeAllListeners();
     }
   });
 };
@@ -162,40 +173,57 @@ var notificationReceived = function(connection, callback) {
     console.log('Connection Error: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
-
+    connection.removeAllListeners();
   });
   connection.on('close', function(error) {
     console.log('Connection closed: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
-
+    connection.removeAllListeners();
   });
   connection.on('message', function(message) {
     if (message.type !== 'utf8') {
       callback('notificationReceived --> Message is not UTF8');
       callback = function() {};
+      connection.removeAllListeners();
       return;
     }
-    debug('Received: "' + message.utf8Data + '"');
+    debug('notificationReceived --> Received: "' + message.utf8Data + '"');
 
     var msg = JSON.parse(message.utf8Data);
-    debug(msg);
 
     if (!Array.isArray(msg.updates)) {
       callback('notificationReceived --> notifications are not an array');
       callback = function() {};
+      connection.removeAllListeners();
       return;
     }
 
     if (msg.messageType === 'notification') {
-      callback(null, msg.updates[0].version, msg.updates[0].pushEndpoint);
+      callback(null, connection, msg.updates);
       callback = function() {};
+      connection.removeAllListeners();
     } else {
       callback('notificationReceived --> messageType=' + msg.messageType);
       callback = function() {};
-
+      connection.removeAllListeners();
     }
   });
+};
+
+var sendACK = function(connection, updates, callback) {
+  var msg = {
+    messageType: 'ack',
+    updates: updates
+  };
+  if (connection.connected) {
+    connection.sendUTF(JSON.stringify(msg));
+    callback(null);
+    callback = function() {};
+  } else {
+    callback('sendACK --> Not connected!!');
+    callback = function() {};
+  }
 };
 
 /**
@@ -205,7 +233,8 @@ async.waterfall([
   registerUA,
   registerWA,
   sendNotification,
-  notificationReceived
+  notificationReceived,
+  sendACK
   ], function(error/*, results*/) {
     if (error) {
       console.log(error);
