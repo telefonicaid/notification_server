@@ -232,7 +232,7 @@ var notificationReceived = function(connection, callback) {
   connection.on('message', function(message) {
     if (message.type !== 'utf8') {
       console.error('notificationReceived --> Message is not UTF8');
-      callback(null, [connection, []]);
+      callback(null, [connection]);
       callback = function() {};
       connection.removeAllListeners();
       clearTimeout(timeout);
@@ -244,7 +244,7 @@ var notificationReceived = function(connection, callback) {
 
     if (!Array.isArray(msg.updates)) {
       console.error('notificationReceived --> notifications are not an array');
-      callback(null, [connection, []]);
+      callback(null, [connection]);
       callback = function() {};
       connection.removeAllListeners();
       clearTimeout(timeout);
@@ -258,7 +258,7 @@ var notificationReceived = function(connection, callback) {
       clearTimeout(timeout);
     } else {
       console.error('notificationReceived --> messageType=' + msg.messageType);
-      callback(null, [connection, []]);
+      callback(null, [connection]);
       callback = function() {};
       connection.removeAllListeners();
       clearTimeout(timeout);
@@ -277,7 +277,7 @@ var sendACK = function(args, callback) {
 
   var msg = {
     messageType: 'ack',
-    updates: args[1]
+    updates: args[1] || []
   };
   if (args[0].connected) {
     args[0].sendUTF(JSON.stringify(msg));
@@ -302,7 +302,7 @@ var foreverNotifications = function(args, callback) {
       console.error('foreverNotifications --> ' + error.toString());
     }
     setTimeout(function() {
-      callback(null, results);
+      callback(error, results);
     }, TIMEOUT);
   });
 };
