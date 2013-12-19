@@ -38,21 +38,34 @@ var common = require('./common'),
 var WS = process.argv[2];
 var TIMEOUT = process.argv[3] * 1000;
 var OPS_TIMEOUT = process.argv[4] * 1000;
+var DEBUG = false;
+
+var debug = function(msg) {
+  if (DEBUG) {
+    console.log(Date.now() + ' -- ' + msg);
+  }
+};
 
 var registerUA = function (callback) {
-  setTimeout(function() {
+  debug('registerUA()');
+
+  var timeout = setTimeout(function() {
     callback('registerUA --> TIMEOUT');
+    client && client.removeAllListeners && client.removeAllListeners();
+    conn && conn.removeAllListeners && conn.removeAllListeners();
   }, OPS_TIMEOUT);
 
   var WebSocketClient = require('websocket').client;
   var client = new WebSocketClient();
+  var conn = null;
 
   client.on('connectFailed', function(error) {
-    console.log('registerUA --> Connect Error: ' + error.toString());
+    debug('registerUA --> Connect Error: ' + error.toString());
   });
 
   client.on('connect', function(connection) {
     debug('WebSocket client connected');
+    conn = connection;
 
     if (connection.connected) {
       var msg = ('{"uaid": null, "messageType":"hello"}');
@@ -62,23 +75,25 @@ var registerUA = function (callback) {
       callback = function() {};
       client.removeAllListeners();
       connection.removeAllListeners();
+      clearTimeout(timeout);
       return;
     }
 
-
     connection.on('error', function(error) {
-      console.log('registerUA --> Connection Error: ' + error.toString());
+      debug('registerUA --> Connection Error: ' + error.toString());
       callback(error.toString());
       callback = function() {};
       client.removeAllListeners();
       connection.removeAllListeners();
+      clearTimeout(timeout);
     });
     connection.on('close', function(error) {
-      console.log('registerUA --> Connection closed: ' + error.toString());
+      debug('registerUA --> Connection closed: ' + error.toString());
       callback('registerUA --> ' + error.toString());
       callback = function() {};
       client.removeAllListeners();
       connection.removeAllListeners();
+      clearTimeout(timeout);
     });
     connection.on('message', function(message) {
       if (message.type !== 'utf8') {
@@ -86,6 +101,7 @@ var registerUA = function (callback) {
         callback = function() {};
         client.removeAllListeners();
         connection.removeAllListeners();
+        clearTimeout(timeout);
         return;
       }
       debug('registerUA --> Received: "' + message.utf8Data + '"');
@@ -97,11 +113,13 @@ var registerUA = function (callback) {
         callback = function() {};
         client.removeAllListeners();
         connection.removeAllListeners();
+        clearTimeout(timeout);
       } else {
         callback('registerUA --> Status is=' + msg.status + ' and messageType=' + msg.messageType);
         callback = function() {};
         client.removeAllListeners();
         connection.removeAllListeners();
+        clearTimeout(timeout);
       }
     });
   });
@@ -110,7 +128,9 @@ var registerUA = function (callback) {
 
 
 var registerWA = function (connection, callback) {
-  setTimeout(function() {
+  debug('registerWA()');
+
+  var timeout = setTimeout(function() {
     callback('registerWA --> TIMEOUT');
   }, OPS_TIMEOUT);
 
@@ -118,28 +138,31 @@ var registerWA = function (connection, callback) {
   if (!connection.connected) {
     callback('registerWA --> Connection is down');
     callback = function() {};
+    clearTimeout(timeout);
     return;
   }
   connection.sendUTF(msg.toString());
   
   connection.on('error', function(error) {
-    console.log('Connection Error: ' + error.toString());
+    debug('Connection Error: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
     connection.removeAllListeners();
+    clearTimeout(timeout);
   });
   connection.on('close', function(error) {
-    console.log('Connection closed: ' + error.toString());
+    debug('Connection closed: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
     connection.removeAllListeners();
-
+    clearTimeout(timeout);
   });
   connection.on('message', function(message) {
     if (message.type !== 'utf8') {
       callback('registerWA --> Message is not UTF8');
       callback = function() {};
       connection.removeAllListeners();
+      clearTimeout(timeout);
       return;
     }
     debug('registerWA --> Received: "' + message.utf8Data + '"');
@@ -151,60 +174,68 @@ var registerWA = function (connection, callback) {
       callback(null, [connection, msg.pushEndpoint]);
       callback = function() {};
       connection.removeAllListeners();
+      clearTimeout(timeout);
     } else {
       callback('registerWA --> Status is=' + msg.status + ' and messageType=' + msg.messageType);
       callback = function() {};
       connection.removeAllListeners();
+      clearTimeout(timeout);
     }
   });
 };
 
 var sendNotification = function(args, callback) {
-  console.log('sendNotification()');
-  setTimeout(function() {
-    callback('sendNotification --> TIMEOUT');
+  debug('sendNotification()');
+
+  var timeout = setTimeout(function() {
+    console.error('sendNotification --> TIMEOUT');
+    callback(null, args[0]);
+    callback = function() {};
   }, OPS_TIMEOUT);
 
   var body = 'version=' + (new Date()).getTime();
   request.put(args[1], { body: body }, function (error, response /*, body*/) {
     if (error) {
-      callback('sendNotification --> ' + error.toString());
-      callback = function() {};
-      return;
+      console.error('sendNotification --> ' + error.toString());
     }
-    if (response.statusCode !== 200) {
-      callback('sendNotification --> Bad statusCode=' + response.statusCode);
-      callback = function() {};
-      return;
+    if (response && response.statusCode !== 200) {
+      console.error('sendNotification --> Bad statusCode=' + response.statusCode);
     }
     callback(null, args[0]);
     callback = function() {};
+    clearTimeout(timeout);
   });
 };
 
 var notificationReceived = function(connection, callback) {
-  console.log('notificationReceived()');
-  setTimeout(function() {
-    callback('notificationReceived --> TIMEOUT');
+  debug('notificationReceived()');
+
+  var timeout = setTimeout(function() {
+    console.error('notificationReceived --> TIMEOUT');
+    callback(null, [connection]);
+    callback = function() {};
+    connection.removeAllListeners();
   }, OPS_TIMEOUT);
 
   connection.on('error', function(error) {
-    console.log('Connection Error: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
     connection.removeAllListeners();
+    clearTimeout(timeout);
   });
   connection.on('close', function(error) {
-    console.log('Connection closed: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
     connection.removeAllListeners();
+    clearTimeout(timeout);
   });
   connection.on('message', function(message) {
     if (message.type !== 'utf8') {
-      callback('notificationReceived --> Message is not UTF8');
+      console.error('notificationReceived --> Message is not UTF8');
+      callback(null, [connection, []]);
       callback = function() {};
       connection.removeAllListeners();
+      clearTimeout(timeout);
       return;
     }
     debug('notificationReceived --> Received: "' + message.utf8Data + '"');
@@ -212,9 +243,11 @@ var notificationReceived = function(connection, callback) {
     var msg = JSON.parse(message.utf8Data);
 
     if (!Array.isArray(msg.updates)) {
-      callback('notificationReceived --> notifications are not an array');
+      console.error('notificationReceived --> notifications are not an array');
+      callback(null, [connection, []]);
       callback = function() {};
       connection.removeAllListeners();
+      clearTimeout(timeout);
       return;
     }
 
@@ -222,16 +255,25 @@ var notificationReceived = function(connection, callback) {
       callback(null, [connection, msg.updates]);
       callback = function() {};
       connection.removeAllListeners();
+      clearTimeout(timeout);
     } else {
-      callback('notificationReceived --> messageType=' + msg.messageType);
+      console.error('notificationReceived --> messageType=' + msg.messageType);
+      callback(null, [connection, []]);
       callback = function() {};
       connection.removeAllListeners();
+      clearTimeout(timeout);
     }
   });
 };
 
 var sendACK = function(args, callback) {
-  console.log('sendACK()');
+  debug('sendACK()');
+
+  var timeout = setTimeout(function() {
+    console.error('sendACK --> TIMEOUT');
+    callback(null);
+    callback = function() {};
+  }, OPS_TIMEOUT);
 
   var msg = {
     messageType: 'ack',
@@ -241,14 +283,16 @@ var sendACK = function(args, callback) {
     args[0].sendUTF(JSON.stringify(msg));
     callback(null);
     callback = function() {};
+    clearTimeout(timeout);
   } else {
     callback('sendACK --> Not connected!!');
     callback = function() {};
+    clearTimeout(timeout);
   }
 };
 
 var foreverNotifications = function(args, callback) {
-  console.log('foreverNotifications()');
+  debug('foreverNotifications()');
   async.waterfall([
     sendNotification.bind(undefined, args),
     notificationReceived,
@@ -258,7 +302,7 @@ var foreverNotifications = function(args, callback) {
       console.error('foreverNotifications --> ' + error.toString());
     }
     setTimeout(function() {
-      callback(error, results);
+      callback(null, results);
     }, TIMEOUT);
   });
 };
@@ -271,6 +315,7 @@ async.waterfall([
   registerWA
   ], function(error, results) {
     if (error) {
+      console.error(error);
       console.error('This _SHOULD_ never be called');
       return;
     }
