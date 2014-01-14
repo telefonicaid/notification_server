@@ -76,14 +76,15 @@ NS_WakeUp_Checker.prototype = {
         Log.error(Log.messages.ERROR_MOBILENETWORKERROR, {
           'error': error
         });
+        cb(error);
         return;
       }
       if (!d) {
         Log.debug('NS_WakeUpChecker:recoverNetworks --> No local nodes found on database');
-        return;
+      } else {
+        Log.debug('NS_WakeUpChecker:recoverNetworks --> Local nodes found: ', d);
       }
-      Log.debug('NS_WakeUpChecker:recoverNetworks --> Local nodes found: ', d);
-      cb(d);
+      cb(null, d);
     });
   },
 
@@ -93,7 +94,14 @@ NS_WakeUp_Checker.prototype = {
     }
     Log.debug('NS_WakeUpChecker:checkNodes -> Checking nodes');
     var self = this;
-    this.recoverNetworks(function(wakeUpNodes){
+    this.recoverNetworks(function(error, wakeUpNodes) {
+      if (error) {
+        return;
+      }
+      if (!Array.isArray(wakeUpNodes)) {
+        Log.error('NS_WakeUpChecker:checkNodes --> Data recovered is not an array. Check backend!');
+        return;
+      }
       wakeUpNodes.forEach(function(node) {
         Log.debug('NS_WakeUpChecker:checkNodes --> Checking Local Proxy server', node);
         self.checkServer(node.wakeup, function(err,res) {
@@ -131,6 +139,7 @@ NS_WakeUp_Checker.prototype = {
       Log.error(Log.messages.ERROR_UDPBADADDRESS, {
         'address': address
       });
+      cb('Bad URL');
       return;
     }
 
@@ -147,6 +156,7 @@ NS_WakeUp_Checker.prototype = {
     }
     if (!protocolHandler) {
       Log.debug('NS_WakeUpChecker::checkServer --> Non valid URL (invalid protocol)');
+      cb('Non valid URL (invalid protocol)');
       return;
     }
     var options = {
@@ -155,12 +165,11 @@ NS_WakeUp_Checker.prototype = {
       path: '/status',
       agent: false
     };
-    protocolHandler.get(options,
-      function(res) {
-        cb(null, res);
-      }).on('error', function(e) {
-        cb(e);
-      }).end();
+    protocolHandler.get(options, function(res) {
+      cb(null, res);
+    }).on('error', function(e) {
+      cb(e.message);
+    });
   }
 };
 
