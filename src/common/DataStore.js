@@ -226,7 +226,7 @@ var DataStore = function () {
 /**
  * Register a new application
  */
-  this.registerApplication = function (appToken, channelID, uaid, cert, callback) {
+  this.registerApplication = function (appToken, channelID, uaid, callback) {
     // Store in MongoDB
     this.db.collection('apps', function (err, collection) {
       if (!err) {
@@ -234,7 +234,6 @@ var DataStore = function () {
           { _id: appToken },
           [],
           { $set: {
-            ce: cert,
             ch: channelID
           },
             $addToSet: {

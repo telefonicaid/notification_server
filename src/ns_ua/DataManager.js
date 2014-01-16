@@ -132,9 +132,9 @@ function DataManager() {
   /**
    * Register a new application
    */
-  this.registerApplication = function (appToken, channelID, uaid, cert, callback) {
+  this.registerApplication = function (appToken, channelID, uaid, callback) {
     // Store in persistent storage
-    DataStore.registerApplication(appToken, channelID, uaid, cert, callback);
+    DataStore.registerApplication(appToken, channelID, uaid, callback);
   },
 
  /**

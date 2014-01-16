@@ -590,7 +590,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
           appToken: appToken
         });
 
-        DataManager.registerApplication(appToken, channelID, connection.uaid, null, function(error) {
+        DataManager.registerApplication(appToken, channelID, connection.uaid, function(error) {
           if (!error) {
             var notifyURL = Helpers.getNotificationURL(appToken);
             connection.res({
@@ -893,7 +893,7 @@ NS_UA_WS.prototype.recoveryChannels = function(uaid, channelIDs) {
       Log.debug('WS::onWSMessage::recoveryChannels --> UAID=' + uaid +
                 ', to register=' + ch);
       var appToken = Helpers.getAppToken(ch, uaid);
-      DataManager.registerApplication(appToken, ch, uaid, null, function(error) {
+      DataManager.registerApplication(appToken, ch, uaid, function(error) {
         if (error) {
           Log.debug('WS::onWSMessage::recoveryChannels --> Failing registering channelID');
           return;
