@@ -1,3 +1,4 @@
+
 'use strict';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -24,7 +25,7 @@ exec(path.resolve('./scripts/add_wakeupserver_ip.sh') + ' 214 007 https://localh
     }
   }
 );
-exec(path.resolve('./scripts/add_wakeupserver_networks.sh') + ' 214 007 0.0.0.0/1',
+exec(path.resolve('./scripts/add_wakeupserver_networks.sh') + ' 214 007 127.0.0.0/24',
   function(error, stdout, stderr) {
     if (error) {
       console.log('IP networks insertion ERRORED' + error);
@@ -49,8 +50,17 @@ var PushTest = {
       debug('WebSocket client connected');
       connection.on('error', function(error) {
         console.log('Connection Error: ' + error.toString());
-        cb(error.toString());
-        cb = function() {};
+        // Hack. Since we are dropping the connection and not waiting
+        // for an ACK, we might end up with this error on Node 0.10+.
+        // But we can check the closeReasonCode that the server
+        // sent us.
+        if (error.toString().indexOf('EPIPE')) {
+          cb(null, connection.closeReasonCode);
+          cb = function() {};
+        } else {
+          cb(error.toString());
+          cb = function() {};
+        }
       });
       connection.on('close', function(code) {
         cb(null, code);
@@ -79,7 +89,7 @@ var PushTest = {
 
       (function sendRegisterUAMessage() {
         if (connection.connected) {
-          var msg = '{"uaid":null,"channelIDs":[],"wakeup_hostport":{"ip":"192.168.1.1","port":8080},"mobilenetwork":{"mcc":"214","mnc":"07"},"protocol":"udp","messageType":"hello"}';
+          var msg = '{"uaid":null,"channelIDs":[],"wakeup_hostport":{"ip":"127.0.0.1","port":8080},"mobilenetwork":{"mcc":"214","mnc":"07"},"protocol":"udp","messageType":"hello"}';
           connection.sendUTF(msg.toString());
           PushTest.registerUAOK = false;
         } else {
