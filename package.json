@@ -32,7 +32,8 @@
     "amqp": "0.1.x",
     "string": "1.8.x",
     "forever-monitor": "1.2.x",
-    "request": "2.x.x"
+    "request": "2.x.x",
+    "async": "0.2.x"
   },
   "devDependencies": {
     "vows": "0.7.x",
