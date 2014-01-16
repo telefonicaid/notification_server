@@ -1,4 +1,4 @@
-/**
+/** jshint node:true */
 /**
  * E2E test for Push Notifications.
  * This is not a unit test. Just first run the server with the default
@@ -18,9 +18,11 @@
  * will be debug information showing what failed.
  */
 
- process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+'use strict';
 
- (function checkArgvLength() {
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
+(function checkArgvLength() {
   if (process.argv.length < 3) {
     console.log('You need to supply the WebSocket to connect to');
     console.log('node E2E.js \'wss://ua.push.tefdigital.com:443/\'');
@@ -29,15 +31,43 @@
 })();
 
 var common = require('./common'),
+    exec = require('child_process').exec,
     debug = common.debug,
     async = require('async'),
     request = require('request'),
     fs = require('fs'),
-    dgram = require('dgram');
+    dgram = require('dgram'),
+    path = require('path');
 
 var WS = process.argv[2];
 var PORT = 44444;
 var IP = '127.0.0.1';
+
+/**
+ * First, we need to add a wakeup server to the carrier we are going to test
+ * which is 214-07. We are going to use the script on $root/scripts/add_wakeup_server_ip.sh.
+ *
+ */
+exec(path.resolve('scripts/add_wakeupserver_ip.sh') + ' 214 007 https://localhost:8090/',
+  function(error, stdout, stderr) {
+    if (error) {
+      debug('Wakeup Server insertion ERRORED');
+      process.exit(1);
+    } else {
+      debug('Wakeup Server correctly added');
+    }
+  }
+);
+exec(path.resolve('./scripts/add_wakeupserver_networks.sh') + ' 214 007 127.0.0.0/24',
+  function(error, stdout, stderr) {
+    if (error) {
+      console.log('IP networks insertion ERRORED' + error);
+      process.exit(1);
+    } else {
+      debug('IP networks correctly added');
+    }
+  }
+);
 
 var registerUA = function (callback) {
   var WebSocketClient = require('websocket').client;
@@ -76,12 +106,12 @@ var registerUA = function (callback) {
         callback = function() {};
         return;
       }
-      debug("Received: '" + message.utf8Data + "'");
+      debug('Received: "' + message.utf8Data + '"');
 
       var msg = JSON.parse(message.utf8Data);
       debug(msg);
-      if (msg.status === 201 && msg.messageType == "hello") {
-        debug("UA registered");
+      if (msg.status === 201 && msg.messageType == 'hello') {
+        debug('UA registered');
         callback(null, connection);
         callback = function() {};
         connection.removeAllListeners();
@@ -105,13 +135,13 @@ var registerWA = function (connection, callback) {
   connection.sendUTF(msg.toString());
   
   connection.on('error', function(error) {
-    console.log("Connection Error: " + error.toString());
+    console.log('Connection Error: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
 
   });
   connection.on('close', function(error) {
-    console.log("Connection closed: " + error.toString());
+    console.log('Connection closed: ' + error.toString());
     callback('registerWA -->' + error.toString());
     callback = function() {};
 
@@ -123,13 +153,13 @@ var registerWA = function (connection, callback) {
 
       return;
     }
-    debug("Received: '" + message.utf8Data + "'");
+    debug('Received: "' + message.utf8Data + '"');
 
     var msg = JSON.parse(message.utf8Data);
     debug(msg);
 
-    if (msg.status === 200 && msg.messageType === "register" && msg.pushEndpoint) {
-      debug("WA registered");
+    if (msg.status === 200 && msg.messageType === 'register' && msg.pushEndpoint) {
+      debug('WA registered');
       callback(null, connection, msg.pushEndpoint);
       callback = function() {};
       connection.removeAllListeners();
@@ -147,8 +177,23 @@ var disconnectedForUDP = function(connection, pushEndpoint, callback) {
   }, 12000);
 
   connection.on('error', function(error) {
-    callback('disconnectedForUDP -->' + error.stack);
-    callback = function() {};
+    // Hack. Since we are dropping the connection and not waiting
+    // for an ACK, we might end up with this error on Node 0.10+.
+    // But we can check the closeReasonCode that the server
+    // sent us.
+    if (error.toString().indexOf('EPIPE')) {
+      if (connection.closeReasonCode === 4774) {
+        callback(null, connection, pushEndpoint);
+        callback = function() {};
+        clearTimeout(timeout);
+        connection.removeAllListeners();
+      }
+      callback(null, connection.closeReasonCode);
+      callback = function() {};
+    } else {
+      callback('disconnectedForUDP -->' + error.stack);
+      callback = function() {};
+    }
   });
   connection.on('close', function(error) {
     if (error === 4774) {
@@ -184,13 +229,13 @@ var sendNotification = function(connection, pushEndpoint, callback) {
 
 var notificationReceived = function(connection, callback) {
   connection.on('error', function(error) {
-    console.log("Connection Error: " + error.toString());
+    console.log('Connection Error: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
 
   });
   connection.on('close', function(error) {
-    console.log("Connection closed: " + error.toString());
+    console.log('Connection closed: ' + error.toString());
     callback('notificationReceived -->' + error.toString());
     callback = function() {};
 
@@ -201,7 +246,7 @@ var notificationReceived = function(connection, callback) {
       callback = function() {};
       return;
     }
-    debug("Received: '" + message.utf8Data + "'");
+    debug('Received: "' + message.utf8Data + '"');
 
     var msg = JSON.parse(message.utf8Data);
     debug(msg);
@@ -233,16 +278,16 @@ var notificationUDPReceived = function(callback) {
 
   var server = dgram.createSocket("udp4");
 
-  server.on("error", function (err) {
-    console.log("server error:\n" + err.stack);
+  server.on('error', function (err) {
+    console.log('server error:\n' + err.stack);
     callback(err.stack);
     callback = function() {};
     server.close();
   });
 
-  server.on("message", function (msg, rinfo) {
-    console.log("server got: " + msg + " from " +
-      rinfo.address + ":" + rinfo.port);
+  server.on('message', function (msg, rinfo) {
+    console.log('server got: ' + msg + ' from ' +
+      rinfo.address + ':' + rinfo.port);
     callback(null);
     callback = function() {};
     clearTimeout(timeout);
