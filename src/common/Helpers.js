@@ -104,8 +104,6 @@ function getCaChannel() {
 exports.getCaChannel = getCaChannel;
 
 function isIPInNetwork(ip, networks) {
-  var range_check = require('range_check');
-
   if (!net.isIP(ip)) {
     return false;
   }
@@ -123,6 +121,30 @@ function isIPInNetwork(ip, networks) {
   }
   //If IP is in one of the network ranges, we think that you are in a
   //private network and can be woken up.
-  return range_check.in_range(ip, networks);
+  return __isIPInNetworks(ip, networks);
 }
 exports.isIPInNetwork = isIPInNetwork;
+
+function __isIPInNetworks(ip, networks) {
+  var rv = false;
+  networks.forEach(function(network) {
+    //If is found in other network, return.
+    if (rv) {
+      return;
+    }
+    var split = network.split('/');
+    var ad1 = __ipAddr2Int(ip);
+    var ad2 = __ipAddr2Int(split[0]);
+    var mask = -1 << (32-split[1]);
+
+    rv = (ad1 & mask) == ad2;
+  });
+  return rv;
+}
+
+function __ipAddr2Int(ip) {
+  var split = ip.split('.');
+  return split[0] << 24 | split[1] << 16 | split[2] << 8 | split[3];
+}
+
+console.log(isIPInNetwork('127.0.0.1', ['127.0.0.0/24']));
