@@ -24,7 +24,7 @@ exec(path.resolve('./scripts/add_wakeupserver_ip.sh') + ' 214 007 https://localh
     }
   }
 );
-exec(path.resolve('./scripts/add_wakeupserver_networks.sh') + ' 214 007 0.0.0.0/1',
+exec(path.resolve('./scripts/add_wakeupserver_networks.sh') + ' 214 007 127.0.0.0/24',
   function(error, stdout, stderr) {
     if (error) {
       console.log('IP networks insertion ERRORED' + error);
@@ -80,7 +80,7 @@ var PushTest = {
 
       (function sendRegisterUAMessage() {
         if (connection.connected) {
-          var msg = '{"uaid":null,"channelIDs":[],"wakeup_hostport":{"ip":"192.168.1.1","port":8080},"mobilenetwork":{"mcc":"214","mnc":"07"},"protocol":"udp","messageType":"hello"}';
+          var msg = '{"uaid":null,"channelIDs":[],"wakeup_hostport":{"ip":"127.0.0.1","port":8080},"mobilenetwork":{"mcc":"214","mnc":"07"},"protocol":"udp","messageType":"hello"}';
           connection.sendUTF(msg.toString());
           PushTest.registerUAOK = false;
         } else {
