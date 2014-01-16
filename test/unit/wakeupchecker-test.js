@@ -68,7 +68,8 @@ vows.describe('WakeUp checker').addBatch({
           wakeup.recoverNetworks(this.callback);
           setTimeout(this.callback, 3000);
         },
-        'check recovered networks': function(data, undf) {
+        'check recovered networks': function(error, data) {
+          assert.isNull(error);
           assert.isNotNull(data);
           assert.isArray(data);
         }
