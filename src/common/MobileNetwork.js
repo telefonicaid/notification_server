@@ -12,31 +12,30 @@
 
 var consts = require('../config.js').consts,
     DataStore = require('./DataStore.js'),
+    events = require('events'),
+    util = require('util'),
     Log = require('./Logger.js'),
     Helpers = require('./Helpers.js');
 
-function MobileNetwork() {
+var MobileNetwork = function() {
     this.cache = {};
     this.ready = false;
     this.callbacks = [];
     this.isCacheEnabled = consts.MOBILENETWORK_CACHE;
-}
 
-MobileNetwork.prototype = {
-
-    getIndex: function(mcc, mnc) {
+    this.getIndex = function(mcc, mnc) {
         return Helpers.padNumber(mcc, 3) + '-' + Helpers.padNumber(mnc, 3);
-    },
+    };
 
-    callbackReady: function(callback) {
+    this.callbackReady = function(callback) {
         if (this.ready) {
             callback(true);
             return;
         }
         this.callbacks.push(Helpers.checkCallback(callback));
-    },
+    };
 
-    start: function() {
+    this.start = function() {
         this.resetCache();
 
         DataStore.once('ready', (function() {
@@ -46,6 +45,7 @@ MobileNetwork.prototype = {
             callbacks.forEach(function(elem) {
                 elem(true);
             });
+            this.emit('ready');
         }).bind(this));
         DataStore.once('closed', (function() {
             this.ready = false;
@@ -55,16 +55,21 @@ MobileNetwork.prototype = {
         process.nextTick(function() {
             DataStore.start();
         });
-    },
+    };
 
-    resetCache: function(callback) {
+    this.stop = function() {
+        this.ready = false;
+        DataStore.stop();
+    };
+
+    this.resetCache = function(callback) {
         this.cache = {};
         callback = Helpers.checkCallback(callback);
         callback();
         Log.debug('MobileNetwork::resetCache --> cache cleaned');
-    },
+    };
 
-    getNetwork: function(mcc, mnc, callback) {
+    this.getNetwork = function(mcc, mnc, callback) {
         callback = Helpers.checkCallback(callback);
 
         var index = this.getIndex(mcc, mnc);
@@ -102,19 +107,20 @@ MobileNetwork.prototype = {
             }
             callback(null, d, 'ddbb');
         });
-    },
+    };
 
-    changeNetworkStatus: function(mcc, mnc, online) {
+    this.changeNetworkStatus = function(mcc, mnc, online) {
         var index = this.getIndex(mcc, mnc);
         Log.debug('MobileNetwork::changeNetworkStatus --> ' + index + ' is ' + online);
         DataStore.changeLocalServerStatus(index, online);
-    }
+    };
 };
 
 
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
+util.inherits(MobileNetwork, events.EventEmitter);
 var _mn = new MobileNetwork();
 
 function getMobileNetwork() {

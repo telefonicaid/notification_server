@@ -10,12 +10,12 @@ var mn = require('../../src/common/MobileNetwork.js'),
     assert = require('assert'),
     vows = require('vows');
 
+mn.start();
 
 vows.describe('MobileNetwork tests').addBatch({
     'Ready.': {
         topic: function() {
             mn.callbackReady(this.callback);
-            mn.start();
         },
         'is ready': function(ready) {
             assert.isTrue(ready);
@@ -112,9 +112,8 @@ vows.describe('MobileNetwork tests').addBatch({
                 }
             }
         }
-    }
-}).addBatch({
-    'Ready.': {
+    },
+    'Ready2.': {
         topic: function() {
             mn.callbackReady(this.callback);
         },
@@ -135,9 +134,8 @@ vows.describe('MobileNetwork tests').addBatch({
                 assert.equal(where, 'ddbb');
             }
         }
-    }
-}).addBatch({
-    'Ready.': {
+    },
+    'Ready3.': {
         topic: function() {
             mn.callbackReady(this.callback);
         },
@@ -178,5 +176,8 @@ vows.describe('MobileNetwork tests').addBatch({
                 }
             }
         }
+    },
+    'Close': {
+        topic: mn.stop()
     }
 }).export(module);
