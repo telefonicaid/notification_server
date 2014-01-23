@@ -1,4 +1,5 @@
 node_modules/*
 
 src/version.info
+src/config.js
 twitter_server/config.js
