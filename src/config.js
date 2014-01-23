@@ -85,13 +85,13 @@ exports.logger = {
  * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
-    host: 'dev-owd-be-01.aislada.hi.inet',
+    host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
     password: 'guest',
     heartbeat: 1200
 }, {
-    host: 'dev-owd-be-02.aislada.hi.inet',
+    host: 'localhost',
     port: 5672, //AMQP default port
     login: 'guest',
     password: 'guest',
@@ -101,7 +101,7 @@ exports.queue = [{
 /********************* Database configuration *************************/
 exports.ddbbsettings = {
     machines: [
-        ['localhost', 30000]
+        ['localhost', 27017]
     ],
     ddbbname: 'push_notification_server'
 };
