@@ -20,19 +20,20 @@ var Log = require('../common/Logger.js'),
 function NS_UA_UDP() {
     this.closingCorrectly = false;
     this.msgBrokerReady = false;
+    this.mobileNetworkReady = false;
     this.readyTimeout = undefined;
 }
 
 NS_UA_UDP.prototype = {
 
     checkReady: function() {
-        if (this.msgBrokerReady) {
+        if (this.msgBrokerReady && this.mobileNetworkReady) {
             Log.debug('NS_UDP::checkReady --> We are ready. Clearing any readyTimeout');
             clearTimeout(this.readyTimeout);
         } else {
-            Log.debug('NS_UDP::checkReady --> Not ready yet. msgBrokerReady=' + this.msgBrokerReady);
+            Log.debug('NS_UDP::checkReady --> Not ready yet. msgBrokerReady=' + this.msgBrokerReady + 'mobileNetworkReady=' + this.mobileNetworkReady);
         }
-        return this.msgBrokerReady;
+        return this.msgBrokerReady && this.mobileNetworkReady;
     },
 
     start: function() {
@@ -73,6 +74,25 @@ NS_UA_UDP.prototype = {
                 return;
             }
             Log.critical(Log.messages.CRITICAL_MBDISCONNECTED, {
+                'class': 'NS_UDP',
+                'method': 'start'
+            });
+            self.stop();
+        });
+
+        MobileNetwork.on('ready', function() {
+            Log.info('NS_UDP::start --> MobileNetwork is ready');
+            self.mobileNetworkReady = true;
+            self.checkReady();
+        });
+
+        MobileNetwork.once('closed', function() {
+            self.mobileNetworkReady = false;
+            if (self.closingCorrectly) {
+                Log.info('NS_UDP::stop --> Closed MobileNetwork (DataStore)');
+                return;
+            }
+            Log.critical(Log.messages.CRITICAL_DBDISCONNECTED, {
                 'class': 'NS_UDP',
                 'method': 'start'
             });
