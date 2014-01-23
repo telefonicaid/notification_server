@@ -1,3 +1,4 @@
+/* jshint node:true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2013 - All rights reserved
@@ -12,31 +13,32 @@
 var log = require('./Logger.js');
 
 function Maintenance() {
-  this.enabled = false;
+    this.enabled = false;
 }
 
 Maintenance.prototype = {
-  set: function() {
-    log.debug('Setting under Maintenance');
-    this.enabled = true;
-  },
+    set: function() {
+        log.debug('Setting under Maintenance');
+        this.enabled = true;
+    },
 
-  unset: function() {
-    log.debug('Removing under Maintenance');
-    this.enabled = false;
-  },
+    unset: function() {
+        log.debug('Removing under Maintenance');
+        this.enabled = false;
+    },
 
-  getStatus: function() {
-    return this.enabled;
-  }
+    getStatus: function() {
+        return this.enabled;
+    }
 };
 
 ///////////////////////////////////////////
 // Singleton
 ///////////////////////////////////////////
 var _maintenance = new Maintenance();
+
 function getMaintenance() {
-  return _maintenance;
+    return _maintenance;
 }
 
 ///////////////////////////////////////////

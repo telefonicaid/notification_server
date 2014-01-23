@@ -1,3 +1,4 @@
+/* jshint node:true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -18,133 +19,133 @@ var publicBaseURL = require('../config.js').consts.publicBaseURL,
  * Gets the public notification URL for the given apptoken
  */
 function getNotificationURL(apptoken) {
-  return publicBaseURL + '/notify/' + apptoken;
+    return publicBaseURL + '/notify/' + apptoken;
 }
 exports.getNotificationURL = getNotificationURL;
 
 
 function getAppToken(watoken, pbkbase64) {
-  return Cryptography.hashSHA256(watoken + pbkbase64);
+    return Cryptography.hashSHA256(watoken + pbkbase64);
 }
 exports.getAppToken = getAppToken;
 
 
-function padNumber(number,len) {
-  var str = '' + number;
-  while (str.length < len) {
-    str = '0' + str;
-  }
-  return str;
+function padNumber(number, len) {
+    var str = '' + number;
+    while (str.length < len) {
+        str = '0' + str;
+    }
+    return str;
 }
 exports.padNumber = padNumber;
 
 
 function checkCallback(callback) {
-  if (typeof callback !== 'function') {
-    callback = function() {};
-  }
-  return callback;
+    if (typeof callback !== 'function') {
+        callback = function() {};
+    }
+    return callback;
 }
 exports.checkCallback = checkCallback;
 
 
 function getMaxFileDescriptors(cb) {
-  exec('ulimit -n', function(error, stdout) {
-    cb(error, stdout);
-  });
+    exec('ulimit -n', function(error, stdout) {
+        cb(error, stdout);
+    });
 }
 exports.getMaxFileDescriptors = getMaxFileDescriptors;
 
 
 function isVersion(n) {
     return (!isNaN(parseInt(n, 10)) &&
-            isFinite(n) &&
-            n < 9007199254740992 &&
-            n >= 0 &&
-            n % 1 === 0);
+        isFinite(n) &&
+        n < 9007199254740992 &&
+        n >= 0 &&
+        n % 1 === 0);
 }
 exports.isVersion = isVersion;
 
 
 function getCaChannel() {
-  var log = require('./Logger.js');
-  var caDir = require('../config.js').consts.caDir;
+    var log = require('./Logger.js');
+    var caDir = require('../config.js').consts.caDir;
 
-  var cas = [];
-  if (!caDir) {
-    log.error(log.messages.ERROR_CASDIRECTORYUNDEFINED);
+    var cas = [];
+    if (!caDir) {
+        log.error(log.messages.ERROR_CASDIRECTORYUNDEFINED);
+        return cas;
+    }
+
+    var path = require('path');
+    var fs = require('fs');
+    try {
+        var files = fs.readdirSync(caDir);
+
+        var i;
+        var len = files.length;
+        if (len === 0) {
+            log.error(log.messages.ERROR_NOCADEFINED, {
+                'path': caDir
+            });
+            return cas;
+        }
+
+        for (i = 0; i < len; i++) {
+            cas.push(fs.readFileSync(caDir + path.sep + files[i]));
+        }
+    } catch (e) {
+        log.error(log.messages.ERROR_NOCADEFINED, {
+            'path': caDir
+        });
+    }
+
     return cas;
-  }
-
-  var path = require('path');
-  var fs = require('fs');
-  try {
-    var files = fs.readdirSync(caDir);
-
-    var i;
-    var len = files.length;
-    if (len === 0) {
-      log.error(log.messages.ERROR_NOCADEFINED, {
-        'path': caDir
-      });
-      return cas;
-    }
-
-    for (i = 0; i < len; i++) {
-      cas.push(fs.readFileSync(caDir + path.sep + files[i]));
-    }
-  } catch (e) {
-    log.error(log.messages.ERROR_NOCADEFINED, {
-      'path': caDir
-    });
-  }
-
-  return cas;
 }
 exports.getCaChannel = getCaChannel;
 
 function isIPInNetwork(ip, networks) {
-  if (!net.isIP(ip)) {
-    return false;
-  }
+    if (!net.isIP(ip)) {
+        return false;
+    }
 
-  if (!Array.isArray(networks)) {
-    networks = [];
-  }
+    if (!Array.isArray(networks)) {
+        networks = [];
+    }
 
-  //Adding private networks from https://tools.ietf.org/html/rfc1918
-  //If networks are empty, we add RFC private networks.
-  if (networks.length === 0) {
-    networks.push('10.0.0.0/8');
-    networks.push('172.16.0.0/12');
-    networks.push('192.168.0.0/16');
-  }
-  //If IP is in one of the network ranges, we think that you are in a
-  //private network and can be woken up.
-  return __isIPInNetworks(ip, networks);
+    //Adding private networks from https://tools.ietf.org/html/rfc1918
+    //If networks are empty, we add RFC private networks.
+    if (networks.length === 0) {
+        networks.push('10.0.0.0/8');
+        networks.push('172.16.0.0/12');
+        networks.push('192.168.0.0/16');
+    }
+    //If IP is in one of the network ranges, we think that you are in a
+    //private network and can be woken up.
+    return __isIPInNetworks(ip, networks);
 }
 exports.isIPInNetwork = isIPInNetwork;
 
 function __isIPInNetworks(ip, networks) {
-  var rv = false;
-  networks.forEach(function(network) {
-    //If is found in other network, return.
-    if (rv) {
-      return;
-    }
-    var split = network.split('/');
-    var ad1 = __ipAddr2Int(ip);
-    var ad2 = __ipAddr2Int(split[0]);
-    var mask = -1 << (32-split[1]);
+    var rv = false;
+    networks.forEach(function(network) {
+        //If is found in other network, return.
+        if (rv) {
+            return;
+        }
+        var split = network.split('/');
+        var ad1 = __ipAddr2Int(ip);
+        var ad2 = __ipAddr2Int(split[0]);
+        var mask = -1 << (32 - split[1]);
 
-    rv = (ad1 & mask) == ad2;
-  });
-  return rv;
+        rv = (ad1 & mask) == ad2;
+    });
+    return rv;
 }
 
 function __ipAddr2Int(ip) {
-  var split = ip.split('.');
-  return split[0] << 24 | split[1] << 16 | split[2] << 8 | split[3];
+    var split = ip.split('.');
+    return split[0] << 24 | split[1] << 16 | split[2] << 8 | split[3];
 }
 
 console.log(isIPInNetwork('127.0.0.1', ['127.0.0.0/24']));

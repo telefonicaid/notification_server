@@ -1,3 +1,4 @@
+/* jshint node: true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -6,19 +7,19 @@
  * Guillermo Lopez Leal <gll@tid.es>
  */
 
-var numCPUs = 1; //require('os').cpus().length;
+var numCPUs = require('os').cpus().length;
 
 /******************* Servers to run on this machine ********************/
 /**
  * Put to true what you want to run
  */
 exports.servers = {
-  NS_AS: true,
-  NS_Monitor: true,
-  NS_UA_WS: true,
-  NS_UA_UDP: true,
-  NS_WakeUp: true,
-  NS_WakeUp_Checker: true
+    NS_AS: true,
+    NS_Monitor: true,
+    NS_UA_WS: true,
+    NS_UA_UDP: true,
+    NS_WakeUp: true,
+    NS_WakeUp_Checker: true
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -27,54 +28,54 @@ exports.servers = {
 
 /********************* Constants********************************************/
 exports.consts = {
-  PREPRODUCTION_MODE: true,
-  MOBILENETWORK_CACHE: false,
+    PREPRODUCTION_MODE: true,
+    MOBILENETWORK_CACHE: false,
 
 
-  /**
-   * This is the Key and the Certificate of the server. Should be shared
-   * between all frontends that receive connections (NS_AS, NS_UA_WS).
-   * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
-   */
+    /*
+     * This is the Key and the Certificate of the server. Should be shared
+     * between all frontends that receive connections (NS_AS, NS_UA_WS).
+     * Self-signed: http://stackoverflow.com/questions/9519707/can-nodejs-generate-ssl-certificates
+     */
 
-  caDir: '../examples/ssl_cert/cas',
-  key: '../examples/ssl_cert/server-key.pem',
-  cert: '../examples/ssl_cert/server-cert.pem',
+    caDir: '../examples/ssl_cert/cas',
+    key: '../examples/ssl_cert/server-key.pem',
+    cert: '../examples/ssl_cert/server-cert.pem',
 
-  /**
-   * Public base URL to receive notifications. This will be the base to
-   * append the /notify/12345abcdef… URL
-   */
-  publicBaseURL: 'https://localhost:8081/v1',
+    /**
+     * Public base URL to receive notifications. This will be the base to
+     * append the /notify/12345abcdef… URL
+     */
+    publicBaseURL: 'https://localhost:8081/v1',
 
-  /**
-   * This must be shared between all your NS_UA_WS frontends.
-   * This is used to verify if the token to register a UA comes from
-   * this server
-   * THIS MUST BE CHANGED ON PRODUCTION
-   */
-  cryptokey: '12345678901234567890'
+    /**
+     * This must be shared between all your NS_UA_WS frontends.
+     * This is used to verify if the token to register a UA comes from
+     * this server
+     * THIS MUST BE CHANGED ON PRODUCTION
+     */
+    cryptokey: '12345678901234567890'
 };
 
 /********************* Logger parameters ***********************************/
 var loglevel = require('./common/constants.js').loglevels;
 exports.logger = {
-  /**
-   * Log levels:
-   *
-   * # NONE: Log disabled
-   * # DEBUG: Very detailed information about all the things the server is doing
-   * # INFO: General information about the things the server is doing
-   * # ERROR: Error detected, but the server can continue working
-   * # ALERT: Error detected but not directly on this process, so this is a
-   *          notification that should be investigated
-   * # NOTIFY: General notifications, ie. New connections
-   * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
-   */
-  LOGLEVEL: loglevel.DEBUG | loglevel.INFO | loglevel.ERROR | loglevel.CRITICAL | loglevel.ALERT | loglevel.NOTIFY | loglevel.ALARM,
-  CONSOLEOUTPUT: 1,
-  BASE_PATH: '/var/log/push_server/',
-  ALARM: '/var/log/push_server/alarms.log'
+    /**
+     * Log levels:
+     *
+     * # NONE: Log disabled
+     * # DEBUG: Very detailed information about all the things the server is doing
+     * # INFO: General information about the things the server is doing
+     * # ERROR: Error detected, but the server can continue working
+     * # ALERT: Error detected but not directly on this process, so this is a
+     *          notification that should be investigated
+     * # NOTIFY: General notifications, ie. New connections
+     * # CRITICAL: When a CRITICAL trace is sent the process will be STOPPED
+     */
+    LOGLEVEL: loglevel.DEBUG | loglevel.INFO | loglevel.ERROR | loglevel.CRITICAL | loglevel.ALERT | loglevel.NOTIFY | loglevel.ALARM,
+    CONSOLEOUTPUT: 1,
+    BASE_PATH: '/var/log/push_server/',
+    ALARM: '/var/log/push_server/alarms.log'
 
 };
 
@@ -84,19 +85,25 @@ exports.logger = {
  * Heartbeat in seconds. 0 => No heartbeat
  */
 exports.queue = [{
-    host: 'localhost',
+    host: 'dev-owd-be-01.aislada.hi.inet',
     port: 5672, //AMQP default port
     login: 'guest',
     password: 'guest',
     heartbeat: 1200
-  }];
+}, {
+    host: 'dev-owd-be-02.aislada.hi.inet',
+    port: 5672, //AMQP default port
+    login: 'guest',
+    password: 'guest',
+    heartbeat: 1200
+}];
 
 /********************* Database configuration *************************/
 exports.ddbbsettings = {
-  machines: [
-    ['localhost', 27017]
-  ],
-  ddbbname: 'push_notification_server'
+    machines: [
+        ['localhost', 30000]
+    ],
+    ddbbname: 'push_notification_server'
 };
 
 ////////////////////////////////////////////////////////////////////////
@@ -105,109 +112,110 @@ exports.ddbbsettings = {
 
 /********************* NS_AS *****************************************/
 exports.NS_AS = {
-  logfile: 'NS_AS.log',
+    logfile: 'NS_AS.log',
 
-  /**
-   * Number of processes which shall run in parallel
-   */
-  numProcesses: numCPUs,
+    /**
+     * Number of processes which shall run in parallel
+     */
+    numProcesses: numCPUs,
 
-  /**
-   * Binding interface to listen to
-   */
-  interface: {
-    ip: '0.0.0.0',
-    port: 8081,
-    ssl: true
-  }
+    /**
+     * Binding interface to listen to
+     */
+    interface: {
+        ip: '0.0.0.0',
+        port: 8081,
+        ssl: true
+    }
 };
 
 /********************* NS_MSG_monitor ********************************/
 
 exports.NS_Monitor = {
-  logfile: 'NS_Monitor.log',
+    logfile: 'NS_Monitor.log',
 
-  /**
-   * Milliseconds to retry to send the UDP packets to wakeup a device
-   */
-  retryTime: 30000
+    /**
+     * Milliseconds to retry to send the UDP packets to wakeup a device
+     */
+    retryTime: 300000000
 };
 
 /********************* NS_UA_WS **************************************/
 
 exports.NS_UA_WS = {
-  logfile: 'NS_UA_WS.log',
+    logfile: 'NS_UA_WS.log',
 
-  /**
-   * Number of processes which shall run in parallel
-   */
-  numProcesses: numCPUs,
+    /**
+     * Number of processes which shall run in parallel
+     */
+    numProcesses: numCPUs,
 
-  /**
-   * Maximum size for a WebSocket message (20 KiB)
-   */
-  MAX_MESSAGE_SIZE: 0x5000, //20480 bytes
+    /**
+     * Maximum size for a WebSocket message (20 KiB)
+     */
+    MAX_MESSAGE_SIZE: 0x5000, //20480 bytes
 
-  /**
-   * Binding interfaces and ports
-   * [ iface, port, ssl ]
-   */
-  interface: {
-    ip: '0.0.0.0',
-    port: 8080,
-    ssl: true
-  },
+    /**
+     * Binding interfaces and ports
+     * [ iface, port, ssl ]
+     */
+    interface: {
+        ip: '0.0.0.0',
+        port: 8080,
+        ssl: true
+    },
 
-  /**
-   * Websocket configuration
-   * @see https://github.com/Worlize/WebSocket-Node/blob/master/lib/WebSocketServer.js
-   * Be sure to know exactly what are you changing. Short keepaliveIntervals
-   * on 3G networks causes a lot of signalling and also dropping too many connections
-   * because timeouts on handset status change time.
-   * It's disabled because we do not want to track if we have an open connection
-   * with a client. It's the client who needs to keep track of it (with a PING message)
-   */
-  websocket_params: {
-    keepalive: false    // By default, currently the KA messages will be managed by the client side
-  }
+    /**
+     * Websocket configuration
+     * @see https://github.com/Worlize/WebSocket-Node/blob/master/lib/WebSocketServer.js
+     * Be sure to know exactly what are you changing. Short keepaliveIntervals
+     * on 3G networks causes a lot of signalling and also dropping too many connections
+     * because timeouts on handset status change time.
+     * It's disabled because we do not want to track if we have an open connection
+     * with a client. It's the client who needs to keep track of it (with a PING message)
+     */
+    websocket_params: {
+        keepalive: false, // By default, currently the KA messages will be managed by the client side
+        keepaliveInterval: 300000 // 5 minutes
+    }
 };
 
 /********************* NS_UA_UDP *************************************/
 
 exports.NS_UA_UDP = {
-  logfile: 'NS_UA_UDP.log'
+    logfile: 'NS_UA_UDP.log'
 };
 
 /********************* NS_WakeUp *************************************/
 
 exports.NS_WakeUp = {
-  logfile: 'NS_WakeUp.log',
+    logfile: 'NS_WakeUp.log',
 
-  /**
-   * Number of processes which shall run in parallel
-   */
-  numProcesses: numCPUs,
+    /**
+     * Number of processes which shall run in parallel
+     */
+    numProcesses: numCPUs,
 
-  /**
-   * Binding interfaces and ports
-   * [ iface, port, ssl ]
-   */
-  interface: {
-    ip: '0.0.0.0',
-    port: 8090,
-    ssl: true        // Disable SSL
-  }
+    /**
+     * Binding interfaces and ports
+     * [ iface, port, ssl ]
+     */
+    interface: {
+        ip: '0.0.0.0',
+        port: 8090,
+        ssl: true // Disable SSL
+    }
 };
 
 /********************* NS_WakeUpChecker ******************************/
 
 exports.NS_WakeUp_Checker = {
-  logfile: 'NS_WakeUp_Checker.log',
-  checkPeriod: 300000
+    logfile: 'NS_WakeUp_Checker.log',
+    checkPeriod: 300000
 };
 
 /********************* NS start.js ***********************************/
 
 exports.NS = {
-  logfile: 'NS.log'
+    logfile: 'NS.log'
 };

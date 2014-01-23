@@ -1,3 +1,4 @@
+/* jshint node:true */
 /**
  * PUSH Notification server
  * (c) Telefonica Digital, 2012 - All rights reserved
@@ -11,22 +12,21 @@
 
 var crypto = require('crypto');
 
-function Cryptography() {
-}
+function Cryptography() {}
 
 Cryptography.prototype = {
-  hashSHA256: function(data) {
-    return crypto.createHash('sha256').update(data).digest('hex');
-  },
+    hashSHA256: function(data) {
+        return crypto.createHash('sha256').update(data).digest('hex');
+    },
 
-  hashSHA512: function(data) {
-    return crypto.createHash('sha512').update(data).digest('hex');
-  },
+    hashSHA512: function(data) {
+        return crypto.createHash('sha512').update(data).digest('hex');
+    },
 
-  // Lets go with SHA-1 for now, can change it later on
-  generateHMAC: function(data,key) {
-    return crypto.createHmac('sha1', key).update(data).digest('hex');
-  }
+    // Lets go with SHA-1 for now, can change it later on
+    generateHMAC: function(data, key) {
+        return crypto.createHmac('sha1', key).update(data).digest('hex');
+    }
 };
 
 
@@ -34,8 +34,9 @@ Cryptography.prototype = {
 // Singleton
 ///////////////////////////////////////////
 var crypt = new Cryptography();
+
 function getCrypto() {
-  return crypt;
+    return crypt;
 }
 
 module.exports = getCrypto();
