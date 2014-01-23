@@ -158,14 +158,18 @@ NS_UA_WS.prototype.start = function() {
                 if (forked > 20) {
                     Log.critical('Please, check logs, there has been too much re-spawns');
                     return;
-                } else {
-                    Log.info('NS_UA_WS::start -- Spawning a new worker…');
-                    --closed;
-                    var w = cluster.fork();
-                    w.on('message', messageHandlerMaster.bind(this));
-                    forked++;
-                    errored = true;
                 }
+                if (self.closing) {
+                    Log.info('NS_UA_WS::start -- Closing, not spawning anything');
+                    return;
+                }
+
+                Log.info('NS_UA_WS::start -- Spawning a new worker…');
+                --closed;
+                var w = cluster.fork();
+                w.on('message', messageHandlerMaster.bind(this));
+                forked++;
+                errored = true;
             } else {
                 Log.info('NS_UA_WS::start -- wrk' + worker.id + ' with PID ' + worker.process.pid + ' exited correctly');
             }
@@ -303,6 +307,7 @@ NS_UA_WS.prototype.start = function() {
 };
 
 NS_UA_WS.prototype.stop = function(correctly) {
+    this.closing = true;
     if (cluster.isMaster) {
         var timeouts = [];
         Object.keys(cluster.workers).forEach(function(id) {
