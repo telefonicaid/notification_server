@@ -342,7 +342,7 @@ NS_UA_WS.prototype.stop = function(correctly) {
 };
 
 NS_UA_WS.prototype.sendNotification = function(connector, notification) {
-    Log.debug('WS::Queue::sendNotification --> Sending messages:', notification);
+    Log.debug('WS::sendNotification --> Sending messages:', notification);
     this.stats['notifications_sent'] = (this.stats['notifications_sent'] || 0) + 1;
     if (!Array.isArray(notification)) {
         notification = [notification];
@@ -355,7 +355,7 @@ NS_UA_WS.prototype.sendNotification = function(connector, notification) {
 
 NS_UA_WS.prototype.onNewMessage = function(json) {
     this.stats['messages_from_mq'] = (this.stats['messages_from_mq'] || 0) + 1;
-    Log.debug('WS::Queue::onNewMessage --> New message received: ', +json);
+    Log.debug('WS::Queue::onNewMessage --> New message received: ', json);
     // If we don't have enough data, return
     if (!json.uaid || !json.payload || !json.payload.ch || !json.payload.vs) {
         Log.error(Log.messages.ERROR_WSNODATA);
@@ -374,7 +374,7 @@ NS_UA_WS.prototype.onNewMessage = function(json) {
             version: json.payload.vs,
             channelID: json.payload.ch
         };
-        this.sendNotification(nodeConnector, notification).bind(this);
+        this.sendNotification.bind(this)(nodeConnector, notification);
     } else {
         Log.debug('WS::Queue::onNewMessage --> No node found');
     }
@@ -385,7 +385,6 @@ NS_UA_WS.prototype.subscribeQueues = function(broker) {
         durable: false,
         autoDelete: true
     };
-
     MsgBroker.subscribe(process.serverId, args, broker, this.onNewMessage.bind(this));
 };
 
@@ -567,8 +566,8 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                         uaid: connection.uaid,
                         socket_ip: connection.remoteAddress,
                         socket_port: connection.socket.remotePort,
-                        ip: (query.mobilenetwork && query.mobilenetwork.ip) || 0,
-                        port: (query.mobilenetwork && query.mobilenetwork.port) || 0,
+                        ip: (query.wakeup_hostport && query.wakeup_hostport.ip) || 0,
+                        port: (query.wakeup_hostport && query.wakeup_hostport.port) || 0,
                         mcc: (query.mobilenetwork && query.mobilenetwork.mcc) || 0,
                         mnc: (query.mobilenetwork && query.mobilenetwork.mnc) || 0
                     });
