@@ -208,7 +208,7 @@ exports.logtraces = {
     },
     ERROR_MBCONNECTIONERROR: {
         id: 0x2018,
-        m: 'msgbroker::queue.onerror --> There was an error in one of the connections: ::error'
+        m: 'msgbroker::queue.onerror --> There was an error in one of the connections (::id): ::error'
     },
 
     ERROR_NOSERVERPROVIDED: {
