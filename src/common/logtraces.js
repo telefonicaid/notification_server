@@ -24,7 +24,7 @@ exports.logtraces = {
      */
     NOTIFY_HELLO: {
         id: 0x9000,
-        m: 'Hello message -- uaid=::uaid -- mcc=::mcc -- mnc=::mnc -- ip=::ip -- port=::port'
+        m: 'Hello message -- uaid=::uaid -- mcc=::mcc -- mnc=::mnc -- ip=::ip -- port=::port -- real_ip=::socket_ip -- real_port=::socket_port'
     },
     NOTIFY_REGISTER: {
         id: 0x9001,

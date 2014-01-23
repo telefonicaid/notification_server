@@ -560,8 +560,10 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                     //KPI: 0x2000
                     Log.notify(Log.messages.NOTIFY_HELLO, {
                         uaid: connection.uaid,
-                        ip: connection.remoteAddress,
-                        port: connection.socket.remotePort,
+                        socket_ip: connection.remoteAddress,
+                        socket_port: connection.socket.remotePort,
+                        ip: (query.mobilenetwork && query.mobilenetwork.ip) || 0,
+                        port: (query.mobilenetwork && query.mobilenetwork.port) || 0,
                         mcc: (query.mobilenetwork && query.mobilenetwork.mcc) || 0,
                         mnc: (query.mobilenetwork && query.mobilenetwork.mnc) || 0
                     });
