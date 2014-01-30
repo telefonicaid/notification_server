@@ -42,10 +42,13 @@ NS_AS.prototype = {
 
     checkReady: function() {
         if (this.dataStoreReady && this.msgBrokerReady) {
-            Log.debug('NS_AS::checkReady --> We are ready. Clearing any readyTimeout');
+            Log.debug(
+                'NS_AS::checkReady --> We are ready. Clearing any readyTimeout'
+            );
             clearTimeout(this.readyTimeout);
         } else {
-            Log.debug('NS_AS::checkReady --> Not ready yet. dataStoreReady=' + this.dataStoreReady +
+            Log.debug('NS_AS::checkReady --> Not ready yet. dataStoreReady=' +
+                this.dataStoreReady +
                 ', msgBrokerReady=' + this.msgBrokerReady);
         }
         return this.dataStoreReady && this.msgBrokerReady;
@@ -83,7 +86,9 @@ NS_AS.prototype = {
                         'code': code
                     });
                     if (forked > 20) {
-                        Log.critical('NS_AS::start --> Please, check logs, there has been too much re-spawns');
+                        Log.critical(
+                            'NS_AS::start --> Please, check logs, there has been too much re-spawns'
+                        );
                     } else {
                         Log.info('NS_AS::start --> Spawning a new worker…');
                         cluster.fork();
@@ -92,15 +97,21 @@ NS_AS.prototype = {
                         errored = true;
                     }
                 } else {
-                    Log.info('NS_AS::start -- wrk' + worker.id + ' with PID ' + worker.process.pid + ' exited correctly');
+                    Log.info('NS_AS::start -- wrk' + worker.id +
+                        ' with PID ' + worker.process.pid +
+                        ' exited correctly');
                 }
                 ++closed;
                 if (closed === config.NS_AS.numProcesses) {
                     if (errored) {
-                        Log.error('NS_AS::start() -- Closing INCORRECTLY. Check errors for a worker');
+                        Log.error(
+                            'NS_AS::start() -- Closing INCORRECTLY. Check errors for a worker'
+                        );
                         process.exit(1);
                     } else {
-                        Log.info('NS_AS::start() -- Closing. That\'s all folks!');
+                        Log.info(
+                            'NS_AS::start() -- Closing. That\'s all folks!'
+                        );
                         process.exit(0);
                     }
                 }
@@ -117,9 +128,11 @@ NS_AS.prototype = {
                     requestCert: false,
                     rejectUnauthorized: false
                 };
-                this.server = require('https').createServer(options, this.onHTTPMessage.bind(this));
+                this.server = require('https').createServer(options, this.onHTTPMessage
+                    .bind(this));
             } else {
-                this.server = require('http').createServer(this.onHTTPMessage.bind(this));
+                this.server = require('http').createServer(this.onHTTPMessage.bind(
+                    this));
             }
             this.server.listen(this.port, this.ip);
             Log.info('NS_AS::start --> HTTP' + (this.ssl ? 'S' : '') +
@@ -189,7 +202,8 @@ NS_AS.prototype = {
                     cluster.workers[id].destroy();
                 }, 4000);
                 cluster.workers[id].on('disconnect', function() {
-                    Log.info('NS_AS::stop --> Worker ' + id + ' disconnected');
+                    Log.info('NS_AS::stop --> Worker ' + id +
+                        ' disconnected');
                     clearTimeout(timeouts[id]);
                 });
             });
@@ -212,7 +226,8 @@ NS_AS.prototype = {
             this.server.close();
 
             setTimeout(function() {
-                Log.info('Suiciding worker with id=' + cluster.worker.id + '. Bye!');
+                Log.info('Suiciding worker with id=' + cluster.worker.id +
+                    '. Bye!');
                 cluster.worker.destroy();
             }, 3000);
         }
@@ -230,14 +245,17 @@ NS_AS.prototype = {
                 if (this.statusCode === 200) {
                     this.write('{"status":"ACCEPTED"}');
                 } else {
-                    this.write('{"status":"ERROR", "reason":"' + errorCode[1] + '"}');
+                    this.write('{"status":"ERROR", "reason":"' + errorCode[1] +
+                        '"}');
                 }
             }
             this.end();
         };
 
         if (!self.checkReady()) {
-            Log.debug('NS_AS::onHTTPMessage --> Message rejected, we are not ready yet');
+            Log.debug(
+                'NS_AS::onHTTPMessage --> Message rejected, we are not ready yet'
+            );
             response.res(errorcodes.NOT_READY);
             return;
         }
@@ -250,7 +268,8 @@ NS_AS.prototype = {
         if (request.method === 'OPTIONS') {
             Log.debug('NS_AS::onHTTPMessage --> Received an OPTIONS method');
             response.setHeader('Access-Control-Allow-Origin', '*');
-            response.setHeader('Access-Control-Allow-Methods', 'PUT, GET, OPTIONS');
+            response.setHeader('Access-Control-Allow-Methods',
+                'PUT, GET, OPTIONS');
             response.end();
             return;
         }
@@ -265,7 +284,9 @@ NS_AS.prototype = {
                 if (body.length > 25) {
                     request.tooBig = true;
                     request.emit('end');
-                    Log.debug('NS_AS::onHTTPMessage --> Message rejected, too long for this API');
+                    Log.debug(
+                        'NS_AS::onHTTPMessage --> Message rejected, too long for this API'
+                    );
                     response.res(errorcodesAS.BAD_MESSAGE_BODY_TOO_BIG);
                 }
             });
@@ -287,7 +308,8 @@ NS_AS.prototype = {
                             text = p.render(function(t) {
                                 switch (t) {
                                     case '{{GIT_VERSION}}':
-                                        return require('fs').readFileSync('version.info');
+                                        return require('fs').readFileSync(
+                                            'version.info');
                                     case '{{MODULE_NAME}}':
                                         return 'Application Server Frontend';
                                     default:
@@ -322,7 +344,8 @@ NS_AS.prototype = {
                     break;
 
                 default:
-                    Log.debug('NS_AS::onHTTPMessage --> messageType "' + path[1] + '" not recognized');
+                    Log.debug('NS_AS::onHTTPMessage --> messageType "' + path[1] +
+                        '" not recognized');
                     response.res(errorcodesAS.BAD_URL);
                     return;
             }
@@ -380,7 +403,8 @@ NS_AS.prototype = {
                 return;
             }
             (appInfo.no).forEach(function(nodeId) {
-                var msg = DataStore.newVersion(nodeId, appToken, appInfo.ch, version);
+                var msg = DataStore.newVersion(nodeId, appToken,
+                    appInfo.ch, version);
                 MsgBroker.push('newMessages', msg);
             });
         });
