@@ -186,34 +186,6 @@ exports.NS_UA_UDP = {
     logfile: 'NS_UA_UDP.log'
 };
 
-/********************* NS_WakeUp *************************************/
-
-exports.NS_WakeUp = {
-    logfile: 'NS_WakeUp.log',
-
-    /**
-     * Number of processes which shall run in parallel
-     */
-    numProcesses: numCPUs,
-
-    /**
-     * Binding interfaces and ports
-     * [ iface, port, ssl ]
-     */
-    interface: {
-        ip: '0.0.0.0',
-        port: 8090,
-        ssl: true // Disable SSL
-    }
-};
-
-/********************* NS_WakeUpChecker ******************************/
-
-exports.NS_WakeUp_Checker = {
-    logfile: 'NS_WakeUp_Checker.log',
-    checkPeriod: 300000
-};
-
 /********************* NS start.js ***********************************/
 
 exports.NS = {
