@@ -10,9 +10,9 @@ The server could be allocated inside the MNO private network with two network in
 * To connect from Internet
 
 ## Documentation
-It's on [a wiki page](https://github.com/telefonicaid/notification_server/wiki/_pages), but that doesn't mean that it's updated. We are working on a document.
+It's on [Github Pages](http://frsela.github.io/notification_server_doc/), but that doesn't mean that it's updated. We are working on continously on it.
 
 ## Requirements / Dependencies
-* [Node.JS (>= 0.8.x)](http://nodejs.org/)
-* [MongoDB (>= 2.2.x)](http://www.mongodb.org/)
-* [RabbitMQ (>= 2.8.x)](http://www.rabbitmq.com/) (with AMQP protocol active)
+* [Node.JS (>= 0.10.x)](http://nodejs.org/)
+* [MongoDB (>= 2.4.x)](http://www.mongodb.org/)
+* [RabbitMQ (>= 3.2.x)](http://www.rabbitmq.com/) (using AMQP 0.9)
