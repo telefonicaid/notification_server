@@ -21,7 +21,6 @@ ConnectorUDP.prototype = {
     },
 
     getServer: function() {
-        //return 'UDP';
         return process.serverId;
     },
 
