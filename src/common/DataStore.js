@@ -159,7 +159,8 @@ var DataStore = function() {
         });
     },
 
-    this.unregisterNode = function(uaid, queue, fullyDisconnected, callback) {
+    this.unregisterNode = function(uaid, queryFrom, newQueue, fullyDisconnected,
+        callback) {
         this.db.collection('nodes', function(err, collection) {
             callback = Helpers.checkCallback(callback);
             if (err) {
@@ -172,11 +173,12 @@ var DataStore = function() {
             }
             collection.findAndModify({
                     _id: uaid,
-                    si: queue
+                    si: queryFrom
                 }, [], {
                     $set: {
                         co: fullyDisconnected,
-                        lt: new Date()
+                        lt: new Date(),
+                        si: newQueue
                     }
                 }, {
                     safe: true
@@ -218,7 +220,9 @@ var DataStore = function() {
                     callback(err);
                     return;
                 }
-                var msg = data ? 'Data found, calling callback with data' : 'Node not found';
+                var msg = data ?
+                    'Data found, calling callback with data' :
+                    'Node not found';
                 Log.debug('datastore::getNodeData --> ' + msg);
                 callback(null, data);
             });
@@ -251,7 +255,9 @@ var DataStore = function() {
                                 'error': err
                             });
                         } else {
-                            Log.debug('datastore::registerApplication --> Application inserted into MongoDB');
+                            Log.debug(
+                                'datastore::registerApplication --> Application inserted into MongoDB'
+                            );
                         }
                     });
             } else {
@@ -296,7 +302,9 @@ var DataStore = function() {
                         callback(err);
                         return;
                     }
-                    Log.debug('dataStore::registerApplication --> Message inserted');
+                    Log.debug(
+                        'dataStore::registerApplication --> Message inserted'
+                    );
                     callback(null, data);
                 }
             );
@@ -335,11 +343,15 @@ var DataStore = function() {
                         return;
                     }
                     if (!data) {
-                        Log.debug('dataStore::unregisterApplication --> appToken not found');
+                        Log.debug(
+                            'dataStore::unregisterApplication --> appToken not found'
+                        );
                         callback(-1);
                         return;
                     }
-                    Log.debug('dataStore::unregisterApplication --> Deleted node from apps collection');
+                    Log.debug(
+                        'dataStore::unregisterApplication --> Deleted node from apps collection'
+                    );
                 }
             );
         });
@@ -367,10 +379,14 @@ var DataStore = function() {
                 }, {},
                 function(err, data) {
                     if (err) {
-                        Log.debug('datastore::unregisterApplication --> Error removing apptoken from the nodes: ' + err);
+                        Log.debug(
+                            'datastore::unregisterApplication --> Error removing apptoken from the nodes: ' +
+                            err);
                         return callback(err);
                     }
-                    Log.debug('datastore::unregisterApplication --> Application removed from node data');
+                    Log.debug(
+                        'datastore::unregisterApplication --> Application removed from node data'
+                    );
                     return callback(null);
                 }
             );
@@ -402,7 +418,9 @@ var DataStore = function() {
                 },
                 function(err) {
                     if (err) {
-                        Log.debug('datastore::removeApplicationIfEmpty --> Error removing application from apps: ' + err);
+                        Log.debug(
+                            'datastore::removeApplicationIfEmpty --> Error removing application from apps: ' +
+                            err);
                     }
                 }
             );
@@ -411,7 +429,9 @@ var DataStore = function() {
 
     this.getApplicationsForUA = function(uaid, callback) {
         // Get from MongoDB
-        Log.debug('datastore::getApplicationsOnUA --> Going to find applications in UA: ' + uaid);
+        Log.debug(
+            'datastore::getApplicationsOnUA --> Going to find applications in UA: ' +
+            uaid);
         this.db.collection('nodes', function(err, collection) {
             callback = Helpers.checkCallback(callback);
             if (err) {
@@ -436,10 +456,14 @@ var DataStore = function() {
                         return;
                     }
                     if (data && data.ch && data.ch.length) {
-                        Log.debug('datastore::getApplicationsOnUA --> Applications recovered, calling callback');
+                        Log.debug(
+                            'datastore::getApplicationsOnUA --> Applications recovered, calling callback'
+                        );
                         callback(null, data.ch);
                     } else {
-                        Log.debug('datastore::getApplicationsOnUA --> No applications recovered :(');
+                        Log.debug(
+                            'datastore::getApplicationsOnUA --> No applications recovered :('
+                        );
                         callback(null, []);
                     }
                 }
@@ -451,7 +475,9 @@ var DataStore = function() {
      * Gets an application node list
      */
     this.getApplication = function(appToken, callback, json) {
-        Log.debug('datastore::getApplication --> Going to find application with appToken: ' + appToken);
+        Log.debug(
+            'datastore::getApplication --> Going to find application with appToken: ' +
+            appToken);
         this.db.collection('apps', function(err, apps) {
             if (err) {
                 Log.error(Log.messages.ERROR_DSERROROPENINGAPPSCOLLECTION, {
@@ -479,7 +505,8 @@ var DataStore = function() {
                     // Also, we only care if the data.no is just one. We should not allow
                     // register more than one node for each appToken… but that's another
                     // story…
-                    if (!data || !Array.isArray(data.no) || data.no.length !== 1 || !data.no[0]) {
+                    if (!data || !Array.isArray(data.no) ||
+                        data.no.length !== 1 || !data.no[0]) {
                         Log.error('Not enough data or invalid: ', data);
                         return;
                     }
@@ -508,9 +535,15 @@ var DataStore = function() {
                                     callback(err);
                                     return;
                                 }
-                                Log.debug('datastore::getApplication --> Application found');
-                                var msg = data ? 'Application found, have callback, calling' : 'No app found, calling callback';
-                                Log.debug('datastore::getApplication --> ' + msg, data);
+                                Log.debug(
+                                    'datastore::getApplication --> Application found'
+                                );
+                                var msg = data ?
+                                    'Application found, have callback, calling' :
+                                    'No app found, calling callback';
+                                Log.debug(
+                                    'datastore::getApplication --> ' +
+                                    msg, data);
                                 // Convert it to an Array.
                                 callback(null, [data], json);
                             }
@@ -523,7 +556,9 @@ var DataStore = function() {
 
     this.getInfoForAppToken = function(apptoken, callback) {
         apptoken = apptoken.toString();
-        Log.debug('datastore::getInfoForAppToken --> Going to find the info for the appToken ' + apptoken);
+        Log.debug(
+            'datastore::getInfoForAppToken --> Going to find the info for the appToken ' +
+            apptoken);
         this.db.collection('apps', function(err, collection) {
             callback = Helpers.checkCallback(callback);
             if (err) {
@@ -546,7 +581,9 @@ var DataStore = function() {
                     return;
                 }
                 if (!data) {
-                    Log.debug('datastore::getInfoForAppToken --> There are no appToken=' + apptoken + ' in the DDBB');
+                    Log.debug(
+                        'datastore::getInfoForAppToken --> There are no appToken=' +
+                        apptoken + ' in the DDBB');
                     callback(null, null);
                     return;
                 }
@@ -602,7 +639,8 @@ var DataStore = function() {
      *
      */
     this.ackMessage = function(uaid, channelID, version) {
-        Log.debug('dataStore::ackMessage --> Going to ACK message from uaid=' + uaid + ' for channelID=' + channelID + ' and version=' + version);
+        Log.debug('dataStore::ackMessage --> Going to ACK message from uaid=' +
+            uaid + ' for channelID=' + channelID + ' and version=' + version);
         this.db.collection('nodes', function(error, collection) {
             if (error) {
                 Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
@@ -652,12 +690,16 @@ var DataStore = function() {
                 '_id': id
             }, function(err, data) {
                 if (err) {
-                    Log.debug('datastore::getOperator --> Error finding operator from MongoDB: ' + err);
+                    Log.debug(
+                        'datastore::getOperator --> Error finding operator from MongoDB: ' +
+                        err);
                     callback(err);
                     return;
                 }
-                var msg = data ? 'The operator has been recovered. ' : 'No operator found. ';
-                Log.debug('datastore::getOperator --> ' + msg + ' Calling callback');
+                var msg = data ? 'The operator has been recovered. ' :
+                    'No operator found. ';
+                Log.debug('datastore::getOperator --> ' + msg +
+                    ' Calling callback');
                 callback(null, data);
             });
         });
@@ -665,7 +707,9 @@ var DataStore = function() {
 
     this.getOperatorsWithLocalNodes = function(callback) {
         callback = Helpers.checkCallback(callback);
-        Log.debug('datastore::getOperatorsWithLocalNodes --> Looking for operators with a wakeup local node');
+        Log.debug(
+            'datastore::getOperatorsWithLocalNodes --> Looking for operators with a wakeup local node'
+        );
         // Get from MongoDB
         this.db.collection('operators', function(err, collection) {
             if (err) {
@@ -682,12 +726,17 @@ var DataStore = function() {
                 }
             }).toArray(function(err, data) {
                 if (err) {
-                    Log.debug('datastore::getOperatorsWithLocalNodes --> Error finding operators from MongoDB: ' + err);
+                    Log.debug(
+                        'datastore::getOperatorsWithLocalNodes --> Error finding operators from MongoDB: ' +
+                        err);
                     callback(err);
                     return;
                 }
-                var msg = data ? 'The operators list has been recovered. ' : 'No operators found. ';
-                Log.debug('datastore::getOperatorsWithLocalNodes --> ' + msg + ' Calling callback');
+                var msg = data ?
+                    'The operators list has been recovered. ' :
+                    'No operators found. ';
+                Log.debug('datastore::getOperatorsWithLocalNodes --> ' +
+                    msg + ' Calling callback');
                 callback(null, data);
             });
         });
@@ -695,7 +744,9 @@ var DataStore = function() {
 
     this.changeLocalServerStatus = function(index, online, callback) {
         callback = Helpers.checkCallback(callback);
-        Log.debug('datastore::changeLocalServerStatus --> Changing status of a wakeup local server: ', index);
+        Log.debug(
+            'datastore::changeLocalServerStatus --> Changing status of a wakeup local server: ',
+            index);
         // Get from MongoDB
         this.db.collection('operators', function(err, collection) {
             if (err) {
@@ -739,7 +790,9 @@ var DataStore = function() {
                         callback(err);
                         return;
                     }
-                    Log.debug('dataStore::changeLocalServerStatus --> Local server updated ', res);
+                    Log.debug(
+                        'dataStore::changeLocalServerStatus --> Local server updated ',
+                        res);
                 });
         });
     },
@@ -780,7 +833,9 @@ var DataStore = function() {
                     callback(null, null);
                     return;
                 }
-                Log.debug('dataStore::getUDPClientsAndUnACKedMessages --> Data found.');
+                Log.debug(
+                    'dataStore::getUDPClientsAndUnACKedMessages --> Data found.'
+                );
                 callback(null, nodes);
             });
         });

@@ -75,31 +75,42 @@ function DataManager() {
     };
 
     /*
-     * Unregisters (or inform about disconnection) a Node from the DDBB and memory
+     * Unregisters a Node from the DDBB and memory
      */
     this.unregisterNode = function(uaid) {
         Log.debug('dataManager::unregisterNode --> Going to unregister a node');
         if (!uaid) {
             // Might be a connection closed that has no uaid associated
             // (e.g. registerWA without registerUA before)
-            Log.debug('dataManager::unregisterNode --> This connection does not have a uaid');
+            Log.debug(
+                'dataManager::unregisterNode --> This connection does not have a uaid'
+            );
             return;
         }
 
-        Log.debug('dataManager::unregisterNode --> Removing disconnected node uaid ' + uaid);
+        Log.debug(
+            'dataManager::unregisterNode --> Removing disconnected node uaid ' +
+            uaid);
         // Delete from DDBB
         var connector = Connectors.getConnectorForUAID(uaid);
         var fullyDisconnected = connectionstate.DISCONNECTED;
-        var server = '';
+        var thisServer = '';
+        var newServer = '';
         if (!connector) {
-            Log.debug('dataManager::unregisterNode --> No connector found for uaid=' + uaid);
+            Log.debug(
+                'dataManager::unregisterNode --> No connector found for uaid=' +
+                uaid);
         } else {
-            fullyDisconnected = connector.canBeWakeup() ? connectionstate.WAKEUP : connectionstate.DISCONNECTED;
-            server = connector.getServer();
+            fullyDisconnected = connector.canBeWakeup() ? connectionstate.WAKEUP :
+                connectionstate.DISCONNECTED;
+            thisServer = connector.getServer();
+            newServer = connector.canBeWakeup() ? 'UDP' : connector.getServer();
         }
+
         DataStore.unregisterNode(
             uaid,
-            server,
+            thisServer,
+            newServer,
             fullyDisconnected,
             function(error) {
                 if (!error)  {
