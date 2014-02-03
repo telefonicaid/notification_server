@@ -505,8 +505,8 @@ var DataStore = function() {
                     // Also, we only care if the data.no is just one. We should not allow
                     // register more than one node for each appToken… but that's another
                     // story…
-                    if (!data || !Array.isArray(data.no) || data.no.length !==
-                        1 || !data.no[0]) {
+                    if (!data || !Array.isArray(data.no) ||
+                        data.no.length !== 1 || !data.no[0]) {
                         Log.error('Not enough data or invalid: ', data);
                         return;
                     }
