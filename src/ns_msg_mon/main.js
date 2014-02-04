@@ -158,8 +158,8 @@ NS_Monitor.prototype.retryUDPnotACKed = function() {
     });
 };
 
-NS_Monitor.prototype.onNodeData = function(nodeData, json) {
-    if (!nodeData || !nodeData.si || !nodeData._id) {
+NS_Monitor.prototype.onNodeData = function(nodeData, notif) {
+    if (!nodeData || !nodeData.si || !nodeData._id || !nodeData.dt) {
         Log.error(Log.messages.ERROR_BACKENDERROR, {
             'class': 'NS_Monitor',
             'method': 'onNodeData',
@@ -170,39 +170,26 @@ NS_Monitor.prototype.onNodeData = function(nodeData, json) {
 
     // Is the node connected? AKA: is websocket?
     if (nodeData.co === connectionstate.DISCONNECTED) {
-        Log.debug('NS_Monitor::onNodeData --> Node recovered but not connected, just delaying');
+        Log.debug(
+            'NS_Monitor::onNodeData --> Node recovered but not connected, just delaying'
+        );
         return;
     }
-
     Log.debug('NS_Monitor::onNodeData --> Node connected:', nodeData);
 
     Log.notify(Log.messages.NOTIFY_INCOMING_TO, {
         uaid: nodeData._id,
-        appToken: json.app,
-        version: json.vs,
-        mcc: (nodeData.dt && nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) || 0,
-        mnc: (nodeData.dt && nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) || 0
+        appToken: notif.app,
+        version: notif.vs,
+        mcc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) || 0,
+        mnc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) || 0
     });
     var body = {
-        messageId: json.messageId,
         uaid: nodeData._id,
         dt: nodeData.dt,
-        payload: json
+        notif: notif
     };
     MsgBroker.push(nodeData.si, body);
-};
-
-NS_Monitor.prototype.onApplicationData = function(error, appData, json) {
-    if (error) {
-        Log.error(Log.messages.ERROR_MONERROR);
-        return;
-    }
-
-    Log.debug('NS_Monitor::onApplicationData --> Application data recovered:', appData);
-    appData.forEach(function(nodeData, i) {
-        Log.debug('NS_Monitor::onApplicationData --> Notifying node: ' + i + ':', nodeData);
-        this.onNodeData(nodeData, json);
-    }.bind(this));
 };
 
 NS_Monitor.prototype.subscribeQueues = function(broker) {
@@ -223,12 +210,13 @@ NS_Monitor.prototype.subscribeQueues = function(broker) {
 
 NS_Monitor.prototype.newMessage = function(msg) {
     Log.debug('NS_Monitor::newMessage --> Message received --', msg);
-    if (!msg.app || !msg.vs) {
+    if (!msg.app || !msg.ch || !msg.vs || !msg.no) {
         Log.error('NS_Monitor::newMessage --> Not enough data', msg);
         return;
     }
-
-    DataStore.getApplication(msg.app, this.onApplicationData.bind(this), msg);
+    DataStore.getNodeData(msg.no, (function(error, data) {
+        this.onNodeData(data, msg);
+    }).bind(this));
 };
 
 exports.NS_Monitor = NS_Monitor;
