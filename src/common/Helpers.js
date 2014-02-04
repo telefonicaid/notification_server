@@ -147,5 +147,3 @@ function __ipAddr2Int(ip) {
     var split = ip.split('.');
     return split[0] << 24 | split[1] << 16 | split[2] << 8 | split[3];
 }
-
-console.log(isIPInNetwork('127.0.0.1', ['127.0.0.0/24']));

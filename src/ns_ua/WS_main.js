@@ -357,22 +357,22 @@ NS_UA_WS.prototype.onNewMessage = function(json) {
     this.stats['messages_from_mq'] = (this.stats['messages_from_mq'] || 0) + 1;
     Log.debug('WS::Queue::onNewMessage --> New message received: ', json);
     // If we don't have enough data, return
-    if (!json.uaid || !json.payload || !json.payload.ch || !json.payload.vs) {
+    if (!json.uaid || !json.notif || !json.notif.ch || !json.notif.vs) {
         Log.error(Log.messages.ERROR_WSNODATA);
         return;
     }
     Log.debug('WS::Queue::onNewMessage --> Notifying node:', json.uaid);
     Log.notify(Log.messages.NOTIFY_MSGSENTTOUA, {
         uaid: json.uaid,
-        channelId: json.payload.ch,
-        version: json.payload.vs
+        channelId: json.notif.ch,
+        version: json.notif.vs
     });
 
     var nodeConnector = DataManager.getNodeConnector(json.uaid);
     if (nodeConnector) {
         var notification = {
-            version: json.payload.vs,
-            channelID: json.payload.ch
+            version: json.notif.vs,
+            channelID: json.notif.ch
         };
         this.sendNotification.bind(this)(nodeConnector, notification);
     } else {

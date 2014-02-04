@@ -147,123 +147,125 @@ NS_UA_UDP.prototype = {
     },
 
     onNewMessage: function(message) {
-        /**
-         * Messages are formed like this:
-         * {
-         *  "uaid": "<UAID>",
-         *  "dt": {
-         *    "wakeup_hostport": {
-         *      "ip": "IP",
-         *      "port": "PORT"
-         *    },
-         *    "mobilenetwork": {
-         *      "mcc": "MCC",
-         *      "MobileNetworkc": "MNC"
-         *    },
-         *    "protocol": "udp|tcp",
-         *    "canBeWakeup": "true|false",
-         *    "payload": {
-         *      "app": "<appToken>",
-         *      "ch": "<channelID>",
-         *      "vs": "x"
-         *    }
-         *  }
-         * }
-         */
-        // If message does not follow the above standard, return.
+        // {
+        // "uaid": "<node_id>",
+        // "dt": {
+        //     "wakeup_hostport": {
+        //         "ip": "127.0.0.1",
+        //         "port": 44444
+        //     },
+        //     "mobilenetwork": {
+        //         "mcc": "214",
+        //         "mnc": "07"
+        //     },
+        //     "protocol": "udp",
+        //     "canBeWakeup": true
+        // },
+        // "notif": {
+        //     "app": "<apptoken>",
+        //     "ch": "testApp",
+        //     "vs": "1391518019069",
+        //     "no": "<node_id>"
+        // }
+
         Log.debug('UDP::queue::onNewMessage --> messageData =', message);
-        if (!message.uaid || !message.dt || !message.dt.wakeup_hostport || !
-            message.dt.wakeup_hostport.ip || !message.dt.wakeup_hostport.port || !
-            message.dt.mobilenetwork || !message.dt.mobilenetwork.mcc || !
-            message.dt.mobilenetwork.mnc) {
+
+
+        // If message does not follow the above standard, return.
+        var ip = message.dt.wakeup_hostport && essage.dt.wakeup_hostport.ip;
+        var port = message.dt.wakeup_hostport &&
+            message.dt.wakeup_hostport.port;
+        var mcc = message.dt.mobilenetwork && message.dt.mobilenetwork.mcc;
+        var mnc = message.dt.mobilenetwork && message.dt.mobilenetwork.mnc;
+        var protocol = message.dt.protocol || undefined;
+        if (!message.uaid || !ip || !port || !mcc || !mnc) {
             Log.error(Log.messages.ERROR_UDPNODATA);
             return;
         }
 
-        MobileNetwork.getNetwork(message.dt.mobilenetwork.mcc, message.dt.mobilenetwork
-            .mnc, function(error, op) {
-                if (error) {
-                    Log.error(Log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
-                        'error': error
-                    });
-                    return;
-                }
-                if (!op || !op.wakeup) {
-                    Log.debug(
-                        'UDP::queue::onNewMessage --> No WakeUp server found');
-                    return;
-                }
-                Log.debug('onNewMessage: UDP WakeUp server for ' + op.operator +
-                    ': ' + op.wakeup);
-
-                // Send HTTP Notification Message
-                var address = urlparser.parse(op.wakeup);
-
-                if (!address.href) {
-                    Log.error(Log.messages.ERROR_UDPBADADDRESS, {
-                        'address': address
-                    });
-                    return;
-                }
-
-                if (address.protocol !== 'https:') {
-                    Log.debug(
-                        'UDP:queue:onNewMessage --> Non valid URL (invalid protocol, only HTTPS allowed)'
-                    );
-                    return;
-                }
-
-                var pathname = address.pathname || '';
-                var postData = querystring.stringify({
-                    ip: message.dt.wakeup_hostport.ip,
-                    port: message.dt.wakeup_hostport.port,
-                    protocol: message.dt.protocol,
-                    mcc: message.dt.mobilenetwork.mcc,
-                    mnc: message.dt.mobilenetwork.mnc
+        MobileNetwork.getNetwork(mcc, mnc, function(error, op) {
+            if (error) {
+                Log.error(Log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
+                    'error': error
                 });
-                var options = {
-                    hostname: address.hostname,
-                    port: address.port,
-                    path: pathname,
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'Content-Length': postData.length
-                    },
-                    ca: CA,
-                    key: KEY,
-                    cert: CERT,
-                    agent: false
-                };
+                return;
+            }
+            if (!op || !op.wakeup) {
+                Log.debug(
+                    'UDP::queue::onNewMessage --> No WakeUp server found');
+                return;
+            }
+            Log.debug('onNewMessage: UDP WakeUp server for ' + op.operator +
+                ': ' + op.wakeup);
 
-                //Fire the request, and forget
-                var req = https.request(options, function(res) {
-                    Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
-                        uaid: message.uaid,
-                        wakeupip: message.dt.wakeup_hostport.ip,
-                        wakeupport: message.dt.wakeup_hostport.port,
-                        mcc: message.dt.mobilenetwork.mcc,
-                        mnc: message.dt.mobilenetwork.mnc,
-                        protocol: message.dt.protocol,
-                        response: res.statusCode
-                    });
+            // Send HTTP Notification Message
+            var address = urlparser.parse(op.wakeup);
+
+            if (!address.href) {
+                Log.error(Log.messages.ERROR_UDPBADADDRESS, {
+                    'address': address
                 });
+                return;
+            }
 
-                req.on('error', function(e) {
-                    Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
-                        uaid: message.uaid,
-                        wakeupip: message.dt.wakeup_hostport.ip,
-                        wakeupport: message.dt.wakeup_hostport.port,
-                        mcc: message.dt.mobilenetwork.mcc,
-                        mnc: message.dt.mobilenetwork.mnc,
-                        protocol: message.dt.protocol,
-                        response: e.message
-                    });
-                });
+            if (address.protocol !== 'https:') {
+                Log.debug(
+                    'UDP:queue:onNewMessage --> Request will NOT be HTTPS)'
+                );
+                return;
+            }
 
-                req.write(postData);
-                req.end();
+            var pathname = address.pathname || '';
+            var postData = querystring.stringify({
+                ip: ip,
+                port: port,
+                protocol: message.dt.protocol,
+                mcc: mcc,
+                mnc: mnc
             });
+            var options = {
+                hostname: address.hostname,
+                port: address.port,
+                path: pathname,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Length': postData.length
+                },
+                ca: CA,
+                key: KEY,
+                cert: CERT,
+                agent: false
+            };
+
+            //Fire the request, and forget
+            var req = https.request(options, function(res) {
+                Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
+                    uaid: message.uaid,
+                    wakeupip: ip,
+                    wakeupport: port,
+                    mcc: mcc,
+                    mnc: mnc,
+                    protocol: protocol,
+                    response: res.statusCode
+                });
+            });
+
+            req.on('error', function(e) {
+                Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
+                    uaid: message.uaid,
+                    wakeupip: ip,
+                    wakeupport: port,
+                    mcc: mcc,
+                    mnc: mnc,
+                    protocol: protocol,
+                    response: e.message
+                });
+            });
+
+            req.write(postData);
+            req.end();
+        });
     }
 };
 

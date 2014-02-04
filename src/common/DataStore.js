@@ -601,6 +601,7 @@ var DataStore = function() {
         msg.app = appToken;
         msg.ch = channelID;
         msg.vs = version;
+        msg.no = nodeId;
 
         this.db.collection('nodes', function(err, collection) {
             if (err) {
