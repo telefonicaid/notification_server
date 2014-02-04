@@ -159,7 +159,7 @@ NS_Monitor.prototype.retryUDPnotACKed = function() {
 };
 
 NS_Monitor.prototype.onNodeData = function(nodeData, notif) {
-    if (!nodeData || !nodeData.si || !nodeData._id) {
+    if (!nodeData || !nodeData.si || !nodeData._id || !nodeData.dt) {
         Log.error(Log.messages.ERROR_BACKENDERROR, {
             'class': 'NS_Monitor',
             'method': 'onNodeData',
@@ -181,10 +181,8 @@ NS_Monitor.prototype.onNodeData = function(nodeData, notif) {
         uaid: nodeData._id,
         appToken: notif.app,
         version: notif.vs,
-        mcc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) ||
-            0,
-        mnc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) ||
-            0
+        mcc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) || 0,
+        mnc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) || 0
     });
     var body = {
         uaid: nodeData._id,
