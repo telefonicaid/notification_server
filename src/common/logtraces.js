@@ -44,7 +44,7 @@ exports.logtraces = {
     },
     NOTIFY_TO_WAKEUP: {
         id: 0x9005,
-        m: 'Notify to wakeup -- uaid=::uaid -- wakeup=::wakeupip:::wakeupport -- mcc=::mcc -- mnc=::mnc -- protocol=::protocol -- status=::response'
+        m: 'Notify to wakeup -- uaid=::uaid -- wakeup=::wakeupip:::wakeupport -- mcc=::mcc -- mnc=::mnc -- protocol=::protocol -- status=::response -- trackingid=::xtracking'
     },
     NOTIFY_ACK: {
         id: 0x9006,

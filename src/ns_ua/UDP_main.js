@@ -12,7 +12,6 @@
 
 var Log = require('../common/Logger.js'),
     MsgBroker = require('../common/MsgBroker.js'),
-    MobileNetwork = require('../common/MobileNetwork.js'),
     Helpers = require('../common/Helpers.js'),
     config = require('../config.js').NS_UA_UDP,
     https = require('https'),
@@ -23,28 +22,27 @@ var Log = require('../common/Logger.js'),
 var CA = fs.readFileSync(config.ca);
 var KEY = fs.readFileSync(config.key);
 var CERT = fs.readFileSync(config.cert);
+var WAKEUP_URL = config.WAKEUP_URL;
 
 function NS_UA_UDP() {
     this.closingCorrectly = false;
     this.msgBrokerReady = false;
-    this.mobileNetworkReady = false;
     this.readyTimeout = undefined;
 }
 
 NS_UA_UDP.prototype = {
 
     checkReady: function() {
-        if (this.msgBrokerReady && this.mobileNetworkReady) {
+        if (this.msgBrokerReady) {
             Log.debug(
                 'NS_UDP::checkReady --> We are ready. Clearing any readyTimeout'
             );
             clearTimeout(this.readyTimeout);
         } else {
             Log.debug('NS_UDP::checkReady --> Not ready yet. msgBrokerReady=' +
-                this.msgBrokerReady + 'mobileNetworkReady=' + this.mobileNetworkReady
-            );
+                this.msgBrokerReady);
         }
-        return this.msgBrokerReady && this.mobileNetworkReady;
+        return this.msgBrokerReady;
     },
 
     start: function() {
@@ -90,30 +88,9 @@ NS_UA_UDP.prototype = {
             self.stop();
         });
 
-        MobileNetwork.on('ready', function() {
-            Log.info('NS_UDP::start --> MobileNetwork is ready');
-            self.mobileNetworkReady = true;
-            self.checkReady();
-        });
-
-        MobileNetwork.once('closed', function() {
-            self.mobileNetworkReady = false;
-            if (self.closingCorrectly) {
-                Log.info(
-                    'NS_UDP::stop --> Closed MobileNetwork (DataStore)');
-                return;
-            }
-            Log.critical(Log.messages.CRITICAL_DBDISCONNECTED, {
-                'class': 'NS_UDP',
-                'method': 'start'
-            });
-            self.stop();
-        });
-
         // Subscribe to the UDP common Queue
         process.nextTick(function() {
             MsgBroker.start();
-            MobileNetwork.start();
         });
 
         //Check if we are alive
@@ -172,100 +149,86 @@ NS_UA_UDP.prototype = {
 
 
         // If message does not follow the above standard, return.
-        var ip = message.dt.wakeup_hostport && essage.dt.wakeup_hostport.ip;
+        var ip = message.dt.wakeup_hostport && message.dt.wakeup_hostport.ip;
         var port = message.dt.wakeup_hostport &&
             message.dt.wakeup_hostport.port;
         var mcc = message.dt.mobilenetwork && message.dt.mobilenetwork.mcc;
         var mnc = message.dt.mobilenetwork && message.dt.mobilenetwork.mnc;
-        var protocol = message.dt.protocol || undefined;
+        var protocol = message.dt.protocol || 'udp';
         if (!message.uaid || !ip || !port || !mcc || !mnc) {
             Log.error(Log.messages.ERROR_UDPNODATA);
             return;
         }
 
-        MobileNetwork.getNetwork(mcc, mnc, function(error, op) {
-            if (error) {
-                Log.error(Log.messages.ERROR_UDPERRORGETTINGOPERATOR, {
-                    'error': error
-                });
-                return;
-            }
-            if (!op || !op.wakeup) {
-                Log.debug(
-                    'UDP::queue::onNewMessage --> No WakeUp server found');
-                return;
-            }
-            Log.debug('onNewMessage: UDP WakeUp server for ' + op.operator +
-                ': ' + op.wakeup);
+        // Send HTTP Notification Message
+        var address = urlparser.parse(WAKEUP_URL);
 
-            // Send HTTP Notification Message
-            var address = urlparser.parse(op.wakeup);
-
-            if (!address.href) {
-                Log.error(Log.messages.ERROR_UDPBADADDRESS, {
-                    'address': address
-                });
-                return;
-            }
-
-            if (address.protocol !== 'https:') {
-                Log.debug(
-                    'UDP:queue:onNewMessage --> Request will NOT be HTTPS)'
-                );
-                return;
-            }
-
-            var pathname = address.pathname || '';
-            var postData = querystring.stringify({
-                ip: ip,
-                port: port,
-                protocol: message.dt.protocol,
-                mcc: mcc,
-                mnc: mnc
+        if (!address.href) {
+            Log.error(Log.messages.ERROR_UDPBADADDRESS, {
+                'address': address
             });
-            var options = {
-                hostname: address.hostname,
-                port: address.port,
-                path: pathname,
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'Content-Length': postData.length
-                },
-                ca: CA,
-                key: KEY,
-                cert: CERT,
-                agent: false
-            };
+            return;
+        }
 
-            //Fire the request, and forget
-            var req = https.request(options, function(res) {
-                Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
-                    uaid: message.uaid,
-                    wakeupip: ip,
-                    wakeupport: port,
-                    mcc: mcc,
-                    mnc: mnc,
-                    protocol: protocol,
-                    response: res.statusCode
-                });
-            });
+        if (address.protocol !== 'https:') {
+            Log.error(
+                'UDP:queue:onNewMessage --> Request is not HTTPS)'
+            );
+            return;
+        }
 
-            req.on('error', function(e) {
-                Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
-                    uaid: message.uaid,
-                    wakeupip: ip,
-                    wakeupport: port,
-                    mcc: mcc,
-                    mnc: mnc,
-                    protocol: protocol,
-                    response: e.message
-                });
-            });
-
-            req.write(postData);
-            req.end();
+        var pathname = address.pathname || '';
+        var postData = querystring.stringify({
+            ip: ip,
+            port: port,
+            protocol: message.dt.protocol,
+            mcc: mcc,
+            mnc: mnc
         });
+        var options = {
+            hostname: address.hostname,
+            port: address.port,
+            path: pathname,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Content-Length': postData.length
+            },
+            ca: CA,
+            key: KEY,
+            cert: CERT,
+            agent: false
+        };
+
+        //Fire the request, and forget
+        var req = https.request(options, function(res) {
+            Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
+                uaid: message.uaid,
+                wakeupip: ip,
+                wakeupport: port,
+                mcc: mcc,
+                mnc: mnc,
+                protocol: protocol,
+                response: res.statusCode,
+                xtracking: res.headers['x-tracking-id']
+            });
+        });
+
+        req.on('error', function(e) {
+            Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
+                uaid: message.uaid,
+                wakeupip: ip,
+                wakeupport: port,
+                mcc: mcc,
+                mnc: mnc,
+                protocol: protocol,
+                response: e.message,
+                xtracking: res.headers['x-tracking-id']
+            });
+        });
+
+        req.write(postData);
+        req.end();
     }
 };
 
