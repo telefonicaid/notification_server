@@ -222,8 +222,7 @@ NS_UA_UDP.prototype = {
                 mcc: mcc,
                 mnc: mnc,
                 protocol: protocol,
-                response: e.message,
-                xtracking: res.headers['x-tracking-id']
+                response: e.message
             });
         });
 
