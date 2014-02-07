@@ -11,15 +11,19 @@
 
 
 var Log = require('../common/Logger.js'),
-    DataStore = require('../common/DataStore.js'),
     MobileNetwork = require('../common/MobileNetwork.js'),
-    http = require('http'),
-    https = require('https'),
+    request = require('request'),
     urlparser = require('url'),
-    checkPeriod = require('../config.js').NS_WakeUp_Checker.checkPeriod;
+    fs = require('fs'),
+    config = require('../config.js').NS_WakeUp_Checker;
+
+var CA = fs.readFileSync(config.ca);
+var KEY = fs.readFileSync(config.key);
+var CERT = fs.readFileSync(config.cert);
+var GLOBAL_WAKEUP_API_CHECK = config.GLOBAL_WAKEUP_API_CHECK;
 
 function NS_WakeUp_Checker() {
-    this.dataStoreReady = false;
+    this.MobileNetworkReady = false;
 }
 
 NS_WakeUp_Checker.prototype = {
@@ -34,31 +38,31 @@ NS_WakeUp_Checker.prototype = {
 
         //Wait until we have setup our events listeners
         var self = this;
-        DataStore.once('ready', function() {
+        MobileNetwork.once('ready', function() {
             Log.info(
-                'NS_WakeUpChecker::init --> DataStore ready and connected');
-            self.dataStoreReady = true;
+                'NS_WakeUpChecker::init --> MobileNetwork ready and connected');
+            self.MobileNetworkReady = true;
             self.checkNodes();
         });
-        DataStore.once('closed', function() {
+        MobileNetwork.once('closed', function() {
             if (self.closingCorrectly) {
-                Log.info('NS_WakeUpChecker::start --> Closed DataStore');
+                Log.info('NS_WakeUpChecker::start --> Closed MobileNetwork');
                 return;
             }
             Log.critical(Log.messages.CRITICAL_DBDISCONNECTED, {
                 'class': 'NS_WakeUpChecker',
                 'method': 'init'
             });
-            self.dataStoreReady = false;
+            self.MobileNetworkReady = false;
             this.stop();
         });
         process.nextTick(function() {
-            DataStore.start();
+            MobileNetwork.start();
         });
 
         // Check if we are alive
         this.readyTimeout = setTimeout(function() {
-            if (!self.dataStoreReady) {
+            if (!self.MobileNetworkReady) {
                 Log.critical(Log.messages.CRITICAL_NOTREADY);
             }
         }, 30 * 1000); //Wait 30 seconds
@@ -69,124 +73,67 @@ NS_WakeUp_Checker.prototype = {
         Log.info(
             'NS_WakeUpChecker::stop --> Closing WakeUp local nodes checker server'
         );
-        DataStore.removeAllListeners();
-        DataStore.stop();
+        MobileNetwork.removeAllListeners();
+        MobileNetwork.stop();
+        clearTimeout(this.checkNodesTimeout);
         setTimeout(function() {
             process.exit(0);
         }, 5000);
     },
 
     recoverNetworks: function(cb) {
-        DataStore.getOperatorsWithLocalNodes(function(error, d) {
-            if (error) {
-                Log.error(Log.messages.ERROR_MOBILENETWORKERROR, {
-                    'error': error
-                });
-                cb(error);
-                return;
-            }
-            if (!d) {
-                Log.debug(
-                    'NS_WakeUpChecker:recoverNetworks --> No local nodes found on database'
-                );
+        var options = {
+            url: GLOBAL_WAKEUP_API_CHECK,
+            method: 'GET',
+            ca: CA,
+            key: KEY,
+            cert: CERT,
+            agent: false
+        };
+
+        request(options, function(error, response, body) {
+            if (error || response.statusCode !== 200) {
+                cb({ error: (error || response.statusCode || 'Unknown')});
             } else {
-                Log.debug(
-                    'NS_WakeUpChecker:recoverNetworks --> Local nodes found: ',
-                    d);
+                cb(body, (response.headers && response.headers['x-tracking-id']));
             }
-            cb(null, d);
         });
     },
 
     checkNodes: function() {
-        if (!this.dataStoreReady) {
+        if (!this.MobileNetworkReady) {
             return;
         }
         Log.debug('NS_WakeUpChecker:checkNodes -> Checking nodes');
         var self = this;
-        this.recoverNetworks(function(error, wakeUpNodes) {
-            if (error) {
+        this.recoverNetworks(function(wakeUpNodes, trackingID) {
+            var json = {};
+            try {
+                json = JSON.parse(wakeUpNodes);
+            } catch (e) {
                 return;
             }
-            if (!Array.isArray(wakeUpNodes)) {
+            if (json.error) {
+                return;
+            }
+            if (!json.nets || !Array.isArray(json.nets)) {
                 Log.error(
                     'NS_WakeUpChecker:checkNodes --> Data recovered is not an array. Check backend!'
                 );
                 return;
             }
-            wakeUpNodes.forEach(function(node) {
+            (json.nets).forEach(function(node) {
                 Log.debug(
                     'NS_WakeUpChecker:checkNodes --> Checking Local Proxy server',
                     node);
-                self.checkServer(node.wakeup, function(err, res) {
-                    if (err || res.statusCode !== 200) {
-                        Log.info(Log.messages.NOTIFY_WAKEUPSERVER_KO, {
-                            country: node.country,
-                            mcc: node.mcc,
-                            mnc: node.mnc,
-                            retries: node.offlinecounter + 1
-                        });
-                        MobileNetwork.changeNetworkStatus(node.mcc,
-                            node.mnc, false);
-                    } else {
-                        Log.info(Log.messages.NOTIFY_WAKEUPSERVER_OK, {
-                            country: node.country,
-                            mcc: node.mcc,
-                            mnc: node.mnc
-                        });
-                        if (node.offline) {
-                            MobileNetwork.changeNetworkStatus(node.mcc,
-                                node.mnc, true);
-                        }
-                    }
-                });
+                var mcc = node.mccmnc.split('-')[0];
+                var mnc = node.mccmnc.split('-')[1];
+
+                MobileNetwork.changeNetworkStatus(mcc, mnc, !node.offline);
             });
-            setTimeout(function() {
+            self.checkNodesTimeout = setTimeout(function() {
                 self.checkNodes();
-            }, checkPeriod);
-        });
-    },
-
-    checkServer: function(url, cb) {
-        // Send HTTP Notification Message
-        var address = urlparser.parse(url);
-
-        if (!address.href) {
-            Log.error(Log.messages.ERROR_UDPBADADDRESS, {
-                'address': address
-            });
-            cb('Bad URL');
-            return;
-        }
-
-        var protocolHandler = null;
-        switch (address.protocol) {
-            case 'http:':
-                protocolHandler = http;
-                break;
-            case 'https:':
-                protocolHandler = https;
-                break;
-            default:
-                protocolHandler = null;
-        }
-        if (!protocolHandler) {
-            Log.debug(
-                'NS_WakeUpChecker::checkServer --> Non valid URL (invalid protocol)'
-            );
-            cb('Non valid URL (invalid protocol)');
-            return;
-        }
-        var options = {
-            hostname: address.hostname,
-            port: address.port,
-            path: '/status',
-            agent: false
-        };
-        protocolHandler.get(options, function(res) {
-            cb(null, res);
-        }).on('error', function(e) {
-            cb(e.message);
+            }, config.checkPeriod);
         });
     }
 };
