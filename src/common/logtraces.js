@@ -56,11 +56,11 @@ exports.logtraces = {
     },
     NOTIFY_WAKEUPSERVER_OK: {
         id: 0x9008,
-        m: '::country ::mcc-::mnc Local Proxy server available, working on wake-up mode'
+        m: '::mcc-::mnc Local Proxy server available, working on wake-up mode'
     },
     NOTIFY_WAKEUPSERVER_KO: {
         id: 0x9009,
-        m: '::country ::mcc-::mnc Local Proxy server not available (::retries of attempts), working on websocket'
+        m: '::mcc-::mnc Local Proxy server not available (::retries of attempts), working on websocket'
     },
 
     /**

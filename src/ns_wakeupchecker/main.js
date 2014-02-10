@@ -24,6 +24,7 @@ var GLOBAL_WAKEUP_API_CHECK = config.GLOBAL_WAKEUP_API_CHECK;
 
 function NS_WakeUp_Checker() {
     this.MobileNetworkReady = false;
+    this.statuses = {};
 }
 
 NS_WakeUp_Checker.prototype = {
@@ -129,6 +130,28 @@ NS_WakeUp_Checker.prototype = {
                 var mcc = node.mccmnc.split('-')[0];
                 var mnc = node.mccmnc.split('-')[1];
 
+                // Check existencially
+                self.statuses[node.mccmnc] = self.statuses[node.mccmnc] || {};
+
+                if (node.offline === true) {
+                    self.statuses[node.mccmnc].retries =
+                        (self.statuses[node.mccmnc].retries || 0) + 1;
+                } else {
+                    self.statuses[node.mccmnc].retries = 0;
+                }
+
+                if (self.statuses[node.mccmnc].retries === 0) {
+                    Log.info(Log.messages.NOTIFY_WAKEUPSERVER_OK, {
+                        mcc: mcc,
+                        mnc: mnc
+                    });
+                } else {
+                    Log.info(Log.messages.NOTIFY_WAKEUPSERVER_KO, {
+                        mcc: mcc,
+                        mnc: mnc,
+                        retries: self.statuses[node.mccmnc].retries
+                    });
+                }
                 MobileNetwork.changeNetworkStatus(mcc, mnc, !node.offline);
             });
             self.checkNodesTimeout = setTimeout(function() {
