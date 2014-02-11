@@ -187,7 +187,19 @@ exports.NS_UA_UDP = {
     ca: null,
     key: null,
     cert: null,
-    WAKEUP_URL: null
+    WAKEUP_URL: 'https://wakeup.tefdigital.com/wakeup/v1'
+};
+
+/** NS_WakeUp_Checker **/
+exports.NS_WakeUp_Checker = {
+    logfile: 'NS_WakeUp_Checker.log',
+    /* Paths to files */
+    ca: null,
+    key: null,
+    cert: null,
+    GLOBAL_WAKEUP_API_CHECK: 'https://wakeup.tefdigital.com/netinfo/v1',
+
+    checkPeriod: 180000
 };
 
 /********************* NS start.js ***********************************/
