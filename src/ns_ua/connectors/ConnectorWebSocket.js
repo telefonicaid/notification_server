@@ -33,7 +33,7 @@ ConnectorWebSocket.prototype = {
     },
 
     getMobileNetwork: function() {
-        return null;
+        return this.data.mobilenetwork || null;
     },
 
     getProtocol: function() {
