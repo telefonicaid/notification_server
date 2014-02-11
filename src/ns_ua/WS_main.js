@@ -560,6 +560,8 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                     }
                     Log.debug('WS:onWSMessage --> Accepted uaid=' + query.uaid);
                     connection.uaid = query.uaid;
+                    connection.mcc = (query.mobilenetwork && query.mobilenetwork.mcc) || 0;
+                    connection.mnc = (query.mobilenetwork && query.mobilenetwork.mnc) || 0;
 
                     //KPI: 0x2000
                     Log.notify(Log.messages.NOTIFY_HELLO, {
@@ -568,8 +570,8 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                         socket_port: connection.socket.remotePort,
                         ip: (query.wakeup_hostport && query.wakeup_hostport.ip) || 0,
                         port: (query.wakeup_hostport && query.wakeup_hostport.port) || 0,
-                        mcc: (query.mobilenetwork && query.mobilenetwork.mcc) || 0,
-                        mnc: (query.mobilenetwork && query.mobilenetwork.mnc) || 0
+                        mcc: connection.mcc,
+                        mnc: connection.mnc
                     });
                     self.stats['websocket_messages_hello'] = (self.stats['websocket_messages_hello'] || 0) + 1;
 
@@ -768,7 +770,9 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                             uaid: connection.uaid,
                             channelID: el.channelID,
                             appToken: Helpers.getAppToken(el.channelID, connection.uaid),
-                            version: el.version
+                            version: el.version,
+                            mcc: connection.mcc,
+                            mnc: connection.mnc
                         });
 
                         DataManager.ackMessage(connection.uaid, el.channelID, el.version);

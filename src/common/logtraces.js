@@ -48,7 +48,7 @@ exports.logtraces = {
     },
     NOTIFY_ACK: {
         id: 0x9006,
-        m: 'ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version'
+        m: 'ACK received -- uaid=::uaid -- channelID=::channelID -- appToken=::appToken -- version=::version -- mcc=::mcc -- mnc=::mnc'
     },
     NOTIFY_MSGSENTTOUA: {
         id: 0x9007,
