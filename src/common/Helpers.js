@@ -110,7 +110,7 @@ function isIPInNetwork(ip, networks) {
     }
 
     if (!Array.isArray(networks)) {
-        networks = [];
+        networks = [networks];
     }
 
     //Adding private networks from https://tools.ietf.org/html/rfc1918
@@ -136,8 +136,14 @@ function __isIPInNetworks(ip, networks) {
         var split = network.split('/');
         var ad1 = __ipAddr2Int(ip);
         var ad2 = __ipAddr2Int(split[0]);
-        var mask = -1 << (32 - split[1]);
-
+        var mask = 0;
+        // JavaScript operates in 32 bits. Check
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Bitwise_Operators#Summary
+        // and see that a Left Shift of 32 should not be used
+        // "The right operand should be less than 32"
+        if (split[1] !== '0') {
+            mask = -1 << (32 - split[1]);
+        }
         rv = (ad1 & mask) == ad2;
     });
     return rv;
