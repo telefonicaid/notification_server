@@ -99,9 +99,7 @@ var MobileNetwork = function() {
                 return;
             }
             Log.debug('MobileNetwork::getNetwork --> found on database:', d);
-            /*
-        Save to the cache the found value.
-       */
+            // Save to the cache the found value.
             if (self.isCacheEnabled) {
                 self.cache[index] = d;
             }
