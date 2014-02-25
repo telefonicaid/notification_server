@@ -13,7 +13,6 @@
 var Log = require('../common/Logger.js'),
     MobileNetwork = require('../common/MobileNetwork.js'),
     request = require('request'),
-    urlparser = require('url'),
     fs = require('fs'),
     config = require('../config.js').NS_WakeUp_Checker;
 
@@ -43,7 +42,13 @@ NS_WakeUp_Checker.prototype = {
             Log.info(
                 'NS_WakeUpChecker::init --> MobileNetwork ready and connected');
             self.MobileNetworkReady = true;
+
+            // Start checking while booting
             self.checkNodes();
+            // And set the interval
+            self.checkNodesInterval = setInterval(function() {
+                self.checkNodes();
+            }, config.checkPeriod);
         });
         MobileNetwork.once('closed', function() {
             if (self.closingCorrectly) {
@@ -55,6 +60,7 @@ NS_WakeUp_Checker.prototype = {
                 'method': 'init'
             });
             self.MobileNetworkReady = false;
+            clearInterval(self.checkNodesInterval);
             this.stop();
         });
         process.nextTick(function() {
@@ -115,6 +121,8 @@ NS_WakeUp_Checker.prototype = {
                 return;
             }
             if (json.error) {
+                Log.info('NS_WakeUpChecker:checkNodes --> Some error checking ' +
+                    'nodes ' + json.error);
                 return;
             }
             if (!json.nets || !Array.isArray(json.nets)) {
@@ -130,7 +138,7 @@ NS_WakeUp_Checker.prototype = {
                 var mcc = node.mccmnc.split('-')[0];
                 var mnc = node.mccmnc.split('-')[1];
 
-                // Check existencially
+                // Check existentially
                 self.statuses[node.mccmnc] = self.statuses[node.mccmnc] || {};
 
                 if (node.offline === true) {
@@ -154,9 +162,6 @@ NS_WakeUp_Checker.prototype = {
                 }
                 MobileNetwork.changeNetworkStatus(mcc, mnc, !node.offline);
             });
-            self.checkNodesTimeout = setTimeout(function() {
-                self.checkNodes();
-            }, config.checkPeriod);
         });
     }
 };
