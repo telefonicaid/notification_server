@@ -159,7 +159,7 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
             'id': conn.id
         });
         conn.state = QUEUE_ERROR;
-        self.emit('queuedisconnected');
+        self.emit('queuedisconnected', error);
         self.exchange = undefined;
     }));
 
