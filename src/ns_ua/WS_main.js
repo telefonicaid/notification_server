@@ -342,6 +342,9 @@ NS_UA_WS.prototype.stop = function(correctly) {
 };
 
 NS_UA_WS.prototype.sendNotification = function(connector, notification) {
+    if (!connector) {
+        return;
+    }
     Log.debug('WS::sendNotification --> Sending messages:', notification);
     this.stats['notifications_sent'] = (this.stats['notifications_sent'] || 0) + 1;
     if (!Array.isArray(notification)) {
