@@ -808,8 +808,13 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
     this.onWSClose = function(reasonCode, description) {
         self.stats['websocket_closed_connections'] = (self.stats['websocket_closed_connections'] || 0) + 1;
         self.stats['websocket_actual_open_connections'] = self.stats['websocket_actual_open_connections'] - 1;
-        DataManager.unregisterNode(connection.uaid);
-        Log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uaid ' + connection.uaid);
+        if (!connection.replacedByNewConnection) {
+          DataManager.unregisterNode(connection.uaid);
+          Log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uaid ' + connection.uaid);
+        } else {
+          // Connection was replaced by a new connection. 
+          Log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' replaced by a new connection with uaid ' + connection.uaid);
+        }
     };
 
     /**
