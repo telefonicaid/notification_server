@@ -80,7 +80,7 @@ Connector.prototype = {
             oldConnection.close();
         }
         Log.debug('getConnector --> getting a WebSocket connector');
-        connector = new ConnectorWebSocket(data, connection);
+        var connector = new ConnectorWebSocket(data, connection);
         this.nodesConnectors[data.uaid] = connector;
         return callback(null, connector);
     },
@@ -89,7 +89,7 @@ Connector.prototype = {
         if (this.nodesConnectors[data.uaid]) {
             this.nodesConnectors[data.uaid].getConnection().close();
         }
-        connector = new ConnectorUDP(data, connection);
+        var connector = new ConnectorUDP(data, connection);
         this.nodesConnectors[data.uaid] = connector;
         return callback(null, connector);
     },
