@@ -75,7 +75,9 @@ Connector.prototype = {
 
     getWSconnector: function(data, connection, callback) {
         if (this.nodesConnectors[data.uaid]) {
-            this.nodesConnectors[data.uaid].getConnection().close();
+            var oldConnection = this.nodesConnectors[data.uaid].getConnection();
+            oldConnection.replacedByNewConnection = true;
+            oldConnection.close();
         }
         Log.debug('getConnector --> getting a WebSocket connector');
         connector = new ConnectorWebSocket(data, connection);
