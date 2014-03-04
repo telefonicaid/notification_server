@@ -63,7 +63,8 @@ Connector.prototype = {
                     //Falback for WebSocket
                     Log.debug('getConnector::UDP --> Data is not accepted by the network' +
                         ' falling back to WebSocket');
-                    Log.debug('getConnector::UDP --> Local server is ' + (!op.offline ? 'online' : 'offline'));
+                    Log.debug('getConnector::UDP --> Local server is ' +
+                        (op && !op.offline) ? 'online' : 'offline');
                     self.getWSconnector(data, connection, callback);
                 }
             });
