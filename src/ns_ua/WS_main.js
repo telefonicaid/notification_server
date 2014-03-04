@@ -605,6 +605,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
 
                         // If uaid do not have any channelIDs (first connection), we do not launch this processes.
                         if (query.channelIDs && Array.isArray(query.channelIDs)) {
+                            nodeConnector = DataManager.getNodeConnector(query.uaid);
                             //Start recovery protocol
                             process.nextTick(function() {
                                 self.recoveryChannels(connection.uaid, query.channelIDs, connection);
@@ -812,7 +813,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
           DataManager.unregisterNode(connection.uaid);
           Log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' disconnected with uaid ' + connection.uaid);
         } else {
-          // Connection was replaced by a new connection. 
+          // Connection was replaced by a new connection.
           Log.debug('WS::onWSClose --> Peer ' + connection.remoteAddress + ' replaced by a new connection with uaid ' + connection.uaid);
         }
     };
