@@ -156,7 +156,7 @@ NS_UA_WS.prototype.start = function() {
                     'code': code
                 });
                 if (forked > 20) {
-                    Log.critical('Please, check logs, there has been too much re-spawns');
+                    Log.critical('Please, check logs, there have been too much re-spawns');
                     return;
                 }
                 if (self.closing) {
