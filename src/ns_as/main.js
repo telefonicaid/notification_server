@@ -87,7 +87,7 @@ NS_AS.prototype = {
                     });
                     if (forked > 20) {
                         Log.critical(
-                            'NS_AS::start --> Please, check logs, there has been too much re-spawns'
+                            'NS_AS::start --> Please, check logs, there have been too much re-spawns'
                         );
                     } else {
                         Log.info('NS_AS::start --> Spawning a new worker…');
