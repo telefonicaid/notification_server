@@ -786,7 +786,6 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                 default:
                     self.stats['websocket_messages_unknown'] = (self.stats['websocket_messages_unknown'] || 0) + 1;
 
-                    Log.debug('WS::onWSMessage::default --> messageType not recognized');
                     Log.info('WS::onWSMessage -> Bad message type (not recognized) ', query);
                     connection.res({
                         errorcode: errorcodesWS.MESSAGETYPE_NOT_RECOGNIZED
