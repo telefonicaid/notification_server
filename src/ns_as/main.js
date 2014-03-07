@@ -380,7 +380,7 @@ NS_AS.prototype = {
             versions[0] !== 'version' || !Helpers.isVersion(version)) {
             response.statusCode = 400;
             response.end('{ reason: "Bad request"}');
-            Log.debug('NS_AS::simplepushRequest --> Bad request');
+            Log.info('NS_AS::simplepushRequest --> Bad request ' + body);
             return;
         }
 
