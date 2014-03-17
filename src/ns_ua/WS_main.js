@@ -549,7 +549,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                     process.nextTick(function() {
                         self.getPendingMessages(connection.uaid, function(channelsUpdate) {
                             if (channelsUpdate) {
-                                self.sendNotification.bind(this)(nodeConnector, channelsUpdate);
+                                self.sendNotification.bind(self)(nodeConnector, channelsUpdate);
                             }
                         });
                     });
