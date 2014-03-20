@@ -118,19 +118,26 @@ NS_WakeUp_Checker.prototype = {
             try {
                 json = JSON.parse(wakeUpNodes);
             } catch (e) {
-                return;
+                json.error = 'Cannot parse JSON from server';
             }
+
             if (json.error) {
                 Log.info('NS_WakeUpChecker:checkNodes --> Some error checking ' +
                     'nodes ' + json.error);
+                // We need to disable all networks with wakeup enabled since the
+                // global wakeup is down and we cannot communicate with the local
+                // wakeups :(
+                MobileNetwork.disableAllWakeups();
                 return;
             }
+
             if (!json.nets || !Array.isArray(json.nets)) {
                 Log.error(
                     'NS_WakeUpChecker:checkNodes --> Data recovered is not an array. Check backend!'
                 );
                 return;
             }
+
             (json.nets).forEach(function(node) {
                 Log.debug(
                     'NS_WakeUpChecker:checkNodes --> Checking Local Proxy server',
