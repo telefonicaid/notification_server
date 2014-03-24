@@ -112,6 +112,30 @@ var MobileNetwork = function() {
         Log.debug('MobileNetwork::changeNetworkStatus --> ' + index + ' is ' + online);
         DataStore.changeLocalServerStatus(index, online);
     };
+
+    /**
+     * Disable all wakeups
+     */
+    this.disableAllWakeups = function() {
+        DataStore.getOperatorsWithLocalNodes(function(error, nodes) {
+            if (error) {
+                Log.error('MobileNetwork::disableAllWakeups --> Error getting ' +
+                    ' operators from DDBB. Error=', error);
+                return;
+            }
+            nodes.forEach(function(node) {
+                DataStore.changeLocalServerStatus(node._id, false, function(error) {
+                    if (error) {
+                        Log.error('MobileNetwork::disableAllWakeups --> ' + node._id +
+                            ' not disabled, error=', error);
+                        return;
+                    }
+                    Log.debug('MobileNetwork::disableAllWakeups --> ' + node._id +
+                        ' disabled correctly');
+                });
+            });
+        });
+    };
 };
 
 
