@@ -15,7 +15,6 @@ var Log = require('../common/Logger'),
     config = require('../config.js'),
     consts = config.consts,
     fs = require('fs'),
-    net = require('net'),
     cluster = require('cluster'),
     MsgBroker = require('../common/MsgBroker'),
     DataStore = require('../common/DataStore'),
@@ -60,12 +59,6 @@ NS_AS.prototype = {
         this.ip = conf.ip;
         this.port = conf.port;
         this.ssl = conf.ssl;
-
-        if (!net.isIP(this.ip) || isNaN(this.port)) {
-            Log.critical('NS_AS::start() --> Bad params, closing');
-            this.stop();
-            return;
-        }
 
         var closed = 0;
         var errored = false;
