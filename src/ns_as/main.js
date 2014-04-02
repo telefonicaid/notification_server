@@ -378,10 +378,11 @@ NS_AS.prototype = {
         }
 
         //Now, we are safe to start using the path and data
+        var connectionIP = request.socket.remoteAddress;
         Log.notify(Log.messages.NOTIFY_APPTOKEN_VERSION, {
             appToken: appToken,
             version: version,
-            ip: request.connection.remoteAddress || null
+            ip: connectionIP || null
         });
 
         // Send the OK response always, this free some server resources
