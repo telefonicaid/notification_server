@@ -100,15 +100,13 @@ Logger.prototype = {
         if (typeof(message) === 'object') {
             message = 'ID: 0x' + message.id.toString(16) + ' - ' + message.m;
             if (object) {
-                var messageObjKeys = Object.keys(object);
-                for (var i = 0; i < messageObjKeys.length; i++) {
-                    var k = messageObjKeys[i];
+                Object.keys(object).forEach(function(k) {
                     if (typeof(object[k]) === 'object') {
                         message = message.replace('::' + k, JSON.stringify(object[k]));
                     } else {
                         message = message.replace('::' + k, object[k]);
                     }
-                }
+                });
                 object = null;
             }
         }
@@ -137,7 +135,7 @@ Logger.prototype = {
         }
 
         if (this.consoleOutput) {
-            process.stdout.write(color + logmsg + this.color_reset + '\n');
+            console.log(color + logmsg + this.color_reset);
             if (trace) {
                 console.trace('logger::log --> Callstack:');
             }
