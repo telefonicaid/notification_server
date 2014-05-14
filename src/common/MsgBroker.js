@@ -155,7 +155,7 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
 
     conn.on('error', (function(error) {
         Log.error(Log.messages.ERROR_MBCONNECTIONERROR, {
-            'error': error.type,
+            'error': error,
             'id': conn.id
         });
         conn.state = QUEUE_ERROR;
