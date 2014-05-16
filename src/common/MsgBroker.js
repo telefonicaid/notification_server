@@ -21,6 +21,7 @@ var QUEUE_DISCONNECTED = 0;
 var QUEUE_CREATED = 1;
 var QUEUE_ERROR = 2;
 var QUEUE_CONNECTED = 3;
+var ALL_QUEUES_CLOSED_GRACE_PERIOD = 10000;
 
 function MsgBroker() {
     events.EventEmitter.call(this);
@@ -122,10 +123,17 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
     conn.id = Math.random();
     this.conns.push(conn);
 
+    this.allClosedGracePeriod = null;
+
     var self = this;
 
     // Events for this queue
     conn.on('ready', (function() {
+        if (self.allClosedGracePeriod) {
+            Log.info('msgbroker::queue::queue.ready --> Some queues recovered !');
+            clearTimeout(self.allClosedGracePeriod);
+            self.allClosedGracePeriod = null;
+        }
         conn.state = QUEUE_CONNECTED;
         Log.info('msgbroker::queue.ready --> Connected to one Message Broker, id=' + conn.id);
         self.queues.push(conn);
@@ -146,9 +154,13 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
         var pending = self.conns.some(self.pending);
         if (length === 0 && allDisconnected && !pending) {
             if (!self.controlledClose) {
-                self.emit('closed');
+                Log.error('msgbroker::queue::queue.close --> All queues closed !');
+                self.allClosedGracePeriod = setTimeout(function() {
+                    Log.error('msgbroker::queue::queue.close --> Sending closing signal');
+                    self.emit('closed');
+                    self.stop();
+                }, ALL_QUEUES_CLOSED_GRACE_PERIOD);
             }
-            self.stop();
         }
         self.emit('queuedisconnected');
     }));
