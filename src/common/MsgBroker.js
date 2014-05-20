@@ -70,6 +70,10 @@ MsgBroker.prototype.subscribe = function(queueName, args, broker, callback) {
     });
 
     broker.forEach(function(br) {
+        if (br.reconnecting) {
+            Log.debug('Avoiding create new subscriptions');
+            return;
+        }
         var exchange = br.exchange(queueName + '-fanout', {
             type: 'fanout'
         });
@@ -141,6 +145,9 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
     }));
 
     conn.on('close', (function() {
+        if (conn.reconnecting) {
+            return;
+        }
         Log.info('msgbroker::queue.close --> Close on one Message Broker, id=' + conn.id);
         if (conn.state === QUEUE_CONNECTED) {
             conn.state = QUEUE_DISCONNECTED;
@@ -166,6 +173,9 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
     }));
 
     conn.on('error', (function(error) {
+        if (conn.reconnecting) {
+            return;
+        }
         Log.error(Log.messages.ERROR_MBCONNECTIONERROR, {
             'error': error,
             'id': conn.id
@@ -179,6 +189,22 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
         Log.debug('msgbroker::heartbeat');
     }));
 };
+
+MsgBroker.prototype.reconnectQueues = function() {
+    Log.debug('Reconnecting to the Messages Queues');
+    for (var i = 0; i < this.conns.length; i++) {
+        this.conns[i].reconnecting = true;
+
+        Log.debug('Reconnecting connection ' + this.conns[i].id);
+        this.conns[i].disconnect();
+
+        var conn = this.conns[i];
+        setTimeout(function() {
+            Log.debug('Reconnecting ' + conn.id + ' finished');
+            conn.reconnecting = false;
+        }, 60000);
+    };
+}
 
 MsgBroker.prototype.isDisconnected = function(element) {
     return element.state !== QUEUE_CONNECTED;
