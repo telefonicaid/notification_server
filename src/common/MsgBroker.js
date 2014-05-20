@@ -21,6 +21,7 @@ var QUEUE_DISCONNECTED = 0;
 var QUEUE_CREATED = 1;
 var QUEUE_ERROR = 2;
 var QUEUE_CONNECTED = 3;
+var ALL_QUEUES_CLOSED_GRACE_PERIOD = 10000;
 
 function MsgBroker() {
     events.EventEmitter.call(this);
@@ -69,6 +70,10 @@ MsgBroker.prototype.subscribe = function(queueName, args, broker, callback) {
     });
 
     broker.forEach(function(br) {
+        if (br.reconnecting) {
+            Log.debug('Avoiding create new subscriptions');
+            return;
+        }
         var exchange = br.exchange(queueName + '-fanout', {
             type: 'fanout'
         });
@@ -122,10 +127,17 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
     conn.id = Math.random();
     this.conns.push(conn);
 
+    this.allClosedGracePeriod = null;
+
     var self = this;
 
     // Events for this queue
     conn.on('ready', (function() {
+        if (self.allClosedGracePeriod) {
+            Log.info('msgbroker::queue::queue.ready --> Some queues recovered !');
+            clearTimeout(self.allClosedGracePeriod);
+            self.allClosedGracePeriod = null;
+        }
         conn.state = QUEUE_CONNECTED;
         Log.info('msgbroker::queue.ready --> Connected to one Message Broker, id=' + conn.id);
         self.queues.push(conn);
@@ -133,6 +145,9 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
     }));
 
     conn.on('close', (function() {
+        if (conn.reconnecting) {
+            return;
+        }
         Log.info('msgbroker::queue.close --> Close on one Message Broker, id=' + conn.id);
         if (conn.state === QUEUE_CONNECTED) {
             conn.state = QUEUE_DISCONNECTED;
@@ -146,16 +161,23 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
         var pending = self.conns.some(self.pending);
         if (length === 0 && allDisconnected && !pending) {
             if (!self.controlledClose) {
-                self.emit('closed');
+                Log.error('msgbroker::queue::queue.close --> All queues closed !');
+                self.allClosedGracePeriod = setTimeout(function() {
+                    Log.error('msgbroker::queue::queue.close --> Sending closing signal');
+                    self.emit('closed');
+                    self.stop();
+                }, ALL_QUEUES_CLOSED_GRACE_PERIOD);
             }
-            self.stop();
         }
         self.emit('queuedisconnected');
     }));
 
     conn.on('error', (function(error) {
+        if (conn.reconnecting) {
+            return;
+        }
         Log.error(Log.messages.ERROR_MBCONNECTIONERROR, {
-            'error': error.type,
+            'error': error,
             'id': conn.id
         });
         conn.state = QUEUE_ERROR;
@@ -167,6 +189,22 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
         Log.debug('msgbroker::heartbeat');
     }));
 };
+
+MsgBroker.prototype.reconnectQueues = function() {
+    Log.debug('Reconnecting to the Messages Queues');
+    for (var i = 0; i < this.conns.length; i++) {
+        this.conns[i].reconnecting = true;
+
+        Log.debug('Reconnecting connection ' + this.conns[i].id);
+        this.conns[i].disconnect();
+
+        var conn = this.conns[i];
+        setTimeout(function() {
+            Log.debug('Reconnecting ' + conn.id + ' finished');
+            conn.reconnecting = false;
+        }, 60000);
+    };
+}
 
 MsgBroker.prototype.isDisconnected = function(element) {
     return element.state !== QUEUE_CONNECTED;
