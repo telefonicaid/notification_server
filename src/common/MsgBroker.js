@@ -198,11 +198,10 @@ MsgBroker.prototype.reconnectQueues = function() {
         Log.debug('Reconnecting connection ' + this.conns[i].id);
         this.conns[i].disconnect();
 
-        var conn = this.conns[i];
         setTimeout(function() {
-            Log.debug('Reconnecting ' + conn.id + ' finished');
-            conn.reconnecting = false;
-        }, 60000);
+            Log.debug('Reconnecting ' + this.id + ' finished');
+            this.reconnecting = false;
+        }.bind(this.conns[i]), 60000);
     };
 }
 
