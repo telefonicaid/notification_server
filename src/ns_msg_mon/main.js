@@ -98,7 +98,7 @@ NS_Monitor.prototype.start = function() {
     // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
     // (we might end up with gazillions (hundreds, really) callbacks on the same
     // socket for handling messages)
-    MsgBroker.on('queuedisconnected', this.subscribeQueues.bind(this));
+    MsgBroker.on('queuedisconnected', MsgBroker.reconnectQueues);
 
     // Connect to the message broker
     process.nextTick(function() {
