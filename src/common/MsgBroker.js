@@ -70,10 +70,6 @@ MsgBroker.prototype.subscribe = function(queueName, args, broker, callback) {
     });
 
     broker.forEach(function(br) {
-        if (br.reconnecting) {
-            Log.debug('Avoiding create new subscriptions');
-            return;
-        }
         var exchange = br.exchange(queueName + '-fanout', {
             type: 'fanout'
         });
