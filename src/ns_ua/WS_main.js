@@ -360,7 +360,7 @@ NS_UA_WS.prototype.onNewMessage = function(json) {
     this.stats['messages_from_mq'] = (this.stats['messages_from_mq'] || 0) + 1;
     Log.debug('WS::Queue::onNewMessage --> New message received: ', json);
     // If we don't have enough data, return
-    if (!json.uaid || !json.notif || !json.notif.ch || !json.notif.vs) {
+    if (!json.uaid || !json.notif || !json.notif.ch || !Helpers.isVersion(json.notif.vs)) {
         Log.error(Log.messages.ERROR_WSNODATA);
         return;
     }
@@ -497,6 +497,20 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
     this.onWSMessage = function(message) {
         self.stats['websocket_messages'] = (self.stats['websocket_messages'] || 0) + 1;
 
+        // Get IP and port also if configured using UNIX sockets
+        // The HTTP proxy shall inyect the header X-Forwarded-For with the port
+        // proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for:$remote_port;
+        if (connection.socket.remotePort === undefined) {
+            try {
+                connection.remotePort = connection.remoteAddress.split(':')[1];
+                connection.remoteAddress = connection.remoteAddress.split(':')[0];
+            } catch(e) {
+                connection.remotePort = 'unknown';
+            }
+        } else {
+            connection.remotePort = connection.socket.remotePort;
+        }
+
         // Restart autoclosing timeout
         var nodeConnector = DataManager.getNodeConnector(connection.uaid);
         if (nodeConnector) {
@@ -570,7 +584,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                     Log.notify(Log.messages.NOTIFY_HELLO, {
                         uaid: connection.uaid,
                         socket_ip: connection.remoteAddress,
-                        socket_port: connection.socket.remotePort,
+                        socket_port: connection.remotePort,
                         ip: (query.wakeup_hostport && query.wakeup_hostport.ip) || 0,
                         port: (query.wakeup_hostport && query.wakeup_hostport.port) || 0,
                         mcc: connection.mcc,
@@ -980,14 +994,14 @@ NS_UA_WS.prototype.recoveryChannels = function(uaid, channelIDs, connection) {
                 }
                 var notifyURL = Helpers.getNotificationURL(appToken);
                 Log.debug('WS::onWSMessage::recoveryChannels --> OK registering channelID: ' + notifyURL);
-                if (connection) {
+                if (connection && connection.res && typeof connection.res === 'function') {
                     connection.res({
                         errorcode: errorcodes.NO_ERROR,
                         extradata: {
                             messageType: 'register',
                             status: statuscodes.REGISTERED,
                             pushEndpoint: notifyURL,
-                            channelID: channelID
+                            channelID: ch
                         }
                     });
                 }
