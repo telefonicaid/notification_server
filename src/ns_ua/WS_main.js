@@ -987,7 +987,7 @@ NS_UA_WS.prototype.recoveryChannels = function(uaid, channelIDs, connection) {
                             messageType: 'register',
                             status: statuscodes.REGISTERED,
                             pushEndpoint: notifyURL,
-                            channelID: channelID
+                            channelID: ch
                         }
                     });
                 }
