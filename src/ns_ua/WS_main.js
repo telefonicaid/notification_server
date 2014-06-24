@@ -360,7 +360,7 @@ NS_UA_WS.prototype.onNewMessage = function(json) {
     this.stats['messages_from_mq'] = (this.stats['messages_from_mq'] || 0) + 1;
     Log.debug('WS::Queue::onNewMessage --> New message received: ', json);
     // If we don't have enough data, return
-    if (!json.uaid || !json.notif || !json.notif.ch || !Helpers.isVersion(json.notif.vs)) {
+    if (!json.uaid || !json.notif || !json.notif.ch || !json.notif.vs) {
         Log.error(Log.messages.ERROR_WSNODATA);
         return;
     }
@@ -980,14 +980,14 @@ NS_UA_WS.prototype.recoveryChannels = function(uaid, channelIDs, connection) {
                 }
                 var notifyURL = Helpers.getNotificationURL(appToken);
                 Log.debug('WS::onWSMessage::recoveryChannels --> OK registering channelID: ' + notifyURL);
-                if (connection && connection.res && typeof connection.res === 'function') {
+                if (connection) {
                     connection.res({
                         errorcode: errorcodes.NO_ERROR,
                         extradata: {
                             messageType: 'register',
                             status: statuscodes.REGISTERED,
                             pushEndpoint: notifyURL,
-                            channelID: ch
+                            channelID: channelID
                         }
                     });
                 }
