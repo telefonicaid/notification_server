@@ -9,7 +9,6 @@
 
 'use strict';
 
-
 var Log = require('../common/Logger.js'),
     MobileNetwork = require('../common/MobileNetwork.js'),
     request = require('request'),
