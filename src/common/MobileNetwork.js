@@ -24,7 +24,7 @@ var MobileNetwork = function() {
     this.isCacheEnabled = consts.MOBILENETWORK_CACHE;
 
     this.getIndex = function(mcc, mnc) {
-        return Helpers.padNumber(mcc, 3) + '-' + Helpers.padNumber(mnc, 3);
+        return mcc + '-' + mnc;
     };
 
     this.callbackReady = function(callback) {
@@ -136,8 +136,26 @@ var MobileNetwork = function() {
             });
         });
     };
-};
 
+    this.getAllWakeUps = function(callback) {
+        DataStore.getWakeUps(function(error, servers) {
+            if (error) {
+                Log.error('WakeUpManager::getAllWakeUps --> Error getting ' +
+                    ' servers from DDBB. Error=', error);
+                callback(null);
+            }
+            callback(servers);
+        });
+    };
+
+    this.cleanAllOperators = function(callback) {
+        DataStore.cleanAllOperators(callback);
+    };
+
+    this.provisionOperator = function(operator, wakeup) {
+        DataStore.provisionOperator(operator, wakeup);
+    }
+};
 
 ///////////////////////////////////////////
 // Singleton

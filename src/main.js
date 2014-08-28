@@ -75,7 +75,7 @@ Main.prototype = {
                 break;
 
             default:
-                Log.init('/tmp/push.log', 'PUSH', 1);
+                Log.init('push.log', 'PUSH', 1);
                 Log.error(Log.messages.ERROR_NOSERVERPROVIDED);
         }
     },

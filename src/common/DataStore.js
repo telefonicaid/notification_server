@@ -32,7 +32,7 @@ var DataStore = function() {
             this.callbacks = [];
         }
         this.callbacks.push(Helpers.checkCallback(callback));
-    },
+    };
 
     this.start = function() {
         Log.info('datastore::init --> MongoDB data store loading.');
@@ -99,7 +99,7 @@ var DataStore = function() {
                 elem(true);
             });
         });
-    },
+    };
 
     this.stop = function() {
         Log.info('datastore::close --> Closing connection to DB');
@@ -108,7 +108,7 @@ var DataStore = function() {
         }
         this.emit('closed');
         this.ready = false;
-    },
+    };
 
     this.registerNode = function(uaid, serverId, data, callback) {
         this.db.collection('nodes', function(err, collection) {
@@ -157,7 +157,7 @@ var DataStore = function() {
                 );
             });
         });
-    },
+    };
 
     this.unregisterNode = function(uaid, queryFrom, newQueue, fullyDisconnected,
         callback) {
@@ -195,7 +195,7 @@ var DataStore = function() {
                 }
             );
         });
-    },
+    };
 
     this.getNodeData = function(uaid, callback) {
         Log.debug('datastore::getNodeData --> Finding info for node ' + uaid);
@@ -309,7 +309,7 @@ var DataStore = function() {
                 }
             );
         });
-    },
+    };
 
     /**
      * Unregister an old application
@@ -394,7 +394,7 @@ var DataStore = function() {
 
         //Remove the appToken if the nodelist (no) is empty
         this.removeApplicationIfEmpty(appToken);
-    },
+    };
 
     this.removeApplicationIfEmpty = function(appToken) {
         this.db.collection('apps', function(err, collection) {
@@ -425,7 +425,7 @@ var DataStore = function() {
                 }
             );
         });
-    },
+    };
 
     this.getApplicationsForUA = function(uaid, callback) {
         // Get from MongoDB
@@ -469,7 +469,7 @@ var DataStore = function() {
                 }
             );
         });
-    },
+    };
 
     /**
      * Gets an application node list
@@ -552,7 +552,7 @@ var DataStore = function() {
                 }
             );
         });
-    },
+    };
 
     this.getInfoForAppToken = function(apptoken, callback) {
         apptoken = apptoken.toString();
@@ -590,7 +590,7 @@ var DataStore = function() {
                 callback(null, data);
             });
         });
-    },
+    };
 
     /**
      * Save a new message
@@ -633,7 +633,7 @@ var DataStore = function() {
             );
         });
         return msg;
-    },
+    };
 
     /**
      * This ACKs a message by putting a 'new' flag to 0 on the node, on the channelID ACKed
@@ -671,6 +671,103 @@ var DataStore = function() {
     },
 
     /**
+     * Recovers all the wakeup platforms with access from the dataStore
+     */
+    this.getWakeUps = function(callback) {
+        Log.debug('dataStore::getWakeUps --> Looking for all wakeups...');
+        this.db.collection('wakeup', function(err, collection) {
+            callback = Helpers.checkCallback(callback);
+            if(err) {
+                Log.error('datastore::getWakeUps - Error getting collection: ' + err);
+                callback(err);
+                return;
+            }
+            collection.find().toArray(function(err, data) {
+                if (err) {
+                    Log.error('datastore::getWakeUps - Error getting data: ' + err);
+                    callback(err);
+                    return;
+                }
+                var msg = data ? 'The wakeup server list has been recovered. ' :
+                    'No operator found. ';
+                Log.debug('datastore::getWakeUps --> ' + msg +
+                    ' Calling callback');
+                callback(null, data);
+            });
+        });
+    };
+
+    /**
+     * Drop operators collection from Mongo
+     */
+    this.cleanAllOperators = function(callback) {
+        var self = this;
+        this.db.collection('operators', function(err, collection) {
+            callback = Helpers.checkCallback(callback);
+            if(err) {
+                Log.error('datastore::cleanAllOperators - Error getting collection: ' + err);
+                callback(err);
+                return;
+            }
+            collection.drop(function(err) {
+                if (err) {
+                    Log.info('datastore::cleanAllOperators - Error dropping collection: ' + err);
+                    Log.debug('datastore::cleanAllOperators - Creating new one');
+                    self.createOperatorsCollection();
+                    callback(err);
+                    return;
+                }
+                Log.debug('datastore::cleanAllOperators - Done !');
+                self.createOperatorsCollection();
+                callback(null);
+            });
+        });
+    };
+
+    this.createOperatorsCollection = function() {
+        Log.debug('datastore::createOperatorsCollection - Creating new operators collection');
+        this.db.createCollection('operators', function(err, collection) {
+            if (err) {
+                Log.error('datastore::createOperatorsCollection - error: ' + err);
+                return;
+            }
+            Log.debug('datastore::createOperatorsCollection - Created new collection ');
+        });
+    }
+
+    /**
+     * Provision a new operator into Mongo
+     */
+    this.provisionOperator = function(operator, wakeup) {
+        Log.debug('datastore::provisionOperator - Provision operator from wakeup server ' +
+            wakeup.name + ' - ', operator);
+        this.db.collection('operators', function(err, collection) {
+            if(err) {
+                Log.error('datastore::provisionOperator - Error getting collection: ' + err);
+                return;
+            }
+            collection.insert({
+                _id: operator.mccmnc,
+                netid: operator.netid,
+                mccmnc: operator.mccmnc,
+                range: operator.range,
+                protocols: operator.protocols,
+                offline: operator.offline,
+                wakeup: wakeup
+            },function(err) {
+                if (err) {
+                    Log.info('datastore::provisionOperator - Error dropping collection: ' + err);
+                    Log.debug('datastore::provisionOperator - Creating new one');
+                    self.createOperatorsCollection();
+                    return;
+                }
+                Log.debug('datastore::provisionOperator - Done !');
+                self.createOperatorsCollection();
+            });
+        });
+    };
+
+    /**
      * Recovers an operator from the dataStore
      */
     this.getOperator = function(mcc, mnc, callback) {
@@ -704,7 +801,7 @@ var DataStore = function() {
                 callback(null, data);
             });
         });
-    },
+    };
 
     this.getOperatorsWithLocalNodes = function(callback) {
         callback = Helpers.checkCallback(callback);
@@ -741,7 +838,7 @@ var DataStore = function() {
                 callback(null, data);
             });
         });
-    },
+    };
 
     this.changeLocalServerStatus = function(index, online, callback) {
         callback = Helpers.checkCallback(callback);
@@ -796,7 +893,7 @@ var DataStore = function() {
                         res);
                 });
         });
-    },
+    };
 
     this.getUDPClientsAndUnACKedMessages = function(callback) {
         callback = Helpers.checkCallback(callback);
@@ -841,7 +938,7 @@ var DataStore = function() {
                 callback(null, nodes);
             });
         });
-    },
+    };
 
     this.flushDb = function() {
         this.db.collection('apps', function(err, collection) {
