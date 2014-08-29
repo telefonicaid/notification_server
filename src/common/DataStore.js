@@ -771,7 +771,7 @@ var DataStore = function() {
      * Recovers an operator from the dataStore
      */
     this.getOperator = function(mcc, mnc, callback) {
-        var id = Helpers.padNumber(mcc, 3) + '-' + Helpers.padNumber(mnc, 3);
+        var id = mcc + '-' + mnc;
         Log.debug('datastore::getOperator --> Looking for operator ' + id);
         // Get from MongoDB
         this.db.collection('operators', function(err, collection) {
