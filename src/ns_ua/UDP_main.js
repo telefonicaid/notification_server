@@ -17,37 +17,40 @@ var Log = require('../common/Logger.js'),
     https = require('https'),
     fs = require('fs'),
     querystring = require('querystring'),
-    urlparser = require('url');
-
-var CA = fs.readFileSync(config.ca);
-var KEY = fs.readFileSync(config.key);
-var CERT = fs.readFileSync(config.cert);
-var WAKEUP_URL = config.WAKEUP_URL;
+    urlparser = require('url'),
+    mn = require('../common/MobileNetwork.js');
 
 function NS_UA_UDP() {
     this.closingCorrectly = false;
     this.msgBrokerReady = false;
+    this.mnDatabase = false;
     this.readyTimeout = undefined;
 }
 
 NS_UA_UDP.prototype = {
 
     checkReady: function() {
-        if (this.msgBrokerReady) {
+        if (this.msgBrokerReady && this.mnDatabase) {
             Log.debug(
                 'NS_UDP::checkReady --> We are ready. Clearing any readyTimeout'
             );
             clearTimeout(this.readyTimeout);
         } else {
             Log.debug('NS_UDP::checkReady --> Not ready yet. msgBrokerReady=' +
-                this.msgBrokerReady);
+                this.msgBrokerReady + ' / mnDatabase=' + this.mnDatabase);
         }
-        return this.msgBrokerReady;
+        return this.msgBrokerReady && this.mnDatabase;
     },
 
     start: function() {
         Log.info('NS_UDP:start --> Starting UA-UDP server');
         var self = this;
+
+        mn.start();
+        mn.once('ready', function() {
+            self.mnDatabase = true;
+            self.checkReady();
+        });
 
         MsgBroker.once('ready', function() {
             Log.info('NS_UDP::start --> MsgBroker ready and connected');
@@ -147,7 +150,6 @@ NS_UA_UDP.prototype = {
 
         Log.debug('UDP::queue::onNewMessage --> messageData =', message);
 
-
         // If message does not follow the above standard, return.
         var ip = message.dt.wakeup_hostport && message.dt.wakeup_hostport.ip;
         var port = message.dt.wakeup_hostport &&
@@ -160,74 +162,86 @@ NS_UA_UDP.prototype = {
             return;
         }
 
-        // Send HTTP Notification Message
-        var address = urlparser.parse(WAKEUP_URL);
+        mn.getNetwork(mcc, mnc, function(error, op) {
+            if (error) {
+                Log.error(Log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
+                    'error': error
+                });
+                return;
+            }
 
-        if (!address.href) {
-            Log.error(Log.messages.ERROR_UDPBADADDRESS, {
-                'address': address
-            });
-            return;
-        }
+            Log.debug('Recovered operator through wakeup: ' + op.wakeup.name);
 
-        if (address.protocol !== 'https:') {
-            Log.error(
-                'UDP:queue:onNewMessage --> Request is not HTTPS)'
-            );
-            return;
-        }
+            // Send HTTP Notification Message
+            var address = urlparser.parse(op.wakeup.wakeup);
 
-        var pathname = address.pathname || '';
-        var postData = querystring.stringify({
-            ip: ip,
-            port: port,
-            protocol: message.dt.protocol,
-            mcc: mcc,
-            mnc: mnc
-        });
-        var options = {
-            hostname: address.hostname,
-            port: address.port,
-            path: pathname,
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Content-Length': postData.length
-            },
-            ca: CA,
-            key: KEY,
-            cert: CERT,
-            agent: false
-        };
+            if (!address.href) {
+                Log.error(Log.messages.ERROR_UDPBADADDRESS, {
+                    'address': address
+                });
+                return;
+            }
 
-        //Fire the request, and forget
-        var req = https.request(options, function(res) {
-            Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
-                uaid: message.uaid,
-                wakeupip: ip,
-                wakeupport: port,
+            if (address.protocol !== 'https:') {
+                Log.error(
+                    'UDP:queue:onNewMessage --> Request is not HTTPS)'
+                );
+                return;
+            }
+
+            var pathname = address.pathname || '';
+            var postData = querystring.stringify({
+                ip: ip,
+                port: port,
+                protocol: message.dt.protocol,
                 mcc: mcc,
-                mnc: mnc,
-                protocol: protocol,
-                response: res.statusCode,
-                xtracking: res.headers['x-tracking-id']
+                mnc: mnc
             });
-        });
+            var options = {
+                hostname: address.hostname,
+                port: address.port,
+                path: pathname,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Content-Length': postData.length
+                },
+                ca: op.wakeup.ca,
+                key: op.wakeup.key,
+                cert: op.wakeup.crt,
+                rejectUnauthorized: false,
+                agent: false
+            };
 
-        req.on('error', function(e) {
-            Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
-                uaid: message.uaid,
-                wakeupip: ip,
-                wakeupport: port,
-                mcc: mcc,
-                mnc: mnc,
-                protocol: protocol,
-                response: e.message
+            //Fire the request, and forget
+            var req = https.request(options, function(res) {
+                Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
+                    uaid: message.uaid,
+                    wakeupip: ip,
+                    wakeupport: port,
+                    mcc: mcc,
+                    mnc: mnc,
+                    protocol: protocol,
+                    response: res.statusCode,
+                    xtracking: res.headers['x-tracking-id']
+                });
             });
-        });
 
-        req.write(postData);
-        req.end();
+            req.on('error', function(e) {
+                Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
+                    uaid: message.uaid,
+                    wakeupip: ip,
+                    wakeupport: port,
+                    mcc: mcc,
+                    mnc: mnc,
+                    protocol: protocol,
+                    response: e.message
+                });
+            });
+
+            req.write(postData);
+            req.end();
+        });
     }
 };
 

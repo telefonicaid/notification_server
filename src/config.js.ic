@@ -188,11 +188,6 @@ exports.NS_UA_WS = {
 
 exports.NS_UA_UDP = {
     logfile: 'NS_UA_UDP.log',
-    /* Paths to files */
-    ca: null,
-    key: null,
-    cert: null,
-    WAKEUP_URL: 'https://wakeup.tefdigital.com/wakeup/v1'
 };
 
 /** NS_WakeUp_Checker **/
