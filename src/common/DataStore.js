@@ -711,39 +711,38 @@ var DataStore = function() {
             }
             collection.drop(function(err) {
                 if (err) {
-                    Log.info('datastore::cleanAllOperators - Error dropping collection: ' + err);
-                    Log.debug('datastore::cleanAllOperators - Creating new one');
-                    self.createOperatorsCollection();
-                    callback(err);
+                    Log.debug('datastore::cleanAllOperators - Error dropping collection: ' + err);
+                    self.createOperatorsCollection(callback);
                     return;
                 }
                 Log.debug('datastore::cleanAllOperators - Done !');
-                self.createOperatorsCollection();
-                callback(null);
+                self.createOperatorsCollection(callback);
             });
         });
     };
 
-    this.createOperatorsCollection = function() {
+    this.createOperatorsCollection = function(callback) {
         Log.debug('datastore::createOperatorsCollection - Creating new operators collection');
         this.db.createCollection('operators', function(err, collection) {
             if (err) {
-                Log.error('datastore::createOperatorsCollection - error: ' + err);
+                callback('datastore::createOperatorsCollection - error: ' + err);
                 return;
             }
             Log.debug('datastore::createOperatorsCollection - Created new collection ');
+            callback(null);
         });
     }
 
     /**
      * Provision a new operator into Mongo
      */
-    this.provisionOperator = function(operator, wakeup) {
+    this.provisionOperator = function(operator, wakeup, callback) {
         Log.debug('datastore::provisionOperator - Provision operator from wakeup server ' +
             wakeup.name + ' - ', operator);
         this.db.collection('operators', function(err, collection) {
             if(err) {
                 Log.error('datastore::provisionOperator - Error getting collection: ' + err);
+                callback(err);
                 return;
             }
             collection.insert({
@@ -758,11 +757,11 @@ var DataStore = function() {
                 if (err) {
                     Log.info('datastore::provisionOperator - Error dropping collection: ' + err);
                     Log.debug('datastore::provisionOperator - Creating new one');
-                    self.createOperatorsCollection();
+                    self.createOperatorsCollection(callback);
                     return;
                 }
                 Log.debug('datastore::provisionOperator - Done !');
-                self.createOperatorsCollection();
+                self.createOperatorsCollection(callback);
             });
         });
     };

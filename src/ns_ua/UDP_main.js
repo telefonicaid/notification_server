@@ -204,7 +204,7 @@ NS_UA_UDP.prototype = {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'Content-Length': postData.length
+                    'Content-Length': unescape(encodeURIComponent(postData)).length
                 },
                 ca: op.wakeup.ca,
                 key: op.wakeup.key,
@@ -213,7 +213,6 @@ NS_UA_UDP.prototype = {
                 agent: false
             };
 
-            //Fire the request, and forget
             var req = https.request(options, function(res) {
                 Log.notify(Log.messages.NOTIFY_TO_WAKEUP, {
                     uaid: message.uaid,

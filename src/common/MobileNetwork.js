@@ -142,9 +142,9 @@ var MobileNetwork = function() {
             if (error) {
                 Log.error('WakeUpManager::getAllWakeUps --> Error getting ' +
                     ' servers from DDBB. Error=', error);
-                callback(null);
+                callback(error);
             }
-            callback(servers);
+            callback(null, servers);
         });
     };
 
@@ -152,8 +152,8 @@ var MobileNetwork = function() {
         DataStore.cleanAllOperators(callback);
     };
 
-    this.provisionOperator = function(operator, wakeup) {
-        DataStore.provisionOperator(operator, wakeup);
+    this.provisionOperator = function(operator, wakeup, callback) {
+        DataStore.provisionOperator(operator, wakeup, callback);
     }
 };
 

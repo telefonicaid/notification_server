@@ -113,36 +113,50 @@ NS_WakeUp_Checker.prototype = {
         Log.debug('NS_WakeUpChecker:autoProvisionNetworks -> Checking WakeUp networks');
         var self = this;
 
-        MobileNetwork.getAllWakeUps(function (servers) {
-            MobileNetwork.cleanAllOperators();
+        MobileNetwork.getAllWakeUps(function (error, servers) {
+            if (error) {
+                return;
+            }
+            MobileNetwork.cleanAllOperators(function() {
+                servers.forEach(function(server) {
+                    self.recoverNetworks(server, function(wakeUpNodes, trackingID) {
+                        var json = {};
+                        try {
+                            json = JSON.parse(wakeUpNodes);
+                        } catch (e) {
+                            json.error = 'Cannot parse JSON from server';
+                        }
 
-            servers.forEach(function(server) {
-                self.recoverNetworks(server, function(wakeUpNodes, trackingID) {
-                    var json = {};
-                    try {
-                        json = JSON.parse(wakeUpNodes);
-                    } catch (e) {
-                        json.error = 'Cannot parse JSON from server';
-                    }
+                        if (json.error) {
+                            Log.info('NS_WakeUpChecker:autoProvisionNetworks --> Some error checking ' +
+                                'nodes ' + json.error);
+                            return;
+                        }
 
-                    if (json.error) {
-                        Log.info('NS_WakeUpChecker:autoProvisionNetworks --> Some error checking ' +
-                            'nodes ' + json.error);
-                        return;
-                    }
+                        if (!json.nets || !Array.isArray(json.nets)) {
+                            Log.error(
+                                'NS_WakeUpChecker:autoProvisionNetworks --> Data recovered is not an array. Check backend!'
+                            );
+                            return;
+                        }
 
-                    if (!json.nets || !Array.isArray(json.nets)) {
-                        Log.error(
-                            'NS_WakeUpChecker:autoProvisionNetworks --> Data recovered is not an array. Check backend!'
-                        );
-                        return;
-                    }
-
-                    (json.nets).forEach(function(node) {
-                        Log.debug(
-                            'NS_WakeUpChecker:autoProvisionNetworks --> Provisioning Local Proxy server',
-                            node);
-                        MobileNetwork.provisionOperator(node, server);
+                        (json.nets).forEach(function(node) {
+                            Log.debug(
+                                'NS_WakeUpChecker:autoProvisionNetworks --> Provisioning Local Proxy server',
+                                node);
+                            MobileNetwork.provisionOperator(node, server,
+                                function provisionOperatorCB(error) {
+                                    if (error) {
+                                        Log.info(
+                                            'NS_WakeUpChecker:autoProvisionNetworks --> Error provisioning operator: ' +
+                                            error);
+                                    } else {
+                                        Log.info(
+                                            'NS_WakeUpChecker:autoProvisionNetworks --> operator provisioned on server ' +
+                                            server.name + ' -', node);
+                                    }
+                                });
+                        });
                     });
                 });
             });
@@ -155,7 +169,10 @@ NS_WakeUp_Checker.prototype = {
         }
         Log.debug('NS_WakeUpChecker:checkNodes -> Checking nodes');
         var self = this;
-        MobileNetwork.getAllWakeUps(function (servers) {
+        MobileNetwork.getAllWakeUps(function (error, servers) {
+            if (error) {
+                return;
+            }
             servers.forEach(function(server) {
                 self.recoverNetworks(server, function(wakeUpNodes, trackingID) {
                     var json = {};
