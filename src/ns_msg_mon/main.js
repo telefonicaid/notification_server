@@ -153,7 +153,10 @@ NS_Monitor.prototype.retryUDPnotACKed = function() {
         }
 
         nodes.forEach(function(node) {
-            self.onNodeData(node, {});
+            self.onNodeData(node, {
+                app: node.ch[0].app,
+                vs: node.ch[0].vs
+            });
         });
     });
 };

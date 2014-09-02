@@ -820,7 +820,8 @@ var DataStore = function() {
             }, {
                 _id: true,
                 si: true,
-                dt: true
+                dt: true,
+                ch: true
             }).toArray(function(err, nodes) {
                 if (err) {
                     Log.error(Log.messages.ERROR_DSERROROPENINGNODESCOLLECTION, {
