@@ -90,6 +90,11 @@ NS_UA_WS.prototype.start = function() {
     this.ip = config.interface.ip;
     this.port = config.interface.port;
     this.ssl = config.interface.ssl;
+    this.stats = {
+        ip: config.statsInterface.ip,
+        port: config.statsInterface.port,
+        ssl: config.statsInterface.ssl
+    };
     Log.info('NS_UA_WS::start --> server starting');
     var errored = false;
     var closed = 0;
@@ -126,7 +131,7 @@ NS_UA_WS.prototype.start = function() {
 
     if (cluster.isMaster) {
         // Create the stats server
-        if (this.ssl) {
+        if (this.stats.ssl) {
             var options = {
                 ca: Helpers.getCaChannel(),
                 key: fs.readFileSync(consts.key),
@@ -136,9 +141,9 @@ NS_UA_WS.prototype.start = function() {
         } else {
             this.server = require('http').createServer(this.onStatsRequest.bind(this));
         }
-        this.server.listen((this.port + 222), this.ip);
-        Log.info('NS_UA_WS::stats::init --> Stats server running on http' + (this.ssl ? 's' : '') +
-            '://' + this.ip + ':' + (this.port + 222) + '/');
+        this.server.listen(this.stats.port, this.stats.ip);
+        Log.info('NS_UA_WS::stats::init --> Stats server running on http' + (this.stats.ssl ? 's' : '') +
+            '://' + this.stats.ip + ':' + this.stats.port + '/');
 
         // Fork workers and set messageHandler
         for (var i = 0; i < config.numProcesses; i++) {
