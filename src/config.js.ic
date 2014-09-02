@@ -163,6 +163,11 @@ exports.NS_UA_WS = {
         port: 8080,
         ssl: true
     },
+    statsInterface: {
+        ip: '0.0.0.0',
+        port: 8222,
+        ssl: true
+    },
 
     /**
      * Websocket configuration
