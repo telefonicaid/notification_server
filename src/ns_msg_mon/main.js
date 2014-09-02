@@ -168,6 +168,14 @@ NS_Monitor.prototype.onNodeData = function(nodeData, notif) {
         return;
     }
 
+    Log.notify(Log.messages.NOTIFY_INCOMING_TO, {
+        uaid: nodeData._id,
+        appToken: notif.app,
+        version: notif.vs,
+        mcc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) || 0,
+        mnc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) || 0
+    });
+
     // Is the node connected? AKA: is websocket?
     if (nodeData.co === connectionstate.DISCONNECTED) {
         Log.debug(
@@ -177,13 +185,6 @@ NS_Monitor.prototype.onNodeData = function(nodeData, notif) {
     }
     Log.debug('NS_Monitor::onNodeData --> Node connected:', nodeData);
 
-    Log.notify(Log.messages.NOTIFY_INCOMING_TO, {
-        uaid: nodeData._id,
-        appToken: notif.app,
-        version: notif.vs,
-        mcc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mcc) || 0,
-        mnc: (nodeData.dt.mobilenetwork && nodeData.dt.mobilenetwork.mnc) || 0
-    });
     var body = {
         uaid: nodeData._id,
         dt: nodeData.dt,
