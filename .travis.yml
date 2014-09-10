@@ -10,7 +10,7 @@ services:
 
 branches:
   only:
-    - v1.2
+    - v1.3
 
 before_install:
   - npm install
@@ -39,5 +39,4 @@ after_script:
 
 notifications:
    email:
-      - gll@tid.es
-      - frsela@tid.es
+      - guillermo.lopezleal@telefonica.com
