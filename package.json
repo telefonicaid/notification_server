@@ -1,7 +1,7 @@
 {
   "name": "push-notification-server",
   "author": "Telefónica I+D. 2012-2013",
-  "version": "1.2.0-dev",
+  "version": "1.3.0-dev",
   "description": "a push notification server for desktop and mobile",
   "contributors": [
     {
@@ -26,19 +26,19 @@
     "server"
   ],
   "dependencies": {
-    "node-uuid": "1.4.x",
-    "websocket": "1.0.x",
-    "mongodb": "1.3.x",
-    "amqp": "0.2.x",
-    "string": "1.8.x",
-    "forever-monitor": "1.2.x",
-    "request": "2.x.x",
-    "async": "0.2.x"
+    "node-uuid": "1.4.1",
+    "websocket": "1.0.8",
+    "mongodb": "1.4.10",
+    "amqp": "0.2.0",
+    "string": "2.0.1",
+    "forever-monitor": "1.3.0",
+    "request": "2.42.0",
+    "async": "0.9.0"
   },
   "devDependencies": {
     "vows": "0.7.x",
-    "nodemon": "1.0.x",
-    "node-inspector": "0.6.x"
+    "nodemon": "1.2.x",
+    "node-inspector": "0.7.x"
   },
   "engines": {
     "node": ">=0.10.x"
