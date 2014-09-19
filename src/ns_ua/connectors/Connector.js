@@ -50,21 +50,25 @@ Connector.prototype = {
                     callback(error);
                     return;
                 }
+
                 // This is the only moment we can give a UDP connector
-                var network = (op && op.networks) || [];
+                var network = (op && op.range) || [];
                 Log.debug('Checking if IP=' + data.wakeup_hostport.ip + ' is on networks=' + network);
                 var inNetwork = isIPInNetwork(data.wakeup_hostport.ip, network);
 
                 if (op && op.wakeup && !op.offline && inNetwork) {
-                    Log.debug('getConnector --> UDP WakeUp server for ' + op.operator +
-                        ': ' + op.wakeup);
+                    Log.debug('getConnector --> UDP WakeUp server through ' + op.wakeup.name +
+                        '. MCC-MNC: ' + op.mccmnc + " - netID: " + op.netid);
                     self.getUDPconnector(data, connection, callback);
                 } else {
                     //Falback for WebSocket
                     Log.debug('getConnector::UDP --> Data is not accepted by the network' +
                         ' falling back to WebSocket');
                     Log.debug('getConnector::UDP --> Local server is ' +
-                        (op && !op.offline) ? 'online' : 'offline');
+                        ((op && !op.offline) ? 'online' : 'offline'));
+                    if (!inNetwork) {
+                        Log.debug('getConnector::UDP --> Host is out of the allowed networks')
+                    }
                     self.getWSconnector(data, connection, callback);
                 }
             });
