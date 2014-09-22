@@ -195,7 +195,8 @@ NS_UA_UDP.prototype = {
                 port: port,
                 protocol: message.dt.protocol,
                 mcc: mcc,
-                mnc: mnc
+                mnc: mnc,
+                netid: mcc + '-' + mnc + '.default'
             });
             var options = {
                 hostname: address.hostname,
