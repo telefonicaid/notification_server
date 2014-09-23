@@ -203,20 +203,22 @@ NS_WakeUp_Checker.prototype = {
                         Log.debug(
                             'NS_WakeUpChecker:checkNodes --> Checking Local Proxy server',
                             node);
+                        var id = node._id;
                         var mcc = node.mccmnc.split('-')[0];
                         var mnc = node.mccmnc.split('-')[1];
+                        var netid = node.netid;
 
                         // Check existentially
-                        self.statuses[node.mccmnc] = self.statuses[node.mccmnc] || {};
+                        self.statuses[id] = self.statuses[id] || {};
 
                         if (node.offline === true) {
-                            self.statuses[node.mccmnc].retries =
-                                (self.statuses[node.mccmnc].retries || 0) + 1;
+                            self.statuses[id].retries =
+                                (self.statuses[id].retries || 0) + 1;
                         } else {
-                            self.statuses[node.mccmnc].retries = 0;
+                            self.statuses[id].retries = 0;
                         }
 
-                        if (self.statuses[node.mccmnc].retries === 0) {
+                        if (self.statuses[id].retries === 0) {
                             Log.info(Log.messages.NOTIFY_WAKEUPSERVER_OK, {
                                 mcc: mcc,
                                 mnc: mnc
@@ -225,10 +227,10 @@ NS_WakeUp_Checker.prototype = {
                             Log.info(Log.messages.NOTIFY_WAKEUPSERVER_KO, {
                                 mcc: mcc,
                                 mnc: mnc,
-                                retries: self.statuses[node.mccmnc].retries
+                                retries: self.statuses[id].retries
                             });
                         }
-                        MobileNetwork.changeNetworkStatus(mcc, mnc, !node.offline);
+                        MobileNetwork.changeNetworkStatus(mcc, mnc, netid, !node.offline);
                     });
                 });
             });

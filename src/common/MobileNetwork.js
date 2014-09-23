@@ -23,8 +23,8 @@ var MobileNetwork = function() {
     this.callbacks = [];
     this.isCacheEnabled = consts.MOBILENETWORK_CACHE;
 
-    this.getIndex = function(mcc, mnc) {
-        return mcc + '-' + mnc;
+    this.getIndex = function(mcc, mnc, netid) {
+        return mcc + '-' + mnc + '@' + netid;
     };
 
     this.callbackReady = function(callback) {
@@ -107,8 +107,8 @@ var MobileNetwork = function() {
         });
     };
 
-    this.changeNetworkStatus = function(mcc, mnc, online) {
-        var index = this.getIndex(mcc, mnc);
+    this.changeNetworkStatus = function(mcc, mnc, netid, online) {
+        var index = this.getIndex(mcc, mnc, netid);
         Log.debug('MobileNetwork::changeNetworkStatus --> ' + index + ' is ' + online);
         DataStore.changeLocalServerStatus(index, online);
     };
