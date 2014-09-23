@@ -34,15 +34,17 @@ Connector.prototype = {
         var port = data.wakeup_hostport && data.wakeup_hostport.port &&
             (data.wakeup_hostport.port > 0) && (data.wakeup_hostport.port < 65535);
         //Is valid MCC?
-        var mcc = data.mobilenetwork && data.mobilenetwork.mcc && !isNaN(parseInt(data.mobilenetwork.mcc, 10));
+        var mcc = data.mobilenetwork && data.mobilenetwork.mcc && !isNaN(parseInt(data.mobilenetwork.mcc, 10)) && data.mobilenetwork.mcc;
         //Is valid MNC?
-        var mnc = data.mobilenetwork && data.mobilenetwork.mnc && !isNaN(parseInt(data.mobilenetwork.mnc, 10));
+        var mnc = data.mobilenetwork && data.mobilenetwork.mnc && !isNaN(parseInt(data.mobilenetwork.mnc, 10)) && data.mobilenetwork.mnc;
+        //NetID (if present)
+        var netid = (data.mobilenetwork && data.mobilenetwork.netid) || null;
 
         var self = this;
 
         if (ip && port && mcc && mnc) {
             Log.debug('getConnector --> Valid ip, port, mcc and mnc to search for wakeup');
-            mn.getNetwork(data.mobilenetwork.mcc, data.mobilenetwork.mnc, function(error, op) {
+            mn.getNetwork(mcc, mnc, netid, function(error, op) {
                 if (error) {
                     Log.error(Log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
                         'error': error
