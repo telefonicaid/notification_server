@@ -746,7 +746,7 @@ var DataStore = function() {
                 return;
             }
             collection.insert({
-                _id: operator.mccmnc + '@' + operator.netid,
+                _id: Helpers.getIndex({mccmnc: operator.mccmnc}, operator.netid),
                 netid: operator.netid,
                 mccmnc: operator.mccmnc,
                 range: operator.range,
@@ -770,11 +770,7 @@ var DataStore = function() {
      * Recovers an operator from the dataStore
      */
     this.getOperator = function(mcc, mnc, netid, callback) {
-        if (!netid) {
-            netid = mcc + '-' + mnc + '.default';
-            Log.debug('datastore:getOperator --> No netid ... using default ' + netid);
-        }
-        var id = mcc + '-' + mnc + '@' + netid;
+        var id = Helpers.getIndex({mcc: mcc, mnc: mnc}, netid);
         Log.debug('datastore::getOperator --> Looking for operator ' + id);
         // Get from MongoDB
         this.db.collection('operators', function(err, collection) {

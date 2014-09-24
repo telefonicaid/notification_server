@@ -153,3 +153,17 @@ function __ipAddr2Int(ip) {
     var split = ip.split('.');
     return split[0] << 24 | split[1] << 16 | split[2] << 8 | split[3];
 }
+
+function getIndex(mccmncObj, netid) {
+    var log = require('./Logger.js');
+    var mccmnc = mccmncObj.mccmnc;
+    if (!mccmnc) {
+        mccmnc = mccmncObj.mcc + '-' + mccmncObj.mnc;
+    }
+    if (!netid) {
+        netid = mccmnc + '.default';
+    }
+    log.debug('Helpers::getIndex --> ' + mccmnc + '@' + netid);
+    return mccmnc + '@' + netid;
+};
+exports.getIndex = getIndex;

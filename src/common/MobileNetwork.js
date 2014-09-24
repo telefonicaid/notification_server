@@ -23,13 +23,6 @@ var MobileNetwork = function() {
     this.callbacks = [];
     this.isCacheEnabled = consts.MOBILENETWORK_CACHE;
 
-    this.getIndex = function(mcc, mnc, netid) {
-        if (!netid) {
-            netid = mcc + '-' + mnc + '.default';
-        }
-        return mcc + '-' + mnc + '@' + netid;
-    };
-
     this.callbackReady = function(callback) {
         if (this.ready) {
             callback(true);
@@ -75,7 +68,7 @@ var MobileNetwork = function() {
     this.getNetwork = function(mcc, mnc, netid, callback) {
         callback = Helpers.checkCallback(callback);
 
-        var index = this.getIndex(mcc, mnc, netid);
+        var index = Helpers.getIndex({mcc: mcc, mnc: mnc}, netid);
         var value;
 
         Log.debug('MobileNetwork::getNetwork --> looking for MCC-MNC: ' + index);
@@ -111,7 +104,7 @@ var MobileNetwork = function() {
     };
 
     this.changeNetworkStatus = function(mcc, mnc, netid, online) {
-        var index = this.getIndex(mcc, mnc, netid);
+        var index = Helpers.getIndex({mcc: mcc, mnc: mnc}, netid);
         Log.debug('MobileNetwork::changeNetworkStatus --> ' + index + ' is ' + online);
         DataStore.changeLocalServerStatus(index, online);
     };
