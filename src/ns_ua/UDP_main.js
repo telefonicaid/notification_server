@@ -156,13 +156,14 @@ NS_UA_UDP.prototype = {
             message.dt.wakeup_hostport.port;
         var mcc = message.dt.mobilenetwork && message.dt.mobilenetwork.mcc;
         var mnc = message.dt.mobilenetwork && message.dt.mobilenetwork.mnc;
+        var netid = message.dt.mobilenetwork && message.dt.mobilenetwork.netid;
         var protocol = message.dt.protocol || 'udp';
         if (!message.uaid || !ip || !port || !mcc || !mnc) {
             Log.error(Log.messages.ERROR_UDPNODATA);
             return;
         }
 
-        mn.getNetwork(mcc, mnc, function(error, op) {
+        mn.getNetwork(mcc, mnc, netid, function(error, op) {
             if (error) {
                 Log.error(Log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
                     'error': error
@@ -195,7 +196,8 @@ NS_UA_UDP.prototype = {
                 port: port,
                 protocol: message.dt.protocol,
                 mcc: mcc,
-                mnc: mnc
+                mnc: mnc,
+                netid: netid
             });
             var options = {
                 hostname: address.hostname,

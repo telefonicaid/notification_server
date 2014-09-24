@@ -23,10 +23,6 @@ var MobileNetwork = function() {
     this.callbacks = [];
     this.isCacheEnabled = consts.MOBILENETWORK_CACHE;
 
-    this.getIndex = function(mcc, mnc) {
-        return mcc + '-' + mnc;
-    };
-
     this.callbackReady = function(callback) {
         if (this.ready) {
             callback(true);
@@ -69,10 +65,10 @@ var MobileNetwork = function() {
         Log.debug('MobileNetwork::resetCache --> cache cleaned');
     };
 
-    this.getNetwork = function(mcc, mnc, callback) {
+    this.getNetwork = function(mcc, mnc, netid, callback) {
         callback = Helpers.checkCallback(callback);
 
-        var index = this.getIndex(mcc, mnc);
+        var index = Helpers.getIndex({mcc: mcc, mnc: mnc}, netid);
         var value;
 
         Log.debug('MobileNetwork::getNetwork --> looking for MCC-MNC: ' + index);
@@ -85,7 +81,7 @@ var MobileNetwork = function() {
 
         // Check if the network if it's in the database and update cache
         var self = this;
-        DataStore.getOperator(mcc, mnc, function(error, d) {
+        DataStore.getOperator(mcc, mnc, netid, function(error, d) {
             if (error) {
                 Log.error(Log.messages.ERROR_MOBILENETWORKERROR, {
                     'error': error
@@ -107,8 +103,8 @@ var MobileNetwork = function() {
         });
     };
 
-    this.changeNetworkStatus = function(mcc, mnc, online) {
-        var index = this.getIndex(mcc, mnc);
+    this.changeNetworkStatus = function(mcc, mnc, netid, online) {
+        var index = Helpers.getIndex({mcc: mcc, mnc: mnc}, netid);
         Log.debug('MobileNetwork::changeNetworkStatus --> ' + index + ' is ' + online);
         DataStore.changeLocalServerStatus(index, online);
     };
