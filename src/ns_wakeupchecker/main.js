@@ -206,7 +206,6 @@ NS_WakeUp_Checker.prototype = {
                         var id = node._id;
                         var mcc = node.mccmnc.split('-')[0];
                         var mnc = node.mccmnc.split('-')[1];
-                        var netid = node.netid;
 
                         // Check existentially
                         self.statuses[id] = self.statuses[id] || {};
@@ -230,7 +229,7 @@ NS_WakeUp_Checker.prototype = {
                                 retries: self.statuses[id].retries
                             });
                         }
-                        MobileNetwork.changeNetworkStatus(mcc, mnc, netid, !node.offline);
+                        MobileNetwork.changeNetworkStatus(mcc, mnc, node.netid, !node.offline);
                     });
                 });
             });
