@@ -38,7 +38,9 @@ NS_WakeUp_Checker.prototype = {
             self.MobileNetworkReady = true;
 
             // Start auto provisioning networks with wakeup available
-            self.autoProvisionNetworks();
+            self.autoProvisionNetworksInterval = setInterval(function() {
+                self.autoProvisionNetworks();
+            }, config.autoProvisionNetworksPeriod);
 
             // Check periodically the networks
             self.checkNodesInterval = setInterval(function() {
@@ -113,11 +115,16 @@ NS_WakeUp_Checker.prototype = {
         Log.debug('NS_WakeUpChecker:autoProvisionNetworks -> Checking WakeUp networks');
         var self = this;
 
-        MobileNetwork.getAllWakeUps(function (error, servers) {
-            if (error) {
-                return;
-            }
-            MobileNetwork.cleanAllOperators(function() {
+        var mongoOperatorsList = [];
+        var newOperatorsList = [];
+
+        MobileNetwork.getOperators(function (error, data){
+            mongoOperatorsList = data;
+
+            MobileNetwork.getAllWakeUps(function (error, servers) {
+                if (error) {
+                    return;
+                }
                 servers.forEach(function(server) {
                     self.recoverNetworks(server, function(wakeUpNodes, trackingID) {
                         var json = {};
@@ -144,23 +151,43 @@ NS_WakeUp_Checker.prototype = {
                             Log.debug(
                                 'NS_WakeUpChecker:autoProvisionNetworks --> Provisioning Local Proxy server',
                                 node);
-                            MobileNetwork.provisionOperator(node, server,
-                                function provisionOperatorCB(error) {
-                                    if (error) {
-                                        Log.info(
-                                            'NS_WakeUpChecker:autoProvisionNetworks --> Error provisioning operator: ' +
-                                            error);
-                                    } else {
-                                        Log.info(
-                                            'NS_WakeUpChecker:autoProvisionNetworks --> operator provisioned on server ' +
-                                            server.name + ' -', node);
-                                    }
-                                });
+                            newOperatorsList.push(node);
+                            MobileNetwork.provisionOperator(node, server, function provisionOperatorCB(error) {
+                                if (error) {
+                                    Log.info(
+                                        'NS_WakeUpChecker:autoProvisionNetworks --> Error provisioning operator: ' +
+                                        error);
+                                } else {
+                                    Log.info(
+                                        'NS_WakeUpChecker:autoProvisionNetworks --> operator provisioned on server ' +
+                                        server.name + ' -', node);
+                                }
+                            });
+                        });
+                        var listOperatorsRemove = self.clearLists(mongoOperatorsList, newOperatorsList);
+                        listOperatorsRemove.forEach(function(operator) {
+                            MobileNetwork.removeOperator(operator);
                         });
                     });
                 });
             });
         });
+    },
+
+    clearLists: function(mongoOperatorsList, newOperatorsList) {
+        newOperatorsList.forEach(function(newOperator, indexNew) {
+            mongoOperatorsList.forEach(function(mongoOperator, indexMongo) {
+                if(mongoOperator.netid == newOperator.netid &&
+                   mongoOperator.mccmnc == newOperator.mccmnc &&
+                   mongoOperator.range == newOperator.range){
+                    mongoOperatorsList.splice(indexMongo, 1);
+                    if(mongoOperator.offline !== newOperator.offline){
+                        MobileNetwork.changeLocalServerStatus(mongoOperator._id, newOperator.offline);
+                    }
+                }
+            });
+        });
+        return mongoOperatorsList;
     },
 
     checkNodes: function() {

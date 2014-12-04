@@ -721,6 +721,33 @@ var DataStore = function() {
         });
     };
 
+    /**
+     * Recovers all the operators
+     */
+    this.getOperators = function(callback) {
+        Log.debug('dataStore::getWakeUps --> Looking for all operators...');
+        this.db.collection('operators', function(err, collection) {
+            callback = Helpers.checkCallback(callback);
+            if(err) {
+                Log.error('datastore::getOperators - Error getting collection: ' + err);
+                callback(err);
+                return;
+            }
+            collection.find().toArray(function(err, data) {
+                if (err) {
+                    Log.error('datastore::getOperators - Error getting data: ' + err);
+                    callback(err);
+                    return;
+                }
+                var msg = data ? 'The wakeup server list has been recovered. ' :
+                    'No operator found. ';
+                Log.debug('datastore::getOperators --> ' + msg +
+                    ' Calling callback');
+                callback(null, data);
+            });
+        });
+    };
+
     this.createOperatorsCollection = function(callback) {
         Log.debug('datastore::createOperatorsCollection - Creating new operators collection');
         this.db.createCollection('operators', function(err, collection) {
@@ -762,6 +789,70 @@ var DataStore = function() {
                 }
                 Log.debug('datastore::provisionOperator - Done !');
                 self.createOperatorsCollection(callback);
+            });
+        });
+    };
+
+    /**
+     * Check if the operator is already in Mongo and insert it if it doesn't exist
+     */
+    this.checkIfOperatorExist = function(operator, wakeup, callback){
+        var self = this;
+        this.db.collection('operators', function(err, collection) {
+            if (err) {
+                Log.error(Log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
+                    'method': 'checkIfOperatorExist',
+                    'error': err
+                });
+                self.createOperatorsCollection(callback);
+                return;
+            }
+            collection.findOne({
+                'netid': operator.netid,
+                'mccmnc': operator.mccmnc,
+                'range': operator.range
+            }, function(err, data) {
+                if (data === null) {
+                    Log.debug('NS_WakeUpChecker:checkIfOperatorExist --> ' +
+                        'the operator is not on the database, inserting it...');
+                    self.provisionOperator(operator, wakeup, callback);
+                    return;
+                }
+                Log.debug('NS_WakeUpChecker:checkIfOperatorExist -->' +
+                    'the operator is on the database, we don\'t need to insert it');
+                self.createOperatorsCollection(callback);
+                return;
+            });
+        });
+    };
+
+    this.removeOperator = function(operator) {
+        this.db.collection('operators', function(err, collection) {
+            if (err) {
+                return;
+                Log.error(Log.messages.ERROR_DSERROROPENINGOPERATORSCOLLECTION, {
+                    'method': 'removeOperator',
+                    'error': err
+                });
+            }
+            collection.findAndModify({
+                'netid': operator.netid,
+                'mccmnc': operator.mccmnc,
+                'range': operator.range
+            }, [], //Sort
+            {}, //Replacement
+            {
+                safe: false,
+                remove: true //Remove document
+            }, function(err) {
+                if (err) {
+                    Log.debug('NS_WakeUpChecker:removeOperator --> ' +
+                        'removing operators that are offline ' +
+                        err);
+                    return;
+                }
+                Log.debug('NS_WakeUpChecker:removeOperator --> ' +
+                    'offline operator removed');
             });
         });
     };

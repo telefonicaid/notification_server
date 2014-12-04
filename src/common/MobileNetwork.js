@@ -144,12 +144,24 @@ var MobileNetwork = function() {
         });
     };
 
+    this.getOperators = function(callback) {
+        DataStore.getOperators(callback);
+    };
+
     this.cleanAllOperators = function(callback) {
         DataStore.cleanAllOperators(callback);
     };
 
     this.provisionOperator = function(operator, wakeup, callback) {
-        DataStore.provisionOperator(operator, wakeup, callback);
+        DataStore.checkIfOperatorExist(operator, wakeup, callback);
+    }
+
+    this.removeOperator = function(operator) {
+        DataStore.removeOperator(operator);
+    }
+
+    this.changeLocalServerStatus = function(index, online) {
+        DataStore.changeLocalServerStatus(index, online);
     }
 };
 
