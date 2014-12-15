@@ -186,21 +186,6 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
     }));
 };
 
-MsgBroker.prototype.reconnectQueues = function() {
-    Log.debug('Reconnecting to the Messages Queues');
-    for (var i = 0; i < this.conns.length; i++) {
-        this.conns[i].reconnecting = true;
-
-        Log.debug('Reconnecting connection ' + this.conns[i].id);
-        this.conns[i].disconnect();
-
-        setTimeout(function() {
-            Log.debug('Reconnecting ' + this.id + ' finished');
-            this.reconnecting = false;
-        }.bind(this.conns[i]), 60000);
-    };
-}
-
 MsgBroker.prototype.isDisconnected = function(element) {
     return element.state !== QUEUE_CONNECTED;
 };

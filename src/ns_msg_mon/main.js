@@ -81,25 +81,6 @@ NS_Monitor.prototype.start = function() {
         self.stop();
     });
 
-
-    //Hack. Once we have a disconnected queue, we must subscribe again for each
-    //broker.
-    //This happens on RabbitMQ as follows:
-    // 1) We are connected to several brokers
-    // 2) We are subscribed to the same queue on those brokers
-    // 3) Master fails :(
-    // 4) RabbitMQ promotes the eldest slave to be the master
-    // 5) RabbitMQ disconnects all clients. Not a socket disconnection, but
-    //    unbinds the connection to the subscribed queue.
-    //
-    // Hacky solution: once we have a disconnected queue (a socket error), we
-    // subscribe again to the queue.
-    // It's not beautiful (we should really unsubscribe all queues first), but works.
-    // This *MIGHT* require OPS job if we have a long-long socket errors with queues.
-    // (we might end up with gazillions (hundreds, really) callbacks on the same
-    // socket for handling messages)
-    MsgBroker.on('queuedisconnected', MsgBroker.reconnectQueues);
-
     // Connect to the message broker
     process.nextTick(function() {
         MsgBroker.start();
