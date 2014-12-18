@@ -36,16 +36,18 @@ NS_WakeUp_Checker.prototype = {
             Log.info(
                 'NS_WakeUpChecker::init --> MobileNetwork ready and connected');
             self.MobileNetworkReady = true;
+            self.autoProvisionNetworksPeriod = config.autoProvisionNetworksPeriod || 1800000;
+            self.checkPeriod = config.checkPeriod || 1800000;
 
             // Start auto provisioning networks with wakeup available
             self.autoProvisionNetworksInterval = setInterval(function() {
                 self.autoProvisionNetworks();
-            }, config.autoProvisionNetworksPeriod);
+            }, self.autoProvisionNetworksPeriod);
 
             // Check periodically the networks
             self.checkNodesInterval = setInterval(function() {
                 self.checkNodes();
-            }, config.checkPeriod);
+            }, self.checkPeriod);
         });
         MobileNetwork.once('closed', function() {
             if (self.closingCorrectly) {
