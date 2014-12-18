@@ -194,7 +194,8 @@ exports.NS_UA_UDP = {
 exports.NS_WakeUp_Checker = {
     logfile: 'NS_WakeUp_Checker.log',
 
-    checkPeriod: 180000
+    checkPeriod: 180000,
+    autoProvisionNetworksPeriod: 180000
 };
 
 /********************* NS start.js ***********************************/
