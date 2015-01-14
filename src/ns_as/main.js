@@ -226,9 +226,32 @@ NS_AS.prototype = {
         }
     },
 
-    onHTTPMessage: function(request, response) {
-        var self = this;
+    // Get IP and port also if configured using UNIX sockets
+    // The HTTP proxy shall inyect the header X-Forwarded-For with the port
+    // proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for:$remote_port;
+    setRemoteAddress: function(request) {
+        if (!request.socket.remoteAddress && !request.socket.remotePort &&
+            request.headers['x-forwarded-for']) {
+            request.remoteAddress =
+                request.headers['x-forwarded-for'].split(':')[0];
+            request.remotePort =
+                request.headers['x-forwarded-for'].split(':')[1];
+        } else {
+            request.remoteAddress = request.socket.remoteAddress;
+            request.remotePort = request.socket.remotePort;
+        }
 
+        Log.info('Connection from ' + this.getRemoteAddress(request));
+    },
+
+    getRemoteAddress: function(request) {
+        return request.remoteAddress + ':' + request.remotePort;
+    },
+
+    onHTTPMessage: function(request, response) {
+        this.setRemoteAddress(request);
+
+        var self = this;
         response.res = function responseHTTP(errorCode) {
             Log.debug('NS_AS::responseHTTP: ', errorCode);
             this.statusCode = errorCode[0];
@@ -373,7 +396,8 @@ NS_AS.prototype = {
             versions[0] !== 'version' || !Helpers.isVersion(version)) {
             response.statusCode = 400;
             response.end('{ reason: "Bad request"}');
-            Log.info('NS_AS::simplepushRequest --> Bad request ' + body);
+            Log.info('NS_AS::simplepushRequest --> Bad request from ' +
+            this.getRemoteAddress(request) + ' with body "' + body + '"');
             return;
         }
 
