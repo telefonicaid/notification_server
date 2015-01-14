@@ -99,8 +99,9 @@ NS_Monitor.prototype.start = function() {
     this.readyUDPTimeout = setTimeout(function() {
         self.retryUDPnotACKedInterval = setInterval(function retryUDPnotACKed() {
             self.retryUDPnotACKed();
-        }, 31 * 1000); // Wait to be ready (31 seconds)
-    }, config.retryTime);
+        }, config.retryTime);
+    }, 31 * 1000); // Wait to be ready (31 seconds)
+    
 };
 
 NS_Monitor.prototype.stop = function(correctly) {
