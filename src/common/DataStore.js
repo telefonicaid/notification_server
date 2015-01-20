@@ -791,7 +791,7 @@ var DataStore = function() {
                         callback(err);
                         return;
                     }
-                    Log.debug(
+                    Log.info(
                         'dataStore::changeLocalServerStatus --> Local server updated ',
                         res);
                 });

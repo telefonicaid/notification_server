@@ -61,7 +61,7 @@ Connector.prototype = {
                     self.getUDPconnector(data, connection, callback);
                 } else {
                     //Falback for WebSocket
-                    Log.debug('getConnector::UDP --> Data is not accepted by the network' +
+                    Log.info('getConnector::UDP --> Data is not accepted by the network' +
                         ' falling back to WebSocket');
                     Log.debug('getConnector::UDP --> Local server is ' +
                         (op && !op.offline) ? 'online' : 'offline');
