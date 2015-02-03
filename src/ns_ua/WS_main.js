@@ -497,6 +497,20 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
     this.onWSMessage = function(message) {
         self.stats['websocket_messages'] = (self.stats['websocket_messages'] || 0) + 1;
 
+        // Get IP and port also if configured using UNIX sockets
+        // The HTTP proxy shall inyect the header X-Forwarded-For with the port
+        // proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for:$remote_port;
+        if (connection.socket.remotePort === undefined) {
+            try {
+                connection.remotePort = connection.remoteAddress.split(':')[1];
+                connection.remoteAddress = connection.remoteAddress.split(':')[0];
+            } catch(e) {
+                connection.remotePort = 'unknown';
+            }
+        } else {
+            connection.remotePort = connection.socket.remotePort;
+        }
+
         // Restart autoclosing timeout
         var nodeConnector = DataManager.getNodeConnector(connection.uaid);
         if (nodeConnector) {
@@ -570,7 +584,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
                     Log.notify(Log.messages.NOTIFY_HELLO, {
                         uaid: connection.uaid,
                         socket_ip: connection.remoteAddress,
-                        socket_port: connection.socket.remotePort,
+                        socket_port: connection.remotePort,
                         ip: (query.wakeup_hostport && query.wakeup_hostport.ip) || 0,
                         port: (query.wakeup_hostport && query.wakeup_hostport.port) || 0,
                         mcc: connection.mcc,
