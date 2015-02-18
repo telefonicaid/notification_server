@@ -29,6 +29,7 @@ exports.servers = {
 exports.consts = {
     PREPRODUCTION_MODE: true,
     MOBILENETWORK_CACHE: false,
+    RENEWPERIOD_CACHE: 3600000,
 
 
     /*
