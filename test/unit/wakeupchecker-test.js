@@ -33,9 +33,6 @@ vows.describe('WakeUp checker').addBatch({
     },
     'checkNodes': function(topic) {
       assert.isFunction(wakeup.checkNodes);
-    },
-    'checkServer': function(topic) {
-      assert.isFunction(wakeup.checkServer);
     }
   },
   'CheckServer method': {
