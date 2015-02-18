@@ -170,6 +170,12 @@ NS_UA_UDP.prototype = {
                 });
                 return;
             }
+            if (op === null) {
+                Log.error(Log.messages.ERROR_CONNECTORERRORGETTINGOPERATOR, {
+                    'error': 'No data found on database'
+                });
+                return;
+            }
 
             Log.debug('Recovered operator through wakeup: ' + op.wakeup.name);
 
