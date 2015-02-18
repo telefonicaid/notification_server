@@ -32,7 +32,16 @@ var MobileNetwork = function() {
     };
 
     this.start = function() {
+        var self = this;
+
         this.resetCache();
+
+        // We delete the cache each X seconds to get updated data all the time.
+        if(this.isCacheEnabled){
+            setInterval(function(){
+                self.resetCache();
+            }, consts.RENEWPERIOD_CACHE);
+        }
 
         DataStore.once('ready', (function() {
             Log.debug('MobileNetwork::start --> library loaded');
