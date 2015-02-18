@@ -25,13 +25,4 @@ vows.describe('About tests').addBatch({
       assert.equal(response.statusCode, 200);
     }
   },
-  'UDP local': {
-    topic: function() {
-      request('https://localhost:8090/about', this.callback);
-    },
-    'no error and 200 as statusCode': function(error, response, body) {
-      assert.isNull(error);
-      assert.equal(response.statusCode, 200);
-    }
-  },
 }).export(module);

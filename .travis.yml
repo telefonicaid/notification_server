@@ -3,6 +3,7 @@ language: "node_js"
 node_js:
   - 0.10
   - 0.11
+  - 0.12
 
 services:
   - rabbitmq # will start rabbitmq-server
@@ -16,9 +17,7 @@ before_install:
   - npm install
   - sudo mkdir -p /var/log/push_server/ # To store log files
   - sudo chmod 777 /var/log/push_server/
-  - cd scripts/
-  - awk -f load_mcc_mnc_onmongo.awk mcc_mnc_list.txt
-  - cd ../src
+  - cd src
   - cp config.js.ic config.js
   - cd ..
 
@@ -38,7 +37,9 @@ after_script:
   - sleep 15
   - cd src
   - cat out
+  - cd ..
+  - make cloc
 
 notifications:
    email:
-      - guillermo.lopezleal@telefonica.com
+      - fernando.rodriguezsela@telefonica.com
