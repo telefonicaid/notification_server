@@ -112,7 +112,7 @@ MsgBroker.prototype.createConnection = function(queuesConf) {
     var conn = new amqp.createConnection({
         port: queuesConf.port,
         host: queuesConf.host,
-        Login: queuesConf.Login,
+        login: queuesConf.Login,
         password: queuesConf.password,
         heartbeat: queuesConf.heartbeat
     }, {
