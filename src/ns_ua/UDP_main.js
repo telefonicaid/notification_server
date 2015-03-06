@@ -229,6 +229,7 @@ NS_UA_UDP.prototype = {
                     wakeupname: op.wakeup.name,
                     mcc: mcc,
                     mnc: mnc,
+                    netid: netid,
                     protocol: protocol,
                     response: res.statusCode,
                     xtracking: res.headers['x-tracking-id']
@@ -243,6 +244,7 @@ NS_UA_UDP.prototype = {
                     wakeupname: op.wakeup.name,
                     mcc: mcc,
                     mnc: mnc,
+                    netid: netid,
                     protocol: protocol,
                     response: e.message
                 });
