@@ -845,7 +845,7 @@ NS_UA_WS.prototype.onWSRequest = function(request) {
     ///////////////////////
 
     // Check limits
-    if (self.wsConnections >= self.stats['max_allowed_connections']) {
+    if (self.stats['websocket_actual_open_connections'] >= self.stats['max_allowed_connections']) {
         Log.debug('WS::onWSRequest --> Connection unaccepted. To many open connections');
         request.reject();
         return;
